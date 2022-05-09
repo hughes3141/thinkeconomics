@@ -1,7 +1,7 @@
 <?php 
 
 
-//print_r($_POST); 
+print_r($_POST); 
 
 
 
@@ -49,7 +49,6 @@ if ($conn->connect_error) {
 $name2= $_POST['name'];
 $password2 = $_POST['password'];
 
-//echo $name2.$password2;
 
 
 
@@ -57,43 +56,32 @@ $sql = "SELECT id, name, password, usertype, groupid FROM users WHERE name = ?";
 $stmt = $conn->prepare($sql); 
 $stmt->bind_param("s", $name2);
 $stmt->execute();
-//$result = $stmt->get_result(); // get the mysqli result
-//$result = $stmt->get_result();
+$result = $stmt->get_result(); // get the mysqli result
+
 //$user = $result->fetch_assoc(); // fetch data   
 
-      /* Store the result (to get properties) */
-      $stmt->store_result();
-      
-      /* Get the number of rows */
-      $num_of_rows = $stmt->num_rows;
 
-      /* Bind the result to variables */
-      
-      $stmt->bind_result($id, $name, $password, $usertype, $groupid);
-  
-      
+$row = $result->fetch_assoc();
+
+
+
 /*
-while ($stmt->fetch()) {
-
-  echo 'ID: '.$id.'<br>';
-  echo 'First Name: '.$name.'<br>';
-  echo 'Last Name: '.$password.'<br>';
-    
-}
-
+Statments from bind_result method:
+      $stmt->store_result();
+      $num_of_rows = $stmt->num_rows;
+      $stmt->bind_result($id, $name, $password);
+      $stmt->fetch();
 */
-
-$stmt->fetch();
-
 if((isset($_POST['userid'])==false)) {
 
-  if(($num_of_rows == 0)and(empty($_POST['name'])==false)) {
+  if(($result->num_rows == 0)and(empty($_POST['name'])==false)) {
     
     echo "<script type='text/javascript'>alert('This name is not in the database');</script>";
     
   } else {
     
-    if(($password != $password2)) {
+    
+    if(($row['password'] != $password2)) {
       echo "<script type='text/javascript'>alert('Incorrect password');</script>";
     
     } elseif (empty($_POST['name'])==false) {
@@ -102,10 +90,10 @@ if((isset($_POST['userid'])==false)) {
       
       ?>
       
-      <input type="hidden" name = "name" value = "<?php echo $name;?>">      
-      <input type="hidden" name = "userid" value = "<?php echo $id;?>">
-      <input type="hidden" name = "usertype" value = "<?php echo $usertype;?>">
-      <input type="hidden" name = "groupid" value = "<?php echo $groupid;?>">
+      <input type="hidden" name = "name" value = "<?php echo $row['name'];?>">      
+      <input type="hidden" name = "userid" value = "<?php echo $row['id'];?>">
+      <input type="hidden" name = "usertype" value = "<?php echo $row['usertype'];?>">
+      <input type="hidden" name = "groupid" value = "<?php echo $row['groupid'];?>">
      
       <script type='text/javascript'>document.getElementById('login_form2').submit();</script>
       
@@ -119,12 +107,10 @@ if((isset($_POST['userid'])==false)) {
     
   }
 } else {
-  //echo "Logged in as: ".$_POST['name'];
+//  echo "Logged in as: ".$_POST['name'];
 }
 
 
-//echo "User entered: ".$name2.$password2."<br>";
-//echo "Database: ".$name.$password;
 //phpinfo();
 
 $conn->close();
