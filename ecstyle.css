@@ -1,0 +1,239 @@
+body {
+	
+	background-color: lightblue;
+	
+
+}
+
+.container.mx-auto.top_container {
+	
+	background-color: lightblue;
+	
+
+}
+
+/* Title headings*/
+
+.title {
+	
+	color: yellow;
+	-webkit-text-stroke: 1px black;
+				text-align: center;
+				font-weight: bold;
+				border: solid;
+				border-color: black;
+				/*font-size: 60px;*/
+				font-size: 5.5vw;
+				background-color: pink;
+				/*margin: 5px auto 5px auto;*/
+				/*margin: 5px;*/
+				overflow: hidden;
+				/*width: 100%;
+				display: inline-block;
+				text-overflow: clip;	*/
+	
+}
+
+.titlediv {
+				color: yellow;
+
+				/*text-align: center;
+				
+				font-size: 60px;
+				
+				*/
+				font-weight: bold;
+				border: solid;
+				border-color: black;
+				
+				background-color: pink;
+				margin: 5px auto 5px auto;
+				overflow: hidden;
+	
+}
+
+/* Navigation bar*/
+
+
+.navbar {
+	
+	//margin: 5px;
+}
+
+ul.navbar {
+
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+li.navbar {
+  float:left;
+  border-right: 1px solid #bbb;
+  //width: 150px;
+	
+  
+}
+
+li.navbar:last-child {
+	
+	border-right: none;
+}
+
+a.navbar {
+	display: block;
+	padding: 8px;
+	background-color: pink;
+}
+
+a.navlink:link, a.navlink:visited {
+  
+	color: yellow;
+	border: none;
+
+				text-decoration: none;
+	
+
+}
+
+a.navlink:hover, a.navlink:active {
+	color: pink;
+	-webkit-text-stroke: 2px black;
+	
+}
+/* Index page subtitle formatting*/
+
+.subtitle {
+	
+	color: yellow;
+	-webkit-text-stroke: 1px black;
+				text-align: center;
+				font-weight: bold;
+				border: solid;
+				border-color: black;
+				font-size: 40px;
+				/*font-size: 5vw;*/
+				background-color: pink;
+				margin: 5px auto 5px auto;
+				width: 50%;
+}
+
+
+/*Body styles*/
+
+div.style {
+	
+	
+				/*font-size: 12pt;*/
+				position: relative;
+				border: solid;
+				border-color: black;
+				background-color: white;
+				/*margin: 5px;*/
+				/*margin: 5px auto 5px auto;*/
+				/*width: 100%;*/
+				padding: 5px 5px 5px 5px;
+				overflow: auto;
+	
+}
+
+div.style {
+	
+	font-size: vw;
+}
+
+.pageindex {
+	
+	border: solid;
+	border-color:black;
+	background-color: pink;
+	margin-left: 0px;
+	width: 50%;
+	
+}
+
+.pagetitle {
+	
+	color: yellow;
+	-webkit-text-stroke: 1px black;
+				text-align: center;
+				font-weight: bold;
+				border: solid;
+				border-color: black;
+				/*font-size: 30px;*/
+				/*font-size: 3vw;*/
+				background-color: pink;
+				margin-left: 0px;
+				margin-bottom: 5px;
+				
+				width: 50%;
+				
+	
+}
+
+h1 {
+	color: black;
+	/*-webkit-text-stroke: 1px black;*/
+	font-family: "Courier New", Courier, monospace;
+	background-color: pink;
+	width: 100%;
+	clear: both;
+	/*font-size:3vw;*/
+}
+
+h2 {
+	/*font-size: 1.17em;*/
+	/*font-size:3vw;*/
+	
+}
+
+p {
+	
+	overflow-wrap: break-word; 
+}
+
+a {
+
+text-decoration: none;}
+
+img.notesimg {
+	
+	float:right;border:1px solid black; max-width:50%; margin: 10px;
+	clear: both;
+}
+
+img {
+	max-width: 100%;
+}
+
+/* Fonts */
+
+.cour {
+		
+	font-family: "Courier New", Courier, monospace;
+}
+
+.arial {
+	
+	font-family: arial, helvetica, sans-serif;
+	
+}
+
+.divright {
+	float: right;
+	margin: ;
+	border: solid;
+	
+	padding:;
+	
+
+}
+
+.footer {
+	margin-top: 5px;
+	text-align: center;
+	/*font-size: 10pt;*/
+	font-size: vw;
+	
+}
