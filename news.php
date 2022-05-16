@@ -173,9 +173,9 @@ if($result) {
     echo "<td>".$row['topic']."</td>";
     echo "<td><p><strong>Headline: </strong>".$row['headline'];
     
-    echo "</p><p><strong>Link: </strong><a target ='_blank' href='".$row['link']."'>".$row['link']."</a></p>";
+    echo "</p><p><strong>Link: </strong><a class = 'hover:bg-sky-100' target ='_blank' href='".$row['link']."'>".$row['link']."</a></p>";
     if ($row['explanation']!="") {
-      echo "<p><strong>Explanation: </strong>:".$row['explanation']."</p>";
+      echo "<p><strong>Explanation: </strong>".$row['explanation']."</p>";
     }
     echo "</td>";
     //echo "<td><a target ='_blank' href='".$row['link']."'>".$row['link']."</a></td>";
