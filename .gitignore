@@ -1,3 +1,5 @@
 admin/files
 *.pdf
-*.jpg 
+*.jpg
+*.wav
+node_modules
