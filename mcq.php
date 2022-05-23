@@ -56,6 +56,16 @@
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/login.php?quizname=1.6.3_1.php">1.6.3/1.6.4 Theory of the Firm Exercises</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/login.php?quizid=69">1.6.5 Monopoly Questions</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/login.php?quizid=64">1.6.6 Oligopoly</a></li>
+        <h2 class="font-mono text-xl bg-pink-300 pl-1">Eduqas Past Papers</h2>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/login.php?quizid=98">C1 Spec Paper</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/login.php?quizid=99">C1 June 2017</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/login.php?quizid=100">C1 June 2018</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/login.php?quizid=6">C1 June 2019</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/login.php?quizid=104">WJEC 2016</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/login.php?quizid=105">WJEC 2017</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/login.php?quizid=106">WJEC 2018</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/login.php?quizid=107">WJEC 2019</a></li>
+
       </ul>
     </div>
 </div>
