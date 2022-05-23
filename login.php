@@ -19,7 +19,7 @@ if(isset($_SESSION['last_url'])) {
 } else {
   $_SESSION['2last_url'] = null;
 }
-$_SESSION['last_url'] = $_SERVER['HTTP_REFERER'];
+$_SESSION['last_url'] = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER']: null;
 
 
 //Set $previous variable to reflect the most recent url that is not the current one.
@@ -31,20 +31,20 @@ if(isset($_SERVER['HTTP_REFERER'])) {
   }
 }
 
-
+/*
 echo $current_url;
 echo "<br>";
 
 echo $previous;
 echo "<br>";
-
+*/
 
 
  
 // Check if the user is already logged in
 if(isset($_SESSION["userid"])){
     //header("location: index.php");
-    print_r($_SESSION);
+    //print_r($_SESSION);
     //exit;
 }
  
@@ -118,7 +118,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             $_SESSION["userid"] = $id;
 
                             // Redirect user to previous page
-                            header("location: ".$previous);
+                            if($previous !="") {
+                              header("location: ".$previous);
+                            } else {
+                              header("location: index.php");
+                            }
                         } else{
                             // Password is not valid, display a generic error message
                             $login_err = "Invalid username or password.";
@@ -142,44 +146,39 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 }
 ?>
  
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body{ font: 14px sans-serif; }
-        .wrapper{ width: 360px; padding: 20px; }
-    </style>
-</head>
+ <?php include "header_tailwind.php"; ?>
+ <div class="container mx-auto px-4 mt-20 lg:w-1/2">
 <body>
-    <div class="wrapper">
-        <h2>Login</h2>
-        <p>Please fill in your credentials to login.</p>
+  <h1 class="font-mono text-2xl bg-pink-400 pl-1">User Login</h1>
+    <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
+       
+        <p class="px-3 py-2">Please fill in your credentials to login.</p>
 
         <?php 
         if(!empty($login_err)){
-            echo '<div class="alert alert-danger">' . $login_err . '</div>';
+            echo '<div class="ml-3 mt-1 py-0 text-red-600 bg-lime-300">' . $login_err . '</div>';
         }        
         ?>
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="form-group">
-                <label>Username</label>
-                <input type="text" name="username" class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>" value="<?php echo ($username!=="")? $username : $_SESSION['name']; ?>">
-                <span class="invalid-feedback"><?php echo $username_err; ?></span>
+                <label class ="text-gray-600 pb-1 ml-2 mb-2 pt-1">Name</label>
+                <input type="text" name="username" class="border px-3 py-2  text-sm w-full" value="<?php echo ($username!=="")? $username : $_SESSION['name']; ?>">
+                <span class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $username_err; ?></span>
             </div>    
             <div class="form-group">
-                <label>Password</label>
-                <input type="password" name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>">
-                <span class="invalid-feedback"><?php echo $password_err; ?></span>
+                <label class ="text-gray-600 pb-1 ml-2 mb-2 pt-1">Password</label>
+                <input type="password" name="password" class="border px-3 py-2  text-sm w-full" placeholder =Password>
+                <span class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $password_err; ?></span>
             </div>
             <div class="form-group">
-                <input type="submit" class="btn btn-primary" value="Login">
+                <input type="submit" class="transition duration-200 bg-sky-500 hover:bg-sky-400 focus:bg-sky-200 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block" value="Login">
             </div>
+            <!--
             <p>Don't have an account? <a href="register.php">Sign up now</a>.</p>
+      -->
         </form>
     </div>
 </body>
+</div>
 </html>

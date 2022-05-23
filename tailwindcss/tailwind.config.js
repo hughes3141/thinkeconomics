@@ -8,7 +8,8 @@ module.exports = {
     "../footer_tailwind.php",
     "../mcq.php",
     "../admin.php",
-    "../user_login2.0.php"
+    "../user_login2.0.php",
+    "../login.php"
 
   ],
   theme: {
