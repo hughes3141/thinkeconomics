@@ -1,44 +1,21 @@
 <?php
+
 // Initialize the session
 session_start();
 
-// Define which page redirected to here
 
+// Define which page redirected to here
 //Storing previous URLs to ensure that we can redirect to page where we cane from
 
-//Define variables for previous page and current page
+if($_SESSION['this_url'] != $_SERVER['REQUEST_URI']) {
+  $_SESSION['last_url'] = $_SESSION['this_url'];
+  $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
+}
+
 $previous = "";
-$current_url = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-
-//Set variables for last 2 URLS; test to ensure that the second URL is not the current URL.
-//$_SESSION['2last_url'] = isset($_SESSION['last_url']) ? $_SESSION['last_url'] : null;
-if(isset($_SESSION['last_url'])) {
-  if ($_SESSION['last_url']!=$current_url) {
-    $_SESSION['2last_url'] = $_SESSION['last_url'];
-  } 
-} else {
-  $_SESSION['2last_url'] = null;
+if($_SESSION['last_url']) {
+  $previous = $_SESSION['last_url'];
 }
-$_SESSION['last_url'] = (isset($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER']: null;
-
-
-//Set $previous variable to reflect the most recent url that is not the current one.
-if(isset($_SERVER['HTTP_REFERER'])) {
-  if($_SESSION['last_url']===$current_url) {
-    $previous = $_SESSION['2last_url'];
-  } else {
-    $previous = $_SESSION['last_url'];
-  }
-}
-
-/*
-echo $current_url;
-echo "<br>";
-
-echo $previous;
-echo "<br>";
-*/
-
 
  
 // Check if the user is already logged in
@@ -109,7 +86,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         //!!Replace previous line with following line once hashed passwords are incorporated into database.
                         //if(password_verify($password2, $hashed_password)){
                             // Password is correct, so start a new session
-                            session_start();
+                            //session_start();
                             
                             // Store data in session variables
                             //$_SESSION["loggedin"] = true;
@@ -157,8 +134,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
        
         <p class="px-3 py-2 hidden">Please fill in your credentials to login.</p>
 
-        <?php print_r($_SESSION);
-        echo $_SERVER['HTTP_REFERER'];?>
+        <?php //print_r($_SESSION);?>
 
         
 

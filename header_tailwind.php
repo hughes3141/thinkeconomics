@@ -113,11 +113,19 @@
           <button
             id="navAction"
             class="mx-auto lg:mx-0 hover:underline bg-pink-200 lg:bg-white text-gray-800 font-bold rounded-full mt-4 lg:mt-0 py-4 px-8 shadow opacity-75 focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
-            onclick ="location.href = 'user_login2.0.php'"
+            onclick ="location.href = 'user/user3.0.php'"
           >
-            Sign In
+            <?php
+            
+            if(!isset($_SESSION['userid'])||($_SESSION['userid']=="")) {
+              echo "Sign In";
+            } else {
+              echo "User Portal";
+            }
+            ?><!--Sign In-->
           </button>
         </div>
       </div>
       <hr class="border-b border-gray-100 opacity-25 my-0 py-0" />
+      <?php //print_r($_SESSION);?>
     </nav>
