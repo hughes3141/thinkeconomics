@@ -9,11 +9,16 @@ module.exports = {
     "../mcq.php",
     "../admin.php",
     "../user_login2.0.php",
-    "../login.php"
+    "../login.php",
+
+
+    "../node_modules/flowbite/**/*.js"
 
   ],
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    require('flowbite/plugin')
+],
 }

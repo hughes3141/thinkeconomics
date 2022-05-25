@@ -111,19 +111,50 @@
             
           </ul>
           <button
-            id="navAction"
-            class="mx-auto lg:mx-0 hover:underline bg-pink-200 lg:bg-white text-gray-800 font-bold rounded-full mt-4 lg:mt-0 py-4 px-8 shadow opacity-75 focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
-            onclick ="location.href = 'user/user3.0.php'"
-          >
+            id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar"
+            class="flex items-center mx-auto lg:mx-0 hover:underline bg-pink-200 lg:bg-white text-gray-800 font-bold rounded-full mt-4 lg:mt-0 py-4 px-8 shadow opacity-75 focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
+            
+          
             <?php
             
             if(!isset($_SESSION['userid'])||($_SESSION['userid']=="")) {
-              echo "Sign In";
+              echo " onclick=\"location.href = 'user/user3.0.php'\">Sign In";
             } else {
-              echo "User Portal";
+              echo ">".$_SESSION['name'];
+              ?> 
+              <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+              <?php
             }
-            ?><!--Sign In-->
+            
+            ?>
+           
           </button>
+            <?php if(isset($_SESSION['userid'])) { ?>
+            <!-- Dropdown menu -->
+            <div id="dropdownNavbar" class="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-44 dark:bg-gray-800 dark:divide-gray-600">
+                <ul class="py-1 text-sm text-gray-800 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
+                  <li>
+                    <a href="user/user3.0.php" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
+                  </li>
+                  <!--
+                  <li>
+                    <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</a>
+                  </li>
+                  
+                  <li>
+                    <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Earnings</a>
+                  </li>
+                  -->
+                </ul>
+                <div class="py-1">
+                  <a href="./signout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white">Sign out</a>
+                </div>
+            </div>
+
+            <?php } ?>
+
+
+
         </div>
       </div>
       <hr class="border-b border-gray-100 opacity-25 my-0 py-0" />
