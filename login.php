@@ -102,8 +102,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             $_SESSION["groupid"] = $groupid;
 
                             // Redirect user to previous page
-                            if($previous !="") {
+                            if(($previous !="")&&($previous !="/")) {
                               header("location: ".$previous);
+                            } else if ($previous == "/") {
+                              header("location: ./user/user3.0.php");
                             } else {
                               header("location: index.php");
                             }
@@ -138,7 +140,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
        
         <p class="px-3 py-2 hidden">Please fill in your credentials to login.</p>
 
-        <?php //print_r($_SESSION);?>
+        <?php print_r($_SESSION);?>
 
         
 
