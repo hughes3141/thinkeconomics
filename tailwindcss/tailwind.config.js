@@ -11,6 +11,8 @@ module.exports = {
     "../user_login2.0.php",
     "../login.php",
 
+    "../user/**/*.{html,js,php}",
+
 
     "../node_modules/flowbite/**/*.js"
 
