@@ -102,8 +102,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             $_SESSION["groupid"] = $groupid;
 
                             // Redirect user to previous page
-                            if($previous !="") {
+                            if(($previous !="")&&($previous !="/")) {
                               header("location: ".$previous);
+                            } else if ($previous == "/") {
+                              header("location: ./user/user3.0.php");
                             } else {
                               header("location: index.php");
                             }
