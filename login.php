@@ -140,7 +140,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
        
         <p class="px-3 py-2 hidden">Please fill in your credentials to login.</p>
 
-        <?php print_r($_SESSION);?>
+        <?php //print_r($_SESSION);?>
 
         
 
