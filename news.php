@@ -4,14 +4,12 @@
 session_start();
 
 
-// Define which page redirected to here
-//Storing previous URLs to ensure that we can redirect to page where we cane from
-
-if($_SESSION['this_url'] != $_SERVER['REQUEST_URI']) {
-  $_SESSION['last_url'] = $_SESSION['this_url'];
-  $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
-}
-
+$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
+/*
+echo $_SESSION['this_url'];
+echo "<br>";
+print_r($_SESSION);
+*/
 error_reporting(0);
 $style_input = <<<END
 
@@ -70,7 +68,7 @@ END;
 <?php 
 
 //print_r($_POST);
-
+/*
 if (isset($_SESSION['userid'])==false) {
 
   $_SESSION['name'] = $_POST['name'];
@@ -79,11 +77,11 @@ if (isset($_SESSION['userid'])==false) {
   $_SESSION['groupid'] = $_POST['groupid'];
 
 }
-
+*/
 //print_r($_SESSION);
 
 ?>
-<div class="container mx-auto px-4 pt-20">
+<div class="container mx-auto px-4 pt-20 lg:pt-32 xl:pt-20">
 <h1 class="font-mono text-2xl bg-pink-400 pl-1 mb-2">News List</h1>
 
 <?php 

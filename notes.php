@@ -4,20 +4,14 @@
 session_start();
 
 
-// Define which page redirected to here
-//Storing previous URLs to ensure that we can redirect to page where we cane from
-
-if($_SESSION['this_url'] != $_SERVER['REQUEST_URI']) {
-  $_SESSION['last_url'] = $_SESSION['this_url'];
-  $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
-}
+$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
 include "header_tailwind.php"; ?>
 
 <!--
 <section class="bg-white border-b py-8 text-black">
 -->
-<div class="container mx-auto px-4 mt-20 lg:w-1/2">
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1 ">Notes</h1>
     
   <div class="container mx-auto px-0 mt-2 bg-white text-black ">

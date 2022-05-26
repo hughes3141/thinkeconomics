@@ -118,7 +118,7 @@
             <?php
             
             if(!isset($_SESSION['userid'])||($_SESSION['userid']=="")) {
-              echo " onclick=\"location.href = 'user/user3.0.php'\">Sign In";
+              echo " onclick=\"location.href = '/login.php'\">Sign In";
             } else {
               echo ">".$_SESSION['name'];
               ?> 
@@ -147,7 +147,7 @@
                   -->
                 </ul>
                 <div class="py-1">
-                  <a href="./signout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white">Sign out</a>
+                  <a href="/signout.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white">Sign out</a>
                 </div>
             </div>
 
