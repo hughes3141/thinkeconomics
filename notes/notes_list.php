@@ -43,13 +43,89 @@ if($result) {
 $maxOrder = intval($maxOrder['maxOrder']);
 
 
+function orderUpdate($input) {
+  global $maxOrder, $conn;
+  //Ensure that new order input is not greater than maximum
+  $orderInstance = $input;
+  if($orderInstance >  $maxOrder) {
+    $orderInstance =  $maxOrder+1;
+  }
+  //Ensure that new order input is not less than 1;
+  if($orderInstance < 1) {
+    $orderInstance = 1;
+  }
+
+  
+
+  //Update Order List of others:
+  $sql = "SELECT * FROM notes_index WHERE user = ? AND orderNo >= ? ORDER BY orderNo";
+
+  $orderIteration = $orderInstance;
+
+  $stmt=  $conn->prepare($sql);
+  $stmt-> bind_param("ii", $_SESSION['userid'], $orderInstance);
+  $stmt-> execute();      
+  $result = $stmt-> get_result();     
+  if($result ->num_rows>0) {    
+    $sql = "UPDATE notes_index SET orderNo = ? WHERE id = ?";
+    $stmt = $conn->prepare($sql);     
+    $stmt->bind_param("ii", $x, $y);   
+
+    while($row = $result->fetch_assoc()) {
+      //echo "<br>";
+      //print_r($row);
+
+      $newOrder = $row['orderNo'] +1;
+      //$newOrder = $orderIteration + 1;
+      //$orderIteration = $newOrder;
+      $x = $newOrder;
+      $y = $row['id'];
+      $stmt->execute();
+      
+    }
+  }
+  return $orderInstance;
+}
+
+function orderCleanup() {
+  global $conn;
+  $sql = "SELECT * FROM notes_index WHERE user = ? ORDER BY orderNo";
+
+  $stmt=  $conn->prepare($sql);
+  $stmt-> bind_param("i", $_SESSION['userid']);
+  $stmt-> execute();      
+  $result = $stmt-> get_result();     
+  
+  $orderIteration = 1;
+
+  if($result ->num_rows>0) {    
+    $sql = "UPDATE notes_index SET orderNo = ? WHERE id = ?";
+    $stmt = $conn->prepare($sql);     
+    $stmt->bind_param("ii", $x, $y);   
+
+    while($row = $result->fetch_assoc()) {
+      //echo "<br>";
+      //print_r($row);
+
+      $newOrder = $orderIteration;
+      $x = $newOrder;
+      $y = $row['id'];
+      $stmt->execute();
+      $orderIteration ++;
+      
+    }
+  }
+
+
+}
+
 date_default_timezone_set('Europe/London');
 $datetime = date("Y-m-d H:i:s");
 $link_validation_error = "";
 echo $datetime;
 
 
-
+//Update Database:
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
   
   //Define heading
@@ -60,11 +136,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $heading_type = $_POST['heading'];
   }
 
-  echo $heading_type;
+  //echo $heading_type;
 
   //Validate link, so long as the input is not a 'header'
   if((filter_var($_POST['link'], FILTER_VALIDATE_URL)) || $_POST['heading']!="") {
 
+    $orderInstance = orderUpdate($_POST['order']);
+    orderCleanup();
+
+    /*
     //Ensure that new order input is not greater than maximum
     $orderInstance = $_POST['order'];
     if($orderInstance > $maxOrder) {
@@ -93,34 +173,64 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $newOrder = $row['orderNo'] +1;    
         $x = $newOrder;
         $y = $row['id'];
-        //$stmt->execute();
+        $stmt->execute();
         
       }
     }
-
+    */
     
     //Update database with new information:
-
-    $sql = "INSERT INTO notes_index (title, link, explanation, topic, source, dateCreated, user, active, orderNo, heading) VALUES (?,?,?,?,?,?,?,?,?,?)";
     
     
 
-    $inserts = array(
-      $_POST['title'], 
-      $_POST['link'], 
-      $_POST['explanation'], 
-      $_POST['topic'], 
-      $_POST['source'], 
-      $datetime, 
-      $_SESSION['userid'], 
-      $_POST['active'],
-      $orderInstance,
-      $heading_type
-    );
+    if ($_POST['submit'] == "Create New Notes Entry") {
+      $inserts = array(
+        $_POST['title'], 
+        $_POST['link'], 
+        $_POST['explanation'], 
+        $_POST['topic'], 
+        $_POST['source'], 
+        $datetime, 
+        $_SESSION['userid'], 
+        $_POST['active'],
+        $orderInstance,
+        $heading_type
+      );
+      $sql = "INSERT INTO notes_index (title, link, explanation, topic, source, dateCreated, user, active, orderNo, heading) VALUES (?,?,?,?,?,?,?,?,?,?)";
+      $stmt = $conn->prepare($sql);
+      $stmt->bind_param("ssssssiiis", ...$inserts);
 
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssssiiis", ...$inserts);
-    //$stmt->execute();
+    }
+    
+    if ($_POST['submit'] == "Update Entry") {
+      $updates = array(
+        $_POST['title'], 
+        $_POST['link'], 
+        $_POST['explanation'], 
+        $_POST['topic'], 
+        $_POST['source'], 
+        $datetime, 
+        $_SESSION['userid'], 
+        $_POST['active'],
+        $orderInstance,
+        $heading_type,
+        $_POST['id']
+      );
+      $sql = "UPDATE notes_index SET title = ?, link = ?, explanation = ?, topic = ?, source = ?, dateCreated = ?,  user = ?, active = ?, orderNo = ?, heading =? WHERE id = ?";
+
+      $stmt = $conn->prepare($sql);
+      $stmt->bind_param("ssssssiiisi", ...$updates);
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    $stmt->execute();
     echo "New record created";  
 
     //Update $maxOrder to reflect that a new value has been created (strictly for when page reloads for input max value)
@@ -202,7 +312,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   
 
-  <input type ="submit" name="submit" value="Click to Submit">
+  <input type ="submit" name="submit" value="Create New Notes Entry">
 
 
 
@@ -268,11 +378,45 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
               -->
             </div>
             <div class = "hide hide_<?=$row['id'];?>">
+              <input type="hidden" name = "id" value = "<?=$row['id']?>">
 
+              <input type ="text" name = "title" value ="<?=$row['title']?>"></input>
+              <br>
+              <input type ="text" name = "link" value ="<?=$row['link']?>"></input>
+              <br>
+              
+              <input type ="text" name = "source" value ="<?=$row['source']?>"></input>
+              <br>
+
+              <input type ="text" name = "explanation" value ="<?=$row['explanation']?>"></input>
+              <br>
+              <input type ="text" name = "topic" value ="<?=$row['topic']?>"></input>
+              <br>
+              <input type ="text" name = "heading" value ="<?=$row['heading']?>"></input>
+              <br>
+              <input type="radio" id="active_yes" name="active" value="1" <?= $row['active'] ? "checked" : ""?> >
+              <label for="active_yes">Active</label><br>
+              <input type="radio" id="active_no" name="active" value="0" <?= !$row['active'] ? "checked" : ""?>>
+              <label for="active_no">Inactive</label><br>
             </div>
           </td>
           <td>
-            <?=$row['orderNo']?>
+            <div class = "show_<?=$row['id'];?>">
+              <?=$row['orderNo']?>
+            </div>
+            <div class = "hide hide_<?=$row['id'];?>">
+            <input type ="number" name="order" id="order" value="<?=$row['orderNo']?>" max = "<?=$maxOrder+1?>" min ="1"></input>
+            </div>
+          </td>
+          <td>
+            <div>
+              <button type ="button" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>)"">Edit</button>
+            </div>
+            <div class ="hide hide_<?=$row['id'];?>">
+              <input type="hidden" name = "id" value = "<?=$row['id'];?>">
+              <input type="submit" name = "submit" value = "Update Entry"></intput>
+            </div>
+            
           </td>
         </form>
       </tr>
@@ -290,4 +434,47 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   </table>
 
   </body>
+
+  <script>
+
+    function changeVisibility(button, id) {
+      
+      if(button.innerHTML =="Edit") {
+        button.innerHTML = "Hide Edit";
+        var hiddens = document.getElementsByClassName("hide_"+id);
+        for (var i=0; i<hiddens.length; i++) {
+          hiddens[i].style.display = "block";
+        }
+    
+        var shows = document.getElementsByClassName("show_"+id);
+        //console.log(shows);
+        for (var i=0; i<shows.length; i++) {
+          
+          shows[i].style.display = "none";
+        }
+      } else {
+        button.innerHTML = "Edit";
+        var hiddens = document.getElementsByClassName("hide_"+id);
+        for (var i=0; i<hiddens.length; i++) {
+          hiddens[i].style.display = "none";
+        }
+    
+        var shows = document.getElementsByClassName("show_"+id);
+        //console.log(shows);
+        for (var i=0; i<shows.length; i++) {
+          
+          shows[i].style.display = "block";
+        }
+      }
+    
+    
+    }
+    
+    
+    function createUpdateRow(id) {
+      var row = document.getElementById("row_"+id);
+      console.log(row.rowIndex);
+    }
+    
+    </script>
 </html>
