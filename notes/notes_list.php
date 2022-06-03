@@ -47,9 +47,23 @@ date_default_timezone_set('Europe/London');
 $datetime = date("Y-m-d H:i:s");
 $link_validation_error = "";
 echo $datetime;
-if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-  if(filter_var($_POST['link'], FILTER_VALIDATE_URL)) {
+
+
+if($_SERVER['REQUEST_METHOD'] == 'POST') {
+  
+  //Define heading
+  $heading_type = "";
+  if ($_POST['heading'] == "") {
+    $heading_type = "a";
+  } else {
+    $heading_type = $_POST['heading'];
+  }
+
+  echo $heading_type;
+
+  //Validate link, so long as the input is not a 'header'
+  if((filter_var($_POST['link'], FILTER_VALIDATE_URL)) || $_POST['heading']!="") {
 
     //Ensure that new order input is not greater than maximum
     $orderInstance = $_POST['order'];
@@ -73,13 +87,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       $stmt->bind_param("ii", $x, $y);   
 
       while($row = $result->fetch_assoc()) {
-        echo "<br>";
-        print_r($row);
+        //echo "<br>";
+        //print_r($row);
 
         $newOrder = $row['orderNo'] +1;    
         $x = $newOrder;
         $y = $row['id'];
-        $stmt->execute();
+        //$stmt->execute();
         
       }
     }
@@ -87,7 +101,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     //Update database with new information:
 
-    $sql = "INSERT INTO notes_index (title, link, explanation, topic, source, dateCreated, user, active, orderNo) VALUES (?,?,?,?,?,?,?,?,?)";
+    $sql = "INSERT INTO notes_index (title, link, explanation, topic, source, dateCreated, user, active, orderNo, heading) VALUES (?,?,?,?,?,?,?,?,?,?)";
     
     
 
@@ -100,12 +114,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       $datetime, 
       $_SESSION['userid'], 
       $_POST['active'],
-      $orderInstance
+      $orderInstance,
+      $heading_type
     );
 
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssssiii", ...$inserts);
-    $stmt->execute();
+    $stmt->bind_param("ssssssiiis", ...$inserts);
+    //$stmt->execute();
     echo "New record created";  
 
     //Update $maxOrder to reflect that a new value has been created (strictly for when page reloads for input max value)
@@ -123,6 +138,21 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <!DOCTYPE html>
 <html>
+  <head>
+    <style>
+      table {
+        border-collapse: collapse;
+      }
+      td, th {
+        border: 1px solid black;
+        padding: 5px;
+      }
+      .hide {
+        display: none;
+      }
+    </style>
+
+  </head>
   <body>
   
   <form method="post" action ="">
@@ -144,6 +174,18 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   <label for="explanation">Explanation:</label><br>
   <textarea name="explanation" id="explanation"><?= isset($_POST['explanation']) ? $_POST['explanation'] : null;?></textarea><br>
+
+  <label for="heading">Heading:</label><br>
+  <select name="heading" id="heading">
+    <option value = "" <?= (isset($_POST['heading']) && $_POST['heading']=="") ? "selected" : "";?> ></option>
+
+    <option value = "h2" <?= (isset($_POST['heading']) && $_POST['heading']=="h2") ? "selected" : "";?> >h2</option>
+    <option value = "h3" <?= (isset($_POST['heading']) && $_POST['heading']=="h3") ? "selected" : "";?> >h3</option>
+    <option value = "h4" <?= (isset($_POST['heading']) && $_POST['heading']=="h4") ? "selected" : "";?> >h3</option>
+
+  </select>
+  <br>
+
 
   <label for="order">Order:</label><br>
   <input type ="number" name="order" id="order" value="<?= isset($_POST['order']) ? $orderInstance : $maxOrder+1;?>" max = "<?=$maxOrder+1?>" min ="1"><br>
@@ -206,26 +248,33 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       ?>
 
       <tr>
-        <td>
-          <?=$row['id']?>
-        </td>
-        <td>
-          <?=$row['title']?>
-          <br>
-          <?=$row['link']?>
-          <br>
-          <!--
-          <?=$row['explanation']?>
-          <br>
-          <?=$row['topic']?>
-          <br>
-          <?=$row['dateCreated']?>
-          <br>
-          -->
-        </td>
-        <td>
-          <?=$row['orderNo']?>
-        </td>
+        <form method="post" action ="">
+          <td>
+            <?=$row['id']?>
+          </td>
+          <td>
+            <div class = "show_<?=$row['id'];?>">
+              <?=$row['title']?>
+              <br>
+              <?=$row['link']?>
+              <br>
+              <!--
+              <?=$row['explanation']?>
+              <br>
+              <?=$row['topic']?>
+              <br>
+              <?=$row['dateCreated']?>
+              <br>
+              -->
+            </div>
+            <div class = "hide hide_<?=$row['id'];?>">
+
+            </div>
+          </td>
+          <td>
+            <?=$row['orderNo']?>
+          </td>
+        </form>
       </tr>
 
       <?php
