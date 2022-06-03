@@ -56,28 +56,31 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if($orderInstance > $maxOrder) {
       $orderInstance = $maxOrder+1;
     }
+    //Ensure that new order input is not less than 1;
     if($orderInstance < 1) {
       $orderInstance = 1;
     }
 
     //Update Order List of others:
-    $sql = "SELECT * FROM notes_index WHERE user = ?";
+    $sql = "SELECT * FROM notes_index WHERE user = ? AND orderNo >= ?";
     $stmt= $conn->prepare($sql);
-    $stmt-> bind_param("i", $_SESSION['userid']);
+    $stmt-> bind_param("ii", $_SESSION['userid'], $orderInstance);
     $stmt-> execute();      
-    $result = $stmt-> get_result();      
+    $result = $stmt-> get_result();     
     if($result ->num_rows>0) {    
       $sql = "UPDATE notes_index SET orderNo = ? WHERE id = ?";
       $stmt = $conn->prepare($sql);     
       $stmt->bind_param("ii", $x, $y);   
 
       while($row = $result->fetch_assoc()) {
-        if($row['orderNo'] >= $orderInstance) {
-          $newOrder = $row['orderNo'] +1;    
-          $x = $newOrder;
-          $y = $row['id'];
-          $stmt->execute();
-        }
+        echo "<br>";
+        print_r($row);
+
+        $newOrder = $row['orderNo'] +1;    
+        $x = $newOrder;
+        $y = $row['id'];
+        $stmt->execute();
+        
       }
     }
 
@@ -104,6 +107,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bind_param("ssssssiii", ...$inserts);
     $stmt->execute();
     echo "New record created";  
+
+    //Update $maxOrder to reflect that a new value has been created (strictly for when page reloads for input max value)
+    $maxOrder ++;
+    
 
   } else {
     $link_validation_error = "Please enter a valid link.<br>";
