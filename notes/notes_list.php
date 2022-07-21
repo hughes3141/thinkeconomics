@@ -42,6 +42,7 @@ if($result) {
 }
 $maxOrder = intval($maxOrder['maxOrder']);
 
+
 //This function updates all records upon the input of a new orderNo.
 function orderUpdate($input) {
   global $maxOrder, $conn;
