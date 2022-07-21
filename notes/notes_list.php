@@ -13,7 +13,7 @@ if (!isset($_SESSION['userid'])) {
   
 }
 
-
+//Define server path:
 $path = $_SERVER['DOCUMENT_ROOT'];
 $path .= "/../secrets/secrets.php";
 include($path);
@@ -189,7 +189,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     
 
   } else {
-    $link_validation_error = "Please enter a valid link.<br>";
+    $link_validation_error = "Please enter a valid link.";
   }
 
   
@@ -317,13 +317,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class = "show_<?=$row['id'];?>">
               <?=$row['title']?>
               <br>
-              <?=$row['link']?>
-              <br>
+              <?= ($row['heading']=="a") ? $row['link']."<br>" : null; ?>
+              
+              <?=$row['topic']?>
+              
+              <?= ($row['heading']=="a") ? null : $row['heading']."<br>"; ?>
+              
               <!--
               <?=$row['explanation']?>
               <br>
-              <?=$row['topic']?>
-              <br>
+              
               <?=$row['dateCreated']?>
               <br>
               -->
@@ -331,20 +334,31 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class = "hide hide_<?=$row['id'];?>">
               <input type="hidden" name = "id" value = "<?=$row['id']?>">
 
-              <input type ="text" name = "title" value ="<?=$row['title']?>"></input>
-              <br>
-              <input type ="text" name = "link" value ="<?=$row['link']?>"></input>
-              <br>
-              
-              <input type ="text" name = "source" value ="<?=$row['source']?>"></input>
+              <label for="title_<?=$row['id']?>">Title: </label>
+              <input type ="text" name = "title" id = "title_<?=$row['id']?>" value ="<?=$row['title']?>"></input>
               <br>
 
-              <input type ="text" name = "explanation" value ="<?=$row['explanation']?>"></input>
+              <label for="link_<?=$row['id']?>">Link: </label>
+              <input type ="text" name = "link" id = "link_<?=$row['id']?>" value ="<?=$row['link']?>"></input>
               <br>
-              <input type ="text" name = "topic" value ="<?=$row['topic']?>"></input>
+              
+              <label for="source_<?=$row['id']?>">Source: </label>
+              <input type ="text" name = "source" id = "source_<?=$row['id']?>" value ="<?=$row['source']?>"></input>
               <br>
-              <input type ="text" name = "heading" value ="<?=$row['heading']?>"></input>
+
+              <label for="explanation_<?=$row['id']?>">Explanation: </label>
+              <input type ="text" name = "explanation" id = "explanation_<?=$row['id']?>" value ="<?=$row['explanation']?>"></input>
               <br>
+
+              <label for="topic_<?=$row['id']?>">Topic: </label>
+              <input type ="text" name = "topic" id = "topic_<?=$row['id']?>" value ="<?=$row['topic']?>"></input>
+              <br>
+
+              <label for="heading_<?=$row['id']?>">Heading: </label>
+              <input type ="text" name = "heading" id = "heading_<?=$row['id']?>" value ="<?=$row['heading']?>"></input>
+              <br>
+
+
               <input type="radio" id="active_yes" name="active" value="1" <?= $row['active'] ? "checked" : ""?> >
               <label for="active_yes">Active</label><br>
               <input type="radio" id="active_no" name="active" value="0" <?= !$row['active'] ? "checked" : ""?>>

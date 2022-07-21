@@ -59,9 +59,15 @@ if (!isset($_SESSION['userid'])) {
           ?>
           
           <h1 class="font-mono text-xl bg-pink-300 pl-1" >Teacher Resources</h1>
+
             <h2 class="font-mono text-lg bg-pink-200 pl-1">News Management</h2>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/news_input2.1.php">News Input</a></p>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/news_list.php">News List</a></p>
+
+            <h2 class="font-mono text-lg bg-pink-200 pl-1">Notes Management</h2>
+              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../notes/notes_list.php">Notes List Update</a></p>
+             
+
             <h2 class="font-mono text-lg bg-pink-200 pl-1">Assignment Management</h2>
               <h3 class="font-mono text-md bg-pink-100 pl-1">Assignments</h3>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_assigncreate1.1.php">Assignment Creator (Old)</a></p>
