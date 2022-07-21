@@ -42,10 +42,15 @@ if ($conn->connect_error) {
 
       <?php
 
-        $sql = "SELECT * FROM notes_index WHERE user = ? ORDER BY orderNo";
+        //$sql = "SELECT * FROM notes_index WHERE user = ? ORDER BY orderNo";
+        $sql = "SELECT * FROM notes_index ORDER BY orderNo";
+
+
         $stmt= $conn->prepare($sql);
 
-        $stmt-> bind_param("i", $_SESSION['userid']);
+        //$stmt-> bind_param("i", $_SESSION['userid']);
+        $stmt-> bind_param();
+
         $stmt-> execute();
 
         $result = $stmt-> get_result();
