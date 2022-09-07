@@ -51,7 +51,7 @@ td.col3 {
 
 <?php include "../navbar.php"; ?>
 
-<h1>Year 1 A Level Economics Year Plan 2021-2022</h1>
+<h1>Year 1 A Level Economics Year Plan 2022-2023</h1>
 <table id="table1"></table>
 
 <?php include "../footer.php"; ?>
@@ -59,7 +59,7 @@ td.col3 {
 <script>
 
 
-index = [
+index1 = [
   ["No.","Week","Subject Content"],
   [0,"06 Sep - 10 Sep","Introduction to Course; What is Economics?"],
   [1,"13 Sep - 17 Sep","1.1.1 Scarcity and Choice; 1.4.1 Types of Economic Systems"],
@@ -106,6 +106,56 @@ index = [
   [35,"27 Jun - 01 Jul","Your Future Week"],
   [36,"04 Jul - 08 Jul","Index Week"],
   [37,"11 Jul - 15 Jul","Admin/Staff Development"]
+]
+
+index =
+[
+  ["No.","Week","Subject Content"],
+  [0,"05 Sep - 09-Sep","Introduction to Course; What is Economics?"],
+  [1,"12 Sep - 16-Sep","1.1.1 Scarcity and Choice; 1.4.1 Types of Economic Systems"],
+  [2,"19 Sep - 23-Sep","1.1.2 Production Possibility Frontiers (PPFs)"],
+  [3,"26 Sep - 30-Sep","1.1.3 Specialisation, Division of Labour and Exchange"],
+  [4,"03 Oct - 07-Oct","1.2.1 Supply and Demand Curves"],
+  [5,"10 Oct - 14-Oct","1.2.2 The Determination of Economic Equilibrium; 1.4.1 The Role of Profit and Prices in a Market System"],
+  [6,"17 Oct - 21-Oct","1.2.3 Producer and Consumer Surplus; 1.2.4 Introduction to Elasticity"],
+  ["-","24 Oct - 28-Oct","Half Term"],
+  [7,"31 Oct - 04-Nov","1.2.4 Elasticity: PED and YED"],
+  [8,"07 Nov - 11-Nov","1.2.4 Elasticities: XED and PES"],
+  [9,"14 Nov - 18-Nov","1.3.1 Labour Markets: Wage Determination"],
+  [10,"21 Nov - 25-Nov","1.3.2 Labour Market Issues"],
+  [11,"28 Nov - 02-Dec","1.7.1 Market Failure: Externalities, Merit and Demerit Goods, Public Goods"],
+  [12,"05 Dec - 09-Dec","1.7.1 Market Failure: Information Assymetry, Property Rights, Income Inequality, Volatile Prices"],
+  [13,"12 Dec - 16-Dec","1.7.2 Government Intervention in Markets"],
+  ["-","19 Dec - 23-Dec","Break"],
+  ["-","26 Dec - 30-Dec","Break"],
+  [14,"02 Jan - 06-Jan","1.7.3 Government Failure"],
+  [15,"09 Jan - 13-Jan","Intro to Macro; 2.2.1 Government Policy Objectives"],
+  [16,"16 Jan - 20-Jan","2.1.1 The Circular Flow of Income"],
+  [17,"23 Jan - 27-Jan","2.1.2 The Components of Aggregate Demand"],
+  [18,"30 Jan - 03-Feb","2.1.3 The AD Function; 2.1.4 The Aggregate Supply (AS) Function"],
+  [19,"06 Feb - 10-Feb","2.1.7 AD/AS Analysis"],
+  ["-","13 Feb - 17-Feb","Half Term"],
+  [20,"20 Feb - 24-Feb","2.1.5-2.1.6: SRAS and LRAS; Neoclassical Economists and Keynes vs Hayek"],
+  [21,"27 Feb - 03-Mar","2.2.2 Economic Growth"],
+  [22,"06 Mar - 10-Mar","2.2.3 Unemployment"],
+  [23,"13 Mar - 17-Mar","2.2.4 Inflation and Deflation"],
+  [24,"20 Mar - 24-Mar","2.2.5 The Balance of Payments"],
+  [25,"27 Mar - 31-Mar","2.2.6 Control of National Debt"],
+  ["-","03 Apr - 07-Apr","Break"],
+  ["-","10 Apr - 14-Apr","Break"],
+  [26,"17 Apr - 21-Apr","2.3.1 Fiscal Policy"],
+  [27,"24 Apr - 28-Apr","2.3.2 Monetary Policy: Bank of England"],
+  [28,"01 May - 05-May","2.3.2 Monetary Policy: Quantitative Easing"],
+  [29,"08 May - 12-May","2.3.4 Exchange Rates: Interpretation and Calculation"],
+  [30,"15 May - 19-May","2.3.4 Exchange Rate Policy: Fixed vs Floating Exchange Rates"],
+  [31,"22 May - 26-May","2.3.5 Supply Side Policies"],
+  ["-","29 May - 02-Jun","Half Term"],
+  [32,"05 Jun - 09-Jun","1.4.1 Assumptions of Rationality"],
+  [33,"12 Jun - 16-Jun","1.4.1 Assumptions of Rationality"],
+  [34,"19 Jun - 23-Jun","1.4.1 Assumptions of Rationality (Presentations); Introduciton to Final Project"],
+  [35,"26 Jun - 30-Jun","Your Future Week"],
+  [36,"03 Jul - 07-Jul","Index Week/Final Project"],
+  [37,"10 Jul - 14-Jul","Admin/Staff Development"]
 ]
 
 var table1 = document.getElementById("table1");
