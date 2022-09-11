@@ -49,7 +49,7 @@ if ($conn->connect_error) {
         $stmt= $conn->prepare($sql);
 
         //$stmt-> bind_param("i", $_SESSION['userid']);
-        $stmt-> bind_param();
+        //$stmt-> bind_param();
 
         $stmt-> execute();
 
@@ -69,7 +69,7 @@ if ($conn->connect_error) {
             }
 
             elseif ($row['heading']=="a") {
-              echo "<li class='ml-3'><a href = '".$row['link']."'>".$row['topic'].": ".$row['title'];
+              echo "<li class='ml-2 mr-2 hover:bg-sky-100'><a class = 'block' target='blank' href = '".$row['link']."'>".$row['topic'].": ".$row['title'];
               echo ($row['source'] != "") ? " (".$row['source'].")" : null;
               echo "</a></li>";
             }
