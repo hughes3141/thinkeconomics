@@ -5,6 +5,8 @@ $path = $_SERVER['DOCUMENT_ROOT'];
 $path .= "/../secrets/secrets.php";
 include($path);
 
+date_default_timezone_set("Europe/London");
+
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -14,6 +16,8 @@ if ($conn->connect_error) {
 
 
 $userid = $_SESSION['userid'];
+
+
 
 $sql = "SELECT * FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
@@ -29,64 +33,42 @@ if($result) {
 }
 
 
-$assignments = array();
-$assignmentsFilter = array();
 
-$sql = "SELECT * FROM assignments;";
+function getUpcomingAssignments($groupId) {
+  global $conn;
+  $t = time();
+  $now = date("Y-m-d H:i:s", $t);
 
-$result = $conn->query($sql);
+  $groupIdSql = '%\"'.$groupId.'\"%';
 
-if($result) {
-  while($row = $result->fetch_assoc()){
+  //echo $groupIdSql;
 
-    
-    $assignment2 = array();
-    
-    $assignment2['id'] = $row['id'];
-		$assignment2['assignName'] =  $row['assignName'];
-		$assignment2['quizid'] =  $row['quizid'];
-		$assignment2['groupid'] =  explode(",", ($row['groupid']));
-		$assignment2['notes'] =  $row['notes'];
-		$assignment2['dateCreated'] =  $row['dateCreated'];
-		$assignment2['dateDue'] =  $row['dateDue'];
-		$assignment2['type'] =  $row['type'];
-    
-    foreach ($assignment2['groupid'] as $x => $val) {
-      $assignment2['groupid'][$x] = intval($val);
-      //echo "$x is $val<br>";
+  $list = array();
+  
+  $sql = "SELECT * FROM assignments WHERE groupid_array LIKE ? AND dateDue > CURRENT_TIMESTAMP()";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("s", $groupIdSql);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($list, $row);
     }
-    
-    if( strtotime($assignment2['dateDue']) > strtotime('now') ) {
-      $assignment2['upcoming'] = 1;
-    } else {
-     $assignment2['upcoming'] = 0; 
-    }
-    
-    
-    array_push($assignments, $assignment2);
-
   }
+
+  return $list;
+
 }
 
+$assignments = getUpcomingAssignments($groupid);
 
-
-for ($x=0; $x<count($assignments); $x++) {
-  if (in_array($groupid, $assignments[$x]['groupid'], TRUE)) {
-    array_push($assignmentsFilter, $assignments[$x]);
-  }
-}
+//print_r($assignments);
 
 
 
 
-$upcomingCheck = false;
-foreach ($assignmentsFilter as $value) {
-  if ($value['upcoming']==1) {
-    $upcomingCheck = true;
-  }
-}
-
-if ($upcomingCheck == false) {
+if(count($assignments) == 0) {
   
   ?>
   
@@ -111,9 +93,8 @@ if ($upcomingCheck == false) {
   
   <?php
   
-  foreach ($assignmentsFilter as $value) {
+  foreach ($assignments as $value) {
 
-    if ($value['upcoming']==1) {
       echo "<tr>";
       echo "<td>".$value['assignName']."</td>";
       echo "<td>".$value['dateDue']."</td>";
@@ -136,7 +117,7 @@ if ($upcomingCheck == false) {
       echo "</tr>";
       //print_r($value);
       //echo "<br>";
-    }
+    
     
   
   }

@@ -2,6 +2,8 @@
 
 session_start();
 
+date_default_timezone_set("Europe/London");
+
 
 $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
