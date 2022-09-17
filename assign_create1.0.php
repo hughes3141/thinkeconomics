@@ -70,10 +70,26 @@ if ($conn->connect_error) {
 <label for="assignType">Type:</label>
 <select id="assignType" name="type" onchange="this.form.submit();">
   <option value=""></option>
-  <option value="mcq" <?php if($_POST['type']=="mcq"){echo "selected";} ?> >MCQ</option>
-  <option value="saq" <?php if($_POST['type']=="saq"){echo "selected";} ?> >SAQ</option>
-  <option value="exercise" <?php if($_POST['type']=="exercise"){echo "selected";} ?> >exercise</option>
-  <option value="nde" <?php if($_POST['type']=="nde"){echo "selected";} ?> >Non Digital Entry</option>
+  <option value="mcq" <?php if($_POST) {
+    if($_POST['type']=="mcq"){
+      echo "selected";}
+      }
+      ?> >MCQ</option>
+  <option value="saq" <?php if($_POST) {
+    if($_POST['type']=="saq"){
+      echo "selected";}
+     } 
+     ?> >SAQ</option>
+  <option value="exercise" <?php if($_POST) {
+    if($_POST['type']=="exercise"){
+       echo "selected";}
+     } 
+     ?> >exercise</option>
+  <option value="nde" <?php if($_POST){
+    if($_POST['type']=="nde"){
+      echo "selected";}
+     }
+     ?> >Non Digital Entry</option>
 
 </select>
 </p>
@@ -169,7 +185,7 @@ $result = $stmt->get_result();
 </div>
 <button type="button" onclick="addClass()">Add class</button>
 
-<input type="hidden" id="groupCountInput" name="classCount">
+<input type="" id="groupCountInput" name="classCount">
 
 </p>
 
@@ -246,6 +262,7 @@ $classIDArray = array();
 
 for($x=0; $x<$_POST['classCount']; $x++) {
   $classIDArray[$x] = $_POST['groupid_'.$x];
+  echo $x.": ".$classIDArray[$x];
 }
 
 $classID_text = "";
@@ -257,7 +274,8 @@ $classID = rtrim($classID_text, " , ");
 
 $classID_array = json_encode($classIDArray);
 
-
+echo "classID_array: ";
+print_r($classID_array);
 
 $assignReturn = 1;
 
@@ -332,7 +350,7 @@ if ($_POST['changeType'] == "assignReturn") {
 
 $query = "SELECT * FROM assignments";
 
-if ($result = mysqli_query($link, $query)) {
+if ($result = mysqli_query($conn, $query)) {
 	
 	while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
 		
