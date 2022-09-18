@@ -1,11 +1,15 @@
 <?php
 
+$path = $_SERVER['DOCUMENT_ROOT'];
+$path .= "/php_header.php";
+include($path);
 
+/*
 // Initialize the session
 session_start();
 
 $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
-
+*/
 
 if (!isset($_SESSION['userid'])) {
   
@@ -13,7 +17,7 @@ if (!isset($_SESSION['userid'])) {
   
 }
 
-
+/*
 //Define server path:
 $path = $_SERVER['DOCUMENT_ROOT'];
 $path .= "/../secrets/secrets.php";
@@ -32,7 +36,7 @@ if ($conn->connect_error) {
 
   die("Connection failed: " . $conn->connect_error);
 }
-
+*/
 $userId = $_SESSION['userid'];
 
 ?>
@@ -80,6 +84,17 @@ td a {
 
 <h1>Multiple Choice Questions Review (by assignment): <span id="nameOfAssignment"></span></h1>
 
+
+<?php
+
+  $students = getGroupUsers(9);
+
+  foreach($students as $student) {
+    echo $student['name']."<br>";
+  }
+
+
+?>
 
 <form method="get">
 <label for ="assignid">Assignment Name:</label>
