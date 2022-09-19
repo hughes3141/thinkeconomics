@@ -86,18 +86,58 @@ td a {
 
 
 <?php
+/*
+$groups = getGroupsList($userId);
+
+foreach($groups as $value) {
+  print_r($value);
+  echo "<br>";
+}
 
   $students = getGroupUsers(9);
 
-  foreach($students as $student) {
-    echo $student['name']."<br>";
+
+  $assignments = getAssignmentsList(1,8, "mcq");
+
+  foreach($assignments as $value) {
+    echo $value['assignName']." ".$value['type'];
+    echo "<br>";
   }
 
+
+  foreach($students as $student) {
+    // $student['name']."<br>";
+  }
+*/
 
 ?>
 
 <form method="get">
+
+
+<label for ="classid">Class:</label>
+<select name="classid" onchange="submit()">
+
+  <?php
+
+  $groups = getGroupsList($userId);
+  foreach($groups as $row) {
+    if ($row['id'] == $_GET['classid']) {
+      $selected = " selected = 'selected'";
+      }
+      else {$selected = "";}
+    echo "<option value = '".$row['id']."'".$selected.">".$row['name']."</option>";
+
+  }
+
+
+  ?>
+
+</select>
+</form>
+<form method="get">
 <label for ="assignid">Assignment Name:</label>
+<input type="hidden" name="classid" value = "<?=$_GET['classid'];?>"></input>
 <select name="assignid">
 
 
@@ -109,26 +149,16 @@ if(isset($_GET['assignid'])) {
 }
 else {$assignId=1;}
 
-$sql = "SELECT id, assignName, quizid FROM assignments WHERE userCreate = ? AND type = 'mcq'";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $userId);
-$stmt->execute();
+$assignments = getAssignmentsList($userId, $_GET['classid'], "mcq");
 
-$result = $stmt->get_result();
+foreach($assignments as $row) {
+  if ($row['id'] == $assignId) {
+    $selected = " selected = 'selected'";
+    }
+    else {$selected = "";}
+  echo "<option value = '".$row['id']."'".$selected.">".$row['assignName']."</option>";
+  
 
-
-
-if ($result->num_rows >0) {	
-	while ($row = $result->fetch_assoc()) {
-		if ($row['id'] == $assignId) {
-			$selected = " selected = 'selected'";
-			}
-			else {$selected = "";}
-		echo "<option value = '".$row['id']."'".$selected.">".$row['assignName']."</option>";
-		
-		
-	}
-	
 }
 
 
@@ -156,8 +186,13 @@ if ($result->num_rows >0) {
 
 <?php
 
-$sql = "SELECT * FROM assignments WHERE id = '".$assignId."'";
-if ($result = $conn->query($sql)) {
+//$sql = "SELECT * FROM assignments WHERE id = '".$assignId."'";
+$sql = "SELECT * FROM assignments WHERE id = ?";
+$stmt=$conn->prepare($sql);
+$stmt->bind_param("i", $assignId);
+$stmt->execute();
+$result=$stmt->get_result();
+if ($result) {
 	$row = $result->fetch_assoc();
 	$quizid = $row['quizid'];
 	$assignName=$row['assignName'];
