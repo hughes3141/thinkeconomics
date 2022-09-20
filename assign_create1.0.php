@@ -1,3 +1,12 @@
+<?php
+
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_functions.php");
+
+?>
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -37,8 +46,8 @@ Used to create all assignments
 
 */
 
-print_r($_POST);
-
+//print_r($_POST);
+/*
 // Using OOP:
 
 $path = $_SERVER['DOCUMENT_ROOT'];
@@ -53,7 +62,7 @@ if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
-
+*/
 
 ?>
 
@@ -183,9 +192,10 @@ $result = $stmt->get_result();
     
   </div>
 </div>
+
 <button type="button" onclick="addClass()">Add class</button>
 
-<input type="" id="groupCountInput" name="classCount">
+<input type="hidden" id="groupCountInput" name="classCount" value = "1">
 
 </p>
 
@@ -246,44 +256,54 @@ $result = $stmt->get_result();
 <?php 
 
 
-$teacherid = 1;
-
-$assignName = $_POST["assignName"];
-$quizID = $_POST["exerciseid"];
-
-$notes = $_POST["notes"];
-$review = $_POST["review"];
-$multi = $_POST["multi"];
-$datetime = date("Y-m-d");
-$dueDate = $_POST["dueDate"];
-$type = $_POST["type"];
-
-$classIDArray = array();
-
-for($x=0; $x<$_POST['classCount']; $x++) {
-  $classIDArray[$x] = $_POST['groupid_'.$x];
-  echo $x.": ".$classIDArray[$x];
-}
-
-$classID_text = "";
-foreach ($classIDArray as $val) {
-  $classID_text .= $val.", ";
-}
-$classID = rtrim($classID_text, " , ");
+if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
-$classID_array = json_encode($classIDArray);
 
-echo "classID_array: ";
-print_r($classID_array);
 
-$assignReturn = 1;
 
-if ($review == 1) {
-	
-	
-	$assignReturn = 0;
-}
+
+
+  $teacherid = 1;
+
+  $assignName = $_POST["assignName"];
+  $quizID = $_POST["exerciseid"];
+
+  $notes = $_POST["notes"];
+  $review = $_POST["review"];
+  $multi = $_POST["multi"];
+  $datetime = date("Y-m-d H:i:s");
+  $dueDate = $_POST["dueDate"];
+  $type = $_POST["type"];
+
+  $classIDArray = array();
+
+  for($x=0; $x<$_POST['classCount']; $x++) {
+    $classIDArray[$x] = $_POST['groupid_'.$x];
+    //echo $x.": ".$classIDArray[$x];
+  }
+
+  $classID_text = "";
+  foreach ($classIDArray as $val) {
+    $classID_text .= $val.", ";
+  }
+  $classID = rtrim($classID_text, " , ");
+
+
+
+
+  $classID_array = json_encode($classIDArray);
+
+  //echo "classID_array: ";
+  //print_r($classID_array);
+
+  $assignReturn = 1;
+
+    if ($review == 1) {
+      
+      
+      $assignReturn = 0;
+    }
 
 
 
@@ -327,6 +347,8 @@ if ($_POST['changeType'] == "assignReturn") {
 	
 }
 
+}
+
 ?>
 
 
@@ -348,22 +370,22 @@ if ($_POST['changeType'] == "assignReturn") {
 
 <?php
 
-$query = "SELECT * FROM assignments";
+$query = "SELECT * FROM assignments ORDER BY dateCreated desc";
 
 if ($result = mysqli_query($conn, $query)) {
 	
 	while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
 		
 			echo "<tr>";
-			echo "<td>$row[id]</td>";
-			echo "<td>$row[assignName]</td>";
-			echo "<td>$row[quizid]</td>";
-			echo "<td>$row[groupid]</td>";
-			echo "<td>$row[notes]</td>";
-			echo "<td>$row[dateCreated]</td>";
-			echo "<td>$row[dateDue]</td>";
-			echo "<td>$row[reviewQs]</td>";
-			echo "<td>$row[multiSubmit]</td>";
+			echo "<td>".$row['id']."</td>";
+			echo "<td>".$row['assignName']."</td>";
+			echo "<td>".$row['quizid']."</td>";
+			echo "<td>".$row['groupid']."</td>";
+			echo "<td>".$row['notes']."</td>";
+			echo "<td>".$row['dateCreated']."</td>";
+			echo "<td>".$row['dateDue']."</td>";
+			echo "<td>".$row['reviewQs']."</td>";
+			echo "<td>".$row['multiSubmit']."</td>";
 			
 			echo "<td>$row[type]</td>";
 			
@@ -397,16 +419,31 @@ $stmt -> execute();
 
 $result = $stmt->get_result();
 
+$classIndex = array();
+
 if($result){
   while($row = $result->fetch_assoc()){
+    $classIndex2 = array();
+    array_push($classIndex2, htmlspecialchars($row['id']));
+    array_push($classIndex2, htmlspecialchars($row['name']));
+    array_push($classIndex, $classIndex2);
+    
+    /*
+
     echo "var classIndex2 = [];
-    classIndex2.push(".$row['id'].");
-    classIndex2.push('".$row['name']."');
+    classIndex2.push(".htmlspecialchars($row['id']).");
+    classIndex2.push('".htmlspecialchars($row['name'])."');
     classIndex.push(classIndex2);";
+    */
   }
+
+  echo "classIndex = ".json_encode($classIndex);
+
 }
 
 ?>
+
+console.log(classIndex);
 
 var groupCount = 1;
 document.getElementById("groupCountInput").value = groupCount;
