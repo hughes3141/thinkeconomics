@@ -1,8 +1,9 @@
 <?php
 
 $path = $_SERVER['DOCUMENT_ROOT'];
-$path .= "/php_header.php";
-include($path);
+include($path."/php_header.php");
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_functions.php");
 
 /*
 // Initialize the session
