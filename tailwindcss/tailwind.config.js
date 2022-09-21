@@ -13,6 +13,8 @@ module.exports = {
 
     "../user/**/*.{html,js,php}",
 
+    "../revision/**/*.{html,js,php}",
+
 
     "../node_modules/flowbite/**/*.js"
 
