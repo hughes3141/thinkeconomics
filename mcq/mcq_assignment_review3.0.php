@@ -1,5 +1,17 @@
 <?php
 
+// Initialize the session
+session_start();
+
+$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
+
+
+if (!isset($_SESSION['userid'])) {
+  
+  header("location: /login.php");
+  
+}
+
 $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 $path = $_SERVER['DOCUMENT_ROOT'];
@@ -10,14 +22,14 @@ include($path."/php_functions.php");
 session_start();
 
 $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
-*/
+
 
 if (!isset($_SESSION['userid'])) {
   
   header("location: /login.php");
   
 }
-
+*/
 /*
 //Define server path:
 $path = $_SERVER['DOCUMENT_ROOT'];
