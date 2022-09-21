@@ -194,4 +194,148 @@ orderUpdate($input, $userId) : null
 
 */
 
+
+/*
+
+getUserInfo ($userId) : array
+
+Returns an array of all information about a user.
+
+
+*/
+
+function getUserInfo($userId) {
+  global $conn;
+  $sql = "SELECT * FROM users WHERE id = ? ";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("i", $userId);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if ($result->num_rows>0) {	
+  $row = $result->fetch_assoc();
+  return $row;   
+     
+  }
+}
+
+
+function getUpcomingAssignmentsArray($groupIdArray) {
+
+  /*
+  This function generates an array of upcoming assignmnents. Input is an array (in JSON form) of the groups that a studnet is listed in.
+  */
+
+  global $conn;
+  $t = time();
+  $now = $now = date("Y-m-d H:i:s", $t);
+
+  $groupIdSql = array();
+
+  $list = array();
+  $paramType = "";
+
+  $sql = "SELECT * FROM assignments WHERE (";
+
+  $count = count($groupIdArray);
+  for($x =0; $x< $count; $x++) {
+    $valueSql = '%\"'.$groupIdArray[$x].'\"%';
+    array_push($groupIdSql, $valueSql);
+    $sql .= "groupid_array LIKE ? ";
+    if($x < ($count - 1)) {
+      $sql .= " OR ";
+    }
+    $paramType .= "s";
+  }
+  
+  $sql .= ") AND dateDue > CURRENT_TIMESTAMP()";
+
+  //echo $sql."<br>".$paramType;
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param($paramType, ...$groupIdSql);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($list, $row);
+    }
+  }
+
+  return $list;
+
+}
+
+function getUpcomingAssignments($groupId) {
+  global $conn;
+  $t = time();
+  $now = date("Y-m-d H:i:s", $t);
+
+  $groupIdSql = '%\"'.$groupId.'\"%';
+
+  //echo $groupIdSql;
+
+  $list = array();
+  
+  $sql = "SELECT * FROM assignments WHERE groupid_array LIKE ? AND dateDue > CURRENT_TIMESTAMP()";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("s", $groupIdSql);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($list, $row);
+    }
+  }
+
+  return $list;
+
+}
+
+
+function getAssignmentsArray($groupIdArray) {
+
+  /*
+  This function generates an array of assigned work. Input is an array (in JSON form) of the groups that a studnet is listed in.
+  */
+
+  global $conn;
+
+  $groupIdSql = array();
+
+  $list = array();
+  $paramType = "";
+
+  $sql = "SELECT * FROM assignments WHERE (";
+
+  $count = count($groupIdArray);
+  for($x =0; $x< $count; $x++) {
+    $valueSql = '%\"'.$groupIdArray[$x].'\"%';
+    array_push($groupIdSql, $valueSql);
+    $sql .= "groupid_array LIKE ? ";
+    if($x < ($count - 1)) {
+      $sql .= " OR ";
+    }
+    $paramType .= "s";
+  }
+  
+  $sql .= ")";
+
+
+  //echo $sql."<br>".$paramType;
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param($paramType, ...$groupIdSql);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($list, $row);
+    }
+  }
+  
+  return $list;
+
+}
+
 ?>
