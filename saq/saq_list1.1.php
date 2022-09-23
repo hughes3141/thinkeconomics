@@ -5,16 +5,41 @@ session_start();
 
 $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
 
 if (!isset($_SESSION['userid'])) {
   
   header("location: /login.php");
+
+  
   
 }
 
-$path = $_SERVER['DOCUMENT_ROOT'];
-include($path."/php_header.php");
-include($path."/php_functions.php");
+else {
+  $userInfo = getUserInfo($_SESSION['userid']);
+  $userType = $userInfo['usertype'];
+  if (!($userType == "teacher" || $userType =="admin")) {
+    header("location: /index.php");
+  }
+}
+
+
+
+function getQuestionData($questionId) {
+  global $conn;
+  $stmt = $conn->prepare("SELECT * FROM saq_question_bank_3 WHERE id = ?");
+  $stmt->bind_param("i", $questionId);
+  $stmt->execute();
+  $result=$stmt->get_result();
+  if($result->num_rows>0) {
+    $row = $result->fetch_assoc();
+    return $row;
+  }
+  
+
+}
 
 
 
@@ -104,17 +129,17 @@ if(isset($_POST['updateValue'])) {
   
   $stmt->bind_param("ssssssi", $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['id']);
 
-  if($_POST['userid']==$_POST['userCreate']) {
+  $questionData = getQuestionData($_POST['id']);
+  $questionDataUser = $questionData['userCreate'];
+
+  if($questionDataUser == $_SESSION['userid']) {
     $stmt->execute();
     //header("Refresh:0");
-    
     echo "Record ".$_POST['id']." updated successfully.";
-
   }
   else {
     echo "Value not updated: userid does not match userCreate";
   }
-  
 }
 
 ?>
@@ -251,8 +276,9 @@ if(isset($_POST['updateValue'])) {
       ?>
       
       <tr id = 'row_<?=$row['id'];?>'>
-
+    <?php if($_SESSION['userid'] == $row['userCreate']) {?>
       <form method="post" action="">
+    <?php }?>
       
         <td class="col1">
           <div>
@@ -264,49 +290,37 @@ if(isset($_POST['updateValue'])) {
           <div class="show_<?=$row['id'];?>">
             <?=htmlspecialchars($row['topic']);?>
           </div>
-          <?php if($_SESSION['userid'] == $row['userCreate']) {?>
             <input type="text" class="hide hide_<?=$row['id'];?>" name ="topic" value ="<?=htmlspecialchars($row['topic'])?>" style="width:100px;"></input>
-          <?php }?>
         </td>
         <td class="col3">
           <div class="show_<?=$row['id'];?>">
             <?=htmlspecialchars($row['question']);?>
           </div>
-          <?php if($_SESSION['userid'] == $row['userCreate']) {?>
             <textarea class="hide hide_<?=$row['id'];?>" name ="question"><?=htmlspecialchars($row['question'])?></textarea>
-          <?php }?>
         </td>
         <td class="col4">
           <div class="show_<?=$row['id'];?>">
             <?=htmlspecialchars($row['img']);?>
           </div>
-          <?php if($_SESSION['userid'] == $row['userCreate']) {?>
             <textarea class="hide hide_<?=$row['id'];?>" name ="img"><?=htmlspecialchars($row['img'])?></textarea>
-          <?php }?>
         </td>
         <td class="col5">
           <div class="show_<?=$row['id'];?>">
             <?=htmlspecialchars($row['points']);?>
           </div>
-          <?php if($_SESSION['userid'] == $row['userCreate']) {?>
             <textarea class="hide hide_<?=$row['id'];?>" name ="points"><?=htmlspecialchars($row['points'])?></textarea>
-          <?php }?>
         </td>
         <td class="col6">
           <div class="show_<?=$row['id'];?>">
             <?=htmlspecialchars($row['type']);?>
           </div>
-          <?php if($_SESSION['userid'] == $row['userCreate']) {?>
             <textarea class="hide hide_<?=$row['id'];?>" name ="type"><?=htmlspecialchars($row['type'])?></textarea>
-          <?php }?>
         </td>
         <td class="col7">
           <div class="show_<?=$row['id'];?>" style="white-space: pre-line;">
             <?=htmlspecialchars($row['model_answer']);?>
           </div>
-          <?php if($_SESSION['userid'] == $row['userCreate']) {?>
             <textarea class="hide hide_<?=$row['id'];?>" name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
-          <?php }?>
         </td>
 
         <td>
@@ -316,17 +330,16 @@ if(isset($_POST['updateValue'])) {
             </div>
             <div class ="hide hide_<?=$row['id'];?>">
               <input type="hidden" name = "id" value = "<?=$row['id'];?>">
-              <input type="hidden" name = "userid" value = "<?=$_SESSION['userid'];?>">
-              <input type ="hidden" name="userCreate" value ="<?=$row['userCreate'];?>">
+
               <input type="submit" name="updateValue" value = "Update"></input>
             </div>
           <?php }?>
           
         </td>
         <tr>
-
+    <?php if($_SESSION['userid'] == $row['userCreate']) {?>
       </form>
-
+    <?php }?>
 
 
       <?php
