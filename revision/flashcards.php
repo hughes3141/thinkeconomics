@@ -17,6 +17,16 @@ include($path."/php_header.php");
 include($path."/php_functions.php");
 include ($path."/header_tailwind.php");
 
+/*
+Notes on command GET variables:
+  -$_GET['topics'] or $_GET['topic'] : Enter comma-separated string of topic strings, to limit questions to particular topics;
+  -$_GET['restrict'] : to change the time until a card is recycled. With following parameters:
+    - !isset($_GET['restrict']) : default, 3 days and 5 days
+    - $_GET['restrict'] = 'none' : No wait, cards immediately recycled
+    - $_GET['restrict'] = '0' : No wait, cards immediately recycled
+    - $_GET['restrict'] = 'minutes' : 3 mins and 5 mins
+*/
+
 
 ?>
 
@@ -96,8 +106,8 @@ include ($path."/header_tailwind.php");
           $now = new DateTime(date("Y-m-d H:i:s", $t));
           $last = new DateTime($dateTime);
           $interval = $now->diff($last);
-          return $daysSince = $interval->days;
-          //return $minutesSince = $interval->i;
+          //return $daysSince = $interval->days;
+          return $minutesSince = $interval->i;
 
           //echo "daysSince:".$daysSince." minutesSince:".$minutesSince;
           
@@ -267,7 +277,7 @@ include ($path."/header_tailwind.php");
 
               $sql="SELECT * FROM saq_question_bank_3 WHERE";
 
-                if($_GET && $_GET['topics']) {
+                if(isset($_GET['topics'])) {
 
                   $topics = explode(",", $_GET['topics']);
                   $sql .= "  (";
@@ -333,19 +343,26 @@ include ($path."/header_tailwind.php");
 
               */
 
+              $bin1Duration = 3 * 24*60;
+              $bin2Duration = 5 *24*60;
+
+              if(isset($_GET['restrict'])) {
+                if($_GET['restrict'] == 'none' || $_GET['restrict'] == "0" ) 
+                {
+                  $bin1Duration = $bin2Duration = 0;
+                }
+                else if($_GET['restrict'] == 'minutes') {
+                  $bin1Duration = $bin1Duration /(24*60);
+                  $bin2Duration = $bin2Duration /(24*60);
+                }
+              }
+
               
               
               while (count($questions)>0) {
 
-
-              
-
-
                   $qCount = count($questions);
 
-                  
-
-                  
                   $randomQuestion = rand(0, $qCount-1);
                   //echo $qCount."<br>".$randomQuestion;
 
@@ -353,17 +370,13 @@ include ($path."/header_tailwind.php");
                     $randomQuestion = 0;
                   }
 
-
                   //Find the response for the last time this question was answered:
 
                     $randomQuestionId = $questions[$randomQuestion]['id'];
 
                     //echo "<br>".$randomQuestionId;
 
-
                     $lastResponse = lastResponse($randomQuestionId);
-
-
 
                     //Logic to see if question should appear, based on the bin it is in.
 
@@ -372,14 +385,13 @@ include ($path."/header_tailwind.php");
                     //echo date("Y-m-d H:i:s", $t);       
                     //echo $lastResponse['timeSubmit'];
 
-                  
-
-                    $daysSince = timeBetween($lastResponse['timeSubmit']);
+                    $timeSince = timeBetween($lastResponse['timeSubmit']);
+                    //echo $timeSince;
 
                     if (
                       $lastResponse['cardCategory'] == 0 ||
-                      (($lastResponse['cardCategory'] == 1 )&&($daysSince>=3) ) ||
-                      (($lastResponse['cardCategory'] == 2 )&&($daysSince>=5) )
+                      (($lastResponse['cardCategory'] == 1 )&&($timeSince>=$bin1Duration) ) ||
+                      (($lastResponse['cardCategory'] == 2 )&&($timeSince>=$bin2Duration) )
                     )
 
                     {
@@ -388,7 +400,17 @@ include ($path."/header_tailwind.php");
                     }
 
                     else {
+                      $summary = array();
+                      $summary['questionId'] = $questions[$randomQuestion]['id'];
+                      $lastResponse = lastResponse($questions[$randomQuestion]['id']);
+                      $summary['cardCategory'] = $lastResponse['cardCategory'];
+                      $summary['timeSubmit'] = $lastResponse['timeSubmit'];
+                      $summary = json_encode($summary);                  
+                      echo "<script>console.log(".$summary.")</script>";
+                      
                       array_splice($questions, $randomQuestion, 1);
+
+                      
 
 
                     }
@@ -417,11 +439,17 @@ include ($path."/header_tailwind.php");
                 
 
             ?>
+
             <?php if(isset($_GET['topics'])) {echo "<p class='ml-1'>Topic: ".htmlspecialchars($questions[$randomQuestion]['topic'])."</p>";}?>
 
             <div id="flashcard" class="font-sans  p-3 m-2">
             
-            <?php //print_r(lastResponse($questions[$randomQuestion]['id']));?>
+            <?php 
+            
+            //print_r(lastResponse($questions[$randomQuestion]['id']));
+            //echo "<br>".count($questions)."<br>";
+            
+            ?>
 
               <form method="post">
               
