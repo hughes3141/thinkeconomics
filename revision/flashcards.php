@@ -38,6 +38,13 @@ include ($path."/header_tailwind.php");
 
         function lastResponse($questionId) {
 
+          /*
+          lastResponse(int $questionId) : array
+
+          Returns the detail about the last time question with $questionId was answered.
+          If not answered, returns array with cardCategory=0 and current timeStamps for timeSubmit and timeStart.
+          */
+
           global $conn;
           global $t;  
           global $userId;
@@ -233,21 +240,55 @@ include ($path."/header_tailwind.php");
               //print_r($teachers);
 
               //This is what needs to be changed: only the first teacher in the array is included.
+              // Change with fucntion that loops through numbe of teachers. Could be done below, e.g. WHERE userCreate LIKE ? OR WHERE userCreate LIKE ? etc.
+
               $teacher = $teachers[0];
 
               //echo "<br>".$teacher;
 
 
+              //Get topics as GET variables
 
 
-              //Array of questions set by the teacher:
+              
+              if(isset($_GET['topic'])) {
+                $_GET['topics'] = $_GET['topic'];
+              }
+
+              //Array of questions set by the teacher, filtered by topic:
 
               $questions = array();
-              //Select questions made by the teacher
-              $sql="SELECT * FROM saq_question_bank_3 WHERE userCreate = ? AND type = 'flashCard'";
+              //Select questions made by the teacher, filter by topic
+
+              $bindArray = array();
+              $paramType = "";
+
+              $sql="SELECT * FROM saq_question_bank_3 WHERE";
+
+                if($_GET && $_GET['topics']) {
+
+                  $topics = explode(",", $_GET['topics']);
+                  $sql .= "  (";
+                  $count=count($topics);
+                  for($x=0; $x<$count; $x++) {
+                    //array_push($topicsSql, $topics[$x]);
+                    $sql .= "topic = ? ";
+                    if($x<$count-1) {
+                      $sql .= " OR ";
+                    } 
+                    $paramType .="s";
+                  }
+                  $sql .= ") AND";
+                  $bindArray = $topics;
+                }
+              $sql .=  "  userCreate = ? AND type = 'flashCard'";
+
+              //echo $sql;
               #just using "AND model_answer <> ''" so we return cards with answers
               $stmt = $conn->prepare($sql);
-              $stmt->bind_param("i", $teacher);
+              array_push($bindArray, $teacher);
+
+              $stmt->bind_param($paramType."i", ...$bindArray);
               $stmt->execute();
               $result = $stmt->get_result();
               if($result ->num_rows >0) {
@@ -374,13 +415,16 @@ include ($path."/header_tailwind.php");
                 
 
             ?>
+            <p class="ml-1">Topic: <?=htmlspecialchars($questions[$randomQuestion]['topic'])?></p>
 
             <div id="flashcard" class="font-sans  p-3 m-2">
             
             <?php //print_r(lastResponse($questions[$randomQuestion]['id']));?>
 
               <form method="post">
+              
                 <h2 class ="text-lg">Question:</h2>
+              
                 <input type="hidden" name="questionId" value = "<?=htmlspecialchars($questions[$randomQuestion]['id'])?>">
                 <input type="hidden" name="timeStart" value = "<?=date("Y-m-d H:i:s",time())?>">
                 <input type="hidden" name="cardCategory" value = "<?=$lastResponse['cardCategory']?>">
