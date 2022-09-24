@@ -459,7 +459,7 @@ Notes on command GET variables:
                 <input type="hidden" name="timeStart" value = "<?=date("Y-m-d H:i:s",time())?>">
                 <input type="hidden" name="cardCategory" value = "<?=$lastResponse['cardCategory']?>">
                 
-                <p class="mb-3"><?php echo htmlspecialchars($questions[$randomQuestion]['question']);?></p>
+                <p class="mb-3" style="white-space: pre-line;"><?php echo htmlspecialchars($questions[$randomQuestion]['question']);?></p>
                 <p><?php //print_r(lastResponse($questions[$randomQuestion]['id']));?>
                 
                 <div id="buttonsDiv" class="flex justify-center">
@@ -470,7 +470,7 @@ Notes on command GET variables:
                 
                 <div id ="answerDiv" class="hidden">
                   <h2 class ="text-lg">Answer:</h2>
-                  <p class="mb-3"><?=htmlspecialchars($questions[$randomQuestion]['model_answer']);?></p>
+                  <p class="mb-3" style="white-space: pre-line;"><?=htmlspecialchars($questions[$randomQuestion]['model_answer']);?></p>
                   <div id ="buttonsDiv2" class="flex justify-center">
                     <button id = "1Button" value ="1" name="rightWrong" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Wrong Answer</button>
                     <button id = "2Button" value ="2" name="rightWrong" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Correct Answer</button>

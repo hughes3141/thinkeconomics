@@ -317,8 +317,7 @@ if(isset($_POST['updateValue'])) {
             <textarea class="hide hide_<?=$row['id'];?>" name ="type"><?=htmlspecialchars($row['type'])?></textarea>
         </td>
         <td class="col7">
-          <div class="show_<?=$row['id'];?>" style="white-space: pre-line;">
-            <?=htmlspecialchars($row['model_answer']);?>
+          <div class="show_<?=$row['id'];?>" style="white-space: pre-line;"><?=htmlspecialchars($row['model_answer']);?>
           </div>
             <textarea class="hide hide_<?=$row['id'];?>" name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
         </td>
