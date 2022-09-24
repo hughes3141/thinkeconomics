@@ -249,6 +249,8 @@ include ($path."/header_tailwind.php");
 
               //Get topics as GET variables
 
+              //print_r($_GET);
+
 
               
               if(isset($_GET['topic'])) {
@@ -415,7 +417,7 @@ include ($path."/header_tailwind.php");
                 
 
             ?>
-            <p class="ml-1">Topic: <?=htmlspecialchars($questions[$randomQuestion]['topic'])?></p>
+            <?php if(isset($_GET['topics'])) {echo "<p class='ml-1'>Topic: ".htmlspecialchars($questions[$randomQuestion]['topic'])."</p>";}?>
 
             <div id="flashcard" class="font-sans  p-3 m-2">
             
