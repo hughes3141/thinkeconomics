@@ -75,7 +75,8 @@ if (!isset($_SESSION['userid'])) {
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_assigncreate1.1.php">Assignment Creator (Old)</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../assign_create1.0.php">Assignment Creator (New)</a></p>
               <h3 class="font-mono text-md bg-pink-100 pl-1">Multiple Choice Questions</h3>
-                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_assignment_review3.0.php">MCQ Assignment Review</a></p> 
+                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_assignment_review3.0.php">MCQ Assignment Review</a></p>
+                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_preview_simple.php">MCQ Quiz Preview (Simple)</a></p>
               <h3 class="font-mono text-md bg-pink-100 pl-1">Short Answer Questions</h3>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../saq/saq_list1.1.php">SAQ Question List and Input</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../saq/saq_exercisecreate1.0.php">SAQ Exercise List and Input</a></p>

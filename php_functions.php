@@ -69,19 +69,40 @@ function getGroupsList($userId, $activeReturn = true) {
 }
 
 
+function getAssignmentInfoById($assignId) {
+  /*
+  Returns information from assignments table from input id.
 
-/*
+  */
 
-getAssignmentsList(int $userId, int $groupId = null, string $type = all) : array
+  global $conn;
+  $sql = "SELECT * FROM assignments WHERE id = ?";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("i", $assignId);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    $row = $result->fetch_assoc();
+    return $row;
+  }
+  
 
-Returns a list of assignments by the user who created it, optional filter by type by type.
 
-  used in:
-  -mcq_assignment_review3.0.php
 
-*/
+
+}
+
+
+
 
 function getAssignmentsList($userId, $classId = null, $type = "all") {
+
+  /*
+  Returns a list of assignments by the user who created it, optional filter by type by type.
+
+  used in:
+  -mcq_assignment_review3.0.php 
+  */
   global $conn;
 
   $state = array(0,0);
@@ -335,6 +356,51 @@ function getAssignmentsArray($groupIdArray) {
   }
   
   return $list;
+
+}
+
+
+function getMCQquizInfo($quizId) {
+
+  /*
+  This function returns array of all columns for a particular id in mcq_quizzes
+  */
+
+  global $conn;
+  $sql = "SELECT * FROM mcq_quizzes WHERE id = ?";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("i", $quizId);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    $row = $result->fetch_assoc();
+    return $row;
+  }
+  
+}
+
+
+function getMCQquizzesByTopic($topic) {
+  /*
+  This function returns an array of all entries from mcq_quizzes table that match a $topic category
+  */
+
+  global $conn;
+  $quizzes = array();
+  $sql = "SELECT * FROM mcq_quizzes WHERE topic LIKE ?";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("s", $topic);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    
+    while($row = $result->fetch_assoc()){
+      array_push($quizzes, $row);
+      
+    }
+    return $quizzes;
+  }
+  
 
 }
 

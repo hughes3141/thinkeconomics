@@ -283,7 +283,6 @@ Notes on command GET variables:
                   $sql .= "  (";
                   $count=count($topics);
                   for($x=0; $x<$count; $x++) {
-                    //array_push($topicsSql, $topics[$x]);
                     $sql .= "topic = ? ";
                     if($x<$count-1) {
                       $sql .= " OR ";
@@ -357,7 +356,7 @@ Notes on command GET variables:
                 }
               }
 
-              
+              $questionSkip = 0;
               
               while (count($questions)>0) {
 
@@ -407,18 +406,16 @@ Notes on command GET variables:
                       $summary['timeSubmit'] = $lastResponse['timeSubmit'];
                       $summary = json_encode($summary);                  
                       echo "<script>console.log(".$summary.")</script>";
+                      //$questionSkip ++;
                       
                       array_splice($questions, $randomQuestion, 1);
 
                       
 
 
-                    }
-
-
-
-                
+                    }          
               }
+              //echo "<script>console.log(".$questionSkip.")</script>";
 
               if(count($questions) == 0) {
               
