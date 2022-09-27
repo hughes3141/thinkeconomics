@@ -200,6 +200,36 @@ if(isset($_POST['updateValue'])) {
     </table>
 
     <p>
+      <label for ="subjectSelect">Subject Select:</label>
+      <select id="subjectSelect" name = "subjectId">
+        <?php
+        
+          $sql = "SELECT * FROM subjects";
+          $stmt=$conn->prepare($sql);
+          //$stmt->bind_param();
+          $stmt->execute();
+          $result = $stmt->get_result();
+
+          if($result->num_rows>0) {
+            while($row = $result->fetch_assoc()) {
+              ?>
+              <option value="<?=$row['id'];?>" <?php
+                if(isset($_POST['subjectId'])) {
+                  if($row['id'] == $_POST['subjectId']) {
+                    echo "selected";
+                  }
+                }              
+              ?> ><?=htmlspecialchars($row['level']);?> <?=htmlspecialchars($row['name']);?></option>
+              <?php
+            }
+          }
+        
+        
+        ?>
+      </select>
+    </p>
+
+    <p>
     <button type="button" onclick="addRow()">Add Row</button>
     </p>
     <p>

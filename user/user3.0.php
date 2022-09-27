@@ -68,6 +68,9 @@ if (!isset($_SESSION['userid'])) {
 
             <h2 class="font-mono text-lg bg-pink-200 pl-1">Notes Management</h2>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../notes/notes_list.php">Notes List Update</a></p>
+
+            <h2 class="font-mono text-lg bg-pink-200 pl-1">Revision Management</h2>
+              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../revision/flashcard_collection_entry.php">Flashcard Collection Entry</a></p>
              
 
             <h2 class="font-mono text-lg bg-pink-200 pl-1">Assignment Management</h2>
