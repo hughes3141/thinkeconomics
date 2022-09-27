@@ -404,4 +404,26 @@ function getMCQquizzesByTopic($topic) {
 
 }
 
+
+function getGroupInfoById($groupId) {
+  /*
+  Returns array of all information from groups table from input $groupId
+  */
+
+  global $conn;
+  $sql = "SELECT * FROM groups WHERE id = ?";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("i", $groupId);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    
+    $row = $result->fetch_assoc();
+    $row['teachers'] = json_decode($row['teachers']);
+    return $row;
+  }
+
+
+}
+
 ?>

@@ -5,6 +5,9 @@ session_start();
 
 $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
 
 if (!isset($_SESSION['userid'])) {
   
@@ -12,10 +15,14 @@ if (!isset($_SESSION['userid'])) {
   
 }
 
-$path = $_SERVER['DOCUMENT_ROOT'];
-include($path."/php_header.php");
-$path = $_SERVER['DOCUMENT_ROOT'];
-include($path."/php_functions.php");
+else {
+  $userInfo = getUserInfo($_SESSION['userid']);
+  $userType = $userInfo['usertype'];
+  if (!($userType == "teacher" || $userType =="admin")) {
+    header("location: /index.php");
+  }
+}
+
 
 ?>
 
@@ -26,6 +33,11 @@ include($path."/php_functions.php");
 <head>
 
 <style>
+
+.hide {
+      display: none;
+   }
+
 td, th {
 	
 	border: 1px solid black;
@@ -39,8 +51,10 @@ table {
   border-collapse: collapse;
 	table-layout: auto;
 
-  width: 75%;
+  //width: 75%;
 }
+
+
 
 </style>
 
@@ -51,10 +65,17 @@ table {
 
 <?php 
 
+$userId = $_SESSION['userid'];
+
+
 /*
 THIS IS assign_create
 Created 18 February 2022, based on mcq_assigncreate1.1.php
 Used to create all assignments
+
+
+$_GET variables:
+-Limit: to limit the number of queries that are returned in summary table
 
 */
 
@@ -119,7 +140,7 @@ if ($conn->connect_error) {
 if(isset($_POST['type'])) {
   $assignType = $_POST['type'];
 
-  $teacherid = 1;
+  $teacherid = $userId;
 
 if($assignType == "mcq") {
   $sql= "SELECT * FROM mcq_quizzes WHERE userCreate = ? /*ORDER BY dateCreated DESC*/";
@@ -173,10 +194,10 @@ $result = $stmt->get_result();
 <p>
 
 <?php
-$teacherid = 1;
+$teacherid = $userId;
 $teacheridsql = '%\"'.$teacherid.'\"%';
 
-$sql= "SELECT * FROM groups WHERE teachers LIKE ?";
+$sql= "SELECT * FROM groups WHERE teachers LIKE ? AND active = 1";
 $stmt = $conn->prepare($sql);
 $stmt -> bind_param("s", $teacheridsql);
 $stmt -> execute();
@@ -225,58 +246,41 @@ $result = $stmt->get_result();
 </p>
 
 <table style="table-layout: fixed; width: 300px;">
-<tr>
-<td>
-<label for="reviewOn">Review On</label>
-<input type="radio" id="reviewOn" name="review" value = "0" checked>
-</td>
-<td>
-<label for="reviewOff">Review Off</label>
-<input type="radio" id="reviewOff" name="review" value = "1">
-</td>
-</tr>
-<tr>
-<td>
-<label for="multiOn">Multi Submit</label>
-<input type="radio" id="multiOn" name="multi" value = "0" checked>
-</td>
-<td>
-<label for="multiOff">No Multi Submit</label>
-<input type="radio" id="multiOff" name="multi" value = "1">
-</td>
-<td>
-
-
-
-</td>
-
+  <tr>
+    <td>
+      <label for="reviewOn">Review On</label>
+      <input type="radio" id="reviewOn" name="review" value = "0" checked>
+    </td>
+    <td>
+      <label for="reviewOff">Review Off</label>
+      <input type="radio" id="reviewOff" name="review" value = "1">
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="multiOn">Multi Submit</label>
+      <input type="radio" id="multiOn" name="multi" value = "0" checked>
+    </td>
+    <td>
+      <label for="multiOff">No Multi Submit</label>
+      <input type="radio" id="multiOff" name="multi" value = "1">
+    </td>
+  </tr>
 </table>
-<br>
-<input type="submit" value="Create Assignment" name ="btnSubmit">
 
+<p>
+  <input type="submit" value="Create Assignment" name ="btnSubmit">
+</p>
 </form>
 
-<form id="form2" method ="post">
 
-<input type ="text" name ="changeType" id="changeType"></input>
-<input type ="number" name ="id" id="changeId"></input>
-<input type ="text" name ="value" id="changeValue"></input>
-
-
-</form>
 
 <?php 
 
 
-if($_SERVER['REQUEST_METHOD'] == 'POST') {
+if($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['updateValue'])) {
 
-
-
-
-
-
-
-  $teacherid = 1;
+  $teacherid = $userId;
 
   $assignName = $_POST["assignName"];
   $quizID = $_POST["exerciseid"];
@@ -313,7 +317,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($review == 1) {
       
-      
       $assignReturn = 0;
     }
 
@@ -329,35 +332,14 @@ $sql = "INSERT INTO assignments (assignName, quizid, groupid, reviewQs, multiSub
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("sisiissssisi", $assignName, $quizID, $classID, $review, $multi, $notes, $datetime, $type, $dueDate, $assignReturn, $classID_array, $teacherid);
 
-if (isset($_POST['btnSubmit'])) {
-  //Execute
-  
-  $stmt->execute();
-  echo "New records created successfully";
+  if (isset($_POST['btnSubmit'])) {
+    //Execute
+    $stmt->execute();
+    echo "New records created successfully";
 
-  
-  //echo $assignName; echo $quizID; echo  $classID; echo  $review; echo  $multi; echo  $notes; echo  $datetime; echo  $type; echo  $dueDate; echo $assignReturn; echo  $classID_array;
-  
-
-  
-}
-
-//$query = "INSERT INTO `assignments` (`assignName`, `quizid`, `groupid`, `reviewQs`, `multiSubmit`, `notes`, `dateCreated`, `type`, `dateDue`, `assignReturn`) VALUES ('$assignName', '$quizID', '$classID', '$review', '$multi', '$notes', '$datetime', '$type', '$dueDate', '$assignReturn')";
-
-
-if ($_POST['changeType'] == "assignReturn") {
-	
-
-	
-	$query2 = "UPDATE `assignments` SET `assignReturn` = '".$_POST['value']."' WHERE `assignments`.`id` = ".$_POST['id'];
-	
-	
-//UPDATE `assignments` SET `assignReturn` = '1' WHERE `assignments`.`id` = 62;
-	
-	echo $query2;
-	
-	
-}
+    //echo $assignName; echo $quizID; echo  $classID; echo  $review; echo  $multi; echo  $notes; echo  $datetime; echo  $type; echo  $dueDate; echo $assignReturn; echo  $classID_array;
+    
+  }
 
 }
 
@@ -368,42 +350,183 @@ if ($_POST['changeType'] == "assignReturn") {
 <tr>
 
 <th>id</th>
-<th>Assignment Name</th>
-<th>quizID</th>
-<th>classID</th>
+<th>Assignment</th>
+<th>Class</th>
+
 <th>Notes</th>
-<th>Date Created</th>
-<th>Due Date</th>
-<th>Review Off</th>
-<th>Multi Submit Off</th>
-<th>Type</th>
-<th>AssignReturn</th>
+<th>Dates</th>
+
+<th>Controls</th>
+
+
+<th>Edit</th>
 </tr>
 
 <?php
 
-$query = "SELECT * FROM assignments ORDER BY dateCreated desc";
+//Script for updating values:
 
-if ($result = mysqli_query($conn, $query)) {
+  function getAssignmentData($assignId) {
+    global $conn;
+    $stmt = $conn->prepare("SELECT * FROM assignments WHERE id = ?");
+    $stmt->bind_param("i", $assignId);
+    $stmt->execute();
+    $result=$stmt->get_result();
+    if($result->num_rows>0) {
+      $row = $result->fetch_assoc();
+      return $row;
+    }
+    
+  
+  }
+
+  //print_r($_POST);
+
+  if(isset($_POST['updateValue'])) {
+    $sql = "UPDATE assignments SET assignReturn = ?, dateDue = ? WHERE id = ?";
+
+    
+    $stmt = $conn->prepare($sql);
+    //print_r($_POST);
+    
+    $stmt->bind_param("isi", $_POST['assignReturn'], $_POST['dateDue'], $_POST['id']);
+  
+    $assignmentData = getAssignmentData($_POST['id']);
+    $assignmentDataUser = $assignmentData['userCreate'];
+  
+    if($assignmentDataUser == $_SESSION['userid']) {
+      $stmt->execute();
+      //header("Refresh:0");
+      echo "Record ".$_POST['id']." updated successfully.";
+    }
+    else {
+      echo "Value not updated: userid does not match userCreate";
+    }
+  }
+
+
+
+//Script for showing table values:
+
+
+
+$sql = "SELECT * FROM assignments ORDER BY dateCreated desc LIMIT ?";
+
+$limit = 10;
+if(isset($_GET['limit'])) {
+  $_GET['limit']= intval($_GET['limit']);
+  var_dump($_GET['limit']);
+
+    $limit = $_GET['limit'];
+  
+}
+
+
+
+$stmt=$conn->prepare($sql);
+$stmt->bind_param("i", $limit);
+$stmt->execute();
+$result= $stmt->get_result();
+
+if ($result->num_rows>0) {
 	
-	while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-		
-			echo "<tr>";
-			echo "<td>".$row['id']."</td>";
-			echo "<td>".$row['assignName']."</td>";
-			echo "<td>".$row['quizid']."</td>";
-			echo "<td>".$row['groupid']."</td>";
-			echo "<td>".$row['notes']."</td>";
-			echo "<td>".$row['dateCreated']."</td>";
-			echo "<td>".$row['dateDue']."</td>";
-			echo "<td>".$row['reviewQs']."</td>";
-			echo "<td>".$row['multiSubmit']."</td>";
-			
-			echo "<td>$row[type]</td>";
-			
-			echo "<td><span id='assignReturn_$row[id]'>$row[assignReturn]</span><br><button onclick ='returnUpdate($row[id])'>Change</button></td>";
-			
-			echo "</tr>";
+	while ($row = $result->fetch_assoc()) {
+
+    ?>
+    
+			<tr id = 'row_<?=$row['id'];?>'>
+    <?php if($_SESSION['userid'] == $row['userCreate']) {?>
+      <form method="post" action="">
+    <?php }?>
+        <td>
+          <div>
+            <?=htmlspecialchars($row['id']);?>
+          </div>
+        </td>
+        <td>
+          <div class="show_<?=$row['id'];?>">
+            <?=htmlspecialchars($row['assignName']);?>
+            <br>
+            <?=htmlspecialchars($row['type']);?>
+            <br>
+            quizId: <?=htmlspecialchars($row['quizid']);?>
+            <br>
+          </div>
+        </td>
+        <td>
+          <div class="show_<?=$row['id'];?>">
+            <?php 
+              if($row['groupid'] != "") {
+
+                $groups = json_decode($row['groupid_array']);
+                //  print_r($groups);
+                if(count($groups)==1) {
+                  //echo "Class: ";
+                } else {
+                  //echo "Classes: ";
+                }
+                foreach ($groups as $groupId) {
+                  $group = getGroupInfoById($groupId);
+                  echo $group['name'];
+                  echo " (".$groupId.")<br>";
+                }
+              }
+              ?>
+          </div>
+        </td>
+        <td>
+        <div class="show_<?=$row['id'];?>">
+          <?=htmlspecialchars($row['notes']);?></td>
+        </div>
+        <td>
+          <div class="show_<?=$row['id'];?>">
+            Due:<br>
+            <?=date("d/m/y g:ia",strtotime($row['dateDue']));?>
+            <br>
+            Created:
+            <?=date("d/m/y", strtotime($row['dateCreated']));?>
+          </div>
+          <div class="hide hide_<?=$row['id'];?>">
+            Due:
+            <input type="datetime-local" name="dateDue" value="<?=$row['dateDue'];?>">
+          </div>
+        </td>
+        <td>
+        <div class="show_<?=$row['id'];?>">
+          Review: <?=htmlspecialchars($row['reviewQs']);?>
+          <br>
+          Multi-Submit: <?=htmlspecialchars($row['multiSubmit']);?>
+          <br>
+          Returned:<?=htmlspecialchars($row['assignReturn']);?>
+        </div>
+        <div class="hide hide_<?=$row['id'];?>">
+              Returned:<input type="text" name="assignReturn" value = "<?=$row['assignReturn'];?>">
+        </div>
+
+        </td>
+
+        
+
+        
+        <td>
+          
+        <?php if($_SESSION['userid'] == $row['userCreate']) {?>
+            <div>
+              <button type ="button" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>)"">Edit</button>
+            </div>
+            <div class ="hide hide_<?=$row['id'];?>">
+              <input type="hidden" name = "id" value = "<?=$row['id'];?>">
+
+              <input type="submit" name="updateValue" value = "Update"></input>
+            </div>
+          <?php }?>
+        </td>
+    <?php if($_SESSION['userid'] == $row['userCreate']) {?>
+      </form>
+    <?php }?>
+			</tr>
+
+      <?php
 		
 	}
 	
@@ -418,6 +541,39 @@ if ($result = mysqli_query($conn, $query)) {
 
 
 <script>
+
+function changeVisibility(button, id) {
+  
+  if(button.innerHTML =="Edit") {
+    button.innerHTML = "Hide Edit";
+    var hiddens = document.getElementsByClassName("hide_"+id);
+    for (var i=0; i<hiddens.length; i++) {
+      hiddens[i].style.display = "block";
+    }
+
+    var shows = document.getElementsByClassName("show_"+id);
+    //console.log(shows);
+    for (var i=0; i<shows.length; i++) {
+      
+      shows[i].style.display = "none";
+    }
+  } else {
+    button.innerHTML = "Edit";
+    var hiddens = document.getElementsByClassName("hide_"+id);
+    for (var i=0; i<hiddens.length; i++) {
+      hiddens[i].style.display = "none";
+    }
+
+    var shows = document.getElementsByClassName("show_"+id);
+    //console.log(shows);
+    for (var i=0; i<shows.length; i++) {
+      
+      shows[i].style.display = "block";
+    }
+  }
+
+
+}
 
 var classIndex = [];
 
