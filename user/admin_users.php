@@ -179,7 +179,6 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
   //echo $sort;
   $sortArray = array("id", "name", "usertype", "schoolid", "groupid");
   
-
   $sql="SELECT * FROM users WHERE usertype != 'admin' AND active = ?";
 
   if(isset($_GET['sort'])) {
@@ -189,7 +188,7 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
       $sql .=  " ORDER BY ".$sort;
     }
   }
-  echo $sql;
+  //echo $sql;
   $stmt=$conn->prepare($sql);
   
   $stmt->bind_param("i", $_GET['active']);

@@ -356,7 +356,7 @@ if(!isset($_GET['limit'])) {
 <form method ="get" action="">
   <label for = "limit_pick">Limit: </label>
   <input type="number" id="limit_pick" min = "0" name="limit" value="<?=$limit?>">
-  <input type="submit" value="Submit">
+  <input type="submit" value="Change Limit">
 </form>
 <br>
 <table>
@@ -530,8 +530,10 @@ if ($result->num_rows>0) {
         </div>
         <div class="hide hide_<?=$row['id'];?>">
           Review:<input type="text" style="width: 60px;" name="reviewQs" value = "<?=$row['reviewQs'];?>">
+          <br>
 
           Multi:<input type="text" style="width: 60px;" name="multiSubmit" value = "<?=$row['multiSubmit'];?>">
+          <br>
 
           Returned:<input type="text" style="width: 60px;" name="assignReturn" value = "<?=$row['assignReturn'];?>">
         </div>
