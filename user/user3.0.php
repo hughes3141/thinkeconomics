@@ -1,5 +1,5 @@
 <?php
-
+// Initialize the session
 session_start();
 
 date_default_timezone_set("Europe/London");
@@ -7,7 +7,9 @@ date_default_timezone_set("Europe/London");
 
 $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
-
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
 
 
 if (!isset($_SESSION['userid'])) {
@@ -109,7 +111,8 @@ if (!isset($_SESSION['userid'])) {
           ?>
           
           <h1 class="font-mono text-xl bg-pink-300 pl-1">Admin Resources</h1>
-          
+          <p class="ml-2 hover:bg-sky-100"><a class ="block" href="/user/admin_users.php" >User Details Edit</a></p>
+                
           
           <?php
           

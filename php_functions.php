@@ -3,6 +3,16 @@
 //Functions:
 
 
+// based on original work from the PHP Laravel framework
+//Polyfill function for str_contains:
+  
+if (!function_exists('str_contains')) {
+  function str_contains($haystack, $needle) {
+      return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+  }
+}
+
+
 /*
 checkGroupAccess(int $userId, int $groupId): bool
 

@@ -32,6 +32,8 @@ if($result) {
   $name = $row['name'];
 }
 
+if(!function_exists('getUpcomingAssignmentsArray')) {
+
 
 
 function getUpcomingAssignmentsArray($groupIdArray) {
@@ -79,7 +81,9 @@ function getUpcomingAssignmentsArray($groupIdArray) {
   return $list;
 
 }
+}
 
+if (!function_exists('getUpcomingAssignments')) {
 function getUpcomingAssignments($groupId) {
   global $conn;
   $t = time();
@@ -105,6 +109,7 @@ function getUpcomingAssignments($groupId) {
 
   return $list;
 
+}
 }
 
 $assignments = getUpcomingAssignmentsArray($groupid);
