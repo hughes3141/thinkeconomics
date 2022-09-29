@@ -77,9 +77,19 @@ if (!isset($_SESSION['userid'])) {
 
             <h2 class="font-mono text-lg bg-pink-200 pl-1">Assignment Management</h2>
               <h3 class="font-mono text-md bg-pink-100 pl-1">Assignments</h3>
-                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_assigncreate1.1.php">Assignment Creator (Old)</a></p>
-                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../assign_create1.0.php">Assignment Creator (New)</a></p>
+                <p class="ml-2 font-bold">Old resources</p>
+                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="/mcq/student_assign_review1.1.php">All Assignments By Student</a></p>
+                <p class="ml-2 font-bold">New resources</p>
+                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../assign_create1.0.php">Assignment Create and List</a></p>
               <h3 class="font-mono text-md bg-pink-100 pl-1">Multiple Choice Questions</h3>
+                <p class="ml-2 font-bold">Old resources</p>
+                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_list.php">List of MCQ Questions</a></p>
+                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_quizcreate.php">MCQ Quiz Creator and List</a></p>
+                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_preview.php">MCQ Preview (Old)</a></p>
+                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_student_review.php">MCQ Student Work Review</a></p>
+                
+                
+                <p class="ml-2 font-bold">New resources</p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_assignment_review3.0.php">MCQ Assignment Review</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_preview_simple.php">MCQ Quiz Preview (Simple)</a></p>
               <h3 class="font-mono text-md bg-pink-100 pl-1">Short Answer Questions</h3>

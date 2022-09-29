@@ -174,13 +174,22 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
   }
 
   $sort = "id";
-  if(isset($_GET['sort'])) {
-    $sort = $_GET['sort'];
-  }
+  
 
   //echo $sort;
+  $sortArray = array("id", "name", "usertype", "schoolid", "groupid");
+  
 
-  $sql="SELECT * FROM users WHERE usertype != 'admin' AND active = ? ORDER BY ".$sort;
+  $sql="SELECT * FROM users WHERE usertype != 'admin' AND active = ?";
+
+  if(isset($_GET['sort'])) {
+    if(in_array($_GET['sort'], $sortArray)) {
+
+      $sort = $_GET['sort'];
+      $sql .=  " ORDER BY ".$sort;
+    }
+  }
+  echo $sql;
   $stmt=$conn->prepare($sql);
   
   $stmt->bind_param("i", $_GET['active']);

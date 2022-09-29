@@ -334,6 +334,7 @@ $stmt->bind_param("sisiissssisi", $assignName, $quizID, $classID, $review, $mult
 
   if (isset($_POST['btnSubmit'])) {
     //Execute
+    
     $stmt->execute();
     echo "New records created successfully";
 
@@ -343,24 +344,31 @@ $stmt->bind_param("sisiissssisi", $assignName, $quizID, $classID, $review, $mult
 
 }
 
+if(!isset($_GET['limit'])) {
+  $limit = 10;
+} else {
+  $limit = $_GET['limit'];
+}
+
 ?>
 
-
+<h2>Assigned Work</h2>
+<form method ="get" action="">
+  <label for = "limit_pick">Limit: </label>
+  <input type="number" id="limit_pick" min = "0" name="limit" value="<?=$limit?>">
+  <input type="submit" value="Submit">
+</form>
+<br>
 <table>
-<tr>
-
-<th>id</th>
-<th>Assignment</th>
-<th>Class</th>
-
-<th>Notes</th>
-<th>Dates</th>
-
-<th>Controls</th>
-
-
-<th>Edit</th>
-</tr>
+  <tr>
+    <th>id</th>
+    <th>Assignment</th>
+    <th>Class</th>
+    <th>Notes</th>
+    <th>Dates</th>
+    <th>Controls</th>
+    <th>Edit</th>
+  </tr>
 
 <?php
 
@@ -383,14 +391,20 @@ $stmt->bind_param("sisiissssisi", $assignName, $quizID, $classID, $review, $mult
   //print_r($_POST);
 
   if(isset($_POST['updateValue'])) {
-    $sql = "UPDATE assignments SET assignReturn = ?, dateDue = ? WHERE id = ?";
+    $sql = "UPDATE assignments SET assignReturn = ?, dateDue = ?, notes = ?, assignName =?, groupid_array =?, groupid = ?, reviewQs = ?, multiSubmit = ? WHERE id = ?";
+
+    $groupid_array = explode(",",$_POST['groupid']);
+    $groupid_array = json_encode($groupid_array);
+    echo $groupid_array;
 
     
     $stmt = $conn->prepare($sql);
     //print_r($_POST);
     
-    $stmt->bind_param("isi", $_POST['assignReturn'], $_POST['dateDue'], $_POST['id']);
+    $stmt->bind_param("isssssiii", $_POST['assignReturn'], $_POST['dateDue'], $_POST['notes'], $_POST['assignName'], $groupid_array, $_POST['groupid'], $_POST['reviewQs'], $_POST['multiSubmit'], $_POST['id']);
   
+    //The following script validates to ensure that the user updating the assignment is hte assignment author:
+
     $assignmentData = getAssignmentData($_POST['id']);
     $assignmentDataUser = $assignmentData['userCreate'];
   
@@ -412,10 +426,10 @@ $stmt->bind_param("sisiissssisi", $assignName, $quizID, $classID, $review, $mult
 
 $sql = "SELECT * FROM assignments ORDER BY dateCreated desc LIMIT ?";
 
-$limit = 10;
+
 if(isset($_GET['limit'])) {
   $_GET['limit']= intval($_GET['limit']);
-  var_dump($_GET['limit']);
+  //var_dump($_GET['limit']);
 
     $limit = $_GET['limit'];
   
@@ -447,6 +461,10 @@ if ($result->num_rows>0) {
           <div class="show_<?=$row['id'];?>">
             <?=htmlspecialchars($row['assignName']);?>
             <br>
+          </div>
+          <div class="hide hide_<?=$row['id'];?>">
+            <input type="text" name="assignName" value = "<?=$row['assignName'];?>">
+          </div>
             <?=htmlspecialchars($row['type']);?>
             <br>
             quizId: <?=htmlspecialchars($row['quizid']);?>
@@ -473,11 +491,22 @@ if ($result->num_rows>0) {
               }
               ?>
           </div>
+          <div class="hide hide_<?=$row['id'];?>">
+          <input type="text" style="width: 60px;" name="groupid" value = "<?php
+            echo implode(",",$groups);
+          
+          ?>">
+          </div>
         </td>
         <td>
-        <div class="show_<?=$row['id'];?>">
-          <?=htmlspecialchars($row['notes']);?></td>
-        </div>
+          <div class="show_<?=$row['id'];?>">
+            <?=htmlspecialchars($row['notes']);?>
+          </div>
+          <div class="hide hide_<?=$row['id'];?>">
+              <textarea name ="notes"><?=htmlspecialchars($row['notes']);?></textarea>
+
+          </div>
+        </td>
         <td>
           <div class="show_<?=$row['id'];?>">
             Due:<br>
@@ -500,7 +529,11 @@ if ($result->num_rows>0) {
           Returned:<?=htmlspecialchars($row['assignReturn']);?>
         </div>
         <div class="hide hide_<?=$row['id'];?>">
-              Returned:<input type="text" name="assignReturn" value = "<?=$row['assignReturn'];?>">
+          Review:<input type="text" style="width: 60px;" name="reviewQs" value = "<?=$row['reviewQs'];?>">
+
+          Multi:<input type="text" style="width: 60px;" name="multiSubmit" value = "<?=$row['multiSubmit'];?>">
+
+          Returned:<input type="text" style="width: 60px;" name="assignReturn" value = "<?=$row['assignReturn'];?>">
         </div>
 
         </td>
