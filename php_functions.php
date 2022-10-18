@@ -436,4 +436,22 @@ function getGroupInfoById($groupId) {
 
 }
 
+function getQuestionById($questionId) {
+  //Returns detail of SAQ_question_bank_3 from input id
+
+  global $conn;
+  $sql = "SELECT * FROM saq_question_bank_3 WHERE id = ?";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("i", $questionId);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    
+    $row = $result->fetch_assoc();
+    return $row;
+  }
+
+
+}
+
 ?>
