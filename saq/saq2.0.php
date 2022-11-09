@@ -135,7 +135,13 @@ function getPreviousSAQSubmissions($userId, $exerciseId, $maxDate = 0, $dataRetu
 
 }
 
+//$userData is an array of all previous saved versions that this user has made for this exerciseId.
 $userData = getPreviousSAQSubmissions($userId, $exerciseId, 0, 1);
+
+
+//$selectUserData is the data that is used on the loaded page. It is what the studnet will be working on.
+//If $versionId is set (from selecting a differnt version) then $selectUserData is generated from $userData, given the $versionId.
+//Else the most recent saved version of the exercise is returned.
 
 if (isset($versionId)) {
   $selectUserData = $userData[$versionId];
@@ -143,12 +149,14 @@ if (isset($versionId)) {
   $selectUserData = getPreviousSAQSubmissions($userId, $exerciseId, 1, 1);
 }
 
+//SelectedVersion is the id of the data used on the loaded page.
 $selectedVersion = $selectUserData['id'];
 
 echo "<br>Select User Data:<br>";
 print_r($selectUserData);
 
 
+//$allUserData is an array of all previously saved versions, but only id, datetime, and version returned. To be used for drop-down list.
 
 $allUserData = getPreviousSAQSubmissions($userId, $exerciseId);
 
@@ -160,7 +168,8 @@ $allUserData = getPreviousSAQSubmissions($userId, $exerciseId);
 function dataToArray($jsonStringArray, $questionId = 0) {
 
   //Converts json array into associative array of user entry data or feedback data
-  //First argument is a json strin representing the array of answers or feedback.
+  //First argument is a json string representing the array of answers or feedback.
+  //Second argument is control. $questionId = 0 to return entire array, else $questionId = id of question to be returned.
 
   global $conn;
 
@@ -222,9 +231,14 @@ function getSAQExerciseInfoById($exerciseId) {
 
 }
 
-//echo "<br>";
+
+
+//$exercise is an array with all fields from saq_exercises
 $excercise = getSAQExerciseInfoById($exerciseId);
+//echo "<br>";
 //print_r($excercise);
+
+
 
 //Retreive question information information from exerciseId:
 
@@ -275,6 +289,45 @@ function getSAQExerciseQuestionsById($exerciseId) {
 
 
 }
+
+//Retrieve structure information from $exerciseID:
+
+function getSAQExerciseStructureById($exerciseId) {
+
+  global $conn;
+  $sql = "SELECT * FROM saq_exercises WHERE id = ?";
+  $stmt= $conn->prepare($sql);
+  $stmt->bind_param("i", $exerciseId);
+  $stmt->execute();
+  $result= $stmt->get_result();
+
+  if($result->num_rows>0) {
+    $row=$result->fetch_assoc();
+    //echo $row['structure'];
+    $structure = json_decode($row['structure']);
+    foreach($structure as &$array) {
+      if($array[0]=="qs") {
+        $questionsArray = explode(",", $array[1]);
+        foreach($questionsArray as &$value) {
+          $value = trim($value);
+        }
+        $array[1] = $questionsArray;
+
+      }
+    }
+    return $structure;
+  }
+
+}
+
+//$structure is the array of all exercise elements
+$structure = getSAQExerciseStructureById($exerciseId);
+
+
+echo "<pre>";
+print_r($structure);
+echo "</pre>";
+
 
 $questions = getSAQExerciseQuestionsById($exerciseId);
 $questionsCount = count($questions);
