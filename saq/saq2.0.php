@@ -241,6 +241,7 @@ $excercise = getSAQExerciseInfoById($exerciseId);
 
 
 //Retreive question information information from exerciseId:
+//Suspect that this function will be deprecated once a new structure is in place.
 
 function getSAQExerciseQuestionsById($exerciseId) {
   //Returns array of questions from SAQ exercises table given $exerciseId
@@ -323,28 +324,26 @@ function getSAQExerciseStructureById($exerciseId) {
 //$structure is the array of all exercise elements
 $structure = getSAQExerciseStructureById($exerciseId);
 
+//$questionsCount is an interval count of all questions contained in structure;
+$questionsCount = 0;
+
+foreach($structure as $array) {
+  if ($array[0]=="qs") {
+    $questionsCount += count($array[1]);
+  }
+}
+
+echo "Question Count: ".$questionsCount."<br>";
+
 
 echo "<pre>";
 print_r($structure);
 echo "</pre>";
 
 
-$questions = getSAQExerciseQuestionsById($exerciseId);
-$questionsCount = count($questions);
-echo $questionsCount;
-
-//print_r($questions);
-
-
-echo "<br>";
-foreach ($questions as $data) {
-  //print_r($data);
-  ////echo "<br>";
-}
-
-
-
-$controlData = array("exerciseId"=>$exerciseId, "timeStart"=>date('Y-m-d H:i:s'), "exerciseName"=>$excercise['exerciseName'], "version"=>$excercise['version']);
+//$controlData is array with key information, particularly timeStart.
+//Version may be an important data point in future but will need to be taken from saq_reponses section.
+$controlData = array("exerciseId"=>$exerciseId, "timeStart"=>date('Y-m-d H:i:s'), "exerciseName"=>$excercise['exerciseName']/*, "version"=>$excercise['version']*/);
 
 print_r($controlData);
 
@@ -412,11 +411,14 @@ print_r($controlData);
     background-color: coral;
   }
 
+  </style>
+
   ";
 
   ?>
   <?=$head_insert;?>
-  </style>
+
+  
 
 </head>
 
@@ -448,16 +450,22 @@ print_r($controlData);
 
   <form method="post" action="">
   <input type="submit" name="control" value="Save Work">
-  <input type="hidden" name="questionCount" value ="<?=$questionsCount?>">
+  <input type="text" name="questionCount" value ="<?=$questionsCount?>">
 
   <?php
-  
-    foreach($questions as $key=>$row) {
-      //Populate page;
-      ?>
+    //Populates Page:
+    foreach($structure as $array) {
+      if($array[0]!="qs") {
+        echo "<".$array[0].">";
+        echo $array[1];
+        echo "</".$array[0].">";
+      }
+    }
+
+      /*?>
 
     <div class="questionContainer">
-      <p><?=$key+1?>: <?=$row['question']?> (<?=$row['points']?>)</p>
+      <p></p>
 
       <?php
         if($row['img']!="") {
@@ -480,7 +488,8 @@ print_r($controlData);
 
 
     <?php
-    }
+    */
+    
   ?>
   </form>
 

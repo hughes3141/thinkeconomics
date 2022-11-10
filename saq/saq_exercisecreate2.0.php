@@ -270,6 +270,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         var input1 = document.createElement('input');
         input1.type = "text";
 
+        var input3 = document.createElement('input');
+        input3.type = "text";
+
         
 
         var removeButton = document.createElement('button');
@@ -280,6 +283,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //div.appendChild(typeLabel);
         div.appendChild(input2);
         div.appendChild(input1);
+        if(input =="img") {
+          div.appendChild(input3);
+        }
+        
         div.appendChild(removeButton);
         
 
