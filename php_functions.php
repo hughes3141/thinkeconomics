@@ -454,4 +454,26 @@ function getQuestionById($questionId) {
 
 }
 
+function getNewsArticlesByKeyword($keyword) {
+
+  global $conn;
+
+  $articles = array();
+
+  $keywordSql = "%".$keyword."%";
+
+  $sql = "SELECT * FROM news_data WHERE keyWords LIKE ? ORDER BY datePublished DESC";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("s", $keywordSql);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($articles, $row);
+    }
+  }
+
+  return $articles;
+}
+
 ?>
