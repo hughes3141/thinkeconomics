@@ -1,3 +1,20 @@
+<?php 
+
+// Initialize the session
+session_start();
+
+
+$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
+
+
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
+
+
+
+//include($path."/header_tailwind.php"); ?>
+
 <html>
 
 <head>
@@ -102,6 +119,17 @@ https://www.pinsentmasons.com/out-law/guides/competition-law---the-basics" targe
 <div id="newsListDiv">
 <ul id ="newsList">
 
+  <?php
+    $articles = $articles = getNewsArticlesByKeyword("competition policy resource");
+
+    foreach($articles as $article) {
+      ?>
+        <li><a target="_blank" href="<?=$article['link']?>"><?=$article['headline']?> (<?=date("d-M-Y", strtotime($article['datePublished']));?>)</a></li>
+      <?php
+    }
+
+  ?>
+
 </ul>
 </div>
 
@@ -146,6 +174,8 @@ var index = [
 
 var newsList = document.getElementById("newsList");
 
+
+
 for (var i=0; i<index.length; i++) {
 
 	var listItem = document.createElement("li");
@@ -162,11 +192,12 @@ for (var i=0; i<index.length; i++) {
 	listItem.appendChild(link);
 	listItem.appendChild(span2);
 	
-	newsList.appendChild(listItem);
+	//newsList.appendChild(listItem);
 
 	
 
 }
+
 
 function toggle() {
 
