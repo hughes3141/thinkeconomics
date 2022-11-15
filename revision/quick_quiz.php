@@ -54,7 +54,7 @@ include ($path."/header_tailwind.php");
                   $bindArray = $topics;
                 }
               //$sql .=  "  userCreate = ? AND type LIKE '%flashCard%'";
-              $sql .=  "  subjectId = '0' OR subjectId = '1' AND type LIKE '%flashCard%'";
+              $sql .=  "  (subjectId = '0' OR subjectId = '1') AND type LIKE '%flashCard%'";
 
               //echo $sql;
               #just using "AND model_answer <> ''" so we return cards with answers
@@ -95,7 +95,7 @@ include ($path."/header_tailwind.php");
 
               for($x=0; $x<$number; $x++) {
                 $max = count($questions) -1;
-                if($max>0) {
+                if($max>=0) {
                   $random = rand(0,$max);
                   array_push($randomQuestions, $questions[$random]);
                   array_splice($questions,$random,1);
@@ -142,7 +142,7 @@ include ($path."/header_tailwind.php");
 
 <?php
   foreach ($questions as $question) {
-    //echo $question['question']."<br>";
+    echo $question['topic']."<br>";
   }
 ?>
 
