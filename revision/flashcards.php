@@ -292,7 +292,7 @@ Notes on command GET variables:
                   $sql .= ") AND";
                   $bindArray = $topics;
                 }
-              $sql .=  "  userCreate = ? AND type = 'flashCard'";
+              $sql .=  "  userCreate = ? AND type LIKE '%flashCard%'";
 
               //echo $sql;
               #just using "AND model_answer <> ''" so we return cards with answers

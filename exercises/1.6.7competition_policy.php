@@ -19,6 +19,12 @@ include($path."/php_functions.php");
 
 <head>
 <?php include "../header.php"; ?>
+
+
+<!--
+  This page will automatically update with new articles with new additions to the news database with the keyword "competition policy resource"
+
+-->
 <style>
 
 .clickthrough1 {
@@ -124,7 +130,7 @@ https://www.pinsentmasons.com/out-law/guides/competition-law---the-basics" targe
 
     foreach($articles as $article) {
       ?>
-        <li><a target="_blank" href="<?=$article['link']?>"><?=$article['headline']?> (<?=date("d-M-Y", strtotime($article['datePublished']));?>)</a></li>
+        <li><a target="_blank" href="<?=$article['link']?>"><?=$article['headline']?></a> (<?=date("d-M-Y", strtotime($article['datePublished']));?>)</li>
       <?php
     }
 
