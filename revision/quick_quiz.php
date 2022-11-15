@@ -162,7 +162,7 @@ include ($path."/header_tailwind.php");
         var questions = document.getElementsByClassName("question");
         for (var i=0; i<questions.length; i++) {
           if (i == num) {
-            //questions[i].classList.remove("hidden");
+            questions[i].classList.remove("bg-pink-400");
             questions[i].classList.add("bg-sky-300");
           }
 
