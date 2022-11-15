@@ -8,7 +8,7 @@ $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
 if (!isset($_SESSION['userid'])) {
   
-  header("location: /login.php");
+  //header("location: /login.php");
   
 }
 
