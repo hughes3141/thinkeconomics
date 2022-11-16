@@ -94,12 +94,12 @@ function getQuestionData($questionId) {
 
 
 //print_r($_SESSION);
-//print_r($_POST);
+print_r($_POST);
 //print_r($_GET);
 
-$stmt = $conn->prepare("INSERT INTO saq_question_bank_3 (topic, question, points, type, img, model_answer, userCreate) VALUES (?, ?, ?, ?, ?, ?, ?)");
+$stmt = $conn->prepare("INSERT INTO saq_question_bank_3 (topic, question, points, type, img, model_answer, userCreate, subjectId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
-$stmt->bind_param("ssisssi", $topic, $question, $points, $type, $image, $model_answer, $userCreate);
+$stmt->bind_param("ssisssis", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId);
 
 if (isset($_POST['submit'])) {
   
@@ -112,6 +112,7 @@ if (isset($_POST['submit'])) {
     $image = $_POST['image_'.$x];
     $model_answer = $_POST['model_answer_'.$x];
     $userCreate = $_SESSION['userid'];
+    $subjectId = $_POST['subjectId'];
   
     $stmt->execute();
     
@@ -167,36 +168,7 @@ if(isset($_POST['updateValue'])) {
       <th>Model Answer/Mark Scheme</th>
     
     </tr>
-    
-    <!--
-    <tr>
-      <td>
-        <label for="topic">Topic:</label>
-        <select id ="topic" name="topic"></select>
-      </td>
-      <td>
-      
-        <label for="question">Question:</label>
-        <textarea type="text" id ="question" name="question"></textarea>
-      </td>
-      <td>
-        <label for="image">img src:</label>
-        <input type="text" id ="image" name="image"></input>
-      </td>
-      <td>
-        <label for="points">Points:</label>
-        <input type="number" id ="points" name="points"></input>
-      </td>
-      <td>
-        <label for="type">Type:</label>
-        <input type="text" id ="type" name="type"></input>
-      </td>
-      <td>
-        <label for="model_answer">Model Answer/Mark Scheme:</label>
-        <textarea type="text" id ="model_answer" name="model_answer"></textarea>
-      </td>
-    </tr>
-    -->
+
     </table>
 
     <p>

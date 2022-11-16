@@ -54,7 +54,7 @@ include ($path."/header_tailwind.php");
                   $bindArray = $topics;
                 }
               //$sql .=  "  userCreate = ? AND type LIKE '%flashCard%'";
-              $sql .=  "  (subjectId = '0' OR subjectId = '1') AND type LIKE '%flashCard%'";
+              $sql .=  "  ( subjectId = '1') AND type LIKE '%flashCard%'";
 
               //echo $sql;
               #just using "AND model_answer <> ''" so we return cards with answers
@@ -142,7 +142,7 @@ include ($path."/header_tailwind.php");
 
 <?php
   foreach ($questions as $question) {
-    echo $question['topic']."<br>";
+    //echo $question['topic']."<br>";
   }
 ?>
 
