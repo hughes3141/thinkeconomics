@@ -33,6 +33,12 @@ include ($path."/header_tailwind.php");
                 $questionNosBool = 1;
               }
 
+              $topicShowBool = 0;
+              if(isset($_GET['topicShow'])) {
+                $topicShowBool = 1;
+              }
+              
+
 
 
               //Array of questions set by the teacher, filtered by topic:
@@ -123,6 +129,8 @@ GET Variables:
   topics
   number:number of questions =10
   questionNos if set then question numbers displayed
+  topicShow if set then topics are displayed
+  columnNos: number of columns in grid form =2
 
 -->
 
@@ -131,23 +139,22 @@ GET Variables:
 
   <h1 class="font-mono text-2xl bg-pink-400 pl-1 ">Quick Revision Quiz</h1>
   <div class="container mx-auto px-0 mt-2 bg-white text-black ">
-    <div class="grid md:grid-cols-2 gap-4">    
+    <div id="gridContainer" class="grid md:grid-cols-2 gap-4">    
       <?php 
       $questionNumber = 1;
       foreach($randomQuestions as $key=>$question) {
         ?>
         
         <div class="content-center">
-          <div class=" question text-center m-3 py-2 px-4  text-black border-4 border-pink-400  rounded-lg shadow-md hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers(<?=$key;?>)">
-
-          <!-- bg-pink-400 text-white font-semibold-->
-
-            <?php
+          <div class=" question text-center m-3 py-2 px-4 whitespace-pre-line text-black border-4 border-pink-400  rounded-lg shadow-md hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers(<?=$key;?>)"> <!-- bg-pink-400 text-white font-semibold--> <?php
               if($questionNosBool == 1) {
                 echo $questionNumber.": ";
-              }
-                
+              } 
               echo $question['question'];
+              if($topicShowBool == 1) {
+                echo " 
+                <i>(".$question['topic'].")</i>";
+              }
               ?>
 
         </div>
@@ -166,6 +173,14 @@ GET Variables:
 
 
     </div>
+    <p>Number of Columns: <?php
+      for($x=1; $x<5; $x++) {
+        echo '<button onclick=changeColumns('.$x.')>'.$x.'</button> ';
+      }
+    
+    ?> Gap: <button onclick=changeGap("-")>-</button> <button onclick=changeGap("+")>+</button>
+    </p>
+    
   </div>
 </div>
 
@@ -198,6 +213,42 @@ GET Variables:
         }
 
       }
+
+    function changeColumns(num) {
+        var contain = document.getElementById("gridContainer");
+        let text = "minmax(0, 1fr) ";
+        let text2 = text.repeat(num);
+        contain.style.gridTemplateColumns = text2;
+      }
+
+    var columnGap = 1;
+    var margin = 0.75;
+
+    function changeGap(input) {
+      var contain = document.getElementById("gridContainer");
+      var questions = document.getElementsByClassName("question");
+      var answers = document.getElementsByClassName("answer");
+      let change = 0.25
+      if(input == "+") {
+        columnGap += change;
+        margin += change;
+      }
+      if(input == "-") {
+        if(columnGap > 0) {
+          columnGap -= change;
+        }
+        if(margin > 0) {
+          margin -= change;
+        }
+      }
+      contain.style.columnGap = columnGap+"rem";
+      contain.style.rowGap = columnGap+"rem";
+      for(var i=0; i<questions.length; i++) {
+        questions[i].style.margin = margin+"rem";
+        answers[i].style.margin = margin+"rem";
+      }
+
+    }
 </script>
 
 <?php include ($path."/footer_tailwind.php");
