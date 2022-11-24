@@ -130,16 +130,16 @@ GET Variables:
   number:number of questions =10
   questionNos if set then question numbers displayed
   topicShow if set then topics are displayed
-  columnNos: number of columns in grid form =2
+
 
 -->
 
 
-<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+<div id="wholeContainer" class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
 
   <h1 class="font-mono text-2xl bg-pink-400 pl-1 ">Quick Revision Quiz</h1>
-  <div class="container mx-auto px-0 mt-2 bg-white text-black ">
-    <div id="gridContainer" class="grid md:grid-cols-2 gap-4">    
+  <div id="gridContainer" class="container mx-auto px-0 mt-2 bg-white text-black ">
+    <div  class="grid md:grid-cols-2 gap-4">    
       <?php 
       $questionNumber = 1;
       foreach($randomQuestions as $key=>$question) {
@@ -150,7 +150,7 @@ GET Variables:
               if($questionNosBool == 1) {
                 echo $questionNumber.": ";
               } 
-              echo $question['question'];
+              echo htmlspecialchars(trim($question['question']));
               if($topicShowBool == 1) {
                 echo " 
                 <i>(".$question['topic'].")</i>";
@@ -158,7 +158,7 @@ GET Variables:
               ?>
 
         </div>
-          <div class="answer hidden    m-3 py-2 px-4 border-4 border-sky-300 rounded-lg whitespace-pre-line"><?//=$question['topic'];?><?=$question['model_answer'];?>
+          <div class="answer hidden    m-3 py-2 px-4 border-4 border-sky-300 rounded-lg whitespace-pre-line"><?//=$question['topic'];?><?=htmlspecialchars(trim($question['model_answer']));?>
 
           </div>
           
@@ -173,15 +173,24 @@ GET Variables:
 
 
     </div>
-    <p>Number of Columns: <?php
-      for($x=1; $x<5; $x++) {
-        echo '<button onclick=changeColumns('.$x.')>'.$x.'</button> ';
-      }
     
-    ?> Gap: <button onclick=changeGap("-")>-</button> <button onclick=changeGap("+")>+</button>
-    </p>
     
   </div>
+</div>
+
+<div class="container mx-auto px-4 lg:w-3/4">
+  <p>Number of Columns: <?php
+        for($x=1; $x<5; $x++) {
+          ?>
+          <button class=" hover:bg-pink-400 text-white py- px-2 rounded" onclick=changeColumns('<?=$x?>')><?=$x?></button>
+          <?php
+        }
+      
+      ?> Gap: <button class=" hover:bg-pink-400 text-white py- px-2 rounded" onclick=changeGap("-")>-</button> 
+              <button class=" hover:bg-pink-400 text-white py- px-2 rounded" onclick=changeGap("+")>+</button>
+      Width: <button class=" hover:bg-pink-400 text-white py- px-2 rounded" onclick=changeWidth("-")>-</button>
+              <button class=" hover:bg-pink-400 text-white py- px-2 rounded" onclick=changeWidth("+")>+</button>
+      </p>
 </div>
 
 <?php
@@ -249,6 +258,28 @@ GET Variables:
       }
 
     }
+
+    function changeWidth(input) {
+      var widths = [640, 768, 1024, 1280, 1536];
+      var container = document.getElementById("wholeContainer");
+      var gridContainer = document.getElementById("gridContainer");
+
+      container.style.maxWidth = "100%";
+      gridContainer.style.maxWidth = "100%";
+      if (input == "+") {
+        container.style.width = container.offsetWidth +100+"px";
+        gridContainer.style.width = container.offsetWidth +100+"px";
+
+      }
+
+      if (input == "-") {
+        container.style.width = container.offsetWidth -100+"px";
+      }
+
+      //console.log(container.offsetWidth);
+    }
+
+    //changeWidth("input");
 </script>
 
 <?php include ($path."/footer_tailwind.php");
