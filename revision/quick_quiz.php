@@ -139,7 +139,7 @@ GET Variables:
 
   <h1 class="font-mono text-2xl bg-pink-400 pl-1 ">Quick Revision Quiz</h1>
   <div id="gridContainer" class="container mx-auto px-0 mt-2 bg-white text-black ">
-    <div  class="grid md:grid-cols-2 gap-4">    
+    <div id="gridContainer2" class="grid md:grid-cols-2 gap-4">    
       <?php 
       $questionNumber = 1;
       foreach($randomQuestions as $key=>$question) {
@@ -224,7 +224,7 @@ GET Variables:
       }
 
     function changeColumns(num) {
-        var contain = document.getElementById("gridContainer");
+        var contain = document.getElementById("gridContainer2");
         let text = "minmax(0, 1fr) ";
         let text2 = text.repeat(num);
         contain.style.gridTemplateColumns = text2;
@@ -234,7 +234,7 @@ GET Variables:
     var margin = 0.75;
 
     function changeGap(input) {
-      var contain = document.getElementById("gridContainer");
+      var contain = document.getElementById("gridContainer2");
       var questions = document.getElementsByClassName("question");
       var answers = document.getElementsByClassName("answer");
       let change = 0.25
