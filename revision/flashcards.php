@@ -468,6 +468,16 @@ Notes on command GET variables:
                 <div id ="answerDiv" class="hidden">
                   <h2 class ="text-lg">Answer:</h2>
                   <p class="mb-3" style="white-space: pre-line;"><?=htmlspecialchars($questions[$randomQuestion]['model_answer']);?></p>
+
+                  <?php
+
+                  if($questions[$randomQuestion]['answer_img'] != "") {
+                    ?><img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($questions[$randomQuestion]['answer_img'])?>" alt = "<?=htmlspecialchars($questions[$randomQuestion]['answer_img_alt'])?>">
+                    <?php
+                  }
+                  ?>
+
+
                   <div id ="buttonsDiv2" class="flex justify-center">
                     <button id = "1Button" value ="1" name="rightWrong" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Wrong Answer</button>
                     <button id = "2Button" value ="2" name="rightWrong" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Correct Answer</button>

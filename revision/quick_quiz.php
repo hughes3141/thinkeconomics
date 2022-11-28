@@ -158,9 +158,17 @@ GET Variables:
               ?>
 
         </div>
-          <div class="answer hidden    m-3 py-2 px-4 border-4 border-sky-300 rounded-lg whitespace-pre-line"><?//=$question['topic'];?><?=htmlspecialchars(trim($question['model_answer']));?>
+          <div class="answer hidden    m-3 py-2 px-4 border-4 border-sky-300 rounded-lg "><?//=$question['topic'];?>
+            <div class="whitespace-pre-line"><?=htmlspecialchars(trim($question['model_answer']));?></div>
+            <?php
 
-          </div>
+          if($question['answer_img'] != "") {
+            ?><img class = "object-center " src= "<?=htmlspecialchars($question['answer_img'])?>" alt = "<?=htmlspecialchars($question['answer_img_alt'])?>">
+            <?php
+          }
+          
+          
+          ?></div>
           
         </div>
 

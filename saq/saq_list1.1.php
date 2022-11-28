@@ -97,9 +97,9 @@ function getQuestionData($questionId) {
 print_r($_POST);
 //print_r($_GET);
 
-$stmt = $conn->prepare("INSERT INTO saq_question_bank_3 (topic, question, points, type, img, model_answer, userCreate, subjectId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+$stmt = $conn->prepare("INSERT INTO saq_question_bank_3 (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-$stmt->bind_param("ssisssis", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId);
+$stmt->bind_param("ssisssisss", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt);
 
 if (isset($_POST['submit'])) {
   
@@ -113,6 +113,8 @@ if (isset($_POST['submit'])) {
     $model_answer = $_POST['model_answer_'.$x];
     $userCreate = $_SESSION['userid'];
     $subjectId = $_POST['subjectId'];
+    $answer_img = $_POST['image_ans_'.$x];
+    $answer_img_alt = $_POST['image_ans_alt_'.$x];
   
     $stmt->execute();
     
@@ -123,12 +125,12 @@ if (isset($_POST['submit'])) {
 }
 
 if(isset($_POST['updateValue'])) {
-  $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ? WHERE id = ?";
+  $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ? WHERE id = ?";
   
   $stmt = $conn->prepare($sql);
   //print_r($_POST);
   
-  $stmt->bind_param("ssssssi", $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['id']);
+  $stmt->bind_param("ssssssssi", $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $_POST['id']);
 
   $questionData = getQuestionData($_POST['id']);
   $questionDataUser = $questionData['userCreate'];
@@ -161,7 +163,7 @@ if(isset($_POST['updateValue'])) {
     <table id="question_input_table">
     <tr>
       <th>Topic</th>
-      <th>Question</th>
+
       <th>img src</th>
       <th>Points</th>
       <th>Type</th>
@@ -322,6 +324,8 @@ if(isset($_POST['updateValue'])) {
           <div class="show_<?=$row['id'];?>" style="white-space: pre-line;"><?=htmlspecialchars($row['model_answer']);?>
           </div>
             <textarea class="hide hide_<?=$row['id'];?>" name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
+            <input type ="text" class="hide hide_<?=$row['id'];?>" name ="answer_img" value = "<?=htmlspecialchars($row['answer_img'])?>"></input>  
+            <input type ="text" class="hide hide_<?=$row['id'];?>" name ="answer_img_alt" value = "<?=htmlspecialchars($row['answer_img_alt'])?>"></input>
         </td>
 
         <td>
@@ -505,17 +509,17 @@ function addRow() {
   var cell2 = row.insertCell(2);
   var cell3 = row.insertCell(3);
   var cell4 = row.insertCell(4);
-  var cell5 = row.insertCell(5);
+  //var cell5 = row.insertCell(5);
   
   var inst = tableLength -1;
 
   cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><select id ="topic_'+inst+'" name="topic_'+inst+'" class="topicSelector"></select>';
   
-  cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" required></textarea>';
-  cell2.innerHTML = '<label for="image_'+inst+'">img src:</label><input type="text" id ="image_'+inst+'" name="image_'+inst+'"></input>';
-  cell3.innerHTML = '<label for="points_'+inst+'">Points:</label><input type="number" id ="points_'+inst+'" name="points_'+inst+'"></input>';
-  cell4.innerHTML = '<label for="type_'+inst+'">Source:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input>';
-  cell5.innerHTML = '<label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><textarea type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea>';
+  cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" required></textarea><br><label for="image_'+inst+'">Question img src:</label><br><input type="text" id ="image_'+inst+'" name="image_'+inst+'"></input>';
+  //cell2.innerHTML = '';
+  cell2.innerHTML = '<label for="points_'+inst+'">Points:</label><input type="number" id ="points_'+inst+'" name="points_'+inst+'"></input>';
+  cell3.innerHTML = '<label for="type_'+inst+'">Source:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input>';
+  cell4.innerHTML = '<label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><label for="image_ans_'+inst+'">Answer img src:</label><br><input type="text" id ="image_ans_'+inst+'" name="image_ans_'+inst+'"></input><br><label for="image_ans_alt'+inst+'">Answer img_alt:</label><br><input type="text" id ="image_ans_alt'+inst+'" name="image_ans_alt_'+inst+'"></input>';
   
   topicListAmend(inst);
   sourceAmend(inst)
