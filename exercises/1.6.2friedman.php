@@ -79,7 +79,7 @@ background-color: #ffffb3;
 <iframe width="560" height="315" src="https://www.youtube.com/embed/ev_Uph_TLLo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 <br>
 <a href ="files/1.6.2 Friedman CSR Article.pdf" target="_blank">Link to Milton Friedman's 1970 NYT Article</a>
-<h2>Articles that offer Counter-Examples:</h2>
+<h2>Other interesting news articles:</h2>
 
 <ul id ="newsList">
 
