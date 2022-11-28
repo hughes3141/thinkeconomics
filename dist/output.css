@@ -1211,6 +1211,11 @@ input[type="range"]::-ms-fill-lower {
   fill: currentColor;
 }
 
+.object-center {
+  -o-object-position: center;
+     object-position: center;
+}
+
 .p-6 {
   padding: 1.5rem;
 }

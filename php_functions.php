@@ -476,4 +476,26 @@ function getNewsArticlesByKeyword($keyword) {
   return $articles;
 }
 
+function getNewsArticlesByTopic($topic) {
+
+  global $conn;
+
+  $articles = array();
+
+  $topicSql = "%".$topic."%";
+
+  $sql = "SELECT * FROM news_data WHERE topic LIKE ? ORDER BY datePublished DESC";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("s", $topicSql);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($articles, $row);
+    }
+  }
+
+  return $articles;
+}
+
 ?>
