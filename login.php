@@ -67,7 +67,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     // Validate credentials
     if(empty($username_err) && empty($password_err)){
         // Prepare a select statement
-        $sql = "SELECT id, name, password, usertype, groupid FROM users WHERE name = ?";
+        $sql = "SELECT id, name, password_hash, usertype, groupid FROM users WHERE name = ?";
         
         if($stmt = $conn->prepare($sql)){
             // Bind variables to the prepared statement as parameters
@@ -86,9 +86,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     // Bind result variables
                     $stmt->bind_result($id, $username, $hashed_password, $usertype, $groupid);
                     if($stmt->fetch()){
-                        if(($password2 === $hashed_password)){
+
+                        //if(($password2 === $hashed_password)){
                         //!!Replace previous line with following line once hashed passwords are incorporated into database.
-                        //if(password_verify($password2, $hashed_password)){
+                        if(password_verify($password2, $hashed_password)){
                             // Password is correct, so start a new session
                             //session_start();
                             
