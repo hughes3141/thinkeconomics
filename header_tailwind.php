@@ -13,15 +13,15 @@
     
     <!--
       Use below once tailwind is built:
-     --> 
+
     <link rel="stylesheet" href="/dist/output.css"/>
-  
+      -->  
     <!--
       Use below for development
     
-  
+      -->  
     <script src="https://cdn.tailwindcss.com"></script>
-     --> 
+
    
 
     <!--Replace with your tailwind.css once created-->
@@ -111,7 +111,8 @@
             if(!isset($_SESSION['userid'])||($_SESSION['userid']=="")) {
               echo " onclick=\"location.href = '/login.php'\">Sign In";
             } else {
-              echo ">".$_SESSION['name'];
+              $userInfo = getUserInfo($_SESSION['userid']);
+              echo ">".trim($userInfo['name_first']." ".$userInfo['name_last']);
               ?> 
               <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
               <?php

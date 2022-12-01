@@ -67,11 +67,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     // Validate credentials
     if(empty($username_err) && empty($password_err)){
         // Prepare a select statement
-        $sql = "SELECT id, name, password_hash, usertype, groupid FROM users WHERE name = ?";
+        $sql = "SELECT id, name, password_hash, usertype, groupid FROM users WHERE name = ? OR username = ? OR email = ?";
         
         if($stmt = $conn->prepare($sql)){
             // Bind variables to the prepared statement as parameters
-            $stmt->bind_param("s", $param_username);
+            $stmt->bind_param("sss", $param_username, $param_username, $param_username);
             
             // Set parameters
             $param_username = $username;
@@ -148,7 +148,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="form-group">
-                <label class ="text-gray-600 pb-1 ml-2 mb-2 pt-1">Name</label>
+                <label class ="text-gray-600 pb-1 ml-2 mb-2 pt-1">username/email:</label>
                 <input type="text" name="username" class="border px-3 py-2  text-sm w-full" placeholder =Name value="<?php echo ($username!=="")? $username : ""; ?>">
                 <span class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $username_err; ?></span>
             </div>    

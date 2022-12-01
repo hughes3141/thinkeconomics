@@ -237,7 +237,7 @@ Returns an array of all information about a user.
 
 function getUserInfo($userId) {
   global $conn;
-  $sql = "SELECT * FROM users WHERE id = ? ";
+  $sql = "SELECT id, name, name_first, name_last, username, usertype, permissions, email, schoolid, groupid, groupid_array, active FROM users WHERE id = ? ";
   $stmt=$conn->prepare($sql);
   $stmt->bind_param("i", $userId);
   $stmt->execute();
