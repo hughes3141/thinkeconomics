@@ -61,7 +61,7 @@
                 stroke="#7dd3fc" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.5 15l2.658-4.5 3.158 3.5L16.5 9" style="animation:check 2s infinite cubic-bezier(.99,-.1,.01,1.02)" stroke-dashoffset="100" stroke-dasharray="100"
                 />
             </svg>
-            thinkeconomics.co.uk
+            thinkeconomics.co.uk &#127876;
           </a>
         </div>
         <div class="block lg:hidden pr-4">
@@ -92,6 +92,11 @@
             <li class="mr-3">
               <a class="block text-black no-underline hover:bg-sky-100 lg:hover:bg-inherit py-2 px-4" href="/mcq.php">
                 MCQs
+              </a>
+            </li>
+            <li class="mr-3">
+              <a class="block text-black no-underline hover:bg-sky-100 lg:hover:bg-inherit py-2 px-4" href="/revision.php">
+                Revision
               </a>
             </li>
             <li class="mr-3">
