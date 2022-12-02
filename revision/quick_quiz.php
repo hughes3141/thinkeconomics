@@ -146,7 +146,9 @@ GET Variables:
         ?>
         
         <div class="content-center">
-          <div class=" question text-center m-3 py-2 px-4 whitespace-pre-line text-black border-4 border-pink-400  rounded-lg shadow-md hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers(<?=$key;?>)"> <!-- bg-pink-400 text-white font-semibold--> <?php
+          <div class=" question text-center m-3 py-2 px-4  text-black border-4 border-pink-400  rounded-lg shadow-md hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers(<?=$key;?>)">
+          <!-- bg-pink-400 text-white font-semibold--> 
+          <div class = "whitespace-pre-line"><?php
               if($questionNosBool == 1) {
                 echo $questionNumber.": ";
               } 
@@ -155,7 +157,17 @@ GET Variables:
                 echo " 
                 <i>(".$question['topic'].")</i>";
               }
+            ?></div>
+
+            <?php
+            
+            if($question['img'] != "") {
               ?>
+                  <img class = "mx-auto object-center " src= "<?=htmlspecialchars($question['img'])?>" alt = "">
+            <?php
+          }
+
+          ?>
 
         </div>
           <div class="answer hidden    m-3 py-2 px-4 border-4 border-sky-300 rounded-lg "><?//=$question['topic'];?>
