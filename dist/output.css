@@ -978,6 +978,10 @@ input[type="range"]::-ms-fill-lower {
   width: 11rem;
 }
 
+.w-3\/4 {
+  width: 75%;
+}
+
 .max-w-5xl {
   max-width: 64rem;
 }
@@ -1744,6 +1748,11 @@ input[type="range"]::-ms-fill-lower {
   .md\:text-sm {
     font-size: 0.875rem;
     line-height: 1.25rem;
+  }
+
+  .md\:text-2xl {
+    font-size: 1.5rem;
+    line-height: 2rem;
   }
 }
 

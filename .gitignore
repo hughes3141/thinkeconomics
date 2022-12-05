@@ -1,4 +1,5 @@
 admin/files
+dist/output.css
 *.pdf
 *.jpg
 *.wav
