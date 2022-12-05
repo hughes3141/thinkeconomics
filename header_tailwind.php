@@ -13,15 +13,15 @@
     
     <!--
       Use below once tailwind is built:
-     --> 
+     -->   
     <link rel="stylesheet" href="/dist/output.css"/>
-  
+
     <!--
       Use below for development
     
-  
+
     <script src="https://cdn.tailwindcss.com"></script>
-     --> 
+     -->   
    
 
     <!--Replace with your tailwind.css once created-->
@@ -49,7 +49,7 @@
     <nav id="header" class="fixed w-full z-30 top-0 text-white">
       <div class="w-full container mx-auto flex flex-wrap items-center justify-between mt-0 py-2">
         <div class="pl-4 flex items-center">
-          <a class="toggleColour text-white no-underline hover:no-underline font-bold text-2xl lg:text-4xl font-mono" href="/">
+          <a class="toggleColour text-white no-underline hover:no-underline font-bold  text-lg min-[365px]:text-xl md:text-2xl lg:text-4xl font-mono" href="/">
             <!--Icon from: http://www.potlabicons.com/ -->
             <svg class="h-8 fill-current inline" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>@keyframes check {
               to {

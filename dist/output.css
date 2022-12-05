@@ -1745,6 +1745,11 @@ input[type="range"]::-ms-fill-lower {
     font-size: 0.875rem;
     line-height: 1.25rem;
   }
+
+  .md\:text-2xl {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
 }
 
 @media (min-width: 1024px) {

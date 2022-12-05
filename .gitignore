@@ -3,3 +3,4 @@ admin/files
 *.jpg
 *.wav
 node_modules
+assets
