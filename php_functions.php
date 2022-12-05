@@ -63,6 +63,7 @@ function getGroupsList($userId, $activeReturn = true) {
   if($activeReturn == false) {
     $sql = "SELECT * FROM groups WHERE teachers LIKE ?";
   }
+  
   $stmt=$conn->prepare($sql);
   $stmt->bind_param("s", $userIdSql);
   $stmt->execute();
@@ -168,12 +169,18 @@ Will produce an array of all users in a given groupId.
   
 */
 
-function getGroupUsers($groupId) {
+function getGroupUsers($groupId, $activeReturn = true) {
   global $conn;
 
   $groupIdSql = '%\"'.$groupId.'\"%';
 
-  $sql = "SELECT * FROM users WHERE groupid_array LIKE ?";
+  $sql = "SELECT id, name, name_first, name_last, username, usertype, permissions, email, schoolid, groupid, groupid_array, active FROM users WHERE groupid_array LIKE ?";
+
+  if($activeReturn == true) {
+    $sql .= " AND active = 1";
+
+  }
+  $sql .= " ORDER BY name_last";
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("s", $groupIdSql);
   $stmt->execute();
@@ -237,7 +244,7 @@ Returns an array of all information about a user.
 
 function getUserInfo($userId) {
   global $conn;
-  $sql = "SELECT * FROM users WHERE id = ? ";
+  $sql = "SELECT id, name, name_first, name_last, username, usertype, permissions, email, schoolid, groupid, groupid_array, active FROM users WHERE id = ? ";
   $stmt=$conn->prepare($sql);
   $stmt->bind_param("i", $userId);
   $stmt->execute();
@@ -324,10 +331,11 @@ function getUpcomingAssignments($groupId) {
 }
 
 
-function getAssignmentsArray($groupIdArray) {
+function getAssignmentsArray($groupIdArray, $startDate = null) {
 
   /*
   This function generates an array of assigned work. Input is an array (in JSON form) of the groups that a studnet is listed in.
+  $startDate is the first date when results are to be output by. format is e.g. 20221203
   */
 
   global $conn;
@@ -351,6 +359,10 @@ function getAssignmentsArray($groupIdArray) {
   }
   
   $sql .= ")";
+
+  if($startDate) {
+    $sql .= " AND dateDue > ".$startDate;
+  }
 
 
   //echo $sql."<br>".$paramType;
@@ -496,6 +508,126 @@ function getNewsArticlesByTopic($topic) {
   }
 
   return $articles;
+}
+
+
+function flashCardSummary($userid = null, $control = null, $where = null) {
+
+  /*
+  This does a lot with the responses from the flashcardResponses table. It can
+  -Show all results from table
+    -Filtered by userid
+    -Filtered by date
+    -Counts
+    -Averages
+
+  $control:
+    -"count": returns count of questions done;
+    -"count_category": returns counts of question by whether student got right or not
+    -"average": returns average time taken to answer
+    -"count_by_date": returns counts of question by date
+    -"count_quetions": returns counts of quesitons completed
+  $where:
+    -A date value: limits results to that date.
+  */
+
+  global $conn;
+  $list = array();
+  
+  $sql = "SELECT * ";
+
+  if($control == "count") {
+    $sql = "SELECT COUNT(*) count ";
+  }
+
+  if($control =="count_category") {
+    $sql = "SELECT gotRight, COUNT(*) count ";
+  }
+  if(($control =="average")||($control=="average_category")) {
+    $sql = "SELECT gotRight, AVG(timeDuration) avg";
+  }
+  if($control == "count_by_date") {
+    $sql = "SELECT date(timeSubmit) date, COUNT(*) count";
+  }
+
+
+
+
+    $sql .= " FROM flashcard_responses";
+
+  if($control == "count_questions") {
+    $sql = "SELECT r.questionId questionId, COUNT(*) count, q.question, q.topic
+    FROM flashcard_responses r
+    LEFT JOIN (SELECT id, question, topic FROM saq_question_bank_3) q
+      ON r.questionId = q.id";
+  }
+
+  if ($userid) {
+    $sql .= " WHERE userId = ?";
+
+    if(strtotime($where)>0) {
+      $sql .= " AND date(timeSubmit) = ? ";
+    }
+  }
+  elseif (strtotime($where)>0) {
+    $sql .= " WHERE date(timeSubmit) = ? ";
+  }
+
+  if(($control == "count_category")||($control == "average_category")) {
+    $sql .= " GROUP BY gotRight";
+  }
+
+  if($control == "count_by_date") {
+    $sql .= " GROUP BY date(timeSubmit) ";
+  }
+  
+  if($control == "count_questions") {
+    $sql .= " GROUP BY r.questionId";
+  }
+
+  //echo $sql;
+  
+  /*
+
+  Sandbox:
+  
+  $sql = "SELECT r.questionId, COUNT(*), q.question, q.topic
+          FROM flashcard_responses r
+          LEFT JOIN (SELECT id, question, topic FROM saq_question_bank_3) q
+            ON r.questionId = q.id
+          GROUP BY r.questionId;
+
+          
+         
+          ";
+         */ 
+          
+
+
+  $stmt=$conn->prepare($sql);
+
+  if (($userid)&& !(strtotime($where)>0)) {
+    $stmt->bind_param("i", $userid);
+  }
+
+  if(!$userid && strtotime($where)>0) {
+    $stmt->bind_param("s", $where);
+  }
+
+  if($userid && strtotime($where)>0) {
+    $stmt->bind_param("is", $userid, $where);
+  }
+  
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($list, $row);
+    }
+  }
+
+  return $list;
 }
 
 ?>
