@@ -29,16 +29,8 @@
     <!-- Define your gradient here - use online tools to find a gradient matching your branding-->
     <style>
       .gradient {
-        
         background: linear-gradient(90deg, #7dd3fc 0%, #f9a8d4 100%);
         //This colour is bg-sky-300 and bg-pink-300
-        
-        /*
-        background: linear-gradient(90deg, #0F8A5F 0%, #CC231E 100%);
-        
-        
-        background: linear-gradient(90deg, #00CF34 45%, #F40C17 55%);
-        */
       }
 
       .group:hover .group-hover\:block {
@@ -69,7 +61,7 @@
                 stroke="#7dd3fc" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.5 15l2.658-4.5 3.158 3.5L16.5 9" style="animation:check 2s infinite cubic-bezier(.99,-.1,.01,1.02)" stroke-dashoffset="100" stroke-dasharray="100"
                 />
             </svg>
-            thinkeconomics.co.uk &#127876;
+            thinkeconomics.co.uk
           </a>
         </div>
         <div class="block lg:hidden pr-4">
