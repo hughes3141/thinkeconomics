@@ -96,10 +96,13 @@ function getQuestionData($questionId) {
 //print_r($_SESSION);
 print_r($_POST);
 //print_r($_GET);
+echo date("Y-m-d H:i:s");
 
-$stmt = $conn->prepare("INSERT INTO saq_question_bank_3 (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+$stmt = $conn->prepare("INSERT INTO saq_question_bank_3 (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, topic_order, time_added) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-$stmt->bind_param("ssisssisss", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt);
+$stmt->bind_param("ssisssisssss", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $topic_order, $timeAdded);
+
+
 
 if (isset($_POST['submit'])) {
   
@@ -115,6 +118,8 @@ if (isset($_POST['submit'])) {
     $subjectId = $_POST['subjectId'];
     $answer_img = $_POST['image_ans_'.$x];
     $answer_img_alt = $_POST['image_ans_alt_'.$x];
+    $topic_order = $_POST['topic_order_'.$x];
+    $timeAdded = date("Y-m-d H:i:s");
   
     $stmt->execute();
     
@@ -125,12 +130,12 @@ if (isset($_POST['submit'])) {
 }
 
 if(isset($_POST['updateValue'])) {
-  $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ? WHERE id = ?";
+  $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?, topic_order = ? WHERE id = ?";
   
   $stmt = $conn->prepare($sql);
   //print_r($_POST);
   
-  $stmt->bind_param("ssssssssi", $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $_POST['id']);
+  $stmt->bind_param("sssssssssi", $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $_POST['topic_order'], $_POST['id']);
 
   $questionData = getQuestionData($_POST['id']);
   $questionDataUser = $questionData['userCreate'];
@@ -237,7 +242,7 @@ if(isset($_POST['updateValue'])) {
     <table>
     <tr>
     <th>ID</th>
-    <th>Topic</th>	
+    <th>Topic<br>Topic Order</th>	
 
     <th>Question</th>
     <th>img src</th>
@@ -255,12 +260,12 @@ if(isset($_POST['updateValue'])) {
   $topicGet = $_GET['topic'];
 
 
-  $stmt = $conn->prepare("SELECT * FROM saq_question_bank_3 WHERE Topic= ?");
+  $stmt = $conn->prepare("SELECT * FROM saq_question_bank_3 WHERE Topic= ? ORDER BY case when topic_order = 0 then 1 else 0 end, topic_order ASC");
 
   $stmt->bind_param("s", $topicGet);
 
   if(isset($_GET['type'])) {
-    $stmt = $conn->prepare("SELECT * FROM saq_question_bank_3 WHERE Topic= ? AND type LIKE ?");
+    $stmt = $conn->prepare("SELECT * FROM saq_question_bank_3 WHERE Topic= ? AND type LIKE ? ORDER BY case when topic_order is null then 1 else 0 end, topic_order ASC");
     $typeSql = "%".$_GET['type']."%";
     $stmt->bind_param("ss", $topicGet, $typeSql);
 
@@ -292,9 +297,12 @@ if(isset($_POST['updateValue'])) {
         </td>
         <td class="col2">
           <div class="show_<?=$row['id'];?>">
-            <?=htmlspecialchars($row['topic']);?>
+            <?=htmlspecialchars($row['topic']);?><br>
+            <?= ($row['topic_order'] != "0" ? htmlspecialchars($row['topic_order']) : "")?>
+            <?//=htmlspecialchars($row['topic_order'])?>
           </div>
             <input type="text" class="hide hide_<?=$row['id'];?>" name ="topic" value ="<?=htmlspecialchars($row['topic'])?>" style="width:100px;"></input>
+            <input type="text" class="hide hide_<?=$row['id'];?>" name ="topic_order" value ="<?=htmlspecialchars($row['topic_order'])?>" style="width:100px;"></input>
         </td>
         <td class="col3">
           <div class="show_<?=$row['id'];?>">
@@ -513,7 +521,7 @@ function addRow() {
   
   var inst = tableLength -1;
 
-  cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><select id ="topic_'+inst+'" name="topic_'+inst+'" class="topicSelector"></select>';
+  cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><select id ="topic_'+inst+'" name="topic_'+inst+'" class="topicSelector"></select><br><label for="topic_order_'+inst+'">Topic Order:</label><input style="width:50px" type="number" step="0.1" name="topic_order_'+inst+'" id="topic_order_'+inst+'"></input>';
   
   cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" required></textarea><br><label for="image_'+inst+'">Question img src:</label><br><input type="text" id ="image_'+inst+'" name="image_'+inst+'"></input>';
   //cell2.innerHTML = '';
