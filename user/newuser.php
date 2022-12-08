@@ -19,15 +19,34 @@ include ($path."/header_tailwind.php");
 
 //$userId = $_SESSION['userid'];
 
-$firstName = $lastName = $username= "";
-$username_err = $password_err = "";
+$firstName = $lastName = $username= $email_name = "";
+$username_err = $username_avail = $password_err = $email_err = $name_err= "";
+$name_validate = $username_validate = $password_vaidate = $email_validate = 0;$fn_validate = $ln_validate = $user_avail_validate = $user_rule_validate = $pass_match_validate = $pass_rule_validate = 0;
 
 //Processing form data when form is submitted
 if($_SERVER['REQUEST_METHOD'] == "POST") {
 
-  $firstName = trim($_POST['firstName']);
-  $lastName = trim($_POST['lastName']);
-  
+  //First Name and Last Name
+  //Check to see that first and last names are entered in
+  if(empty(trim($_POST['firstName']))) {
+    $name_err = "Please enter a name";
+  } else {
+    $firstName = trim($_POST['firstName']);
+    $fn_validate = 1;
+  }
+
+  if(empty(trim($_POST['lastName']))) {
+    $name_err = "Please enter a name";
+  } else {
+    $lastName = trim($_POST['lastName']);
+    $ln_validate = 1;
+  }
+
+  if($fn_validate ==1 AND $ln_validate ==1) {
+    $name_validate = 1;
+  }
+
+  //USERNAME  
   //Check if username is already taken
   if(empty(trim($_POST['username']))) {
     $username_err = "Please enter a username";
@@ -45,38 +64,46 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         $stmt->store_result();
         if ($stmt->num_rows>0) {
           $username_err = "<b>".$username."</b> is registered by another user. Please try another username.";
+        } else {
+          $username_avail = "Success! <b>".$username."</b> is available!";
+          $user_avail_validate = 1;
         }
       }
     }
   }
 
   //Check to see that username fits rules:
+  
   /*
-  $regexp = "/^\S*$/"; // a string consisting only of non-whitespaces
-  if(!preg_match($regexp, $username)) {
-    $username_err = "'<b>$username</b>' is invalid: spaces are not allowed in username.";
-  }
-  */
-
   //$regexp = "^(?=.{8,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$";
+
+  From: https://stackoverflow.com/questions/12018245/regular-expression-to-validate-username
   //$regexp = "/^[a-zA-Z0-9](_(?!(\.|_))|\.(?!(_|\.))|[a-zA-Z0-9]){6,18}[a-zA-Z0-9]$";
   //The above means it's Only contains alphanumeric characters, underscore and dot, Underscore and dot can't be at the end or start of a username (e.g _username / username_ / .username / username.)., Underscore and dot can't be next to each other (e.g user_.name)., Underscore or dot can't be used multiple times in a row (e.g user__name / user..name)., Number of characters must be between 8 to 20.
 
   //Follows these rules: Must start with letter, 6-32 characters, Letters and numbers only
   //$regexp = "/^[A-Za-z][A-Za-z0-9]{5,31}$/";
-
-  
+  */
   $regexp = "/^[a-zA-Z0-9](_(?!(\.|_))|\.(?!(_|\.))|[a-zA-Z0-9]){4,18}[a-zA-Z0-9]$/";
 
   if($username != "") {
     if(!preg_match($regexp, $username)) {
       $username_err = "'<b>$username</b>' is invalid.";
+      $username_avail = "";
+    } else {
+      $user_rule_validate = 1;
     }
   }
 
+  if ($user_avail_validate ==1 and $user_rule_validate ==1) {
+    $username_validate = 1;
+  }
+
+
+  //PASSWORD
   //Check to see if password meets criteria:
-    if(empty(trim($_POST['password1'])) and empty(trim($_POST['password1'])) and $username !="" and $username_err == "") {
-      $password_err = "";
+    if(empty(trim($_POST['password1'])) and empty(trim($_POST['password1']))) {
+      $password_err = "Please enter a password";
     } else {
       $password1 = trim($_POST['password1']);
       $password2 = trim($_POST['password2']);
@@ -85,19 +112,87 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         $password_err = "Passwords to not match";
       }
       else {
+        $pass_match_validate = 1;
+        /*
+        https://stackoverflow.com/questions/19605150/regex-for-password-must-contain-at-least-eight-characters-at-least-one-number-a
 
-      $regexp = "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/";
+        Minimum eight characters, at least one uppercase letter, one lowercase letter and one number:
+        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$"
+      
+        Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character:
+        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+        
+        Modified from previous two:  Minimum eight characters, at least one uppercase letter, one lowercase letter and one number, MAY CONTAIN SPECIAL CHARACTERS
+        "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/"
 
-        if($password1 != "") {
-          if(!preg_match($regexp, $password1)) {
-            $password_err = "This password does not fit the criteria.";
-          }
+        */
+      $regexp = "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/";
+
+
+        if(!preg_match($regexp, $password1)) {
+          $password_err = "This password does not fit the criteria.";
+        } else {
+          $pass_rule_validate = 1;
+        }
+        
+      }
+
+    }
+    if ($pass_match_validate ==1 and $pass_rule_validate==1) {
+      $password_vaidate = 1;
+    }
+
+    //EMAIL
+    //check to ensure valid email format:
+      if(empty(trim($_POST['email']))) {
+        $email_err = "Please enter an email address";
+      } else {
+        $email_name = trim($_POST['email']);
+
+        if (!filter_var($email_name, FILTER_VALIDATE_EMAIL)) {
+          $email_err = "<b>".$email_name."</b> is not a valid email address";
+        } else {
+            //Prepare statement to check email:
+            $sql = "SELECT email FROM users WHERE email = ?";
+            if($stmt = $conn->prepare($sql)) {
+              $stmt->bind_param("s", $param_username);
+              
+              //Set parameters
+              $param_username = $email_name;
+              if($stmt->execute()) {
+                $stmt->store_result();
+                if ($stmt->num_rows>0) {
+                  $email_err = "This email address is already in use. Please try another.";
+                } else {
+                  $email_validate =1;
+                }
+              }
+            }
         }
       }
 
 
-    }
-  
+  //PROCESS VALIDATED INFORMATION
+  if($name_validate ==1 AND $username_validate==1 AND $password_vaidate == 1 AND $email_validate ==1) {
+
+    //Enter new user information into users table
+    $sql = "INSERT INTO users (name_first, name_last, username, password_hash, usertype, permissions, email, active, time_added) VALUES (?,?,?,?,?,?,?,?,?)";
+    
+    $stmt = $conn->prepare($sql);
+    
+    $password_hash = password_hash($password1, PASSWORD_DEFAULT);
+    $usertype =$permissions = "student";
+    $active = 1;
+    $datetime = date("Y-m-d H:i:s");
+
+    $stmt->bind_param("sssssssis", $firstName, $lastName, $username, $password_hash, $usertype, $permissions, $email_name, $active, $datetime);
+    $stmt->execute();
+
+
+    //Send to a new page
+    echo "<script>window.location = '/'</script>";
+  }
+
 
   
 
@@ -128,7 +223,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
       <div class="form-group">
                 <label class ="text-gray-600 pb-1 ml-2 mb-2 pt-1">Last Name:</label>
                 <input type="text" name="lastName" class="border px-3 py-2  text-sm w-3/4 mb-2" placeholder ="Last Name" value="<?php echo ($lastName!=="")? $lastName : ""; ?>">
-
+                <p class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $name_err; ?></p>
       </div>
       <h2>Create Username</h2>
         <p>A username is unique to your account. It must be:
@@ -148,6 +243,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                   }
                   ?>" onchange = "this.form.submit()">
                 <p class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $username_err; ?></p>
+                <p class="ml-3 mt-1 py-0 text-pink-400 border-sky-300"><?php echo $username_avail; ?></p>
 
       </div> 
       <h2>Password</h2>
@@ -157,19 +253,28 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
             <li>At least one uppercase letter</li>
             <li>At least one lowercase letter</li>
             <li>At least one number</li>
-            <li>At least one special character</li>
+
           </ul>
         </p>
       <div class="form-group">
                 <label class ="text-gray-600 pb-1 ml-2 mb-2 pt-1">Password:</label>
-                <input type="password" name="password1" id="password1" class="border px-3 py-2  text-sm w-3/4 mb-2" placeholder ="Password" value="" onchange = "checkTwoPasswords()">
+                <input type="password" name="password1" id="password1" class="border px-3 py-2  text-sm w-3/4 mb-2" placeholder ="Password"  onchange = "//checkTwoPasswords()">
 
 
       </div> 
       <div class="form-group">
                 <label class ="text-gray-600 pb-1 ml-2 mb-2 pt-1">Confirm Password:</label>
-                <input type="password" name="password2" id="password2" class="border px-3 py-2  text-sm w-3/4 mb-2" placeholder ="Password" value="" onchange = "checkTwoPasswords()">
+                <input type="password" name="password2" id="password2" class="border px-3 py-2  text-sm w-3/4 mb-2" placeholder ="Password"  onchange = "//checkTwoPasswords()">
                 <p class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $password_err; ?></p>
+
+                <?php //value="<?= (($password2 != "") AND $password_err ="") ? $password2 : "";?>
+
+      </div> 
+      <h2>email</h2>
+      <div class="form-group">
+                <label class ="text-gray-600 pb-1 ml-2 mb-2 pt-1">Email:</label>
+                <input type="text" name="email" id="email" class="border px-3 py-2  text-sm w-3/4 mb-2" placeholder ="Email" value = "<?= $email_name !="" ? $email_name : "";?>">
+                <p class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $email_err; ?></p>
 
       </div> 
     
@@ -186,6 +291,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
         </div>
 </div>
+
+<?//= $name_validate."||".$username_validate."||".$password_vaidate."||".$email_validate; ?>
+
 
 
 <script>
