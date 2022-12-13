@@ -17,19 +17,27 @@ include($path."/php_header.php");
 include($path."/php_functions.php");
 //include ($path."/header_tailwind.php");
 
-function getFlashcardSummaryByClass($classid) {
+
+function getFlashcardSummaryByClass($classid, $dateStart = null, $dateEnd = null) {
+  /*
+  This function will take input $classid and return a list of questions that has been completed by members of this class.
+  Filter by dates as second argument.
+  */
   global $conn;
   $responses = array();
-
-  $timeSubmit = 0;
-  if(isset($_GET['timeSubmit'])) {
-    $timeSubmit = $_GET['timeSubmit'];
+  if (!isset($dateEnd)) {
+    $dateEnd = date('Ymd');
   }
 
-  $users = getGroupUsers(7);
+
+  
+
+  $users = getGroupUsers($classid);
   //array_push($responses, $users);
 
   $sql = "SELECT q.topic, r.gotRight response, q.question, COUNT(*) count
+
+ 
           FROM flashcard_responses r
           JOIN (SELECT id, name FROM users) u
           ON r.userID = u.id
@@ -45,18 +53,22 @@ function getFlashcardSummaryByClass($classid) {
             }
           }
     $sql .= " ) ";
-    if ($timeSubmit != 0 ) {
-      $sql .= " AND DATE(r.timeSubmit) = ?";
+    if (isset($dateStart)) {
+      $sql .= " AND DATE(r.timeSubmit) BETWEEN ? AND ?";
     }
 
-    $sql .= " GROUP BY q.id, r.gotRight
-            ORDER BY count DESC";
+    $sql .= " GROUP BY q.id, r.gotRight            ORDER BY count DESC";
 
   //echo $sql;
 
   $stmt = $conn->prepare($sql);
 
-  $stmt->bind_param('s',$timeSubmit);
+  if (isset($dateStart)) {
+    $stmt->bind_param('ss',$dateStart, $dateEnd);
+  } 
+
+  
+
 
   $stmt->execute();
   $result = $stmt->get_result();
@@ -71,9 +83,11 @@ function getFlashcardSummaryByClass($classid) {
 
 }
 
-$results = getFlashcardSummaryByClass(1);
 
-echo "<!-- GET variables: timeSubmit, format e.g. 20221212 to show responses from a particular day
+
+$results = getFlashcardSummaryByClass($_GET['groupId'], $_GET['dateStart'], $_GET['dateEnd']);
+
+echo "<!-- GET variables: groupId, dateStart, dateEnd
     
 -->";
 echo "<table>";
@@ -105,6 +119,7 @@ foreach ($results as $array) {
 
   //echo "<br>";
 }
+
 echo "</table>"
 
 ?>
