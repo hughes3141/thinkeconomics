@@ -630,4 +630,86 @@ function flashCardSummary($userid = null, $control = null, $where = null) {
   return $list;
 }
 
+function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endDate = null, $orderByInput = null) {
+  /*
+  Outputs a list of all flashcard questions created by userid=1. 
+    Filter by:
+    -classid: gives results for a particular class
+    -startDate: sets boundary for earliest recored. Enter in Ymd format e.g. 20221213
+    -endDate: sets boundary for most recent record. Default it today's date
+    Order by:
+    -dontknow
+    -wrong
+    -correct
+      Each changes the filter values to show descending order by number got right.
+
+  */
+
+  global $conn;
+  $responses = array();
+  $users = "";
+  if($classid) {
+    $users = getGroupUsers($classid);
+  }
+  //Set end date to today's date if not declared in function
+  if(!$endDate) {
+    $endDate = date('Ymd');
+  }
+  //Set orderBy; default is q.topic:
+  if(!$orderByInput) {
+    $orderBy = "q.topic";
+  } else if ($orderByInput == "dontknow") {
+    $orderBy = "dontknow DESC";
+  } else if ($orderByInput == "wrong") {
+    $orderBy = "wrong DESC";
+  } else if ($orderByInput == "correct") {
+    $orderBy = "correct DESC";
+  } else {
+    $orderBy = "q.topic";
+  }
+
+  $sql = "SELECT q.id id, q.topic, q.question, COUNT(CASE r.gotRight WHEN 0 THEN 1 ELSE NULL END) dontknow, COUNT(CASE r.gotRight WHEN 1 THEN 1 ELSE NULL END) wrong, COUNT(CASE r.gotRight WHEN 2 THEN 1 ELSE NULL END) correct, q.img
+        FROM saq_question_bank_3 q
+        JOIN flashcard_responses r
+        ON q.id = r.questionId
+        WHERE q.userCreate = 1 AND q.type LIKE '%flashCard%'";
+  
+  //Clause to filter by $classid if set:
+  if($classid) {
+    $sql .= " AND r.userId IN (";
+    foreach ($users as $key=>$array) {
+      $sql .= " ".$array['id'];
+      if($key < (count($users)-1)) {
+        $sql .= ", ";
+      }
+    }
+    $sql .= " ) ";
+  }
+
+  //Filter by date, if set
+  if($startDate) {
+    $sql .= " AND DATE(r.timeSubmit) BETWEEN ? AND ?";
+  }
+  $sql .= " GROUP BY id
+            ORDER BY ".$orderBy;
+
+  
+  $stmt = $conn->prepare($sql);
+  //$stmt->bind_param('',);
+  if($startDate) {
+    $stmt->bind_param('ss',$startDate, $endDate);
+  } 
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($responses, $row);
+    }
+  }
+
+  return $responses;
+
+}
+
+
 ?>

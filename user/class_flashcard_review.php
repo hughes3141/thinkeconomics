@@ -15,111 +15,60 @@ if (!isset($_SESSION['userid'])) {
 $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 include($path."/php_functions.php");
-//include ($path."/header_tailwind.php");
-
-
-function getFlashcardSummaryByClass($classid, $dateStart = null, $dateEnd = null) {
-  /*
-  This function will take input $classid and return a list of questions that has been completed by members of this class.
-  Filter by dates as second argument.
-  */
-  global $conn;
-  $responses = array();
-  if (!isset($dateEnd)) {
-    $dateEnd = date('Ymd');
-  }
-
-
-  
-
-  $users = getGroupUsers($classid);
-  //array_push($responses, $users);
-
-  $sql = "SELECT q.topic, r.gotRight response, q.question, COUNT(*) count
-
- 
-          FROM flashcard_responses r
-          JOIN (SELECT id, name FROM users) u
-          ON r.userID = u.id
-          JOIN (SELECT id, topic, question FROM saq_question_bank_3 WHERE type LIKE '%flashCard%' AND userCreate = 1) q
-          ON r.questionId = q.id
-          WHERE (";
-
-          foreach ($users as $key=>$array) {
-            $sql .= " r.userId = ".$array['id']." ";
-
-            if($key < (count($users)-1)) {
-              $sql .= " OR ";
-            }
-          }
-    $sql .= " ) ";
-    if (isset($dateStart)) {
-      $sql .= " AND DATE(r.timeSubmit) BETWEEN ? AND ?";
-    }
-
-    $sql .= " GROUP BY q.id, r.gotRight            ORDER BY count DESC";
-
-  //echo $sql;
-
-  $stmt = $conn->prepare($sql);
-
-  if (isset($dateStart)) {
-    $stmt->bind_param('ss',$dateStart, $dateEnd);
-  } 
-
-  
-
-
-  $stmt->execute();
-  $result = $stmt->get_result();
-
-  if($result->num_rows>0) {
-    while($row = $result->fetch_assoc()) {
-      array_push($responses, $row);
-    }
-  }
-
-  return $responses;
-
-}
+include ($path."/header_tailwind.php");
 
 
 
-$results = getFlashcardSummaryByClass($_GET['groupId'], $_GET['dateStart'], $_GET['dateEnd']);
+$results = getFlashcardSummaryByQuestion($_GET['groupId'], $_GET['startDate'], $_GET['endDate'], $_GET['orderBy']);
 
-echo "<!-- GET variables: groupId, dateStart, dateEnd
-    
--->";
-echo "<table>";
-foreach ($results as $array) {
+
+
+foreach($results as $array) {
   //print_r($array);
-  
-  ?>
-  <tr>
-    <td><?=$array['topic']?></td>
-    <td><?php 
-      if($array['response']==0) {
-        echo "Don't Know";
-      }
-      else if ($array['response']==1) {
-        echo "Wrong";
-      }
-
-      else if ($array['response']==2) {
-        echo "Right";
-      }
-      
-      
-      ?></td>
-    <td><?=$array['question']?></td>
-    <td><?=$array['count']?></td>
-  </tr>
-
-<?php
-
   //echo "<br>";
 }
 
-echo "</table>"
 
 ?>
+
+<!-- GET variables: groupId, startDate, endDate, orderBy
+    
+-->"
+
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+  <h1 class="font-mono text-2xl bg-pink-400 pl-1">Flash Card Review</h1>
+  <div class="container mx-auto px-0 mt-2 bg-white text-black">
+    <table class="table-fixed">
+      <tr>
+        <th>Topic</th>
+        <th>Question</th>
+        <th>Responses</th>
+      </tr>
+      <?php
+      foreach($results as $array) {
+        ?>
+        <tr>
+          <td><?=$array['topic']?></td>
+          <td><?=$array['question']?>
+            <?php
+              if($array['img'] != ""){
+                ?>
+                <img src = "<?=$array['img']?>" class="w-auto">
+                <?php
+              }
+              ?>
+          </td>
+          <td>
+            Correct: <?=$array['correct']?> ||
+            Incorrect: <?=$array['wrong']?> ||
+            Don't Know: <?=$array['dontknow']?>
+          </td>
+        </tr>
+        <?php
+      }
+      ?>
+  </table>
+  </div>
+</div>
+
+<?php include ($path."/footer_tailwind.php");; ?>
