@@ -690,7 +690,7 @@ function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endD
   if($startDate) {
     $sql .= " AND DATE(r.timeSubmit) BETWEEN ? AND ?";
   }
-  $sql .= " GROUP BY id
+  $sql .= " GROUP BY q.id
             ORDER BY ".$orderBy;
 
   
