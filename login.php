@@ -67,7 +67,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     // Validate credentials
     if(empty($username_err) && empty($password_err)){
         // Prepare a select statement
-        $sql = "SELECT id, name, password_hash, usertype, groupid FROM users WHERE name = ? OR username = ? OR email = ?";
+        $sql = "SELECT id, name, password_hash, privacy_agree FROM users WHERE name = ? OR username = ? OR email = ?";
         
         if($stmt = $conn->prepare($sql)){
             // Bind variables to the prepared statement as parameters
@@ -84,7 +84,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 // Check if username exists, if yes then verify password
                 if($stmt->num_rows == 1){                    
                     // Bind result variables
-                    $stmt->bind_result($id, $username, $hashed_password, $usertype, $groupid);
+                    $stmt->bind_result($id, $username, $hashed_password, $privacy_agree);
                     if($stmt->fetch()){
 
                         //if(($password2 === $hashed_password)){
@@ -92,15 +92,24 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         if(password_verify($password2, $hashed_password)){
                             // Password is correct, so start a new session
                             //session_start();
+
+                            //Check to see if privacy agreement has been agreed:
+
+                              if($privacy_agree == 0) {
+                                $_SESSION['temp_userid'] = $id;
+                                echo "<script>window.location='/user/privacy_policy_20221215.php'</script>";
+                                exit();
+                              }
+                              
                             
                             // Store data in session variables
                             //$_SESSION["loggedin"] = true;
                             //$_SESSION["id"] = $id;
                             //$_SESSION["username"] = $username;                            
                             $_SESSION["userid"] = $id;
-                            $_SESSION["name"] = $username;
-                            $_SESSION["usertype"] = $usertype;
-                            $_SESSION["groupid"] = $groupid;
+                            //$_SESSION["name"] = $username;
+                            //$_SESSION["usertype"] = $usertype;
+                            //$_SESSION["groupid"] = $groupid;
 
                             // Redirect user to previous page
                             if(($previous !="")&&($previous !="/")) {
