@@ -21,7 +21,12 @@ if (!isset($_SESSION['userid'])) {
 
 ?>
 
-<?php include "../header_tailwind.php"; ?>
+<?php include "../header_tailwind.php"; 
+
+
+$userInfo = getUserInfo($_SESSION['userid']);
+
+?>
 
 
 
@@ -36,7 +41,7 @@ if (!isset($_SESSION['userid'])) {
     <h1 class="font-mono text-xl bg-pink-400 pl-1">User Portal</h1>
       <div class="container mx-auto px-0 mt-2 bg-white text-black">
     
-          <p class="pl-1 text-lg bg-sky-100 font-mono my-2">Logged in as <?php echo $_SESSION['name'];?></p>
+          <p class="pl-1 text-lg bg-sky-100 font-mono my-2">Logged in as <?php echo trim($userInfo['name_first']." ".$userInfo['name_last']);?></p>
           
           <h1 class="font-mono text-xl bg-pink-300 pl-1">Student Resources</h1>
           <div class="m-3 border-pink-300 border-2 p-3">
@@ -57,7 +62,7 @@ if (!isset($_SESSION['userid'])) {
 
         //Following block provides teacher resources:
 
-        if (($_SESSION['usertype']=="teacher")or($_SESSION['usertype']=="admin")) {
+        if (str_contains($userInfo['permissions'], "teacher")) {
           
           
           ?>
@@ -115,7 +120,7 @@ if (!isset($_SESSION['userid'])) {
 
         //Following block provides admin resources:
 
-        if ($_SESSION['usertype']=="admin") {
+        if (str_contains($userInfo['permissions'], "admin")) {
           
           
           ?>

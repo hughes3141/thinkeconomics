@@ -21,6 +21,8 @@ if($_SESSION['last_url']) {
   $previous = $_SESSION['last_url'];
 }
 
+
+
  
 // Check if the user is already logged in
 if(isset($_SESSION["userid"])){
@@ -29,19 +31,10 @@ if(isset($_SESSION["userid"])){
     //exit;
 }
  
-//Include login information from secrets:
 
 $path = $_SERVER['DOCUMENT_ROOT'];
-$path .= "/../secrets/secrets.php";
-include($path);
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
+include($path."/php_header.php");
+include($path."/php_functions.php");
  
 // Define variables and initialize with empty values
 $username = $password2 = "";
@@ -67,11 +60,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     // Validate credentials
     if(empty($username_err) && empty($password_err)){
         // Prepare a select statement
-        $sql = "SELECT id, name, password, usertype, groupid FROM users WHERE name = ?";
+        $sql = "SELECT id, name, password_hash, privacy_agree FROM users WHERE (name = ? OR username = ? OR email = ?) AND active = 1";
         
         if($stmt = $conn->prepare($sql)){
             // Bind variables to the prepared statement as parameters
-            $stmt->bind_param("s", $param_username);
+            $stmt->bind_param("sss", $param_username, $param_username, $param_username);
             
             // Set parameters
             $param_username = $username;
@@ -84,22 +77,37 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 // Check if username exists, if yes then verify password
                 if($stmt->num_rows == 1){                    
                     // Bind result variables
-                    $stmt->bind_result($id, $username, $hashed_password, $usertype, $groupid);
+                    $stmt->bind_result($id, $username, $hashed_password, $privacy_agree);
                     if($stmt->fetch()){
-                        if(($password2 === $hashed_password)){
+
+                        //if(($password2 === $hashed_password)){
                         //!!Replace previous line with following line once hashed passwords are incorporated into database.
-                        //if(password_verify($password2, $hashed_password)){
+                        if(password_verify($password2, $hashed_password)){
                             // Password is correct, so start a new session
                             //session_start();
+
+                            //Check to see if privacy agreement has been agreed:
+
+                              if($privacy_agree == 0) {
+                                
+                                $_SESSION['temp_userid'] = $id;
+                                echo "<script>window.location='/user/privacy_policy.php?login_redirect'</script>";
+                                exit();
+                                
+                              }
+                              
                             
                             // Store data in session variables
                             //$_SESSION["loggedin"] = true;
                             //$_SESSION["id"] = $id;
                             //$_SESSION["username"] = $username;                            
                             $_SESSION["userid"] = $id;
-                            $_SESSION["name"] = $username;
-                            $_SESSION["usertype"] = $usertype;
-                            $_SESSION["groupid"] = $groupid;
+                            //$_SESSION["name"] = $username;
+                            //$_SESSION["usertype"] = $usertype;
+                            //$_SESSION["groupid"] = $groupid;
+
+                            //Register login at login_log table:
+                            login_log($id);
 
                             // Redirect user to previous page
                             if(($previous !="")&&($previous !="/")) {
@@ -137,7 +145,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 <body>
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">User Login</h1>
     <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
-       
+   
         <p class="px-3 py-2 hidden">Please fill in your credentials to login.</p>
 
         <?php //print_r($_SESSION);?>
@@ -146,7 +154,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="form-group">
-                <label class ="text-gray-600 pb-1 ml-2 mb-2 pt-1">Name</label>
+                <label class ="text-gray-600 pb-1 ml-2 mb-2 pt-1">username/email:</label>
                 <input type="text" name="username" class="border px-3 py-2  text-sm w-full" placeholder =Name value="<?php echo ($username!=="")? $username : ""; ?>">
                 <span class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $username_err; ?></span>
             </div>    

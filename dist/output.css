@@ -978,6 +978,10 @@ input[type="range"]::-ms-fill-lower {
   width: 11rem;
 }
 
+.w-3\/4 {
+  width: 75%;
+}
+
 .max-w-5xl {
   max-width: 64rem;
 }
