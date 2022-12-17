@@ -4,3 +4,4 @@ dist/output.css
 *.jpg
 *.wav
 node_modules
+assets

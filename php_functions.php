@@ -63,6 +63,7 @@ function getGroupsList($userId, $activeReturn = true) {
   if($activeReturn == false) {
     $sql = "SELECT * FROM groups WHERE teachers LIKE ?";
   }
+  
   $stmt=$conn->prepare($sql);
   $stmt->bind_param("s", $userIdSql);
   $stmt->execute();
@@ -168,12 +169,18 @@ Will produce an array of all users in a given groupId.
   
 */
 
-function getGroupUsers($groupId) {
+function getGroupUsers($groupId, $activeReturn = true) {
   global $conn;
 
   $groupIdSql = '%\"'.$groupId.'\"%';
 
-  $sql = "SELECT * FROM users WHERE groupid_array LIKE ?";
+  $sql = "SELECT id, name, name_first, name_last, username, usertype, permissions, email, schoolid, groupid, groupid_array, active FROM users WHERE groupid_array LIKE ?";
+
+  if($activeReturn == true) {
+    $sql .= " AND active = 1";
+
+  }
+  $sql .= " ORDER BY name_last";
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("s", $groupIdSql);
   $stmt->execute();
@@ -324,10 +331,11 @@ function getUpcomingAssignments($groupId) {
 }
 
 
-function getAssignmentsArray($groupIdArray) {
+function getAssignmentsArray($groupIdArray, $startDate = null) {
 
   /*
   This function generates an array of assigned work. Input is an array (in JSON form) of the groups that a studnet is listed in.
+  $startDate is the first date when results are to be output by. format is e.g. 20221203
   */
 
   global $conn;
@@ -351,6 +359,10 @@ function getAssignmentsArray($groupIdArray) {
   }
   
   $sql .= ")";
+
+  if($startDate) {
+    $sql .= " AND dateDue > ".$startDate;
+  }
 
 
   //echo $sql."<br>".$paramType;
@@ -510,5 +522,209 @@ function login_log($userid) {
   $stmt->bind_param("iss", $userid, $datetime, $_SESSION['last_url']);
   $stmt->execute();
 }
+
+
+
+function flashCardSummary($userid = null, $control = null, $where = null) {
+
+  /*
+  This does a lot with the responses from the flashcardResponses table. It can
+  -Show all results from table
+    -Filtered by userid
+    -Filtered by date
+    -Counts
+    -Averages
+
+  $control:
+    -"count": returns count of questions done;
+    -"count_category": returns counts of question by whether student got right or not
+    -"average": returns average time taken to answer
+    -"count_by_date": returns counts of question by date
+    -"count_quetions": returns counts of quesitons completed
+  $where:
+    -A date value: limits results to that date.
+  */
+
+  global $conn;
+  $list = array();
+  
+  $sql = "SELECT * ";
+
+  if($control == "count") {
+    $sql = "SELECT COUNT(*) count ";
+  }
+
+  if($control =="count_category") {
+    $sql = "SELECT gotRight, COUNT(*) count ";
+  }
+  if(($control =="average")||($control=="average_category")) {
+    $sql = "SELECT gotRight, AVG(timeDuration) avg";
+  }
+  if($control == "count_by_date") {
+    $sql = "SELECT date(timeSubmit) date, COUNT(*) count";
+  }
+
+
+
+
+    $sql .= " FROM flashcard_responses";
+
+  if($control == "count_questions") {
+    $sql = "SELECT r.questionId questionId, COUNT(*) count, q.question, q.topic
+    FROM flashcard_responses r
+    LEFT JOIN (SELECT id, question, topic FROM saq_question_bank_3) q
+      ON r.questionId = q.id";
+  }
+
+  if ($userid) {
+    $sql .= " WHERE userId = ?";
+
+    if(strtotime($where)>0) {
+      $sql .= " AND date(timeSubmit) = ? ";
+    }
+  }
+  elseif (strtotime($where)>0) {
+    $sql .= " WHERE date(timeSubmit) = ? ";
+  }
+
+  if(($control == "count_category")||($control == "average_category")) {
+    $sql .= " GROUP BY gotRight";
+  }
+
+  if($control == "count_by_date") {
+    $sql .= " GROUP BY date(timeSubmit) ";
+  }
+  
+  if($control == "count_questions") {
+    $sql .= " GROUP BY r.questionId";
+  }
+
+  //echo $sql;
+  
+  /*
+
+  Sandbox:
+  
+  $sql = "SELECT r.questionId, COUNT(*), q.question, q.topic
+          FROM flashcard_responses r
+          LEFT JOIN (SELECT id, question, topic FROM saq_question_bank_3) q
+            ON r.questionId = q.id
+          GROUP BY r.questionId;
+
+          
+         
+          ";
+         */ 
+          
+
+
+  $stmt=$conn->prepare($sql);
+
+  if (($userid)&& !(strtotime($where)>0)) {
+    $stmt->bind_param("i", $userid);
+  }
+
+  if(!$userid && strtotime($where)>0) {
+    $stmt->bind_param("s", $where);
+  }
+
+  if($userid && strtotime($where)>0) {
+    $stmt->bind_param("is", $userid, $where);
+  }
+  
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($list, $row);
+    }
+  }
+
+  return $list;
+}
+
+function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endDate = null, $orderByInput = null) {
+  /*
+  Outputs a list of all flashcard questions created by userid=1. 
+    Filter by:
+    -classid: gives results for a particular class
+    -startDate: sets boundary for earliest recored. Enter in Ymd format e.g. 20221213
+    -endDate: sets boundary for most recent record. Default it today's date
+    Order by:
+    -dontknow
+    -wrong
+    -correct
+      Each changes the filter values to show descending order by number got right.
+
+  */
+
+  global $conn;
+  $responses = array();
+  $users = "";
+  if($classid) {
+    $users = getGroupUsers($classid);
+  }
+  //Set end date to today's date if not declared in function
+  if(!$endDate) {
+    $endDate = date('Ymd');
+  }
+  //Set orderBy; default is q.topic:
+  if(!$orderByInput) {
+    $orderBy = "q.topic";
+  } else if ($orderByInput == "dontknow") {
+    $orderBy = "dontknow DESC";
+  } else if ($orderByInput == "wrong") {
+    $orderBy = "wrong DESC";
+  } else if ($orderByInput == "correct") {
+    $orderBy = "correct DESC";
+  } else {
+    $orderBy = "q.topic";
+  }
+
+  $sql = "SELECT q.id id, q.topic, q.question, COUNT(CASE r.gotRight WHEN 0 THEN 1 ELSE NULL END) dontknow, COUNT(CASE r.gotRight WHEN 1 THEN 1 ELSE NULL END) wrong, COUNT(CASE r.gotRight WHEN 2 THEN 1 ELSE NULL END) correct, q.img
+        FROM saq_question_bank_3 q
+        JOIN flashcard_responses r
+        ON q.id = r.questionId
+        WHERE q.userCreate = 1 AND q.type LIKE '%flashCard%'";
+  
+  //Clause to filter by $classid if set:
+  if($classid) {
+    $sql .= " AND r.userId IN (";
+    foreach ($users as $key=>$array) {
+      $sql .= " ".$array['id'];
+      if($key < (count($users)-1)) {
+        $sql .= ", ";
+      }
+    }
+    $sql .= " ) ";
+  }
+
+  //Filter by date, if set
+  if($startDate) {
+    $sql .= " AND DATE(r.timeSubmit) BETWEEN ? AND ?";
+  }
+  $sql .= " GROUP BY q.id
+            ORDER BY ".$orderBy;
+
+  
+  $stmt = $conn->prepare($sql);
+  //$stmt->bind_param('',);
+  if($startDate) {
+    $stmt->bind_param('ss',$startDate, $endDate);
+  } 
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($responses, $row);
+    }
+  }
+
+  return $responses;
+
+}
+
+
 
 ?>
