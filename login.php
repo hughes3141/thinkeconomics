@@ -145,8 +145,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 <body>
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">User Login</h1>
     <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
-        <!-- Delete next line before production -->
-        <p>This is the test version</p>       
+   
         <p class="px-3 py-2 hidden">Please fill in your credentials to login.</p>
 
         <?php //print_r($_SESSION);?>
