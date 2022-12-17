@@ -498,4 +498,17 @@ function getNewsArticlesByTopic($topic) {
   return $articles;
 }
 
+function login_log($userid) {
+  //Very simple: this function logs when a user has logged in. Used primarily wiht login.php
+  global $conn;
+  date_default_timezone_set('Europe/London');
+  $datetime = date("Y-m-d H:i:s");
+  $sql = "INSERT INTO login_log
+          (userId, dateTime, last_url)
+          VALUES (?,?,?)";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("iss", $userid, $datetime, $_SESSION['last_url']);
+  $stmt->execute();
+}
+
 ?>

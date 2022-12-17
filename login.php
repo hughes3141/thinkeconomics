@@ -21,6 +21,8 @@ if($_SESSION['last_url']) {
   $previous = $_SESSION['last_url'];
 }
 
+
+
  
 // Check if the user is already logged in
 if(isset($_SESSION["userid"])){
@@ -29,19 +31,10 @@ if(isset($_SESSION["userid"])){
     //exit;
 }
  
-//Include login information from secrets:
 
 $path = $_SERVER['DOCUMENT_ROOT'];
-$path .= "/../secrets/secrets.php";
-include($path);
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
+include($path."/php_header.php");
+include($path."/php_functions.php");
  
 // Define variables and initialize with empty values
 $username = $password2 = "";
@@ -67,7 +60,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     // Validate credentials
     if(empty($username_err) && empty($password_err)){
         // Prepare a select statement
-        $sql = "SELECT id, name, password_hash, privacy_agree FROM users WHERE name = ? OR username = ? OR email = ?";
+        $sql = "SELECT id, name, password_hash, privacy_agree FROM users WHERE (name = ? OR username = ? OR email = ?) AND active = 1";
         
         if($stmt = $conn->prepare($sql)){
             // Bind variables to the prepared statement as parameters
@@ -96,9 +89,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             //Check to see if privacy agreement has been agreed:
 
                               if($privacy_agree == 0) {
+                                
                                 $_SESSION['temp_userid'] = $id;
-                                echo "<script>window.location='/user/privacy_policy_20221215.php'</script>";
+                                echo "<script>window.location='/user/privacy_policy.php?login_redirect'</script>";
                                 exit();
+                                
                               }
                               
                             
@@ -110,6 +105,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             //$_SESSION["name"] = $username;
                             //$_SESSION["usertype"] = $usertype;
                             //$_SESSION["groupid"] = $groupid;
+
+                            //Register login at login_log table:
+                            login_log($id);
 
                             // Redirect user to previous page
                             if(($previous !="")&&($previous !="/")) {

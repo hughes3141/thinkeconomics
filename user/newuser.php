@@ -17,11 +17,15 @@ include($path."/php_header.php");
 include($path."/php_functions.php");
 include ($path."/header_tailwind.php");
 
+//Very little file that only contains the vairabble $version to be ouput to database.
+include ("privacy_version.php");
+
+
 //$userId = $_SESSION['userid'];
 
-$firstName = $lastName = $username= $email_name = "";
-$username_err = $username_avail = $password_err = $email_err = $name_err= "";
-$name_validate = $username_validate = $password_vaidate = $email_validate = 0;$fn_validate = $ln_validate = $user_avail_validate = $user_rule_validate = $pass_match_validate = $pass_rule_validate = 0;
+$firstName = $lastName = $username= $email_name = $privacy_bool = "";
+$username_err = $username_avail = $password_err = $email_err = $name_err= $privacy_err= "";
+$name_validate = $username_validate = $password_vaidate = $email_validate = 0;$fn_validate = $ln_validate = $user_avail_validate = $user_rule_validate = $pass_match_validate = $pass_rule_validate = $privacy_validate = 0;
 
 //Processing form data when form is submitted
 if($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -171,12 +175,21 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         }
       }
 
+    //Privacy Policy
+    //check to make sure that privacy policy has been agreed
+    if(empty($_POST['privacy_agree'])) {
+      $privacy_err = "You must agree to the privacy policy before registering.";
+    } else {
+      $privacy_validate = 1;
+      $privacy_bool = 1;
+    }
+
 
   //PROCESS VALIDATED INFORMATION
-  if($name_validate ==1 AND $username_validate==1 AND $password_vaidate == 1 AND $email_validate ==1) {
+  if($name_validate ==1 AND $username_validate==1 AND $password_vaidate == 1 AND $email_validate == 1 AND $privacy_validate = 1) {
 
     //Enter new user information into users table
-    $sql = "INSERT INTO users (name_first, name_last, username, password_hash, usertype, permissions, email, active, time_added) VALUES (?,?,?,?,?,?,?,?,?)";
+    $sql = "INSERT INTO users (name_first, name_last, username, password_hash, usertype, permissions, email, active, time_added, privacy_agree, privacy_date, privacy_vers) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
     
     $stmt = $conn->prepare($sql);
     
@@ -185,7 +198,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     $active = 1;
     $datetime = date("Y-m-d H:i:s");
 
-    $stmt->bind_param("sssssssis", $firstName, $lastName, $username, $password_hash, $usertype, $permissions, $email_name, $active, $datetime);
+    $stmt->bind_param("sssssssisiss", $firstName, $lastName, $username, $password_hash, $usertype, $permissions, $email_name, $active, $datetime, $privacy_bool, $datetime, $version);
     $stmt->execute();
 
 
@@ -277,15 +290,27 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                 <p class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $email_err; ?></p>
 
       </div> 
+
+      <h2>Privacy Policy</h2>
+      <div class="form-group">
+        <input type="checkbox" id="privacy_checkbox" name="privacy_agree" value="1" <?php
+        if(isset($_POST['privacy_agree'])) {
+          echo "checked";
+        }
+        ?>
+        >
+        <label for="privacy_checkbox">I agree to this website's <a>privacy policy</a></label>
+        <p class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $privacy_err; ?></p>
+      </div>
     
       <div class="form-group">
                 <input type="submit" class=" bg-sky-500 hover:bg-sky-400 focus:bg-sky-200 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block" value="Sign Up!">
+
       </div>
 
       </form>
     
 
-          
           <h1 class="font-mono text-xl bg-pink-300 pl-1"></h1>
           
 

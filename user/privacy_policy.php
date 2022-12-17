@@ -3,7 +3,20 @@
 // Initialize the session
 session_start();
 
-$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
+// Define which page redirected to here
+//Storing previous URLs to ensure that we can redirect to page where we cane from
+/*
+if($_SESSION['this_url'] != $_SERVER['REQUEST_URI']) {
+  $_SESSION['last_url'] = $_SESSION['this_url'];
+  $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
+}
+*/
+
+
+$previous = "";
+if($_SESSION['last_url']) {
+  $previous = $_SESSION['last_url'];
+}
 
 
 if (!isset($_SESSION['userid'])) {
@@ -15,9 +28,56 @@ if (!isset($_SESSION['userid'])) {
 $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 include($path."/php_functions.php");
-include ($path."/header_tailwind.php");
 
-$userId =  $_SESSION['temp_userid']
+
+//Very little file that only contains the vairabble $version to be ouput to database.
+include ("privacy_version.php");
+
+$userId =  $_SESSION['temp_userid'];
+
+function updatePrivacy($userId) {
+  global $conn;
+  date_default_timezone_set('Europe/London');
+  $datetime = date("Y-m-d H:i:s");
+  $privacy_bool = 1;
+  global $version;
+
+  $sql = "UPDATE users
+          SET privacy_agree = ?, privacy_date = ?, privacy_vers = ?
+          WHERE id = ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("issi", $privacy_bool, $datetime, $version, $userId);
+  $stmt->execute();
+
+  $_SESSION['userid'] = $userId;
+  unset($_SESSION['temp_userid']);
+
+
+  login_log($userId);
+  global $previous;
+
+  // Redirect user to previous page
+  if(($previous !="")&&($previous !="/")) {
+    header("location: ".$previous);
+  } else if ($previous == "/") {
+    header("location: /user/user3.0.php");
+  } else if ($previous == $_SERVER['REQUEST_URI']) { 
+    header("location: /user/user3.0.php");
+  } else {
+    header("location: index.php");
+  }
+
+
+}
+
+if($_SERVER['REQUEST_METHOD'] == 'POST') {
+  if($_POST['submit'] == "Agree and continue") {
+    updatePrivacy($_SESSION['temp_userid']);
+  }
+  
+}
+
+include ($path."/header_tailwind.php");
 
 
 ?>
@@ -26,10 +86,31 @@ $userId =  $_SESSION['temp_userid']
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">thinkeconomics.co.uk Privacy and Data Policy</h1>
   <div class="container mx-auto p-2 text-lg mt-2 bg-white text-black">
-    <p class="bg-pink-400 text-xl">Okay, here&rsquo;s the short version without the legal stuff:</p>
-      <ul class="list-disc  ml-7">
+    <?php
+
+    print_r($_POST);
+    print_r($_SESSION);
+    echo "<br>";
+    echo $previous;
+
+      if(isset($_GET['login_redirect'])) {
+
+        ?>
+        <p class="bg-pink-400 text-2xl font-mono">Hello!</p>
+        <p>Sorry to interrupt you, but we've changed our privacy policy recently. We'd love for you to have a look and agree to the new one before you log in.</p>
+        <p>Would you mind having a look and then agreeing you're okay with it? Then you can get back to your learning</p>
+        <p>Thanks from the team here at thinkeconomics.co.uk!</p>
+
+        <?php
+
+
+      }
+
+    ?>
+    <p class="bg-pink-400 text-2xl font-mono">Okay, here&rsquo;s the short version without the legal stuff:</p>
+      <ul class="list-disc  ml-6">
         <li>Our aim is to help people learn.</li>
-        <li>We will collect only enough data about you to help you learn more effective.</li>
+        <li>We will collect only enough data about you to help you learn more effectively.</li>
         <li>We will never share or sell your data to third parties. Ever.</li>
       </ul>
     <p>We are teachers. We are not interested in making money off your data.</p>
@@ -38,7 +119,7 @@ $userId =  $_SESSION['temp_userid']
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">Detailed Privacy and Data Policy</h1>
     <p>thinkeconomics.co.uk is a small UK-based company. This privacy policy will explain how our organization uses the personal data we collect from you when you use our website.</p>
     <p>Topics:</p>
-      <ul class="list-disc  ml-7">
+      <ul class="list-disc  ml-6">
         <li>What data do we collect?</li>
         <li>How do we collect your data?</li>
         <li>How will we use your data?</li>
@@ -56,23 +137,22 @@ $userId =  $_SESSION['temp_userid']
       </ul>
   <h2 class="font-mono text-xl bg-sky-100 pl-1">What data do we collect?</h2>
     <p>Our Company collects the following data:</p>
-      <ul class="list-disc  ml-7">
+      <ul class="list-disc  ml-6">
         <li>Personal identification information (Name, email address)</li>
         <li>Your responses to assignments</li>
         <li>Your input into the news database</li>
       </ul>
   <h2 class="font-mono text-xl bg-sky-100 pl-1">How do we collect your data?</h2>
     <p>You directly provide thinkeconomics.co.uk with most of the data we collect. We collect data and process data when you:</p>
-      <ul class="list-disc  ml-7">
+      <ul class="list-disc  ml-6">
         <li>Register online.</li>
-        <li></li>
         <li>Provide answers to questions.</li>
         <li>Voluntarily complete entries into the News Blog</li>
         <li>Navigate to different parts of the website while you&rsquo;re logged in.</li>
       </ul>
   <h2 class="font-mono text-xl bg-sky-100 pl-1">How will we use your data?</h2>
     <p>thinkeconomics.co.uk collects your data so that we can:</p>
-      <ul class="list-disc  ml-7">
+      <ul class="list-disc  ml-6">
         <li>Manage your account.</li>
         <li>Inform your teacher/administrator about your progress.</li>
         <li>Email you with information about upcoming assignments.</li>
@@ -93,24 +173,24 @@ $userId =  $_SESSION['temp_userid']
     <p><strong>The right to object to processing </strong>- You have the right to object to thinkeconomics.co.uk&rsquo;s processing of your personal data, under certain conditions.</p>
     <p><strong>The right to data portability </strong>- You have the right to request that thinkeconomics.co.uk transfer the data that we have collected to another organization, or directly to you, under certain conditions.</p>
     <p>If you make a request, we have one month to respond to you. If you would like to exercise any of these rights, please contact us at our email:</p>
-    <p>hello@thinkeconomics.co.uk</p>
+    <p><a class="hover:bg-sky-100" href="mailto:hello@thinkeconomics.co.uk">hello@thinkeconomics.co.uk</a></p>
   <h2 class="font-mono text-xl bg-sky-100 pl-1">What are cookies?</h2>
     <p>Cookies are text files placed on your computer to collect standard Internet log information and visitor behaviour information.</p>
     <p>When you visit our websites, we may collect information from you automatically through cookies or similar technology.</p>
-    <p>For further information, visit allaboutcookies.org.</p>
+    <p>For further information, visit <a class="hover:bg-sky-100" href="https://allaboutcookies.org/" target="_blank">allaboutcookies.org</a>.</p>
     <p>thinkeconomics.co.uk does not use cookies.</p>
   <h2 class="font-mono text-xl bg-sky-100 pl-1">How do we use cookies?</h2>
     <p>We don&rsquo;t use cookies.</p>
     <p>If we change this policy in the future we will ask you to sign a new privacy agreement.</p>
     <p>If and when thinkeconomics.co.uk uses cookies, it will be for the following reasons:</p>
-      <ul class="list-disc  ml-7">
+      <ul class="list-disc  ml-6">
         <li>Keeping you signed in</li>
         <li>Understanding how you use our website</li>
       </ul>
   <h2 class="font-mono text-xl bg-sky-100 pl-1">What types of cookies do we use?</h2>
     <p>Currently: none.</p>
     <p>If and when we do, we would use the following types:</p>
-      <ul class="list-disc  ml-7">
+      <ul class="list-disc  ml-6">
         <li>Functionality - thinkeconomics.co.uk uses these cookies so that we recognize you on our website and remember your previously selected preferences. These could include what language you prefer and location you are.</li>
       </ul>
   <h2 class="font-mono text-xl bg-sky-100 pl-1">How to manage cookies</h2>
@@ -127,13 +207,21 @@ $userId =  $_SESSION['temp_userid']
     <p>Helpline: 0303 123 1113</p>
     <p>Website: <a class="hover:bg-sky-100" href="https://ico.org.uk/" target="_blank" >https://ico.org.uk/</a></p>
 
+
+
     <?php
-    print_r($_POST)
-    ?>
+
+    if(isset($_GET['login_redirect'])) {
+
+      ?>
     <form method = "post" action ="">
-      <input name = 'url' type="hidden" value = "<?=$_SERVER['PHP_SELF']?>"></input>
+
     <input type="submit" name="submit" class=" font-mono bg-sky-500 hover:bg-sky-400 focus:bg-sky-200 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block" value="Agree and continue">
   </form>
+
+  <?php 
+    }
+    ?>
 
   </div>
 </div>
