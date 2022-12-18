@@ -2,10 +2,21 @@
 // Initialize the session
 session_start();
 
-
 $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
-include "header_tailwind.php"; 
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
+
+
+if (!isset($_SESSION['userid'])) {
+  
+  //header("location: /login.php");
+  
+}
+
+
+include($path."/header_tailwind.php");
 
 ?>
 

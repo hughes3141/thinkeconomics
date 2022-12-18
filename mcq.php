@@ -6,8 +6,19 @@ session_start();
 
 $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
 
-include "header_tailwind.php"; 
+
+if (!isset($_SESSION['userid'])) {
+  
+  //header("location: /login.php");
+  
+}
+
+
+include($path."/header_tailwind.php");
 
 ?>
 

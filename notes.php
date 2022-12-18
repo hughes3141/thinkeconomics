@@ -3,26 +3,21 @@
 // Initialize the session
 session_start();
 
-
 $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
-include "header_tailwind.php"; 
-
-
-
-//Define server path:
 $path = $_SERVER['DOCUMENT_ROOT'];
-$path .= "/../secrets/secrets.php";
-include($path);
+include($path."/php_header.php");
+include($path."/php_functions.php");
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
+if (!isset($_SESSION['userid'])) {
+  
+  //header("location: /login.php");
+  
 }
 
+
+include($path."/header_tailwind.php");
 
 
 ?>

@@ -30,7 +30,7 @@ include($path."/header_tailwind.php");
 ?>
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
-    <h1 class="font-mono text-2xl bg-pink-400 pl-1">Class Management</h1>
+    <h1 class="font-mono text-2xl bg-pink-400 pl-1">Group Management</h1>
     <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
     </div>
 </div>
