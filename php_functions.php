@@ -726,5 +726,28 @@ function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endD
 }
 
 
+function loginLogReturn($limit = null) {
+  global $conn;
+  $responses = array();
+  $sql = "SELECT l.*, u.name_first first, u.name_last last
+          FROM login_log l
+          LEFT JOIN users u
+          ON l.userId = u.id
+          ORDER BY dateTime DESC;
+
+          ";
+
+  $stmt=$conn->prepare($sql);
+  //$stmt->bind_param("s", $topicSql);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($responses, $row);
+    }
+  }
+return $responses;
+}
+
 
 ?>

@@ -84,14 +84,18 @@ $userInfo = getUserInfo($_SESSION['userid']);
               <h3 class="font-mono text-md bg-pink-100 pl-1">Assignments</h3>
                 <p class="ml-2 font-bold">Old resources</p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="/mcq/student_assign_review1.1.php">All Assignments By Student</a></p>
+
+
                 <p class="ml-2 font-bold">New resources</p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../assign_create1.0.php">Assignment Create and List</a></p>
+                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../user/user_work_review.php">User Work Review (dev)</a></p>
               <h3 class="font-mono text-md bg-pink-100 pl-1">Multiple Choice Questions</h3>
                 <p class="ml-2 font-bold">Old resources</p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_list.php">List of MCQ Questions</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_quizcreate.php">MCQ Quiz Creator and List</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_preview.php">MCQ Preview (Old)</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_student_review.php">MCQ Student Work Review</a></p>
+                
                 
                 
                 <p class="ml-2 font-bold">New resources</p>
@@ -101,6 +105,7 @@ $userInfo = getUserInfo($_SESSION['userid']);
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../saq/saq_list1.1.php">SAQ Question List and Input</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../saq/saq_exercisecreate1.0.php">SAQ Exercise List and Input</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../saq/saq_assign_review1.1.php">SAQ Assignment Review</a></p>
+                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../user/class_flashcard_review.php">Class Flashcard Review (dev)</a></p>
               <h3 class="font-mono text-md bg-pink-100 pl-1">Non-Digital Entry</h3>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../nde/nde_exercise_create1.1.php">Non-Digital Entry: Create Exercise</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../nde/nde_exercise_review1.0.php" >Non-Digital Entry: Review Exercises</a></p>
@@ -127,6 +132,7 @@ $userInfo = getUserInfo($_SESSION['userid']);
           
           <h1 class="font-mono text-xl bg-pink-300 pl-1">Admin Resources</h1>
           <p class="ml-2 hover:bg-sky-100"><a class ="block" href="/user/admin_users.php" >User Details Edit</a></p>
+          <p class="ml-2 hover:bg-sky-100"><a class ="block" href="/user/login_log.php" >User Login Log</a></p>
                 
           
           <?php
