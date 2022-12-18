@@ -749,5 +749,41 @@ function loginLogReturn($limit = null) {
 return $responses;
 }
 
+function createSchool($name, $userAdmin, $postcode, $type) {
+  global $conn;
+  $sql = "INSERT INTO schools
+          (name, userAdmin, postcode, type)
+          VALUES (?,?,?,?)
+          ";
+  
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("ssss", $name, $userAdmin, $postcode, $type);
+  $stmt->execute();
+
+
+}
+
+function listSchools() {
+  global $conn;
+  $responses = array();
+  $sql = "SELECT *
+          FROM schools";
+  $stmt=$conn->prepare($sql);
+  //$stmt->bind_param("s", $topicSql);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($responses, $row);
+    }
+  }
+return $responses;
+}
+
+function createGroup() {
+
+};
+
+
 
 ?>

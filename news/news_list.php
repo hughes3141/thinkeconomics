@@ -3,6 +3,10 @@
 session_start();
 $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
+
 if (!isset($_SESSION['userid'])) {
   
   header("location: /login.php");
@@ -10,17 +14,7 @@ if (!isset($_SESSION['userid'])) {
 }
 
 
-$path = $_SERVER['DOCUMENT_ROOT'];
-$path .= "/../secrets/secrets.php";
-include($path);
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
 
 
 
