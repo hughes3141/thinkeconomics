@@ -726,18 +726,31 @@ function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endD
 }
 
 
-function loginLogReturn($limit = null) {
+function loginLogReturn($limit = null, $likeName = null) {
   global $conn;
   $responses = array();
   $sql = "SELECT l.*, u.name_first first, u.name_last last
           FROM login_log l
           LEFT JOIN users u
-          ON l.userId = u.id
+          ON l.userId = u.id";
+
+          if($likeName) {
+            $sql .= " WHERE
+                      u.name_first LIKE ?
+                      OR
+                      u.name_last LIKE ? ";
+          }
+
+  $sql .= "
           ORDER BY dateTime DESC;
 
           ";
 
   $stmt=$conn->prepare($sql);
+  if($likeName) {
+    $likeNameSearch = "%".$likeName."%";
+    $stmt->bind_param("ss", $likeNameSearch, $likeNameSearch);
+  }
   //$stmt->bind_param("s", $topicSql);
   $stmt->execute();
   $result = $stmt->get_result();
@@ -749,15 +762,18 @@ function loginLogReturn($limit = null) {
 return $responses;
 }
 
-function createSchool($name, $userAdmin, $postcode, $type) {
+//The following are used on school_creator.php:
+
+function createSchool($name, $userAdmin, $postcode, $type, $userCreate) {
   global $conn;
+  $date = date("Y-m-d H:i:s");
   $sql = "INSERT INTO schools
-          (name, userAdmin, postcode, type)
-          VALUES (?,?,?,?)
+          (name, userAdmin, postcode, type, dateCreated, dateUpdate, userCreate)
+          VALUES (?,?,?,?,?,?,?)
           ";
   
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("ssss", $name, $userAdmin, $postcode, $type);
+  $stmt->bind_param("ssssssi", $name, $userAdmin, $postcode, $type, $date, $date, $userCreate);
   $stmt->execute();
 
 
@@ -778,6 +794,18 @@ function listSchools() {
     }
   }
 return $responses;
+}
+
+function editSchool($schoolId, $name, $userAdmin, $postcode, $type) {
+  global $conn;
+  $date = date("Y-m-d H:i:s");
+  $sql = "UPDATE schools
+          SET name =?, userAdmin =?, postcode=?, type =?, dateUpdate =?
+          WHERE id = ?";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("sssssi", $name, $userAdmin, $postcode, $type, $date, $schoolId);
+  $stmt->execute();
+
 }
 
 function createGroup() {

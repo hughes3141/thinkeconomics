@@ -163,7 +163,7 @@ $result = $stmt->get_result();
           </div>
           <div class ="hide hide_<?=$row['id'];?>">
             <input type="hidden" name = "id" value = "<?=$row['id'];?>">
-            <input type="submit" value = "Submit"></input>
+            <input type="submit" name="submit" value = "Submit"></input>
           </div>
           
         </td>

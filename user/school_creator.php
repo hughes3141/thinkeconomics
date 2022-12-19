@@ -17,12 +17,14 @@ if (!isset($_SESSION['userid'])) {
   
 }
 
+
+
 else {
   $userInfo = getUserInfo($_SESSION['userid']);
   $userId = $userInfo['id'];
   $permissions = $userInfo['permissions'];
   if (!(str_contains($permissions, 'main_admin'))) {
-    //header("location: /index.php");
+    header("location: /index.php");
   }
 }
 
@@ -33,13 +35,19 @@ $style_input = ".hide {
                 input, button, textarea, th, td {
                   border: 1px solid black;
                 }
+                td, th {
+                  padding: 5px;
+                
                 ";
 
 include($path."/header_tailwind.php");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if($_POST['submit']=="Create New School") {
-    createSchool($_POST['name'], $_POST['userAdmin'], $_POST['postcode'],$_POST['type']);
+    createSchool($_POST['name'], $_POST['userAdmin'], $_POST['postcode'],$_POST['type'], $_SESSION['userid']);
+  }
+  if($_POST['submit']=="Submit") {
+    editSchool($_POST['id'], $_POST['name'], $_POST['userAdmin'], $_POST['postcode'],$_POST['type']);
   }
 }
 
@@ -73,9 +81,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <h2>List of Schools</h2>
         <table>
           <tr>
+            <th>id</th>
             <th>School Name</th>
             <th>userAdmin</th>
-            <th>Post Code</th>
+            <th>Postcode</th>
             <th>Type</th>
           </tr>
           <?php
@@ -85,10 +94,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <form method="post" action="">
                 <tr>
                   <td>
+                    <?=htmlspecialchars($school['id'])?>
+                  </td>
+                  <td>
                     <div class ="show_<?=$school['id']?>">
                       <?=htmlspecialchars($school['name'])?>
                     </div>
-                    <textarea  class="hide hide_<?=$school['id'];?>" name="name"><?=$school['name']?></textarea>
+                    <div class="hide hide_<?=$school['id'];?>">
+                      <textarea   name="name"><?=$school['name']?></textarea>
+                      <br>Created: 
+                      <?=htmlspecialchars($school['dateCreated'])?>
+                      <br>Last Edit:
+                      <?=htmlspecialchars($school['dateUpdate'])?>
+                    </div>
+                    
                   </td>
                   
                   <td>
@@ -100,10 +119,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   </td>
 
                   <td>
-                    <div class ="show_<?=$school['postcode']?>">
+                    <div class ="show_<?=$school['id']?>">
                       <?=htmlspecialchars($school['postcode'])?>
                     </div>
-                    <textarea  class="hide hide_<?=$school['id'];?>" name="postcode"><?=$school['userAdmin']?></textarea>
+                    <textarea  class="hide hide_<?=$school['id'];?>" name="postcode"><?=$school['postcode']?></textarea>
                   </td>
 
                   <td>
@@ -119,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class ="hide hide_<?=$school['id'];?>">
                       <input type="hidden" name = "id" value = "<?=$school['id'];?>">
-                      <input type="submit" value = "Submit"></input>
+                      <input type="submit" name ="submit" value = "Submit"></input>
                     </div>
                     
                   </td>

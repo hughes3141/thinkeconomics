@@ -125,7 +125,7 @@ $userInfo = getUserInfo($_SESSION['userid']);
 
         //Following block provides admin resources:
 
-        if (str_contains($userInfo['permissions'], "admin")) {
+        if (str_contains($userInfo['permissions'], "main_admin")) {
           
           
           ?>
@@ -133,6 +133,8 @@ $userInfo = getUserInfo($_SESSION['userid']);
           <h1 class="font-mono text-xl bg-pink-300 pl-1">Admin Resources</h1>
           <p class="ml-2 hover:bg-sky-100"><a class ="block" href="/user/admin_users.php" >User Details Edit</a></p>
           <p class="ml-2 hover:bg-sky-100"><a class ="block" href="/user/login_log.php" >User Login Log</a></p>
+          <p class="ml-2 hover:bg-sky-100"><a class ="block" href="/user/school_creator.php" >School Create and Manage</a></p>
+          
                 
           
           <?php
