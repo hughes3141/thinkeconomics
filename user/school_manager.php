@@ -43,18 +43,20 @@ $style_input = "
 
 include($path."/header_tailwind.php");
 
-if (count($_GET)>0) {
-  if($_GET['submit']=="Search Schools") {
-    $searchResults = listSchoolsDfe($_GET['search']);
-  }
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if($_POST['submit']=="Submit") {
     editSchoolDfe($_POST['id'], $_POST['userAdmin']);
     
   }
 }
+
+if (count($_GET)>0) {
+  if($_GET['submit']=="Search Schools") {
+    $searchResults = listSchoolsDfe($_GET['search']);
+  }
+}
+
+
 
 
 
