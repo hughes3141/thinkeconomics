@@ -23,9 +23,10 @@ include ("privacy_version.php");
 
 //$userId = $_SESSION['userid'];
 
-$firstName = $lastName = $username= $email_name = $privacy_bool = "";
-$username_err = $username_avail = $password_err = $email_err = $name_err= $privacy_err= "";
-$name_validate = $username_validate = $password_vaidate = $email_validate = 0;$fn_validate = $ln_validate = $user_avail_validate = $user_rule_validate = $pass_match_validate = $pass_rule_validate = $privacy_validate = 0;
+$firstName = $lastName = $username= $email_name = $privacy_bool = $usertype = "";
+$username_err = $username_avail = $password_err = $email_err = $name_err= $privacy_err = $usertype_err= "";
+$name_validate = $username_validate = $password_vaidate = $email_validate = 0;
+$fn_validate = $ln_validate = $user_avail_validate = $user_rule_validate = $pass_match_validate = $pass_rule_validate = $privacy_validate = $usertype_validate = 0;
 
 //Processing form data when form is submitted
 if($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -58,12 +59,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     $username = trim($_POST['username']);
 
     //Prepare statement to check username:
-    $sql = "SELECT username FROM users WHERE username = ?";
+    $sql = "SELECT LOWER(username) FROM users WHERE username = ?";
     if($stmt = $conn->prepare($sql)) {
       $stmt->bind_param("s", $param_username);
       
       //Set parameters
-      $param_username = $username;
+      $param_username = strtolower($username);
       if($stmt->execute()) {
         $stmt->store_result();
         if ($stmt->num_rows>0) {
@@ -174,6 +175,18 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
             }
         }
       }
+    
+
+    //User Type
+    //check to make sure user_type has been selected
+    
+    if(empty($_POST['user_type'])) {
+      $usertype_err = "Please select an option from above.";
+    } else {
+      $usertype_validate = 1;
+      $usertype = $_POST['user_type'];
+    }
+
 
     //Privacy Policy
     //check to make sure that privacy policy has been agreed
@@ -185,20 +198,22 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     }
 
 
+
+
   //PROCESS VALIDATED INFORMATION
-  if($name_validate ==1 AND $username_validate==1 AND $password_vaidate == 1 AND $email_validate == 1 AND $privacy_validate = 1) {
+  if($name_validate ==1 AND $username_validate==1 AND $password_vaidate == 1 AND $email_validate == 1 AND $privacy_validate = 1 AND $usertype_validate == 1) {
 
     //Enter new user information into users table
-    $sql = "INSERT INTO users (name_first, name_last, username, password_hash, usertype, permissions, email, active, time_added, privacy_agree, privacy_date, privacy_vers) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+    $sql = "INSERT INTO users (name_first, name_last, username, password_hash, usertype, permissions, userInput_userType, email, active, time_added, privacy_agree, privacy_date, privacy_vers) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
     
     $stmt = $conn->prepare($sql);
     
     $password_hash = password_hash($password1, PASSWORD_DEFAULT);
-    $usertype =$permissions = "student";
+    $usertype_std =$permissions = "student";
     $active = 1;
     $datetime = date("Y-m-d H:i:s");
 
-    $stmt->bind_param("sssssssisiss", $firstName, $lastName, $username, $password_hash, $usertype, $permissions, $email_name, $active, $datetime, $privacy_bool, $datetime, $version);
+    $stmt->bind_param("ssssssssisiss", $firstName, $lastName, $username, $password_hash, $usertype_std, $permissions, $usertype, $email_name, $active, $datetime, $privacy_bool, $datetime, $version);
     $stmt->execute();
 
 
@@ -289,7 +304,17 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                 <input type="text" name="email" id="email" class="border px-3 py-2  text-sm w-3/4 mb-2" placeholder ="Email" value = "<?= $email_name !="" ? $email_name : "";?>">
                 <p class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $email_err; ?></p>
 
-      </div> 
+      </div>
+      <h2>User Type</h2>
+      <div class="form-group">
+      <p>I am interested in regigtering for this website as a:</p>
+        <input type="radio" id="student_radio" name="user_type" value="student" checked>
+        <label for="student_radio">Student</label><br>
+        <input type="radio" id="teacher_radio" name="user_type" value="teacher" <?=($_POST['user_type']=="teacher") ? "checked" : ""?>>
+        <label for="teacher_radio">Teacher</label>
+        <p class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $usertype_err; ?></p>
+      </div>
+
 
       <h2>Privacy Policy</h2>
       <div class="form-group">
