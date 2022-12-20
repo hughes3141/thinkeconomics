@@ -808,6 +808,48 @@ function editSchool($schoolId, $name, $userAdmin, $postcode, $type) {
 
 }
 
+//The following is used in user\school_manager.php and takes data. This uses schools_dfe, which is a list of all schools in England.
+
+function listSchoolsDfe($search = null) {
+  global $conn;
+  $responses = array();
+  $sql = "SELECT *
+          FROM schools_dfe
+          WHERE ";
+      if($search) {
+        $sql .= "  (SCHNAME LIKE ? OR POSTCODE LIKE ?) AND ";
+      }
+  $sql .= "SCHSTATUS = 'Open'
+           LIMIT 100";
+  $stmt=$conn->prepare($sql);
+  if($search) {
+    $search = "%".$search."%";
+    $stmt->bind_param("ss", $search, $search);
+  }
+  
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($responses, $row);
+    }
+  }
+return $responses;
+
+}
+
+function editSchoolDfe($schoolId, $userAdmin) {
+  global $conn;
+  $date = date("Y-m-d H:i:s");
+  $sql = "UPDATE schools_dfe
+          SET userAdmin =?, dateUpdate =?
+          WHERE id = ?";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("ssi", $userAdmin, $date, $schoolId);
+  $stmt->execute();
+
+}
+
 function createGroup() {
 
 };
