@@ -107,7 +107,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             //$_SESSION["groupid"] = $groupid;
 
                             //Register login at login_log table:
-                            login_log($id);
+                            //login_log($id);
 
                             // Redirect user to previous page
                             if(($previous !="")&&($previous !="/")) {

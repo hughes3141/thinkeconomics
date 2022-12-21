@@ -244,7 +244,7 @@ Returns an array of all information about a user.
 
 function getUserInfo($userId) {
   global $conn;
-  $sql = "SELECT id, name, name_first, name_last, username, usertype, permissions, email, schoolid, groupid, groupid_array, active FROM users WHERE id = ? ";
+  $sql = "SELECT id, name, name_first, name_last, username, usertype, permissions, userInput_userType, email, schoolid, groupid, groupid_array, active FROM users WHERE id = ? ";
   $stmt=$conn->prepare($sql);
   $stmt->bind_param("i", $userId);
   $stmt->execute();
@@ -810,7 +810,7 @@ function editSchool($schoolId, $name, $userAdmin, $postcode, $type) {
 
 //The following is used in user\school_manager.php and takes data. This uses schools_dfe, which is a list of all schools in England.
 
-function listSchoolsDfe($search = null) {
+function listSchoolsDfe($search = null, $schoolId = null) {
   global $conn;
   $responses = array();
   $sql = "SELECT *
@@ -819,12 +819,18 @@ function listSchoolsDfe($search = null) {
       if($search) {
         $sql .= "  (SCHNAME LIKE ? OR POSTCODE LIKE ?) AND ";
       }
+      if($schoolId) {
+        $sql .= " id = ? AND ";
+      }
   $sql .= "SCHSTATUS = 'Open'
            LIMIT 100";
   $stmt=$conn->prepare($sql);
   if($search) {
     $search = "%".$search."%";
     $stmt->bind_param("ss", $search, $search);
+  }
+  if($schoolId) {
+    $stmt->bind_param("i", $schoolId);
   }
   
   $stmt->execute();
@@ -848,6 +854,18 @@ function editSchoolDfe($schoolId, $userAdmin) {
   $stmt->bind_param("ssi", $userAdmin, $date, $schoolId);
   $stmt->execute();
 
+}
+
+//The following is used in school_registration.php to update a user profile with a School Id:
+// Search register
+function linkUserToSchool($userId, $schoolId) {
+  global $conn;
+  $sql = "UPDATE users
+          SET schoolid =?
+          WHERE id = ?";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("ii", $schoolId, $userId);
+  $stmt->execute();
 }
 
 function createGroup() {

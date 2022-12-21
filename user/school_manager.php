@@ -90,7 +90,7 @@ if (count($_GET)>0) {
           <table class="w-full">
             <tr>
               <th>id</th>
-              <th>School  Name</th>
+              <th>School Name</th>
               <th>userAdmin</th>
               <th>Address</th>
               <th>Details</th>

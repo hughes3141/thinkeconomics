@@ -219,6 +219,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
     //Send to a new page
     echo "<script>window.location = '/'</script>";
+    unset($_SESSION['userid']);
+    
   }
 
 
