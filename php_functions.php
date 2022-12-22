@@ -868,9 +868,67 @@ function linkUserToSchool($userId, $schoolId) {
   $stmt->execute();
 }
 
-function createGroup() {
+//Used in class_creator.php:
+
+function createGroup($userCreate, $name, $subjectId, $schoolId, $teachers, $dateFinish, $optionGroup) {
+  //Used to create a group or class
+
+  global $conn;
+  $date = date("Y-m-d H:i:s");
+  $sql = "INSERT INTO groups
+          (name, school, teachers, subjectId, optionGroup, dateFinish, active, userCreate, dateCreated)
+          VALUES (?,?,?,?,?,?,?,?,?)
+          ";
+  $teachers = json_encode($teachers);
+  $active = 1;
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("sisissiis", $name, $schoolId, $teachers, $subjectId, $optionGroup, $dateFinish, $active, $userCreate, $date);
+  $stmt->execute();
+  //echo "New record created";
+
 
 };
+
+function listSubjects() {
+  global $conn;
+  $responses = array();
+  $sql = "SELECT *
+          FROM subjects";
+  $stmt=$conn->prepare($sql);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($responses, $row);
+    }
+  }
+return $responses;
+  
+
+}
+
+function getTeachersBySchoolId($schoolId) {
+  global $conn;
+  $responses = array();
+  $sql = "SELECT id, name, name_first, name_last, username, usertype, permissions, userInput_userType, email, schoolid, groupid, groupid_array, active 
+  FROM users 
+  WHERE permissions LIKE '%teacher%'
+  AND schoolid = ? 
+  ORDER BY name_last ASC";
+
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("i", $schoolId);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($responses, $row);
+    }
+  }
+  return $responses;
+
+
+}
 
 
 

@@ -43,6 +43,15 @@ $style_input = ".hide {
 include($path."/header_tailwind.php");
 
 if($_SERVER['REQUEST_METHOD']==='POST') {
+  //Create array from teachers:
+  $teachers = array();
+  for($x=0; $x<$_POST['teacher_count']; $x++) {
+    if(isset($_POST['teacher_'.$x])) {
+      array_push($teachers, $_POST['teacher_'.$x]);
+    }
+  }
+  //print_r($teachers);
+  createGroup($userId, $_POST['name'], $_POST['subjectId'], $userInfo['schoolid'], $teachers, $_POST['dateFinish'],  $_POST['optionGroup']);
 
 }
 
@@ -52,8 +61,9 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
     <h1 class="font-mono text-2xl bg-pink-400 pl-1">New Class Creator</h1>
     <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
       <?php
+      //print_r($userInfo);
       if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        print_r($_POST);
+        //print_r($_POST);
       }
       ?>
       <h2>Create a New Class</h2>
@@ -62,15 +72,41 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
           <input type="text" name="name">
           <br>
           <label>Subject:<label>
-          <select>
-
+          <select name="subjectId">
+            <option value=""></option>
+            <?php
+            $results = listSubjects();
+            foreach($results as $result) {
+              ?>
+              <option value="<?=$result['id']?>"><?=$result['level']?> <?=$result['name']?></option>
+              <?php
+            }
+            ?>
           </select>
           <br>
           <label>Option Group:<label>
           <input type="text" name="optionGroup">
           <br>
-          <label>Qualification Type:<label>
-          <input type="text" name="qualType">
+          <?php
+            $results = getTeachersBySchoolId($userInfo['schoolid']);
+            //print_r($results);
+            ?>
+          <label>Class Teacher<?=(count($results)>1) ? "s" : ""?>:</label>
+          <ul>
+            <?php
+            foreach($results as $row=>$result) {
+              ?>
+              <ul>
+                <input type="checkbox" id="checkbox_<?=$result['id']?>" name = "teacher_<?=$row?>" value = "<?=$result['id']?>" <?=($result['id'] == $userId) ? "checked " : ""?>></input>
+                <label for = "checkbox_<?=$result['id']?>"><?=$result['name_first']?> <?=$result['name_last']?></label>
+              </ul>
+              <?php
+            }
+            ?>
+            </ul>
+              <input type="hidden" name="teacher_count" value="<?=count($results)?>">
+            <?php
+          ?>
           <br>
           <label>Finish Date:<label>
           <input type="date" name="dateFinish">
