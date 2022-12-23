@@ -53,7 +53,7 @@ Returns a list of groups for whom the $userId is listed as a teacher
 */
 
 
-function getGroupsList($userId, $activeReturn = true) {
+function getGroupsList($userId, $activeReturn = true, $userCreate = null) {
   global $conn;
 
   $userIdSql = '%\"'.$userId.'\"%';
@@ -62,6 +62,11 @@ function getGroupsList($userId, $activeReturn = true) {
 
   if($activeReturn == false) {
     $sql = "SELECT * FROM groups WHERE teachers LIKE ?";
+  }
+
+  if($userCreate) {
+    $userIdSql = $userCreate;
+    $sql = "SELECT * FROM groups WHERE userCreate = ?";
   }
   
   $stmt=$conn->prepare($sql);
@@ -929,6 +934,7 @@ function getTeachersBySchoolId($schoolId) {
 
 
 }
+
 
 
 
