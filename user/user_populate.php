@@ -123,9 +123,18 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
 <script>
 
-  var schoolId = <?=$schoolId ?>
+  var schoolId = <?=$schoolId ?>;
+  var schoolName = <?php
+
+            $schoolInfo = listSchoolsDfe(null, $schoolId);
+            
+            echo "'".$schoolInfo[0]['SCHNAME'];
+            echo "';";
+
+  ?>
+
   
-  function addInputRow() {
+  function addInputRow(firstName = "", lastName = "", username = "", password="", email="") {
     var table = document.getElementById("inputTable");
     var rowNo = table.rows.length;
     var row = table.insertRow(rowNo);
@@ -135,27 +144,32 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       switch(i) {
         case 0:
           var label = "firstName_"+(rowNo-1);
-          cells[i].innerHTML = "<input name="+label+" id = "+label+" onchange= 'usernameSuggest(this)'>"
+          var value = "value = '"+firstName+"'";
+          cells[i].innerHTML = "<input name="+label+" id = "+label+" onchange= 'usernameSuggest(this)' "+value+">"
           break;
         case 1:
           var label = "lastName_"+(rowNo-1);
-          cells[i].innerHTML = "<input name="+label+" id = "+label+" onchange= 'usernameSuggest(this)'>"
+          var value = "value = '"+lastName+"'";
+          cells[i].innerHTML = "<input name="+label+" id = "+label+" onchange= 'usernameSuggest(this)' "+value+">"
           break;
         case 2:
           var label = "username_"+(rowNo-1);
+          var value = "value = '"+username+"'";
           //cells[i].innerHTML = "<input name='username_"+(rowNo-1)+"'>";
           break;
         case 3:
           var label = "password_"+(rowNo-1);
+          var value = "value = '"+password+"'";
           //cells[i].innerHTML = "<input name='password_"+(rowNo-1)+"'>";
           break;
         case 4:
           var label = "email_"+(rowNo-1);
+          var value = "value = '"+email+"'";
           //cells[i].innerHTML = "<input name='email_"+(rowNo-1)+"'>";
           break;
       }
       if(i>1) {
-        cells[i].innerHTML = "<input name="+label+" id = "+label+">";
+        cells[i].innerHTML = "<input name="+label+" id = "+label+" "+value+">";
       }
     }
     
@@ -172,7 +186,8 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
     if((firstName.value != "") && (lastName.value != "")) {
       var suggest = firstName.value.toLowerCase().replace(/\s|'/g, "").substring(0,1)+lastName.value.toLowerCase().replace(/\s|'/g, "")/*.substring(0,5)*/;
-      username.value = suggest/*+schoolId*/;
+      suggest = suggest+"_"+schoolName.toLowerCase().substring(0,3);
+      username.value = suggest;
 
     }
 
