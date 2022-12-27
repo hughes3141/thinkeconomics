@@ -25,7 +25,7 @@ include ("privacy_version.php");
 
 $firstName = $lastName = $username= $email_name = $privacy_bool = $usertype = "";
 $username_err = $username_avail = $password_err = $email_err = $name_err= $privacy_err = $usertype_err= "";
-$name_validate = $username_validate = $password_vaidate = $email_validate = 0;
+$name_validate = $username_validate = $password_validate = $email_validate = 0;
 $fn_validate = $ln_validate = $user_avail_validate = $user_rule_validate = $pass_match_validate = $pass_rule_validate = $privacy_validate = $usertype_validate = 0;
 
 //Processing form data when form is submitted
@@ -52,170 +52,60 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
   }
 
   //USERNAME  
-  //Check if username is already taken
-  if(empty(trim($_POST['username']))) {
-    $username_err = "Please enter a username";
-  } else {
-    $username = trim($_POST['username']);
 
-    //Prepare statement to check username:
-    $sql = "SELECT LOWER(username) FROM users WHERE username = ?";
-    if($stmt = $conn->prepare($sql)) {
-      $stmt->bind_param("s", $param_username);
-      
-      //Set parameters
-      $param_username = strtolower($username);
-      if($stmt->execute()) {
-        $stmt->store_result();
-        if ($stmt->num_rows>0) {
-          $username_err = "<b>".$username."</b> is registered by another user. Please try another username.";
-        } else {
-          $username_avail = "Success! <b>".$username."</b> is available!";
-          $user_avail_validate = 1;
-        }
-      }
-    }
-  }
-
-  //Check to see that username fits rules:
-  
-  /*
-  //$regexp = "^(?=.{8,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$";
-
-  From: https://stackoverflow.com/questions/12018245/regular-expression-to-validate-username
-  //$regexp = "/^[a-zA-Z0-9](_(?!(\.|_))|\.(?!(_|\.))|[a-zA-Z0-9]){6,18}[a-zA-Z0-9]$";
-  //The above means it's Only contains alphanumeric characters, underscore and dot, Underscore and dot can't be at the end or start of a username (e.g _username / username_ / .username / username.)., Underscore and dot can't be next to each other (e.g user_.name)., Underscore or dot can't be used multiple times in a row (e.g user__name / user..name)., Number of characters must be between 8 to 20.
-
-  //Follows these rules: Must start with letter, 6-32 characters, Letters and numbers only
-  //$regexp = "/^[A-Za-z][A-Za-z0-9]{5,31}$/";
-  */
-  $regexp = "/^[a-zA-Z0-9](_(?!(\.|_))|\.(?!(_|\.))|[a-zA-Z0-9]){4,18}[a-zA-Z0-9]$/";
-
-  if($username != "") {
-    if(!preg_match($regexp, $username)) {
-      $username_err = "'<b>$username</b>' is invalid.";
-      $username_avail = "";
-    } else {
-      $user_rule_validate = 1;
-    }
-  }
-
-  if ($user_avail_validate ==1 and $user_rule_validate ==1) {
-    $username_validate = 1;
-  }
+  $results = validateUsername($_POST['username']);
+  $username_err = $results['username_err'];
+  $username_avail = $results['username_avail'];
+  $username_validate = $results['username_validate'];
+  $username = $results['username'];
 
 
   //PASSWORD
-  //Check to see if password meets criteria:
-    if(empty(trim($_POST['password1'])) and empty(trim($_POST['password1']))) {
-      $password_err = "Please enter a password";
-    } else {
-      $password1 = trim($_POST['password1']);
-      $password2 = trim($_POST['password2']);
 
-      if ($password1 != $password2) {
-        $password_err = "Passwords to not match";
-      }
-      else {
-        $pass_match_validate = 1;
-        /*
-        https://stackoverflow.com/questions/19605150/regex-for-password-must-contain-at-least-eight-characters-at-least-one-number-a
-
-        Minimum eight characters, at least one uppercase letter, one lowercase letter and one number:
-        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$"
-      
-        Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character:
-        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
-        
-        Modified from previous two:  Minimum eight characters, at least one uppercase letter, one lowercase letter and one number, MAY CONTAIN SPECIAL CHARACTERS
-        "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/"
-
-        */
-      $regexp = "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/";
+  $results = validatePassword($_POST['password1'], $_POST['password2']);
+  $password_err = $results['password_err'];
+  $password_validate = $results['password_validate'];
+  $password1 = $results['password'];
 
 
-        if(!preg_match($regexp, $password1)) {
-          $password_err = "This password does not fit the criteria.";
-        } else {
-          $pass_rule_validate = 1;
-        }
-        
-      }
 
-    }
-    if ($pass_match_validate ==1 and $pass_rule_validate==1) {
-      $password_vaidate = 1;
-    }
 
-    //EMAIL
-    //check to ensure valid email format:
-      if(empty(trim($_POST['email']))) {
-        $email_err = "Please enter an email address";
-      } else {
-        $email_name = trim($_POST['email']);
+  //EMAIL
 
-        if (!filter_var($email_name, FILTER_VALIDATE_EMAIL)) {
-          $email_err = "<b>".$email_name."</b> is not a valid email address";
-        } else {
-            //Prepare statement to check email:
-            $sql = "SELECT email FROM users WHERE email = ?";
-            if($stmt = $conn->prepare($sql)) {
-              $stmt->bind_param("s", $param_username);
-              
-              //Set parameters
-              $param_username = $email_name;
-              if($stmt->execute()) {
-                $stmt->store_result();
-                if ($stmt->num_rows>0) {
-                  $email_err = "This email address is already in use. Please try another.";
-                } else {
-                  $email_validate =1;
-                }
-              }
-            }
-        }
-      }
+  $results=validateEmail($_POST['email']);
+  $email_err = $results['email_err'];
+  $email_validate = $results['email_validate'];
+  $email_name = $results['email'];
+
     
 
-    //User Type
-    //check to make sure user_type has been selected
-    
-    if(empty($_POST['user_type'])) {
-      $usertype_err = "Please select an option from above.";
-    } else {
-      $usertype_validate = 1;
-      $usertype = $_POST['user_type'];
-    }
+  //User Type
+  //check to make sure user_type has been selected
+  
+  if(empty($_POST['user_type'])) {
+    $usertype_err = "Please select an option from above.";
+  } else {
+    $usertype_validate = 1;
+    $usertype = $_POST['user_type'];
+  }
 
 
-    //Privacy Policy
-    //check to make sure that privacy policy has been agreed
-    if(empty($_POST['privacy_agree'])) {
-      $privacy_err = "You must agree to the privacy policy before registering.";
-    } else {
-      $privacy_validate = 1;
-      $privacy_bool = 1;
-    }
-
-
-
+  //Privacy Policy
+  //check to make sure that privacy policy has been agreed
+  if(empty($_POST['privacy_agree'])) {
+    $privacy_err = "You must agree to the privacy policy before registering.";
+  } else {
+    $privacy_validate = 1;
+    $privacy_bool = 1;
+  }
 
   //PROCESS VALIDATED INFORMATION
-  if($name_validate ==1 AND $username_validate==1 AND $password_vaidate == 1 AND $email_validate == 1 AND $privacy_validate = 1 AND $usertype_validate == 1) {
+  if($name_validate ==1 AND $username_validate==1 AND $password_validate == 1 AND $email_validate == 1 AND $privacy_validate = 1 AND $usertype_validate == 1) {
 
     //Enter new user information into users table
-    $sql = "INSERT INTO users (name_first, name_last, username, password_hash, usertype, permissions, userInput_userType, email, active, time_added, privacy_agree, privacy_date, privacy_vers) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    
-    $stmt = $conn->prepare($sql);
-    
-    $password_hash = password_hash($password1, PASSWORD_DEFAULT);
-    $usertype_std =$permissions = "student";
-    $active = 1;
-    $datetime = date("Y-m-d H:i:s");
+    insertNewUserIntoUsers($firstName, $lastName, $username, $password1, $usertype, $email_name, $version, $privacy_bool);
 
-    $stmt->bind_param("ssssssssisiss", $firstName, $lastName, $username, $password_hash, $usertype_std, $permissions, $usertype, $email_name, $active, $datetime, $privacy_bool, $datetime, $version);
-    $stmt->execute();
-
+   
 
     //Send to a new page
     echo "<script>window.location = '/'</script>";
@@ -344,7 +234,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         </div>
 </div>
 
-<?//= $name_validate."||".$username_validate."||".$password_vaidate."||".$email_validate; ?>
+<?//= $name_validate."||".$username_validate."||".$password_validate."||".$email_validate; ?>
 
 
 

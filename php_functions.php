@@ -936,6 +936,212 @@ function getTeachersBySchoolId($schoolId) {
 }
 
 
+//The following suite of functions are used in pages that validate new user information
+
+
+function validateUsername($username) {
+
+  /*
+  This function takes as input $username : string and returns array with values:
+  ['username_err'] => Message about why there is error with username;
+  ['username_avail'] => Message if username is available.
+  ['username_validate'] => Bool to show whether this input username is valid as username in app.
+  */
+  
+  global $conn;
+  $username_err = $username_avail = "";
+  $username_validate =  $user_avail_validate = $user_rule_validate = 0;
+
+  
+
+  //USERNAME  
+  //Check if username is already taken
+  if(empty(trim($username))) {
+    $username_err = "Please enter a username";
+  } else {
+    $username = trim($username);
+
+    //Prepare statement to check username:
+    $sql = "SELECT LOWER(username) FROM users WHERE username = ?";
+    if($stmt = $conn->prepare($sql)) {
+      $stmt->bind_param("s", $param_username);
+      
+      //Set parameters
+      $param_username = strtolower($username);
+      if($stmt->execute()) {
+        $stmt->store_result();
+        if ($stmt->num_rows>0) {
+          $username_err = "<b>".$username."</b> is registered by another user. Please try another username.";
+        } else {
+          $username_avail = "Success! <b>".$username."</b> is available!";
+          $user_avail_validate = 1;
+        }
+      }
+    }
+  }
+
+  //Check to see that username fits rules:
+  
+  /*
+  //$regexp = "^(?=.{8,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$";
+
+  From: https://stackoverflow.com/questions/12018245/regular-expression-to-validate-username
+  //$regexp = "/^[a-zA-Z0-9](_(?!(\.|_))|\.(?!(_|\.))|[a-zA-Z0-9]){6,18}[a-zA-Z0-9]$";
+  //The above means it's Only contains alphanumeric characters, underscore and dot, Underscore and dot can't be at the end or start of a username (e.g _username / username_ / .username / username.)., Underscore and dot can't be next to each other (e.g user_.name)., Underscore or dot can't be used multiple times in a row (e.g user__name / user..name)., Number of characters must be between 8 to 20.
+
+  //Follows these rules: Must start with letter, 6-32 characters, Letters and numbers only
+  //$regexp = "/^[A-Za-z][A-Za-z0-9]{5,31}$/";
+  */
+  $regexp = "/^[a-zA-Z0-9](_(?!(\.|_))|\.(?!(_|\.))|[a-zA-Z0-9]){4,18}[a-zA-Z0-9]$/";
+
+  if($username != "") {
+    if(!preg_match($regexp, $username)) {
+      $username_err = "'<b>$username</b>' is invalid.";
+      $username_avail = "";
+    } else {
+      $user_rule_validate = 1;
+    }
+  }
+
+  if ($user_avail_validate ==1 and $user_rule_validate ==1) {
+    $username_validate = 1;
+  }
+ 
+  $results = array(
+    'username_err' => $username_err, 
+    'username_avail' => $username_avail,
+    'username_validate' => $username_validate,
+    'username' => $username);
+
+  return $results;
+
+
+}
+
+function validatePassword($password1, $password2) {
+
+  global $conn;
+  $password_err = "";
+  $password_validate = $pass_match_validate = $pass_match_validate = $pass_rule_validate = 0;
+
+  //PASSWORD
+  //Check to see if password meets criteria:
+    if(empty(trim($password1)) and empty(trim($password2))) {
+      $password_err = "Please enter a password";
+    } else {
+      $password1 = trim($password1);
+      $password2 = trim($password2);
+
+      if ($password1 != $password2) {
+        $password_err = "Passwords to not match";
+      }
+      else {
+        $pass_match_validate = 1;
+        /*
+        https://stackoverflow.com/questions/19605150/regex-for-password-must-contain-at-least-eight-characters-at-least-one-number-a
+
+        Minimum eight characters, at least one uppercase letter, one lowercase letter and one number:
+        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$"
+      
+        Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character:
+        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+        
+        Modified from previous two:  Minimum eight characters, at least one uppercase letter, one lowercase letter and one number, MAY CONTAIN SPECIAL CHARACTERS
+        "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/"
+
+        */
+      $regexp = "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/";
+
+
+        if(!preg_match($regexp, $password1)) {
+          $password_err = "This password does not fit the criteria.";
+        } else {
+          $pass_rule_validate = 1;
+        }
+        
+      }
+
+    }
+    if ($pass_match_validate ==1 and $pass_rule_validate==1) {
+      $password_validate = 1;
+    }
+
+    $results = array(
+      "password_err" => $password_err,
+      "password_validate" => $password_validate,
+      "password" => $password1
+    );
+
+    return $results;
+
+}
+
+function validateEmail($email) {
+
+  global $conn;
+  $email_err = "";
+  $email_validate = 0;
+
+  //EMAIL
+    //check to ensure valid email format:
+      if(empty(trim($email))) {
+        $email_err = "Please enter an email address";
+      } else {
+        $email_name = trim($email);
+
+        if (!filter_var($email_name, FILTER_VALIDATE_EMAIL)) {
+          $email_err = "<b>".$email_name."</b> is not a valid email address";
+        } else {
+            //Prepare statement to check email:
+            $sql = "SELECT email FROM users WHERE email = ?";
+            if($stmt = $conn->prepare($sql)) {
+              $stmt->bind_param("s", $param_username);
+              
+              //Set parameters
+              $param_username = $email_name;
+              if($stmt->execute()) {
+                $stmt->store_result();
+                if ($stmt->num_rows>0) {
+                  $email_err = "This email address is already in use. Please try another.";
+                } else {
+                  $email_validate =1;
+                }
+              }
+            }
+        }
+      }
+
+    $results = array(
+      "email_err" => $email_err,
+      "email_validate" => $email_validate,
+      "email"=> $email_name
+    );
+
+    return $results;
+
+}
+
+function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $usertype, $email_name, $version, $privacy_bool = 0, $usertype_std = "student", $permissions = "student",  $active = 1) {
+
+  global $conn;
+
+  //Enter new user information into users table
+  $sql = "INSERT INTO users (name_first, name_last, username, password_hash, usertype, permissions, userInput_userType, email, active, time_added, privacy_agree, privacy_date, privacy_vers) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    
+  $stmt = $conn->prepare($sql);
+  
+  $password_hash = password_hash($password, PASSWORD_DEFAULT);
+  //$usertype_std =$permissions = "student";
+  //$active = 1;
+  $datetime = date("Y-m-d H:i:s");
+
+  $stmt->bind_param("ssssssssisiss", $firstName, $lastName, $username, $password_hash, $usertype_std, $permissions, $usertype, $email_name, $active, $datetime, $privacy_bool, $datetime, $version);
+  $stmt->execute();
+
+
+
+}
+
 
 
 ?>
