@@ -49,6 +49,8 @@ getGroupsList(int $userId, $activeReturn bool = true) : array
 
 Returns a list of groups for whom the $userId is listed as a teacher
 
+used in: 
+- user/user_populate.php
 
 */
 
@@ -58,19 +60,23 @@ function getGroupsList($userId, $activeReturn = true, $userCreate = null) {
 
   $userIdSql = '%\"'.$userId.'\"%';
 
-  $sql = "SELECT * FROM groups WHERE teachers LIKE ? AND active = 1";
+  $sql = "SELECT * FROM groups WHERE teachers LIKE ? ";
 
-  if($activeReturn == false) {
-    $sql = "SELECT * FROM groups WHERE teachers LIKE ?";
+  if($activeReturn == true) {
+    $sql .= " AND active = 1 ";
   }
 
   if($userCreate) {
-    $userIdSql = $userCreate;
-    $sql = "SELECT * FROM groups WHERE userCreate = ?";
+    $sql .= " AND userCreate = ?";
   }
   
   $stmt=$conn->prepare($sql);
+
+  if($userCreate) {
+    $stmt->bind_param("si", $userIdSql, $userCreate);
+  } else {
   $stmt->bind_param("s", $userIdSql);
+  }
   $stmt->execute();
   $result = $stmt->get_result();
 
@@ -1081,6 +1087,7 @@ function validateEmail($email) {
   global $conn;
   $email_err = "";
   $email_validate = 0;
+  $email_name = "";
 
   //EMAIL
     //check to ensure valid email format:
@@ -1121,12 +1128,12 @@ function validateEmail($email) {
 
 }
 
-function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $usertype, $email_name, $version, $privacy_bool = 0, $usertype_std = "student", $permissions = "student",  $active = 1) {
+function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $usertype, $email_name, $version, $privacy_bool = 0, $usertype_std = "student", $permissions = "student",  $active = 1, $schoolId = null, $userCreate = null, $groupIdArray = "") {
 
   global $conn;
 
   //Enter new user information into users table
-  $sql = "INSERT INTO users (name_first, name_last, username, password_hash, usertype, permissions, userInput_userType, email, active, time_added, privacy_agree, privacy_date, privacy_vers) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  $sql = "INSERT INTO users (name_first, name_last, username, password_hash, usertype, permissions, userInput_userType, email, active, time_added, privacy_agree, privacy_date, privacy_vers, schoolid, userCreate, groupid_array) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     
   $stmt = $conn->prepare($sql);
   
@@ -1135,7 +1142,7 @@ function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $us
   //$active = 1;
   $datetime = date("Y-m-d H:i:s");
 
-  $stmt->bind_param("ssssssssisiss", $firstName, $lastName, $username, $password_hash, $usertype_std, $permissions, $usertype, $email_name, $active, $datetime, $privacy_bool, $datetime, $version);
+  $stmt->bind_param("ssssssssisissiis", $firstName, $lastName, $username, $password_hash, $usertype_std, $permissions, $usertype, $email_name, $active, $datetime, $privacy_bool, $datetime, $version, $schoolId, $userCreate, $groupIdArray);
   $stmt->execute();
 
 
