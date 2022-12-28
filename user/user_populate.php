@@ -59,7 +59,8 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       'last' => $_POST['lastName_'.$x],
       'username' => $_POST['username_'.$x],
       'password' => $_POST['password_'.$x],
-      'email' => $_POST['email_'.$x],
+      // EMAIL DISABLE
+      //'email' => $_POST['email_'.$x],
       'schoolId' => $schoolId,
       'userCreate' => $userId,
       'userType' => 'student',
@@ -118,17 +119,18 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
 
     //EMAIL
-
+    /*
+    EMAIL DISABLE
     $results=validateEmail($user['email']);
     $email_err = $results['email_err'];
     $email_validate = $results['email_validate'];
     $email_name = $results['email'];
-
+    */
 
     //PROCESS VALIDATED INFORMATION
 
 
-    if($name_validate ==1 AND $username_validate==1 AND $password_validate == 1 AND $email_validate == 1 ) {
+    if($name_validate ==1 AND $username_validate==1 AND $password_validate == 1 /* EMAIL DISABLE AND $email_validate == 1 */) {
 
       //Enter new user information into users table
       insertNewUserIntoUsers($firstName, $lastName, $username, $password1, $user['userType'], $email_name, "", 0, $user['userType'], $user['permissions'], 1, $user['schoolId'], $user['userCreate'], $user['groupid_array'] );
@@ -203,7 +205,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
             <th>Last Name</th>
             <th>Username</th>
             <th>Password</th>
-            <th>Email Address</th>
+            <!--<th>Email Address</th>-->
           </tr>
         </table>
         <input type = "hidden" id="inputCount" name="inputCount">
@@ -236,7 +238,8 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
     var rowNo = table.rows.length;
     var row = table.insertRow(rowNo);
     var cells = [];
-    for (var i=0; i<5; i++) {
+    //Email has been taken out. To restore, iterate over loop with i<5
+    for (var i=0; i<4; i++) {
       cells[i] = row.insertCell(i);
       switch(i) {
         case 0:
