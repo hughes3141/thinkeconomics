@@ -58,6 +58,21 @@ $style_input = ".hide {
       
     }
 
+    if($_POST['submit'] == "Remove Student") {
+      $selectedGroupId = $_POST['groupId'];
+      updateStudentGroup($selectedGroupId, $_POST['id'], "remove");
+      
+    }
+
+    if($_POST['submit'] == "Remove Teacher") {
+      $selectedGroupId = $_POST['groupId'];
+      $groupInfo = getGroupInfoById($selectedGroupId);
+      $userCreate = $groupInfo['userCreate'];
+      if($_POST['id'] != $userCreate) {
+        updateGroupTeachers($selectedGroupId, $_POST['id'], "remove");
+      }
+    }
+
 
   }
 
@@ -72,7 +87,7 @@ include($path."/header_tailwind.php");
         //echo $userId;
         //print_r($userInfo);
         if($_SERVER['REQUEST_METHOD']==='POST') {
-          //print_r($_POST);
+          print_r($_POST);
         }
 
       ?>
@@ -106,6 +121,7 @@ include($path."/header_tailwind.php");
           $groupUsers = getGroupUsers($selectedGroupId);
           $groupInfo = getGroupInfoById($selectedGroupId);
           $groupSchoolId = $groupInfo['school'];
+          $groupUserCreate = $groupInfo['userCreate'];
           echo "<pre>";
           //print_r($groupUsers);
           //print_r($groupInfo);
@@ -123,11 +139,24 @@ include($path."/header_tailwind.php");
         <?php
           $groupTeachers = ($groupInfo['teachers']);
           foreach ($groupTeachers as $user) {
+            //echo $user;
             $teacherName = getUserInfo($user);
             $teacherName = $teacherName['name_first']." ".$teacherName['name_last'];
             ?>
             <tr>
-              <td><?=$teacherName?>
+              <form method="post" action ="">
+                <td><?=$teacherName?></td>
+                <td>
+                  <div>
+                    <button type ="button" id = "button_<?=$user?>" onclick = "changeVisibility(this, <?=$user?>)"">Edit</button>
+                  </div>
+                  <div class ="hide hide_<?=$user?>">
+                    <input type="hidden" name = "id" value = "<?=$user?>">
+                    <input type ="hidden" name="groupId" value="<?=$selectedGroupId?>">
+                    <input type="submit" name ="submit" value = "Remove Teacher" <?=($user == $groupUserCreate) ? "disabled" : ""?>></input>
+                  </div>
+                </td>
+             </form>
             </tr>
             <?php
 
@@ -166,7 +195,19 @@ include($path."/header_tailwind.php");
             array_push($classMembers, $user['id']);
             ?>
             <tr>
-              <td><?=$user['name_first']?> <?=$user['name_last']?></td>
+              <form method="post" action="">
+                <td><?=$user['name_first']?> <?=$user['name_last']?></td>
+                <td>
+                  <div>
+                      <button type ="button" id = "button_<?=$user['id']?>" onclick = "changeVisibility(this, <?=$user['id']?>)"">Edit</button>
+                    </div>
+                    <div class ="hide hide_<?=$user['id']?>">
+                      <input type="hidden" name = "id" value = "<?=$user['id']?>">
+                      <input type ="hidden" name="groupId" value="<?=$selectedGroupId?>">
+                      <input type="submit" name ="submit" value = "Remove Student" <?=($user['id'] == $groupUserCreate) ? "disabled" : ""?>></input>
+                    </div>
+                </td>
+              </form>
             </tr>
             <?php
           }
