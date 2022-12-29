@@ -133,7 +133,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
     if($name_validate ==1 AND $username_validate==1 AND $password_validate == 1 /* EMAIL DISABLE AND $email_validate == 1 */) {
 
       //Enter new user information into users table
-      insertNewUserIntoUsers($firstName, $lastName, $username, $password1, $user['userType'], $email_name, "", 0, $user['userType'], $user['permissions'], 1, $user['schoolId'], $user['userCreate'], $user['groupid_array'] );
+      insertNewUserIntoUsers($firstName, $lastName, $username, $password1, $user['userType'], $email_name, "", 0, $user['userType'], $user['permissions'], 1, $user['schoolId'], $user['userCreate'], $user['groupid_array'], 1);
 
       } else {
 
