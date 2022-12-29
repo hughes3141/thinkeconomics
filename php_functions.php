@@ -210,6 +210,42 @@ function getGroupUsers($groupId, $activeReturn = true) {
 
 }
 
+//Used in group_manager.php:
+
+function getSchoolUsers($schoolId, $type = "student", $active = true) {
+  /*
+  Returns array of userIds for which $schoolId is listed as school id
+  */
+
+  global $conn;
+  $results = array();
+  $sql = "SELECT id, name_first, name_last, username, permissions, email, schoolid, groupid_array, active
+  FROM users
+  WHERE schoolid = ?";
+
+  if($type == "student") {
+    $sql .= " AND permissions NOT LIKE '%teacher%' AND permissions NOT LIKE '%admin%' ";
+  }
+
+  if($active == true) {
+    $sql .= " AND active = 1";
+  }
+
+  $sql .= " ORDER BY name_last";
+
+  $stmt =  $conn->prepare($sql);
+  $stmt->bind_param("i", $schoolId);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
+}
+
 
 /*
 
@@ -1128,12 +1164,12 @@ function validateEmail($email) {
 
 }
 
-function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $usertype, $email_name, $version, $privacy_bool = 0, $usertype_std = "student", $permissions = "student",  $active = 1, $schoolId = null, $userCreate = null, $groupIdArray = "") {
+function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $usertype, $email_name, $version, $privacy_bool = 0, $usertype_std = "student", $permissions = "student",  $active = 1, $schoolId = null, $userCreate = null, $groupIdArray = "", $passwordRecord = 0) {
 
   global $conn;
 
   //Enter new user information into users table
-  $sql = "INSERT INTO users (name_first, name_last, username, password_hash, usertype, permissions, userInput_userType, email, active, time_added, privacy_agree, privacy_date, privacy_vers, schoolid, userCreate, groupid_array) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  $sql = "INSERT INTO users (name_first, name_last, username, password_hash, usertype, permissions, userInput_userType, email, active, time_added, privacy_agree, privacy_date, privacy_vers, schoolid, userCreate, groupid_array, password) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     
   $stmt = $conn->prepare($sql);
   
@@ -1142,8 +1178,89 @@ function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $us
   //$active = 1;
   $datetime = date("Y-m-d H:i:s");
 
-  $stmt->bind_param("ssssssssisissiis", $firstName, $lastName, $username, $password_hash, $usertype_std, $permissions, $usertype, $email_name, $active, $datetime, $privacy_bool, $datetime, $version, $schoolId, $userCreate, $groupIdArray);
+  $passwordEntry = "";
+
+  if($passwordRecord != 0) {
+    $passwordEntry = $password;
+  }
+
+  $stmt->bind_param("ssssssssisissiiss", $firstName, $lastName, $username, $password_hash, $usertype_std, $permissions, $usertype, $email_name, $active, $datetime, $privacy_bool, $datetime, $version, $schoolId, $userCreate, $groupIdArray, $passwordEntry);
   $stmt->execute();
+
+
+
+}
+
+
+function updateGroupTeachers($groupId, $teacherId, $method = "add") {
+  global $conn;
+  $sql1 = "SELECT id, teachers
+          FROM groups
+          WHERE id = ?";
+  $stmt=$conn->prepare($sql1);
+  $stmt->bind_param("i", $groupId);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    $row1 = $result->fetch_assoc();
+  }
+  
+  $listedTeachers = json_decode($row1['teachers']);
+
+  if($method == "add") {
+    if(array_search($teacherId, $listedTeachers) === false) {
+      array_push($listedTeachers, $teacherId);
+    }
+  } 
+  if($method == "remove") {
+    if (($key = array_search($teacherId, $listedTeachers)) !== false) {
+      unset($listedTeachers[$key]);
+    }
+  }
+  $listedTeachers = json_encode($listedTeachers);
+
+  $sql2 = "UPDATE groups
+          SET teachers = ?
+          WHERE id = ?";
+  $stmt=$conn->prepare($sql2);
+  $stmt->bind_param("si", $listedTeachers, $groupId);
+  $stmt->execute();
+  
+  
+}
+
+function updateStudentGroup($groupId, $studentId, $method = "add") {
+  global $conn;
+  $sql = "SELECT id, groupid_array
+          FROM users
+          WHERE id = ?";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("i", $studentId);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    $row = $result->fetch_assoc();
+  }
+  $listedGroups = json_decode($row['groupid_array']);
+
+  if($method == "add") {
+    if(array_search($groupId, $listedGroups) === false) {
+      array_push($listedGroups, $groupId);
+    }
+  } 
+  if($method == "remove") {
+    if (($key = array_search($groupId, $listedGroups)) !== false) {
+      unset($listedGroups[$key]);
+    }
+  }
+  $listedGroups = json_encode($listedGroups);
+  $sql2 = "UPDATE users
+          SET groupid_array = ?
+          WHERE id = ?";
+  $stmt=$conn->prepare($sql2);
+  $stmt->bind_param("si", $listedGroups, $studentId);
+  $stmt->execute();
+  
 
 
 
