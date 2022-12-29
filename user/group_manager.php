@@ -73,6 +73,13 @@ $style_input = ".hide {
       }
     }
 
+    if($_POST['submit'] == "Edit Details") {
+      $selectedGroupId = $_POST['groupId'];
+
+        updateGroupInformation($selectedGroupId, $_POST['name'], $_POST['subjectId'], $_POST['optionGroup'], $_POST['dateFinish']);
+      
+    }
+
 
   }
 
@@ -87,7 +94,7 @@ include($path."/header_tailwind.php");
         //echo $userId;
         //print_r($userInfo);
         if($_SERVER['REQUEST_METHOD']==='POST') {
-          print_r($_POST);
+          //print_r($_POST);
         }
 
       ?>
@@ -122,6 +129,7 @@ include($path."/header_tailwind.php");
           $groupInfo = getGroupInfoById($selectedGroupId);
           $groupSchoolId = $groupInfo['school'];
           $groupUserCreate = $groupInfo['userCreate'];
+          $groupName = $groupInfo['name'];
           echo "<pre>";
           //print_r($groupUsers);
           //print_r($groupInfo);
@@ -129,6 +137,43 @@ include($path."/header_tailwind.php");
 
         
       ?>
+      <h2>Group Details</h2>
+        <form method="post" action="">
+          <p>
+            <label>Class Name:<label>
+            <input type="text" name="name" value ="<?=$groupName?>">
+          </p>
+          <p>
+            <label>Subject:<label>
+            <select name="subjectId">
+              <option value=""></option>
+              <?php
+              $results = listSubjects();
+              foreach($results as $result) {
+                $selected = "";
+                if($result['id'] == $groupInfo['subjectId']) {
+                  $selected = "selected";
+                }
+                ?>
+                <option value="<?=$result['id']?>" <?=$selected?>><?=$result['level']?> <?=$result['name']?></option>
+                <?php
+              }
+              ?>
+            </select>
+          </p>
+          <p>
+            <label>Option Group:<label>
+            <input type="text" name="optionGroup" value ="<?=$groupInfo['optionGroup']?>">
+          </p>
+          <p>
+            <label>Finish Date:<label>
+            <input type="date" name="dateFinish" value ="<?=$groupInfo['dateFinish']?>">
+          </p>
+          <p>
+            <input type ="hidden" name="groupId" value="<?=$selectedGroupId?>">
+            <input type="submit" name="submit" value="Edit Details">
+          </p>
+          </form>
       <h2>Teachers</h2>
       <table>
         <tr>
@@ -171,10 +216,12 @@ include($path."/header_tailwind.php");
               $results = getTeachersBySchoolId($groupSchoolId);
               
               foreach($results as $result) {
-
+                print_r($result);
+                if ($groupUserCreate != $result['id']) {
                 ?>
                   <option value="<?=$result['id']?>"><?=$result['name_first']?> <?=$result['name_last']?></option> 
                 <?php
+                }
               }
           ?>
         </select>

@@ -1266,6 +1266,17 @@ function updateStudentGroup($groupId, $studentId, $method = "add") {
 
 }
 
+function updateGroupInformation($groupId, $name, $subjectId, $optionGroup, $dateFinish) {
+
+  global $conn;
+  $sql = "UPDATE groups
+          SET name =?, subjectId = ?, optionGroup =?, dateFinish = ?
+          WHERE id = ?";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("sissi", $name, $subjectId, $optionGroup, $dateFinish, $groupId);
+  $stmt->execute();
+}
+
 
 
 ?>
