@@ -1278,5 +1278,50 @@ function updateGroupInformation($groupId, $name, $subjectId, $optionGroup, $date
 }
 
 
+//Used in mcq_review.php
+
+function getMCQquizResults($userId, $responseId = null) {
+  global $conn;
+  $responses = array();
+
+  //AAAHHH fix the responses table to have quizID, not join on quiz_name!!!
+  $sql = "SELECT r.*, a.assignName, a.id assignId, a.dateDue
+          FROM responses r
+          
+          LEFT JOIN assignments a
+          ON r.assignID = a.id
+          WHERE userID = ?
+          ORDER BY r.id";
+
+  if($responseId) {
+    $sql = "SELECT r.*, u.name_first, u.name_last
+            FROM responses r
+            LEFT JOIN users u
+            ON r.userID = u.id
+            WHERE r.id = ?";
+  }
+
+  $stmt= $conn->prepare($sql);
+  $stmt->bind_param("i", $userId);
+  if($responseId) {
+    $stmt->bind_param("i", $responseId);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($responses, $row);
+    }
+  }
+  if ($responseId) {
+    $responses = $responses[0];
+    if ($responses['userID'] != $userId) {
+      return array();
+    }
+  }
+  return $responses;
+
+}
+
 
 ?>
