@@ -3,7 +3,7 @@
     <footer class="bg-white">
       <div class="container mx-auto px-8">
         <div class="w-full flex flex-col md:flex-row py-6">
-          <div class="flex-1 mb-6 text-black">
+          <div class="flex-1 mb-6 text-black mr-4">
             <a class="text-pink-300 no-underline hover:no-underline font-bold text-2xl lg:text-4xl" href="#">
               <!--Icon from: http://www.potlabicons.com/ -->
               <svg class="h-8 fill-current inline" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>@keyframes check {
@@ -19,8 +19,8 @@
               thinkeconomics.co.uk
             </a>
           </div>
-          <div class ="hidden">
-            <div class="flex-1">
+          
+            <div class="flex-1 hidden">
               <p class="uppercase text-gray-500 md:mb-6">Links</p>
               <ul class="list-reset mb-6">
                 <li class="mt-2 inline-block mr-2 md:block md:mr-0">
@@ -34,7 +34,7 @@
                 </li>
               </ul>
             </div>
-            <div class="flex-1">
+            <div class="flex-1 hidden">
               <p class="uppercase text-gray-500 md:mb-6">Legal</p>
               <ul class="list-reset mb-6">
                 <li class="mt-2 inline-block mr-2 md:block md:mr-0">
@@ -45,7 +45,7 @@
                 </li>
               </ul>
             </div>
-            <div class="flex-1">
+            <div class="flex-1 hidden">
               <p class="uppercase text-gray-500 md:mb-6">Social</p>
               <ul class="list-reset mb-6">
                 <li class="mt-2 inline-block mr-2 md:block md:mr-0">
@@ -59,7 +59,7 @@
                 </li>
               </ul>
             </div>
-            <div class="flex-1">
+            <div class="flex-1 hidden">
               <p class="uppercase text-gray-500 md:mb-6">Company</p>
               <ul class="list-reset mb-6">
                 <li class="mt-2 inline-block mr-2 md:block md:mr-0">
@@ -73,8 +73,9 @@
                 </li>
               </ul>
             </div>
-          </div>
+         
         </div>
+        <div class="text-gray-500 text-center font-mono ">&#169;&nbsp;<?=date("Y")?> thinkeconomics.co.uk</div>
       </div>
   
     </footer>

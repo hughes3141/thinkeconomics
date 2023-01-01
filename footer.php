@@ -1,3 +1,3 @@
 </div>
-<div class="style cour footer container" > &copy;2022 thinkeconomics.co.uk
+<div class="style cour footer container" > &#169;&nbsp;<?=date("Y")?> thinkeconomics.co.uk
 </div>
