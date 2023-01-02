@@ -129,7 +129,10 @@ $style_input = ".hide {
 
       echo "Record entered successfully";
 
-      echo "<script>window.location.replace('/user/user_mcq_review2.0.php')</script>";
+      $responseId= getMCQresponseByUsernameTimestart($userid, $timeStart);
+   
+
+      echo "<script>window.location.replace('/user/user_mcq_review.php?responseId=".$responseId."')</script>";
 
 
      
@@ -146,17 +149,19 @@ include($path."/header_tailwind.php");
 
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
-    <h1 class="font-mono text-2xl bg-pink-400 pl-1">Group (Classes) Manager</h1>
+    <h1 class="font-mono text-2xl bg-pink-400 pl-1">MCQ Exercise</h1>
     <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
       <?php
+      /*
         print_r($quizInfo);
         echo "<br>";
         print_r($_GET);
         echo "<br>";
         print_r($_POST);
+        */
       ?>
-    <h1>Multiple Choice Questions: <?=$quizInfo['quizName']?></h1>
-    <p>Name: <?=$userInfo['name_first']?> <?=$userInfo['name_last']?></p>
+    <h1 class="font-mono text-xl bg-pink-300 pl-1"><?=$quizInfo['quizName']?></h1>
+    <p class="font-mono text-lg bg-pink-200 pl-1">Name: <?=$userInfo['name_first']?> <?=$userInfo['name_last']?></p>
 
 
     <form id="myForm" method="post" action="" style="display:none  ;">
@@ -173,28 +178,31 @@ include($path."/header_tailwind.php");
 
     </form>
 
-<button onclick="submit()" style="display:">Click to submit</button>
+<button onclick="submit()" style="display:none">Click to submit</button>
 <button onclick="view()" style ="display:none;">Click to see console</button>
 
 
-<div>
+<div class="p-2">
 <h2>Question <span id="q1"></span>/<span id="q2"></span></h2>
-<p><em id = "q4"></em></p>
+<p class="text-xs"><em id = "q4"></em></p>
+<div class="flex flex-row">
+  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75" value ="Previous Question" id="previous2">
+  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75" value ="Submit" id="submit2">
+  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75" value ="Next Question" id="next2">
+</div>
 
-<input type="button" value ="Previous Question" id="previous2">
-<input type="button" value ="Submit" id="submit2">
-<input type="button" value ="Next Question" id="next2">
-<br>
-<img src="" alt="Question" id ="question" >
-<br>
-	<div id= "d1">
+<img src="" class="lg:w-3/4 mx-auto mt-3" alt="Question" id ="question" >
+
+	<div id= "d1" class="">
 
 	</div>
 
 <br>
-<input type="button" value ="Previous Question" id="previous">
-<input type="button" value ="Submit" id="submit">
-<input type="button" value ="Next Question" id="next">
+<div class="flex flex-row">
+  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75" value ="Previous Question" id="previous">
+  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75" value ="Submit" id="submit">
+  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75" value ="Next Question" id="next">
+</div>
 
 </div>
 

@@ -1323,5 +1323,22 @@ function getMCQquizResults($userId, $responseId = null) {
 
 }
 
+function getMCQresponseByUsernameTimestart($userId, $timeStart) {
+  //returns $responseId: the id of the entry in the response table
+  global $conn;
+  $responseId = "";
+  $sql = "SELECT * FROM responses WHERE userID= ? AND timeStart= ?";
+  $stmt = $conn->prepare($sql);
+      $stmt->bind_param("is", $userId, $timeStart);
+      $stmt->execute();
+      $result = $stmt->get_result();
+      if($result->num_rows>0) {
+        $row = $result->fetch_assoc();
+        $responseId = $row;
+      }
+    return $responseId['id'];
+
+
+}
 
 ?>
