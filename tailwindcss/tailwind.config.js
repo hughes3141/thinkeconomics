@@ -15,6 +15,8 @@ module.exports = {
 
     "../revision/**/*.{html,js,php}",
 
+    "../mcq/**/*.{html,js,php}",
+
 
     "../node_modules/flowbite/**/*.js"
 

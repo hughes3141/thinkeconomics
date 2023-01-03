@@ -186,9 +186,9 @@ include($path."/header_tailwind.php");
 <h2>Question <span id="q1"></span>/<span id="q2"></span></h2>
 <p class="text-xs"><em id = "q4"></em></p>
 <div class="flex flex-row">
-  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75" value ="Previous Question" id="previous2">
-  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75" value ="Submit" id="submit2">
-  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75" value ="Next Question" id="next2">
+  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1" value ="Previous Question" id="previous2">
+  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1" value ="Submit" id="submit2">
+  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1" value ="Next Question" id="next2">
 </div>
 
 <img src="" class="lg:w-3/4 mx-auto mt-3" alt="Question" id ="question" >
@@ -199,9 +199,9 @@ include($path."/header_tailwind.php");
 
 <br>
 <div class="flex flex-row">
-  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75" value ="Previous Question" id="previous">
-  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75" value ="Submit" id="submit">
-  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75" value ="Next Question" id="next">
+  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1" value ="Previous Question" id="previous">
+  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1" value ="Submit" id="submit">
+  <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1" value ="Next Question" id="next">
 </div>
 
 </div>
