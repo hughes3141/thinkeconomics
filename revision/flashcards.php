@@ -5,6 +5,10 @@ session_start();
 
 $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");  
+
 
 if (!isset($_SESSION['userid'])) {
   
@@ -12,10 +16,18 @@ if (!isset($_SESSION['userid'])) {
   
 }
 
-$path = $_SERVER['DOCUMENT_ROOT'];
-include($path."/php_header.php");
-include($path."/php_functions.php");
-include ($path."/header_tailwind.php");
+else {
+  $userInfo = getUserInfo($_SESSION['userid']);
+  $userId = $_SESSION['userid'];
+  $schoolId = $userInfo['schoolid'];
+  $permissions = $userInfo['permissions'];
+  //print_r($userInfo);
+  $userGroups = json_decode($userInfo['groupid_array']);
+  //print_r($userGroups);
+  
+}
+
+
 
 /*
 Notes on command GET variables:
@@ -27,6 +39,7 @@ Notes on command GET variables:
     - $_GET['restrict'] = 'minutes' : 3 mins and 5 mins
 */
 
+include($path."/header_tailwind.php");
 
 ?>
 
@@ -233,7 +246,7 @@ Notes on command GET variables:
 
               $sql="SELECT * FROM groups WHERE id = ?";
               $stmt = $conn->prepare($sql);
-              $stmt->bind_param("i", $_SESSION['groupid']);
+              $stmt->bind_param("i", $userGroups[0]);
               $stmt->execute();
               $result = $stmt->get_result();
               $user = $result->fetch_assoc();
