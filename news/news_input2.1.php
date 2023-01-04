@@ -127,19 +127,6 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $query2 = "SELECT * FROM news_data ORDER BY id DESC";
 
-// Using OOP:
-
-$path = $_SERVER['DOCUMENT_ROOT'];
-$path .= "/../secrets/secrets.php";
-include($path);
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
 
 // prepare and bind
 $stmt = $conn->prepare("INSERT INTO news_data (headline, link, datePublished, explanation, explanation_long, topic, keyWords, dateCreated, user, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
