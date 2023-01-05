@@ -23,6 +23,12 @@ else {
   if (!(str_contains($permissions, 'teacher'))) {
     header("location: /index.php");
   }
+  $groupsList = getGroupsList($userId, true, $userId);
+  //print_r($groupsList);
+  $hasGroups = 0;
+  if(count($groupsList)>0) {
+    $hasGroups = 1;
+  }
 }
 
 $style_input = ".hide {
@@ -182,36 +188,50 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         //print_r($userCollect);
         echo "</pre>";
       }
+      //echo $hasGroups;
+      if ($hasGroups == 1)
+      {
+        ?>
+        <p>Create new users</p>
+        <form method="post" action = "" >
+          <label>Class:</label>
+          
+          <select name="groupId">
+            <?php
+              $results = getGroupsList($userId, true, $userId);
+              foreach($results as $result) {
+                ?>
+                  <option value="<?=$result['id']?>"><?=$result['name']?></option>
+                
+                <?php
+              }
+            ?>
+          </select>
+          
+          <table id="inputTable" class="w-full table-fixed">
+            <tr>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Username</th>
+              <th>Password</th>
+              <!--<th>Email Address</th>-->
+            </tr>
+          </table>
+          <input type = "hidden" id="inputCount" name="inputCount">
+          <button type="button" onclick="addInputRow();">Add row</button> 
+          <input type="submit" name="submit" value ="Create New Users">
+        </form>
+        <?php
+      }
+
+      if ($hasGroups == 0) {
+        ?>
+        <p>You need to make some classes before you can populate them with students!</p>
+        <p>Go to <a href="class_creator.php" class="text-cyan-700 hover:underline">Class Creator</a> to make some new classes.</p>
+        <?php
+      }
+
       ?>
-      <p>Create new users</p>
-      <form method="post" action = "">
-        <label>Class:</label>
-        
-        <select name="groupId">
-          <?php
-            $results = getGroupsList($userId, true, $userId);
-            foreach($results as $result) {
-              ?>
-                 <option value="<?=$result['id']?>"><?=$result['name']?></option>
-              
-              <?php
-            }
-          ?>
-        </select>
-        
-        <table id="inputTable" class="w-full table-fixed">
-          <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Username</th>
-            <th>Password</th>
-            <!--<th>Email Address</th>-->
-          </tr>
-        </table>
-        <input type = "hidden" id="inputCount" name="inputCount">
-        <button type="button" onclick="addInputRow();">Add row</button> 
-        <input type="submit" name="submit" value ="Create New Users">
-      </form>
 
       
     </div>
@@ -303,7 +323,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
   function passwordSuggest(inputElement) {
     var rowNum = inputElement.parentElement.parentElement.rowIndex -1;
-    var school = schoolName.toLowerCase().substring(0,8);
+    var school = schoolName.toLowerCase().replaceAll(' ', '').substring(0,8);
     var firstName = document.getElementById('firstName_'+rowNum);
     var lastName = document.getElementById('lastName_'+rowNum);
     var password = document.getElementById('password_'+rowNum);

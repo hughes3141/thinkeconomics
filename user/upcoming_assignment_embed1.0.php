@@ -112,6 +112,7 @@ function getUpcomingAssignments($groupId) {
 }
 }
 
+if ($userInfo['groupid_array'] !="") {
 $assignments = getUpcomingAssignmentsArray($groupid);
 
 //print_r($assignments);
@@ -153,7 +154,7 @@ if(count($assignments) == 0) {
       if ($value['type'] == "mcq") {
         echo "<td>";
 // THIS IS WHERE TO CHANGE THE LINK AFTER MAKING CHANGES TO MCQ PAGE
-        echo "<a href = '../mcq/login.php?assignid=".$value['id']."'>Link to MCQ</a>";
+        echo "<a href = '../mcq/mcq_exercise.php?assignid=".$value['id']."'>Link to MCQ</a>";
         echo "</td>";
       }
       
@@ -172,11 +173,13 @@ if(count($assignments) == 0) {
     
   
   }
+
+  
   
   ?> </table> <?php
   
 }
-
+}
 
 
 ?>

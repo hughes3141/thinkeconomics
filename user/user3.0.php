@@ -25,6 +25,7 @@ if (!isset($_SESSION['userid'])) {
 
 
 $userInfo = getUserInfo($_SESSION['userid']);
+//print_r($userInfo);
 
 ?>
 
@@ -49,7 +50,7 @@ $userInfo = getUserInfo($_SESSION['userid']);
             <?php include "upcoming_assignment_embed1.0.php";?>
           </div>
           <p class="ml-2 hover:bg-sky-100">
-            <a class ="block" href="user_mcq_review2.0.php">MCQ Review</a>
+            <a class ="block" href="user_mcq_review.php">MCQ Review</a>
           </p>
           <p class="ml-2 hover:bg-sky-100">
             <a class ="block" href="user_saq_review2.0.php">Short Answer Questions Review</a>

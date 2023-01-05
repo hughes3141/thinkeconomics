@@ -1088,11 +1088,11 @@ function validatePassword($password1, $password2) {
         Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character:
         "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
         
-        Modified from previous two:  Minimum eight characters, at least one uppercase letter, one lowercase letter and one number, MAY CONTAIN SPECIAL CHARACTERS
-        "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/"
+        Modified from previous two:  Minimum six characters, at least one uppercase letter, one lowercase letter and one number, MAY CONTAIN SPECIAL CHARACTERS
+        "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/"
 
         */
-      $regexp = "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/";
+      $regexp = "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/";
 
 
         if(!preg_match($regexp, $password1)) {

@@ -23,6 +23,11 @@ else {
   if (!(str_contains($permissions, 'teacher'))) {
     header("location: /index.php");
   }
+  //print_r($userInfo);
+  $hasSchool = 0;
+  if ($userInfo['schoolid'] != "") {
+    $hasSchool = 1;
+  }
 }
 
 $style_input = ".hide {
@@ -66,53 +71,68 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         //print_r($_POST);
       }
       ?>
-      <h2>Create a New Class</h2>
-        <form method="post" action="">
-          <label>Class Name:<label>
-          <input type="text" name="name">
-          <br>
-          <label>Subject:<label>
-          <select name="subjectId">
-            <option value=""></option>
-            <?php
-            $results = listSubjects();
-            foreach($results as $result) {
-              ?>
-              <option value="<?=$result['id']?>"><?=$result['level']?> <?=$result['name']?></option>
+      
+      <?php
+      if($hasSchool == 1) {
+        ?>
+          <h2>Create a New Class</h2>
+          <form method="post" action="">
+            <label>Class Name:<label>
+            <input type="text" name="name">
+            <br>
+            <label>Subject:<label>
+            <select name="subjectId">
+              <option value=""></option>
               <?php
-            }
-            ?>
-          </select>
-          <br>
-          <label>Option Group:<label>
-          <input type="text" name="optionGroup">
-          <br>
-          <?php
-            $results = getTeachersBySchoolId($userInfo['schoolid']);
-            //print_r($results);
-            ?>
-          <label>Class Teacher<?=(count($results)>1) ? "s" : ""?>:</label>
-          <ul>
-            <?php
-            foreach($results as $row=>$result) {
+              $results = listSubjects();
+              foreach($results as $result) {
+                ?>
+                <option value="<?=$result['id']?>"><?=$result['level']?> <?=$result['name']?></option>
+                <?php
+              }
               ?>
-              <ul>
-                <input type="checkbox" id="checkbox_<?=$result['id']?>" name = "teacher_<?=$row?>" value = "<?=$result['id']?>" <?=($result['id'] == $userId) ? "checked " : ""?>></input>
-                <label for = "checkbox_<?=$result['id']?>"><?=$result['name_first']?> <?=$result['name_last']?></label>
+            </select>
+            <br>
+            <label>Option Group:<label>
+            <input type="text" name="optionGroup">
+            <br>
+            <?php
+              $results = getTeachersBySchoolId($userInfo['schoolid']);
+              //print_r($results);
+              ?>
+            <label>Class Teacher<?=(count($results)>1) ? "s" : ""?>:</label>
+            <ul>
+              <?php
+              foreach($results as $row=>$result) {
+                ?>
+                <ul>
+                  <input type="checkbox" id="checkbox_<?=$result['id']?>" name = "teacher_<?=$row?>" value = "<?=$result['id']?>" <?=($result['id'] == $userId) ? "checked " : ""?>></input>
+                  <label for = "checkbox_<?=$result['id']?>"><?=$result['name_first']?> <?=$result['name_last']?></label>
+                </ul>
+                <?php
+              }
+              ?>
               </ul>
+                <input type="hidden" name="teacher_count" value="<?=count($results)?>">
               <?php
-            }
             ?>
-            </ul>
-              <input type="hidden" name="teacher_count" value="<?=count($results)?>">
-            <?php
-          ?>
-          <br>
-          <label>Finish Date:<label>
-          <input type="date" name="dateFinish">
-          <br>
-          <input type="submit" name="submit" value="Create New Class">
-        </form>
+            <br>
+            <label>Finish Date:<label>
+            <input type="date" name="dateFinish">
+            <br>
+            <input type="submit" name="submit" value="Create New Class">
+          </form>
+        <?php
+      }
+
+      if ($hasSchool == 0) {
+        ?>
+        <p>You need to make register to a school before you can create a class!</p>
+        <p>Go to <a href="school_registration.php" class="text-cyan-700 hover:underline">School Registration</a> to register your account to a school.</p>
+        <?php
+
+      }
+      ?>
 
     </div>
 </div>

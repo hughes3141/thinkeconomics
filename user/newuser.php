@@ -133,7 +133,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         echo "<p>";
       ?>
 
-      <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" id="inputForm">
+      <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" id="inputForm" autocomplete="off">
 
       <div class="form-group">
                 <label class ="text-gray-600 pb-1 ml-2 mb-2 pt-1">First Name:</label>
@@ -161,7 +161,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                   } else {
                     echo "";
                   }
-                  ?>" onchange = "this.form.submit()">
+                  ?>" onchange = "//this.form.submit()">
                 <p class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $username_err; ?></p>
                 <p class="ml-3 mt-1 py-0 text-pink-400 border-sky-300"><?php echo $username_avail; ?></p>
 
@@ -169,7 +169,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
       <h2>Password</h2>
       <p>Passwords must:
           <ul>
-            <li>Have minimum 8 characters</li>
+            <li>Have minimum 6 characters</li>
             <li>At least one uppercase letter</li>
             <li>At least one lowercase letter</li>
             <li>At least one number</li>
