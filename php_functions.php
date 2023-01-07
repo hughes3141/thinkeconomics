@@ -248,6 +248,45 @@ function getSchoolUsers($schoolId, $type = "student", $active = true) {
 
 
 /*
+Used in:
+-user_manager.php
+*/
+function getUsercreateUsers($userCreate,  $active = true, $orderBy = "name_last") {
+
+  /*
+  Returns array of students for whom $userCreate was the userCreate
+  */
+
+  global $conn;
+  $results = array();
+  $sql = "SELECT id, name_first, name_last, username, permissions, email, schoolid, groupid_array, active, userCreate, password
+  FROM users
+  WHERE userCreate = ?";
+
+if($active == true) {
+  $sql .= " AND active = 1";
+}
+
+  if($orderBy == "name_last")  {
+    $sql .= " ORDER BY name_last";
+  }
+
+  
+
+  $stmt =  $conn->prepare($sql);
+  $stmt->bind_param("i", $userCreate);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
+}
+
+/*
 
 maxOrder(str $tableName) : int
 
@@ -1275,6 +1314,20 @@ function updateGroupInformation($groupId, $name, $subjectId, $optionGroup, $date
   $stmt=$conn->prepare($sql);
   $stmt->bind_param("sissi", $name, $subjectId, $optionGroup, $dateFinish, $groupId);
   $stmt->execute();
+}
+
+function updateUserInfo($userId, $name_first, $name_last, $username, $password, $active) {
+  global $conn;
+  $sql = "UPDATE users
+  SET name_first =?, name_last = ?, username =?, password = ?, password_hash = ?, active = ?
+  WHERE id = ?";
+
+  $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("sissi", $name_first, $name_last, $username, $password, $password_hash, $active, $userId);
+  $stmt->execute();
+
 }
 
 

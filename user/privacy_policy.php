@@ -33,8 +33,10 @@ include($path."/php_functions.php");
 //Very little file that only contains the vairabble $version to be ouput to database.
 include ("privacy_version.php");
 
-$userId =  $_SESSION['temp_userid'];
-
+if(isset($_SESSION['temp_userid']))
+{
+  $userId =  $_SESSION['temp_userid'];
+}
 function updatePrivacy($userId) {
   global $conn;
   date_default_timezone_set('Europe/London');
@@ -87,16 +89,17 @@ include ($path."/header_tailwind.php");
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">thinkeconomics.co.uk Privacy and Data Policy</h1>
   <div class="container mx-auto p-2 text-lg mt-2 bg-white text-black">
     <?php
-
+  /*
     print_r($_POST);
     print_r($_SESSION);
     echo "<br>";
     echo $previous;
+    */
 
       if(isset($_GET['login_redirect'])) {
 
         ?>
-        <p class="bg-pink-400 text-2xl font-mono">Hello!</p>
+        <p class="bg-pink-400 text-xl font-mono pl-1">Hello!</p>
         <p>Sorry to interrupt you, but we've changed our privacy policy recently. We'd love for you to have a look and agree to the new one before you log in.</p>
         <p>Would you mind having a look and then agreeing you're okay with it? Then you can get back to your learning</p>
         <p>Thanks from the team here at thinkeconomics.co.uk!</p>
@@ -107,7 +110,8 @@ include ($path."/header_tailwind.php");
       }
 
     ?>
-    <p class="bg-pink-400 text-2xl font-mono">Okay, here&rsquo;s the short version without the legal stuff:</p>
+    <p class="bg-pink-400 text-xl font-mono pl-1">The short version:</p>
+    <p>(without the legal stuff)</p>
       <ul class="list-disc  ml-6">
         <li>Our aim is to help people learn.</li>
         <li>We will collect only enough data about you to help you learn more effectively.</li>
@@ -116,7 +120,7 @@ include ($path."/header_tailwind.php");
     <p>We are teachers. We are not interested in making money off your data.</p>
     <p>That&rsquo;s pretty much it!</p>
     <p>If you want to know the rest, then have a look at the following:</p>
-  <h1 class="font-mono text-2xl bg-pink-400 pl-1">Detailed Privacy and Data Policy</h1>
+  <h1 class="font-mono text-xl bg-pink-400 pl-1">Detailed Privacy and Data Policy</h1>
     <p>thinkeconomics.co.uk is a small UK-based company. This privacy policy will explain how our organization uses the personal data we collect from you when you use our website.</p>
     <p>Topics:</p>
       <ul class="list-disc  ml-6">
