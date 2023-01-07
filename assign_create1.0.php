@@ -143,7 +143,7 @@ if(isset($_POST['type'])) {
   $teacherid = $userId;
 
 if($assignType == "mcq") {
-  $sql= "SELECT * FROM mcq_quizzes WHERE userCreate = ? /*ORDER BY dateCreated DESC*/";
+  $sql= "SELECT * FROM mcq_quizzes /*WHERE userCreate = ? ORDER BY dateCreated DESC*/";
 }
 else if ($assignType == "saq") {
   $sql= "SELECT * FROM saq_exercises WHERE userCreate = ?";
@@ -157,7 +157,7 @@ else if ($assignType == "nde") {
 
 
   $stmt = $conn->prepare($sql);
-  $stmt -> bind_param("s", $teacherid);
+  //$stmt -> bind_param("s", $teacherid);
   $stmt -> execute();
 
 $result = $stmt->get_result();

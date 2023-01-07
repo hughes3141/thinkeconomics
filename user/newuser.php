@@ -209,7 +209,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
       <p>I am interested in regigtering for this website as a:</p>
         <input type="radio" id="student_radio" name="user_type" value="student" checked>
         <label for="student_radio">Student</label><br>
-        <input type="radio" id="teacher_radio" name="user_type" value="teacher" <?=($_POST['user_type']=="teacher") ? "checked" : ""?>>
+        <input type="radio" id="teacher_radio" name="user_type" value="teacher" <?=(isset($_POST['user_type']) && $_POST['user_type']=="teacher") ? "checked" : ""?>>
         <label for="teacher_radio">Teacher</label>
         <p class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $usertype_err; ?></p>
       </div>

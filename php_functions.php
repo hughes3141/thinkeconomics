@@ -1020,7 +1020,7 @@ function getTeachersBySchoolId($schoolId) {
 //The following suite of functions are used in pages that validate new user information
 
 
-function validateUsername($username) {
+function validateUsername($username, $checkUsed = true) {
 
   /*
   This function takes as input $username : string and returns array with values:
@@ -1041,24 +1041,26 @@ function validateUsername($username) {
     $username_err = "Please enter a username";
   } else {
     $username = trim($username);
-
-    //Prepare statement to check username:
-    $sql = "SELECT LOWER(username) FROM users WHERE username = ?";
-    if($stmt = $conn->prepare($sql)) {
-      $stmt->bind_param("s", $param_username);
-      
-      //Set parameters
-      $param_username = strtolower($username);
-      if($stmt->execute()) {
-        $stmt->store_result();
-        if ($stmt->num_rows>0) {
-          $username_err = "<b>".$username."</b> is registered by another user. Please try another username.";
-        } else {
-          $username_avail = "Success! <b>".$username."</b> is available!";
-          $user_avail_validate = 1;
+    //Control to allow function to work without checking username (e.g. for use in update validations)
+    if($checkUsed == true) {
+      //Prepare statement to check username:
+      $sql = "SELECT LOWER(username) FROM users WHERE username = ?";
+      if($stmt = $conn->prepare($sql)) {
+        $stmt->bind_param("s", $param_username);
+        
+        //Set parameters
+        $param_username = strtolower($username);
+        if($stmt->execute()) {
+          $stmt->store_result();
+          if ($stmt->num_rows>0) {
+            $username_err = "<b>".$username."</b> is registered by another user. Please try another username.";
+          } else {
+            $username_avail = "Success! <b>".$username."</b> is available!";
+            $user_avail_validate = 1;
+          }
         }
       }
-    }
+    } else ($user_avail_validate = 1);
   }
 
   //Check to see that username fits rules:
@@ -1325,7 +1327,7 @@ function updateUserInfo($userId, $name_first, $name_last, $username, $password, 
   $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("sissi", $name_first, $name_last, $username, $password, $password_hash, $active, $userId);
+  $stmt->bind_param("sssssii", $name_first, $name_last, $username, $password, $password_hash, $active, $userId);
   $stmt->execute();
 
 }

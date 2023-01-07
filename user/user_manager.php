@@ -76,7 +76,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
       //USERNAME  
 
-      $results = validateUsername($_POST['username']);
+      $results = validateUsername($_POST['username'], false);
       $username_err = $results['username_err'];
       $username_avail = $results['username_avail'];
       $username_validate = $results['username_validate'];
@@ -92,10 +92,19 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
 
 
+
+
       //PROCESS VALIDATED INFORMATION
 
+      $message ="";
 
-      if($name_validate ==1 AND $username_validate==1 AND $password_validate == 1 /* EMAIL DISABLE AND $email_validate == 1 */) {
+
+      if($name_validate ==1 AND $username_validate==1 AND $password_validate == 1) {
+        
+        updateUserInfo($_POST['id'], $_POST['name_first'], $_POST['name_last'], $_POST['username'], $_POST['password'], $_POST['active']);
+        $message = "Record updated";
+
+
         }
 
         //UPdate user information into users table
@@ -110,8 +119,13 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
     <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
       <?php
           if($_SERVER['REQUEST_METHOD']==='POST') {
-            print_r($_POST);
+            //print_r($_POST);
+            echo $name_err;
             echo $username_err;
+            echo $password_err;
+            echo $message;
+            //echo "<br>";
+            //echo $name_validate.$username_validate.$password_validate;
           }
           $students= getUsercreateUsers($userId, false);
           if(count($students)>0){
@@ -178,10 +192,14 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
                         $groups = json_decode($row['groupid_array']);
                         //print_r($groups);
                         if($groups[0]!="0") {
-                          foreach($groups as $group) {
+                          foreach($groups as $key => $group) {
                             $groupInfo = getGroupInfoById($group);
                             //print_r($groupInfo);
                             echo $groupInfo['name'];
+                            if($key < (count($groups))) {
+                              echo "<br>";
+
+                            }
                           }
                         }
                         ?>
@@ -244,7 +262,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
           }
       ?>
-
+    <p>To enter new users, <a class="hover:underline" href="user_populate.php">click here</a></p>
     </div>
 </div>
 
