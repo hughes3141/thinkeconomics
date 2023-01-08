@@ -18,14 +18,16 @@ if (!isset($_SESSION['userid'])) {
   
 }
 
+else {
+  $userInfo = getUserInfo($_SESSION['userid']);
+  $userId = $_SESSION['userid'];
+  $permissions = $userInfo['permissions'];
 
-?>
 
-<?php include "../header_tailwind.php"; 
+}
 
+include "../header_tailwind.php"; 
 
-$userInfo = getUserInfo($_SESSION['userid']);
-//print_r($userInfo);
 
 ?>
 
@@ -39,25 +41,48 @@ $userInfo = getUserInfo($_SESSION['userid']);
 <!--Following block provides student resources:-->
 
   <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
-    <h1 class="font-mono text-xl bg-pink-400 pl-1">User Portal</h1>
+    <h1 class="font-mono text-xl bg-pink-400 pl-1">Dashboard</h1>
       <div class="container mx-auto px-0 mt-2 bg-white text-black">
     
           <p class="pl-1 text-lg bg-sky-100 font-mono my-2">Logged in as <?php echo trim($userInfo['name_first']." ".$userInfo['name_last']);?></p>
-          
-          <h1 class="font-mono text-xl bg-pink-300 pl-1">Student Resources</h1>
-          <div class="m-3 border-pink-300 border-2 p-3">
-            <h2>Upcoming Assignments:</h2>
-            <?php include "upcoming_assignment_embed1.0.php";?>
+        
+        <?php
+          print_r($userInfo);
+        ?>
+
+          <?php if(str_contains($permissions, "teacher")) 
+          { ?>
+          <div class="border-2 border-sky-300 rounded m-3 p-1">
+            <?php 
+          } ?>
+            <h1 class="font-mono text-xl bg-pink-300 pl-1">Student Resources</h1>
+      <?php if(str_contains($permissions, "teacher")) 
+      { ?>
+            <p >These are the types of resosurces your students will see (though you need to add yourself to a class if you want to see them too!</p>
+        <?php 
+      } ?>      
+            <div class="m-3 border-pink-300 border-2 p-3">
+              <h2>Upcoming Assignments:</h2>
+              <?php include "upcoming_assignment_embed1.0.php";?>
+            </div>
+            <p class="ml-2 hover:bg-sky-100">
+              <a class ="block" href="user_mcq_review.php">MCQ Review</a>
+            </p>
+            <?php
+            // Following line is to filter to ensure that user's school has saq_dashboard enabled in permissions.
+            if(str_contains($userInfo['school_permissions'], "saq_dashboard")) 
+            { ?>
+              <p class="ml-2 hover:bg-sky-100">
+                <a class ="block" href="user_saq_review2.0.php">Short Answer Questions Review</a>
+              </p>
+            <?php 
+            } ?>
+            <p class="ml-2 hover:bg-sky-100">
+              <a class ="block" href="user_assign_review.php">All Assignments Review</a>
+            </p>
+          <?php if(str_contains($permissions, "teacher")) { ?>
           </div>
-          <p class="ml-2 hover:bg-sky-100">
-            <a class ="block" href="user_mcq_review.php">MCQ Review</a>
-          </p>
-          <p class="ml-2 hover:bg-sky-100">
-            <a class ="block" href="user_saq_review2.0.php">Short Answer Questions Review</a>
-          </p>
-          <p class="ml-2 hover:bg-sky-100">
-            <a class ="block" href="user_assign_review.php">All Assignments Review</a>
-          </p>
+          <?php } ?>
           
         <?php
 
@@ -69,7 +94,42 @@ $userInfo = getUserInfo($_SESSION['userid']);
           ?>
           
           <h1 class="font-mono text-xl bg-pink-300 pl-1" >Teacher Resources</h1>
+            <h2 class="font-mono text-lg bg-pink-200 pl-1">Assignments</h2>
+              <p class="ml-2 hover:bg-sky-100">
+                <a class ="block" href="/assign_create1.0.php">Create Assignment</a>
+              </p>
+              <p class="ml-2 hover:bg-sky-100">
+                <a class ="block" href="/mcq/mcq_assignment_review3.0.php">MCQ Assignment Review</a>
+              </p>
+              <p class="ml-2 hover:bg-sky-100">
+                <a class ="block" href="/user/user_work_review.php">Review All Assignments By User</a>
+              </p>
 
+            
+            <h2 class="font-mono text-lg bg-pink-200 pl-1">Admin</h2>
+
+              <p class="ml-2 hover:bg-sky-100">
+                <a class ="block" href="/user/school_registration.php">Link Account to Your School</a>
+              </p>
+              <p class="ml-2 hover:bg-sky-100">
+                <a class ="block" href="/user/class_creator.php">Create Classes</a>
+              </p>
+              <p class="ml-2 hover:bg-sky-100">
+                <a class ="block" href="/user/group_manager.php">Manage Classes</a>
+              </p>
+              <p class="ml-2 hover:bg-sky-100">
+                <a class ="block" href="/user/user_populate.php">Add New Users</a>
+              </p>
+              <p class="ml-2 hover:bg-sky-100">
+                <a class ="block" href="/user/user_manager.php">Manage Users</a>
+              </p>
+
+      <?php 
+        }
+        ?>
+
+      <?php if(str_contains($permissions, "main_admin")) { 
+        ?>
             <h2 class="font-mono text-lg bg-pink-200 pl-1">News Management</h2>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/news_input2.1.php">News Input</a></p>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/news_list.php">News List</a></p>

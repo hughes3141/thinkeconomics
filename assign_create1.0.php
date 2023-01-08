@@ -17,89 +17,58 @@ if (!isset($_SESSION['userid'])) {
 
 else {
   $userInfo = getUserInfo($_SESSION['userid']);
-  $userType = $userInfo['usertype'];
-  if (!($userType == "teacher" || $userType =="admin")) {
+  $userId = $_SESSION['userid'];
+  $permissions = $userInfo['permissions'];
+  if (!(str_contains($permissions, 'teacher'))) {
     header("location: /index.php");
   }
-}
+}  
+
+$style_input = ".hide {
+  display: none;
+  }
+  input, button, textarea, th, td, select {
+    border: 1px solid black;
+  }
 
 
-?>
-
-<!DOCTYPE html>
-
-<html lang="en">
-
-<head>
-
-<style>
-
-.hide {
-      display: none;
-   }
 
 td, th {
-	
-	border: 1px solid black;
-	padding: 5px;
-	word-wrap:break-word;
-	
+
+border: 1px solid black;
+padding: 5px;
+word-wrap:break-word;
+
 }
 
 table {
-	
-  border-collapse: collapse;
-	table-layout: auto;
 
-  //width: 75%;
+border-collapse: collapse;
+table-layout: auto;
+
+
 }
 
-
-
-</style>
-
-</head>
-
-
-<body>
-
-<?php 
-
-$userId = $_SESSION['userid'];
-
-
-/*
-THIS IS assign_create
-Created 18 February 2022, based on mcq_assigncreate1.1.php
-Used to create all assignments
-
-
-$_GET variables:
--Limit: to limit the number of queries that are returned in summary table
-
-*/
-
-//print_r($_POST);
-/*
-// Using OOP:
-
-$path = $_SERVER['DOCUMENT_ROOT'];
-$path .= "/../secrets/secrets.php";
-include($path);
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
+p {
+  margin-bottom: 5px;
 }
 
-*/
+  
+  ";
 
+
+
+
+
+include($path."/header_tailwind.php");
 ?>
 
-<h1>Assignment Creator</h1>
+
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+  <h1 class="font-mono text-2xl bg-pink-400 pl-1 ">Assignment Creator</h1>
+  <div class="container mx-auto px-0 mt-2 bg-white text-black ">
+
+
 
 <form method="post" id ="form1">
 <p>
@@ -117,6 +86,11 @@ if ($conn->connect_error) {
       echo "selected";}
       }
       ?> >MCQ</option>
+
+<?php
+if(str_contains($userInfo['school_permissions'], "saq_dashboard")) 
+{ ?>
+
   <option value="saq" <?php if($_POST) {
     if($_POST['type']=="saq"){
       echo "selected";}
@@ -132,6 +106,9 @@ if ($conn->connect_error) {
       echo "selected";}
      }
      ?> >Non Digital Entry</option>
+<?php
+}
+?>
 
 </select>
 </p>
@@ -210,7 +187,7 @@ $result = $stmt->get_result();
 
 <div id="classInput">
   <div class="groupSelectorContainer">
-    <label for="groupid">Class:</label><br>
+    <label for="groupid">Class:</label>
     <select id="groupid" name ="groupid_0" class="groupSelector">
       <option value=""></option>
       <?php
@@ -226,7 +203,7 @@ $result = $stmt->get_result();
   </div>
 </div>
 
-<button type="button" onclick="addClass()">Add class</button>
+<button style="display:none" type="button" onclick="addClass()">Add class</button>
 
 <input type="hidden" id="groupCountInput" name="classCount" value = "1">
 
@@ -573,7 +550,7 @@ if ($result->num_rows>0) {
 
 </table>
 
-
+</div>
 
 <script>
 
@@ -761,6 +738,4 @@ function returnUpdate(i) {
 
 </script>
 
-</body>
-
-</html>
+<?php   include($path."/footer_tailwind.php");?>

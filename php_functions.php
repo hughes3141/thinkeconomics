@@ -330,7 +330,11 @@ Returns an array of all information about a user.
 
 function getUserInfo($userId) {
   global $conn;
-  $sql = "SELECT id, name, name_first, name_last, username, usertype, permissions, userInput_userType, email, schoolid, groupid, groupid_array, active FROM users WHERE id = ? ";
+  $sql = " SELECT u.id, u.name, u.name_first, u.name_last, u.username, u.usertype, u.permissions, u.userInput_userType, u.email, u.schoolid, u.groupid, u.groupid_array, u.active, s.SCHNAME, s.userAdmin, s.permissions school_permissions
+          FROM users u
+          LEFT JOIN schools_dfe s
+          ON u.schoolid = s.id
+          WHERE u.id = ? ";
   $stmt=$conn->prepare($sql);
   $stmt->bind_param("i", $userId);
   $stmt->execute();
