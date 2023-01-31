@@ -128,7 +128,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
     <h1 class=" text-2xl bg-pink-400 pl-1">New User Registration</h1>
-    <div class=" container mx-auto px-0 mt-2 bg-white text-black mb-5">
+    <div class=" container mx-auto mt-2 bg-white text-black mb-5 p-4">
 
 
 
@@ -141,16 +141,20 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
       ?>
 
       <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" id="inputForm" autocomplete="off" >
-
-      <div class="form-group pt-5">
-                <label class ="/*text-gray-600*/ pb-1 ml-2 mb-2 pt-1">First Name:</label>
-                <input type="text" name="firstName" class="border px-3 py-2  text-sm w-3/4 mb-2 font-mono " placeholder ="First Name" value="<?php echo ($firstName!=="")? $firstName : ""; ?>">
-
-      </div>   
-      <div class="form-group">
-                <label class ="/*text-gray-600*/ pb-1 ml-2 mb-2 pt-1">Last Name:</label>
-                <input type="text" name="lastName" class="border px-3 py-2  text-sm w-3/4 mb-2 " placeholder ="Last Name" value="<?php echo ($lastName!=="")? $lastName : ""; ?>">
-                <p class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $name_err; ?></p>
+      <div class="md:flex space-y-5 md:space-y-0 md:space-x-4">
+        <div class="form-group w-full">
+                  <label class ="/*text-gray-600*/ pb-1  pt-1">First Name:</label>
+                  <div class="mt-1.5">
+                    <input type="text" name="firstName" class="border px-3 py-2  text-sm w-full mb-2  " placeholder ="First Name" value="<?php echo ($firstName!=="")? $firstName : ""; ?>">
+                  </div>
+        </div>   
+        <div class="form-group w-full">
+                  <label class ="/*text-gray-600*/ pb-1 pt-1">Last Name:</label>
+                  <div class="mt-1.5">
+                    <input type="text" name="lastName" class="border px-3 py-2  text-sm w-full mb-2 " placeholder ="Last Name" value="<?php echo ($lastName!=="")? $lastName : ""; ?>">
+                </div>
+                    <p class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $name_err; ?></p>
+        </div>
       </div>
       <h2>Create Username</h2>
         <p>A username is unique to your account. It must be:
