@@ -30,12 +30,10 @@ else {
 $style_input = ".hide {
   display: none;
   }
-  input, button, textarea, th, td {
+  button, textarea, th, td {
     border: 1px solid black;
   }
-  td, th {
-    padding: 5px;
-  
+
   ";
 
 
@@ -62,9 +60,9 @@ if (count($_GET)>0) {
 
 ?>
 
-<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2 ">
     <h1 class="font-mono text-2xl bg-pink-400 pl-1">Link to A School</h1>
-    <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
+    <div class=" container mx-auto  mt-2 bg-white text-black mb-5 p-4">
       <?php
       //print_r($userInfo);
       if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -77,13 +75,16 @@ if (count($_GET)>0) {
         <?php 
           if($userInfo['schoolid']=="") {
             ?>
-            <h2>Link your account to your school</h2>
-            <p> You have not yet registered your account to a school. You can do that here.</p>
+            <h2>Link your account to your school!</h2>
+            <p>You have not yet registered your account to a school. You can do that here.</p>
             <form method = "get" action ="">
-              <label>School Name/Postcode:</label>
-              <input type="text" name ="search">
-              <input type="submit" name="submit" value="Search Schools">
-
+              <div class="mt-1.5">
+                <label class="font-bold">School Name/Postcode:</label>
+                <div>
+                  <input class ="w-full rounded font-mono border-2 border-black" type="text" name ="search">
+                </div>
+                <input class= "mx-auto block w-full rounded bg-sky-200 my-2 border-2 border-black hover:bg-pink-300" type="submit" name="submit" value="Search Schools">
+              </div>
 
             </form>
             <?php
@@ -92,18 +93,18 @@ if (count($_GET)>0) {
           <form method ="post" action ="">
           <table class="">
             <tr>
-              <th>School Name</th>
-              <th>Address</th>
-              <th>Select</th>
+              <th class="p-1.5">School Name</th>
+              <th class="p-1.5">Address</th>
+              <th class="p-1.5">Select</th>
             </tr>
               <?php
               foreach($searchResults as $result) {
               ?>
               <tr>
-                <td>
+                <td class="p-1.5">
                   <?=htmlspecialchars($result['SCHNAME'])?>
                 </td>
-                <td>
+                <td class="p-1.5">
                   <?=htmlspecialchars($result['STREET'])?>
                   <br>
                   <?=($result['LOCALITY'] != "") ? htmlspecialchars($result['LOCALITY'])."<br>" : ""?>
@@ -112,7 +113,7 @@ if (count($_GET)>0) {
                   <br>
                   <?=htmlspecialchars($result['POSTCODE'])?>
                 </td>
-                <td>
+                <td class="p-1.5">
                   <input type="radio" name="schoolId" value = "<?=htmlspecialchars($result['id'])?>">
                 </td>
               </tr>

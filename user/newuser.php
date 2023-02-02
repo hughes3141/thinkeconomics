@@ -127,7 +127,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
-    <h1 class=" text-2xl bg-pink-400 pl-1">New User Registration</h1>
+    <h1 class="font-mono text-2xl bg-pink-400 pl-1">New User Registration</h1>
     <div class=" container mx-auto mt-2 bg-white text-black mb-5 p-4">
 
 
