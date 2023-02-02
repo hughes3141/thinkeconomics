@@ -100,7 +100,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
   }
 
   //PROCESS VALIDATED INFORMATION
-  if($name_validate ==1 AND $username_validate==1 AND $password_validate == 1 AND $email_validate == 1 AND $privacy_validate = 1 AND $usertype_validate == 1) {
+  if($name_validate ==1 AND $username_validate==1 AND $password_validate == 1 AND $email_validate == 1 AND $privacy_validate == 1 AND $usertype_validate == 1) {
 
     $permissions = "student";
     if($usertype == "teacher"){
@@ -137,7 +137,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         echo "<p>";
         print_r($_POST);
         echo "<p>";
-        */
+      */
+        
       ?>
 
       <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" id="inputForm" autocomplete="off" >
@@ -145,32 +146,32 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         <div class="form-group w-full">
                   <label class ="/*text-gray-600*/ pb-1  pt-1">First Name:</label>
                   <div class="mt-1.5">
-                    <input type="text" name="firstName" class="border px-3 py-2  text-sm w-full mb-2  " placeholder ="First Name" value="<?php echo ($firstName!=="")? $firstName : ""; ?>">
+                    <input type="text" name="firstName" class="border px-3 py-2  text-sm w-full mb-2  rounded" placeholder ="First Name" value="<?php echo ($firstName!=="")? $firstName : ""; ?>">
                   </div>
         </div>   
         <div class="form-group w-full">
                   <label class ="/*text-gray-600*/ pb-1 pt-1">Last Name:</label>
                   <div class="mt-1.5">
-                    <input type="text" name="lastName" class="border px-3 py-2  text-sm w-full mb-2 " placeholder ="Last Name" value="<?php echo ($lastName!=="")? $lastName : ""; ?>">
+                    <input type="text" name="lastName" class="border px-3 py-2  text-sm w-full mb-2 rounded" placeholder ="Last Name" value="<?php echo ($lastName!=="")? $lastName : ""; ?>">
                   </div>
         </div>
       </div>
       <div>
-        <p class=" mt-1 pl-1 text-red-600 bg-lime-300"><?php echo $name_err; ?></p>
+        <p class=" mt-1 pl-1 text-red-600 bg-lime-300 rounded"><?php echo $name_err; ?></p>
       </div>
 
       <div class="form-group w-full">
           <label class ="/*text-gray-600*/ pb-1 mb-2 pt-1">Username:</label>
           <div class="mt-1.5">
-            <input type="text" name="username" class="border px-3 py-2  text-sm w-full mb-2" placeholder ="username" value="<?php 
+            <input type="text" name="username" class="border px-3 py-2  text-sm w-full mb-2 rounded" placeholder ="username" value="<?php 
               if($username !=="" AND $username_err =="") {
                 echo $username;
               } else {
                 echo "";
               }
               ?>" onchange = "//this.form.submit()">
-            <p class=" mt-1 pl-1 text-red-600 bg-lime-300"><?php echo $username_err; ?></p>
-            <p class=" mt-1 pl-1 text-pink-400 border-sky-300"><?php echo $username_avail; ?></p>
+            <p class=" mt-1 pl-1 text-red-600 bg-lime-300 rounded"><?php echo $username_err; ?></p>
+            <p class=" mt-1 pl-1 text-pink-400 border-sky-300 rounded"><?php echo $username_avail; ?></p>
           </div>
 
       </div> 
@@ -186,7 +187,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
       <div class="form-group w-full">
                 <label class ="/*text-gray-600*/ pb-1 mb-2 pt-1">Password:</label>
                 <div class="mt-1.5">
-                  <input type="password" name="password1" id="password1" class="border px-3 py-2  text-sm w-full mb-2" placeholder ="Password"  onchange = "//checkTwoPasswords()">
+                  <input type="password" name="password1" id="password1" class="border px-3 py-2  text-sm w-full mb-2 rounded" placeholder ="Password"  onchange = "//checkTwoPasswords()">
                 </div>
 
 
@@ -194,14 +195,14 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
       <div class="form-group w-full">
                 <label class ="/*text-gray-600*/ pb-1 mb-2 pt-1">Confirm Password:</label>
                 <div>
-                  <input type="password" name="password2" id="password2" class="border px-3 py-2  text-sm w-full mb-2" placeholder ="Password"  onchange = "//checkTwoPasswords()">
+                  <input type="password" name="password2" id="password2" class="border px-3 py-2  text-sm w-full mb-2 rounded" placeholder ="Password"  onchange = "//checkTwoPasswords()">
                 </div>
 
 
                 <?php //value="<?= (($password2 != "") AND $password_err ="") ? $password2 : "";?>
 
       </div> 
-      <p class=" mt-1 py-0 pl-1 text-red-600 bg-lime-300"><?php echo $password_err; ?></p>
+      <p class=" mt-1 py-0 pl-1 text-red-600 bg-lime-300 rounded"><?php echo $password_err; ?></p>
       <p>Passwords must:
           <ul class="list-disc list-oustide">
             <li class="ml-6">Have minimum 6 characters</li>
@@ -216,7 +217,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
       <div class="form-group w-full">
                 <label class ="/*text-gray-600*/ pb-1  mb-2 pt-1">Email:</label>
                 <div>
-                  <input type="text" name="email" id="email" class="border px-3 py-2  text-sm w-full mb-2" placeholder ="Email" value = "<?= $email_name !="" ? $email_name : "";?>">
+                  <input type="text" name="email" id="email" class="border px-3 py-2  text-sm w-full mb-2 rounded" placeholder ="Email" value = "<?= $email_name !="" ? $email_name : "";?>">
                 </div>
                 <p class="pl-1 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $email_err; ?></p>
 
@@ -224,11 +225,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
       <div class="form-group">
       <p>I am interested in regigtering for this website as a:</p>
-        <input type="radio" id="student_radio" name="user_type" value="student" checked>
-        <label for="student_radio">Student</label><br>
-        <input type="radio" id="teacher_radio" name="user_type" value="teacher" <?=(isset($_POST['user_type']) && $_POST['user_type']=="teacher") ? "checked" : ""?>>
-        <label for="teacher_radio">Teacher</label>
-        <p class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $usertype_err; ?></p>
+        <select class="w-full rounded" name="user_type">
+          <option value= "student" <?=(isset($_POST['user_type']) && $_POST['user_type']=="student") ? "selected" : ""?> >Student</option>
+          <option value= "teacher" <?=(isset($_POST['user_type']) && $_POST['user_type']=="teacher") ? "selected" : ""?> >Teacher</option>
+        </select>
+        
+        <p class="ml-3 mt-1 py-0 text-red-600 bg-lime-300 rounded"><?php echo $usertype_err; ?></p>
       </div>
 
 
@@ -240,12 +242,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         }
         ?>
         >
-        <label for="privacy_checkbox">I agree to this website's <a>privacy policy</a></label>
-        <p class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $privacy_err; ?></p>
+        <label for="privacy_checkbox">I agree to this website's <a href="privacy_policy.php" target="_blank" class="hover:bg-sky-100 underline">privacy policy</a></label>
+        <p class="pl-1 mt-1 py-0 text-red-600 bg-lime-300 rounded"><?php echo $privacy_err; ?></p>
       </div>
     
       <div class="form-group">
-                <input type="submit" class=" bg-sky-500 hover:bg-sky-400 focus:bg-sky-200 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block" value="Sign Up!">
+                <input type="submit" class="mt-3 rounded bg-sky-500 hover:bg-sky-400 focus:bg-sky-200 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block" value="Sign Up!">
 
       </div>
 
