@@ -33,9 +33,7 @@ else {
 $style_input = ".hide {
   display: none;
   }
-  input, button, textarea, th, td {
-    border: 1px solid black;
-  }
+
   td, th {
     padding: 5px;
   
@@ -64,7 +62,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
     <h1 class="font-mono text-2xl bg-pink-400 pl-1">New Class Creator</h1>
-    <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
+    <div class=" container mx-auto  mt-2 bg-white text-black mb-5 p-4">
       <?php
       //print_r($userInfo);
       if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -75,52 +73,70 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       <?php
       if($hasSchool == 1) {
         ?>
-          <h2>Create a New Class</h2>
+          
           <form method="post" action="">
-            <label>Class Name:<label>
-            <input type="text" name="name">
-            <br>
-            <label>Subject:<label>
-            <select name="subjectId">
-              <option value=""></option>
+            <div class="w-full mb-1.5">
+              <label>Class Name:<label>
+                <div class="mt-1.5">
+                  <input type="text" name="name" class="rounded border border-black w-full px-3 py-2 text-sm" placeholder="Class Name">
+                </div>
+            </div>
+            <div class="md:flex  md:space-y-0 md:space-x-4 mb-1.5">
+              <div class="w-full mb-1.5">
+                <label>Subject:<label>
+                  <div class="mt-1.5">
+                    <select name="subjectId" class="rounded border border-black w-full px-3 py-2 text-sm">
+                      <option value=""></option>
+                      <?php
+                      $results = listSubjects();
+                      foreach($results as $result) {
+                        ?>
+                        <option value="<?=$result['id']?>"><?=$result['level']?> <?=$result['name']?></option>
+                        <?php
+                        }
+                        ?>
+                    </select>
+                  </div>
+              </div>
+              <div class="w-full mb-1.5">
+                <label>Option Group:<label>
+                  <div class="mt-1.5">
+                    <input type="text" name="optionGroup" class="rounded border border-black w-full text-sm" placeholder="e.g. A, B, C, etc">
+                  </div>
+              </div>
+              <div class="w-full mb-1.5">
+                <label>Finish Date:<label>
+                  <div class="mt-1.5">
+                    <input type="date" name="dateFinish" class="rounded border border-black w-full text-sm">
+                  </div>
+              </div>
+            </div>
+            <div class="mb-1.5">
               <?php
-              $results = listSubjects();
-              foreach($results as $result) {
-                ?>
-                <option value="<?=$result['id']?>"><?=$result['level']?> <?=$result['name']?></option>
-                <?php
-              }
-              ?>
-            </select>
-            <br>
-            <label>Option Group:<label>
-            <input type="text" name="optionGroup">
-            <br>
-            <?php
-              $results = getTeachersBySchoolId($userInfo['schoolid']);
-              //print_r($results);
-              ?>
-            <label>Class Teacher<?=(count($results)>1) ? "s" : ""?>:</label>
-            <ul>
-              <?php
-              foreach($results as $row=>$result) {
-                ?>
-                <ul>
-                  <input type="checkbox" id="checkbox_<?=$result['id']?>" name = "teacher_<?=$row?>" value = "<?=$result['id']?>" <?=($result['id'] == $userId) ? "checked " : ""?>></input>
-                  <label for = "checkbox_<?=$result['id']?>"><?=$result['name_first']?> <?=$result['name_last']?></label>
-                </ul>
-                <?php
-              }
-              ?>
-              </ul>
-                <input type="hidden" name="teacher_count" value="<?=count($results)?>">
-              <?php
-            ?>
-            <br>
-            <label>Finish Date:<label>
-            <input type="date" name="dateFinish">
-            <br>
-            <input type="submit" name="submit" value="Create New Class">
+                    $results = getTeachersBySchoolId($userInfo['schoolid']);
+                    //print_r($results);
+                    ?>
+              <label>Class Teacher<?=(count($results)>1) ? "s" : ""?>:</label>
+              <div class="grid sm:grid-cols-2 md:grid-cols-4">
+
+                  <?php
+                  foreach($results as $row=>$result) {
+                    ?>
+                    <div>
+
+                      <input type="checkbox" id="checkbox_<?=$result['id']?>" name = "teacher_<?=$row?>" value = "<?=$result['id']?>" <?=($result['id'] == $userId) ? "checked " : ""?>></input>
+                      <label for = "checkbox_<?=$result['id']?>"><?=$result['name_first']?> <?=$result['name_last']?></label>
+
+                    </div>
+                    <?php
+                  }
+                  ?>
+
+              </div>
+                  <input type="hidden" name="teacher_count" value="<?=count($results)?>">
+            </div>
+
+            <input class= "mt-3 rounded bg-sky-500 hover:bg-sky-400 focus:bg-sky-200 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block" type="submit" name="submit" value="Create New Class">
           </form>
         <?php
       }
