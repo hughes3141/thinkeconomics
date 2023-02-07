@@ -45,6 +45,31 @@ $style_input = ".hide {
 
 include($path."/header_tailwind.php");
 
+  //Set default error messages
+
+  $className_err = $subject_err = $optionGroup_err = $finishDate_err = $teacherInput_error = "";
+  $className = $subjectId = $optionGroup = $finishDate = $teachers = "";
+  $success_message = "";
+
+
+  //Automatically set date for next 31 July:
+
+    $now = new DateTime();
+    $targetMonth = 7;
+  
+    if ($now->format('m') >= $targetMonth) {
+        $nextJuly31 = new DateTime($now->format('Y') + 1 . '-07-31');
+    } else {
+        $nextJuly31 = new DateTime($now->format('Y') . '-07-31');
+    }
+    
+    $nextJuly31 = $nextJuly31->format('Y-m-d');
+    //echo $nextJuly31;
+
+    $finishDate = $nextJuly31;
+    //echo $finishDate;
+
+
 if($_SERVER['REQUEST_METHOD']==='POST') {
   //Create array from teachers:
   $teachers = array();
@@ -54,9 +79,39 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
     }
   }
   //print_r($teachers);
-  createGroup($userId, $_POST['name'], $_POST['subjectId'], $userInfo['schoolid'], $teachers, $_POST['dateFinish'],  $_POST['optionGroup']);
+  $className = $_POST['name'];
+  $subjectId =$_POST['subjectId'];
+  $optionGroup = $_POST['optionGroup'];
+  $finishDate = $_POST['dateFinish'];
+
+  if(empty(trim($_POST['name']))) {
+    $className_err = "Please enter a class name";
+  }
+
+  if(empty(trim($_POST['subjectId']))) {
+    $subject_err = "Please enter a subject";
+  }
+
+  if(empty(trim($_POST['dateFinish']))) {
+    $finishDate_err = "Please enter a finish date for this class";
+  }
+
+  if(count($teachers) < 1) {
+    $teacherInput_error = "You must have at least one teacher selected";
+  }
+
+  if($className_err == "" AND $subject_err == "" AND $optionGroup_err == "" AND $finishDate_err == "" AND $teacherInput_error == "") {
+    createGroup($userId, $_POST['name'], $_POST['subjectId'], $userInfo['schoolid'], $teachers, $_POST['dateFinish'],  $_POST['optionGroup']);
+    $success_message = "New class created successfully";
+
+  }
 
 }
+
+
+
+
+
 
 ?>
 
@@ -64,9 +119,10 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
     <h1 class="font-mono text-2xl bg-pink-400 pl-1">New Class Creator</h1>
     <div class=" container mx-auto  mt-2 bg-white text-black mb-5 p-4">
       <?php
-      //print_r($userInfo);
+        //print_r($userInfo);
       if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //print_r($_POST);
+        echo $success_message;
       }
       ?>
       
@@ -78,7 +134,10 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
             <div class="w-full mb-1.5">
               <label>Class Name:<label>
                 <div class="mt-1.5">
-                  <input type="text" name="name" class="rounded border border-black w-full px-3 py-2 text-sm" placeholder="Class Name">
+                  <input type="text" name="name" class="rounded border border-black w-full px-3 py-2 text-sm" placeholder="Class Name" value="<?=$className?>">
+                </div>
+                <div class=" mt-1 pl-2 text-red-600 bg-lime-300 rounded">
+                  <?= $className_err?>
                 </div>
             </div>
             <div class="md:flex  md:space-y-0 md:space-x-4 mb-1.5">
@@ -91,24 +150,33 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
                       $results = listSubjects();
                       foreach($results as $result) {
                         ?>
-                        <option value="<?=$result['id']?>"><?=$result['level']?> <?=$result['name']?></option>
+                        <option value="<?=$result['id']?>" <?= $result['id']==$subjectId ? "selected" : ""?>><?=$result['level']?> <?=$result['name']?></option>
                         <?php
                         }
                         ?>
                     </select>
                   </div>
+                  <div class=" mt-1 pl-2 text-red-600 bg-lime-300 rounded">
+                  <?= $subject_err?>
+                </div>
               </div>
               <div class="w-full mb-1.5">
                 <label>Option Group:<label>
                   <div class="mt-1.5">
-                    <input type="text" name="optionGroup" class="rounded border border-black w-full text-sm" placeholder="e.g. A, B, C, etc">
+                    <input type="text" name="optionGroup" class="rounded border border-black w-full text-sm" placeholder="e.g. A, B, C, etc" value = "<?=$optionGroup?>">
                   </div>
+                  <div class=" mt-1 pl-2 text-red-600 bg-lime-300 rounded">
+                  <?= $optionGroup_err?>
+                </div>
               </div>
               <div class="w-full mb-1.5">
                 <label>Finish Date:<label>
                   <div class="mt-1.5">
-                    <input type="date" name="dateFinish" class="rounded border border-black w-full text-sm">
+                    <input type="date" name="dateFinish" class="rounded border border-black w-full text-sm" value ="<?=$finishDate?>">
                   </div>
+                  <div class=" mt-1 pl-2 text-red-600 bg-lime-300 rounded">
+                  <?= $finishDate_err?>
+                </div>
               </div>
             </div>
             <div class="mb-1.5">
@@ -124,7 +192,15 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
                     ?>
                     <div>
 
-                      <input type="checkbox" id="checkbox_<?=$result['id']?>" name = "teacher_<?=$row?>" value = "<?=$result['id']?>" <?=($result['id'] == $userId) ? "checked " : ""?>></input>
+                      <input type="checkbox" id="checkbox_<?=$result['id']?>" name = "teacher_<?=$row?>" value = "<?=$result['id']?>" <?php
+                        if ($teachers == "") {
+                          if ($result['id'] == $userId) {
+                            echo "checked";
+                          }
+                        } else if (in_array($result['id'], $teachers)) {
+                          echo "checked";
+                        }
+                        ?>></input>
                       <label for = "checkbox_<?=$result['id']?>"><?=$result['name_first']?> <?=$result['name_last']?></label>
 
                     </div>
@@ -133,7 +209,10 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
                   ?>
 
               </div>
-                  <input type="hidden" name="teacher_count" value="<?=count($results)?>">
+              <input type="hidden" name="teacher_count" value="<?=count($results)?>">
+              <div class=" mt-1 pl-2 text-red-600 bg-lime-300 rounded">
+                <?= $teacherInput_error?>
+              </div>
             </div>
 
             <input class= "mt-3 rounded bg-sky-500 hover:bg-sky-400 focus:bg-sky-200 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block" type="submit" name="submit" value="Create New Class">
