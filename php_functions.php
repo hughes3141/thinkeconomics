@@ -51,6 +51,7 @@ Returns a list of groups for whom the $userId is listed as a teacher
 
 used in: 
 - user/user_populate.php
+-user/group_manager.php
 
 */
 
@@ -60,7 +61,9 @@ function getGroupsList($userId, $activeReturn = true, $userCreate = null) {
 
   $userIdSql = '%\"'.$userId.'\"%';
 
-  $sql = "SELECT * FROM groups WHERE teachers LIKE ? ";
+  $sql = "SELECT * 
+          FROM groups 
+          WHERE teachers LIKE ? ";
 
   if($activeReturn == true) {
     $sql .= " AND active = 1 ";
@@ -69,6 +72,8 @@ function getGroupsList($userId, $activeReturn = true, $userCreate = null) {
   if($userCreate) {
     $sql .= " AND userCreate = ?";
   }
+
+  $sql .= " ORDER BY dateFinish";
   
   $stmt=$conn->prepare($sql);
 
