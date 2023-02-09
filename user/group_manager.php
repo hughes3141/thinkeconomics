@@ -40,6 +40,9 @@ $style_input = ".hide {
   
   ";
   $selectedGroupId = "";
+
+  $className_err = $subject_err = $optionGroup_err = $finishDate_err = $teacherInput_error = "";
+
   if($_SERVER['REQUEST_METHOD']==='POST') {
     
     if($_POST['submit'] == "Select Group" ) {
@@ -54,8 +57,9 @@ $style_input = ".hide {
 
     if($_POST['submit'] == "Add Student") {
       $selectedGroupId = $_POST['groupId'];
-      updateStudentGroup($selectedGroupId, $_POST['studentId']);
-      
+      if(isset($_POST['studentId'])) {
+        updateStudentGroup($selectedGroupId, $_POST['studentId']);
+      }
     }
 
     if($_POST['submit'] == "Remove Student") {
@@ -73,10 +77,29 @@ $style_input = ".hide {
       }
     }
 
-    if($_POST['submit'] == "Edit Details") {
+    if($_POST['submit'] == "Edit Group Details") {
+
+
+
+      if(empty(trim($_POST['name']))) {
+        $className_err = "Class Name cannot be blank";
+      }
+
+      if(empty(trim($_POST['subjectId']))) {
+        $subject_err = "Subject field required";
+      }
+
+      if(empty(trim($_POST['dateFinish']))) {
+        $finishDate_err = "Finish Date Field Required";
+      }
+
       $selectedGroupId = $_POST['groupId'];
 
+      if($className_err == "" AND $subject_err == "" AND $optionGroup_err == "" AND $finishDate_err == "" AND $teacherInput_error == "") {
+
         updateGroupInformation($selectedGroupId, $_POST['name'], $_POST['subjectId'], $_POST['optionGroup'], $_POST['dateFinish']);
+        
+      }
       
     }
 
@@ -155,6 +178,9 @@ include($path."/header_tailwind.php");
               <div class="w-full mb-1.5">
                 <input class="rounded border border-black w-full" type="text" name="name" value ="<?=$groupName?>">
               </div>
+              <div class=" mt-1 pl-2 text-red-600 bg-lime-300 rounded">
+                  <?= $className_err?>
+              </div>
           </div>
           <div>
             <label>Subject:<label>
@@ -175,6 +201,9 @@ include($path."/header_tailwind.php");
                   ?>
                 </select>
               </div>
+              <div class=" mt-1 pl-2 text-red-600 bg-lime-300 rounded">
+                  <?= $subject_err?>
+              </div>
           </div>
           <div class="w-full mb-1.5">
             <label>Option Group:<label>
@@ -186,6 +215,9 @@ include($path."/header_tailwind.php");
             <label>Finish Date:<label>
               <div>
                 <input class="rounded border border-black w-full" type="date" name="dateFinish" value ="<?=$groupInfo['dateFinish']?>">
+              </div>
+              <div class=" mt-1 pl-2 text-red-600 bg-lime-300 rounded">
+                  <?= $finishDate_err?>
               </div>
           </div>
         </div>

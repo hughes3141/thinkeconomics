@@ -1029,13 +1029,16 @@ function getTeachersBySchoolId($schoolId) {
 //The following suite of functions are used in pages that validate new user information
 
 
-function validateUsername($username, $checkUsed = true) {
+function validateUsername($username, $checkUsed = true, $idException = null) {
 
   /*
   This function takes as input $username : string and returns array with values:
   ['username_err'] => Message about why there is error with username;
   ['username_avail'] => Message if username is available.
   ['username_validate'] => Bool to show whether this input username is valid as username in app.
+
+  $checkUsed = false will turn off validation to see if it is already in use
+  $idException = id of user you are checking to ensure that, when updating a record, it does not validate against its own name inthe database.
   */
   
   global $conn;
@@ -1050,10 +1053,11 @@ function validateUsername($username, $checkUsed = true) {
     $username_err = "Please enter a username";
   } else {
     $username = trim($username);
+    
     //Control to allow function to work without checking username (e.g. for use in update validations)
     if($checkUsed == true) {
       //Prepare statement to check username:
-      $sql = "SELECT LOWER(username) FROM users WHERE username = ?";
+      $sql = "SELECT LOWER(username), id FROM users WHERE username = ?";
       if($stmt = $conn->prepare($sql)) {
         $stmt->bind_param("s", $param_username);
         
@@ -1061,8 +1065,19 @@ function validateUsername($username, $checkUsed = true) {
         $param_username = strtolower($username);
         if($stmt->execute()) {
           $stmt->store_result();
+
           if ($stmt->num_rows>0) {
-            $username_err = "<b>".$username."</b> is registered by another user. Please try another username.";
+            $username_err = $username." is registered by another user. Please try another username.";
+            $stmt->bind_result($col1, $col2);
+            $stmt->fetch();
+            
+            //Allow validation if the id with the username is the same as the usernameException variable (to allow validation of itsself when updating a form)
+            if($col2 == $idException) {
+              $username_err = "";
+              $user_avail_validate = 1;
+
+            }
+
           } else {
             $username_avail = "Success! <b>".$username."</b> is available!";
             $user_avail_validate = 1;
@@ -1291,8 +1306,14 @@ function updateStudentGroup($groupId, $studentId, $method = "add") {
   if($result->num_rows>0) {
     $row = $result->fetch_assoc();
   }
-  $listedGroups = json_decode($row['groupid_array']);
-
+  
+  //Ensure that it will work even if user is not in a class
+  if ($row['groupid_array'] !="") {
+    $listedGroups = json_decode($row['groupid_array']);
+  }
+  else {
+    $listedGroups = array();
+  }
   if($method == "add") {
     if(array_search($groupId, $listedGroups) === false) {
       array_push($listedGroups, $groupId);
