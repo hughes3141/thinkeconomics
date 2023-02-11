@@ -115,7 +115,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
 ?>
 
-<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1">
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-full">
     <h1 class="font-mono text-2xl bg-pink-400 pl-1">User Manager</h1>
     <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
       <p class="mb-1.5">Use this page to edit the profile information for students that you have entered onto the system.</p>
@@ -132,7 +132,9 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
             ?>
           <div class=" mt-1 pl-2 text-red-600 bg-lime-300 rounded mb-2">
-            <?= $name_err.$username_err.$password_err?>
+            <p><?= $name_err?></p>
+            <p><?= $username_err?></p>
+            <p><?= $password_err?></p>
           </div>
           <div class=" mt-1 pl-2 bg-pink-300 rounded mb-2">
             <?= $message?>
@@ -196,8 +198,13 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
                         <div class="show_<?=$row['id'];?>">
                         <?php
                         $groups = json_decode($row['groupid_array']);
+                        if(!is_array($groups)) {
+                          $groups = array();
+                        }
+
+                        //echo $row['groupid_array'];
                         //print_r($groups);
-                        if($groups[0]!="0") {
+                        //if(count($groups)>0) {
                           foreach($groups as $key => $group) {
                             $groupInfo = getGroupInfoById($group);
                             //print_r($groupInfo);
@@ -207,7 +214,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
                             }
                           }
-                        }
+                        //}
                         ?>
                         </div>
                         <div class="hide hide_<?=$row['id'];?>">

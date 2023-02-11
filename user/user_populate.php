@@ -177,8 +177,8 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
-    <h1 class="font-mono text-2xl bg-pink-400 pl-1">User Populate</h1>
-    <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
+    <h1 class="font-mono text-2xl bg-pink-400 pl-1">Create New Users</h1>
+    <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
     <?php
       //print_r($userInfo);
       if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -192,34 +192,37 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       if ($hasGroups == 1)
       {
         ?>
-        <p>Create new users</p>
+        <p class="mb-1.5">Use this page to add new users to your school and classes.</p>
+        <p class="mb-1.5">You will have admin prviliges for the users you create here, but other teachers from your school will be able to put them into their groups too.</p>
         <form method="post" action = "" >
           <label>Class:</label>
-          
-          <select name="groupId">
-            <?php
-              $results = getGroupsList($userId, true, $userId);
-              foreach($results as $result) {
-                ?>
-                  <option value="<?=$result['id']?>"><?=$result['name']?></option>
-                
-                <?php
-              }
-            ?>
-          </select>
-          
-          <table id="inputTable" class="w-full table-fixed">
+          <div class="w-full mb-1.5">
+            <select class="w-full rounded border border-black" name="groupId">
+              <option value=""></option>
+              <?php
+                $results = getGroupsList($userId, true, $userId);
+                foreach($results as $result) {
+                  ?>
+                    <option value="<?=$result['id']?>"><?=$result['name']?></option>
+                  
+                  <?php
+                }
+              ?>
+            </select>
+          </div>
+          <table id="inputTable" class="w-full table-fixed mb-2">
             <tr>
               <th>First Name</th>
               <th>Last Name</th>
               <th>Username</th>
               <th>Password</th>
               <!--<th>Email Address</th>-->
+              <th></th>
             </tr>
           </table>
           <input type = "hidden" id="inputCount" name="inputCount">
-          <button type="button" onclick="addInputRow();">Add row</button> 
-          <input type="submit" name="submit" value ="Create New Users">
+          <button class="w-full rounded bg-sky-300 hover:bg-sky-200 border border-black mb-2" type="button" onclick="addInputRow();">Add row</button> 
+          <input class="w-full rounded bg-pink-300 hover:bg-pink-200 border border-black" type="submit" name="submit" value ="Create New Users">
         </form>
         <?php
       }
@@ -259,7 +262,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
     var row = table.insertRow(rowNo);
     var cells = [];
     //Email has been taken out. To restore, iterate over loop with i<5
-    for (var i=0; i<4; i++) {
+    for (var i=0; i<5; i++) {
       cells[i] = row.insertCell(i);
       switch(i) {
         case 0:
@@ -267,12 +270,12 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
           var value = "value = '"+firstName+"'";
           var label2 = "inputId_"+(rowNo-1);
           var value2 = "value = '"+(rowNo-1)+"'";
-          cells[i].innerHTML = "<input name="+label+" id = "+label+" onchange= 'usernameSuggest(this); passwordSuggest(this)' "+value+"><input type='hidden' name="+label2+" id = "+label2+" "+value2+"><p class='ml-3 mt-1 py-0 text-red-600 bg-lime-300'>"+name_err+"</p>"
+          cells[i].innerHTML = "<input name="+label+" id = "+label+" onchange= 'usernameSuggest(this); passwordSuggest(this)' "+value+" class='w-full rounded'><input type='hidden' name="+label2+" id = "+label2+" "+value2+"><p class='ml-3 mt-1 py-0 text-red-600 bg-lime-300'>"+name_err+"</p>"
           break;
         case 1:
           var label = "lastName_"+(rowNo-1);
           var value = "value = '"+lastName+"'";
-          cells[i].innerHTML = "<input name="+label+" id = "+label+" onchange= 'usernameSuggest(this); passwordSuggest(this)' "+value+"><p class='ml-3 mt-1 py-0 text-red-600 bg-lime-300'>"+name_err+"</p>"
+          cells[i].innerHTML = "<input name="+label+" id = "+label+" onchange= 'usernameSuggest(this); passwordSuggest(this)' "+value+" class='w-full rounded'><p class='ml-3 mt-1 py-0 text-red-600 bg-lime-300'>"+name_err+"</p>"
           break;
         case 2:
           var label = "username_"+(rowNo-1);
@@ -287,14 +290,19 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
           //cells[i].innerHTML = "<input name='password_"+(rowNo-1)+"'>";
           break;
         case 4:
+          cells[i].innerHTML = "Remove";
+          break;
+          /*
+        case 4:
           var label = "email_"+(rowNo-1);
           var value = "value = '"+email+"'";
           error = email_err;
           //cells[i].innerHTML = "<input name='email_"+(rowNo-1)+"'>";
           break;
+          */
       }
-      if(i>1) {
-        cells[i].innerHTML = "<input name="+label+" id = "+label+" "+value+"><p class='ml-3 mt-1 py-0 text-red-600 bg-lime-300'>"+error+"</p>";
+      if((i>1)&&(i<4)) {
+        cells[i].innerHTML = "<input name="+label+" id = "+label+" "+value+" class='w-full rounded'><p class='ml-3 mt-1 py-0 text-red-600 bg-lime-300'>"+error+"</p>";
       }
     }
     

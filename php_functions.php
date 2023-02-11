@@ -1051,6 +1051,17 @@ function validateUsername($username, $checkUsed = true, $idException = null) {
   //Check if username is already taken
   if(empty(trim($username))) {
     $username_err = "Please enter a username";
+
+    //Check to see whether blank username is already entered
+    if(isset($idException)) {
+      $usernameById = getUserInfo($idException)['username'];
+      if($username == $usernameById) {
+        $username_err = "";
+        $username_validate = 1;
+      }
+      
+
+    }  
   } else {
     $username = trim($username);
     
@@ -1249,6 +1260,12 @@ function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $us
     $passwordEntry = $password;
   }
 
+  //Ensure that empty groupIdArray is entered as blank not [""];
+
+  if($groupIdArray == '[""]') {
+    $groupIdArray = "";
+  }
+
   $stmt->bind_param("ssssssssisissiiss", $firstName, $lastName, $username, $password_hash, $usertype_std, $permissions, $usertype, $email_name, $active, $datetime, $privacy_bool, $datetime, $version, $schoolId, $userCreate, $groupIdArray, $passwordEntry);
   $stmt->execute();
 
@@ -1325,6 +1342,11 @@ function updateStudentGroup($groupId, $studentId, $method = "add") {
     }
   }
   $listedGroups = json_encode($listedGroups);
+  
+  //Ensure empty arrays are entered as blank, not [""]
+  if ($listedGroups =='[""]') {
+    $listedGroups = "";
+  }
   $sql2 = "UPDATE users
           SET groupid_array = ?
           WHERE id = ?";

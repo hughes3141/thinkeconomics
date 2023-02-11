@@ -124,10 +124,10 @@ include($path."/header_tailwind.php");
       <p class="mb-1 ">This page allows you to manage the classes that you have set up in this platform.</p>
       <p class="bg-pink-300 mb-1 rounded pl-1">Teacher: <?=$userInfo['name_first']." ".$userInfo['name_last']?></p>
       <div class="w-full mb-1.5">
-        <label>Group:</label>
+        <label>Class:</label>
           <div>
             <form method="post" action="">
-              <select name="groupId" class="w-full rounded border border-black"">
+              <select name="groupId" class="w-full rounded border border-black">
                 <option value =""></option>
                   <?php
                     $results = getGroupsList($userId, true, $userId);
