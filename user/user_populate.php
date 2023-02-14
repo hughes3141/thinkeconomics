@@ -71,13 +71,20 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       'userCreate' => $userId,
       'userType' => 'student',
       'permissions' => 'student',
-      'groupid_array' => '["'.$_POST['groupId'].'"]');
+      'groupid_array' => '["'.$_POST['groupId'].'"]',
+      'active_entry' => $_POST['active_entry_'.$x]);
 
     array_push($userCollect, $newUser);
 
   }
 
   foreach($userCollect as $user) {
+    //Filter for those entires that are active entries (i.e. not from hidden rows)
+
+    if($user['active_entry'] == "1") {
+
+    
+
     //Process validation and enter into users database:
 
     $firstName = $lastName = $username= $email_name = "";
@@ -161,7 +168,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         $return[$user['inputId']]['email_err'] = $email_err;
       }
 
-    
+    }
     
   }
 
@@ -182,7 +189,9 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
     <?php
       //print_r($userInfo);
       if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        //print_r($_POST);
+        //echo "<pre>";
+        print_r($_POST);
+        //echo "</pre>";
         echo "<pre>";
         //print_r($_POST['return']);
         //print_r($userCollect);
@@ -203,7 +212,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
                 $results = getGroupsList($userId, true, $userId);
                 foreach($results as $result) {
                   ?>
-                    <option value="<?=$result['id']?>"><?=$result['name']?></option>
+                    <option value="<?=$result['id']?>" <?=($result['id'] == $_POST['groupId']) ? "selected" : ""?>><?=$result['name']?></option>
                   
                   <?php
                 }
@@ -211,14 +220,16 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
             </select>
           </div>
           <table id="inputTable" class="w-full table-fixed mb-2">
-            <tr>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Username</th>
-              <th>Password</th>
-              <!--<th>Email Address</th>-->
-              <th></th>
-            </tr>
+            <thead>
+              <tr>
+                <th class="">First Name</th>
+                <th class="">Last Name</th>
+                <th class="">Username</th>
+                <th class="">Password</th>
+                <!--<th>Email Address</th>-->
+                <th class="md:w-1/6 xl:w-1/12">Remove</th>
+              </tr>
+            </thead>
           </table>
           <input type = "hidden" id="inputCount" name="inputCount">
           <button class="w-full rounded bg-sky-300 hover:bg-sky-200 border border-black mb-2" type="button" onclick="addInputRow();">Add row</button> 
@@ -270,12 +281,12 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
           var value = "value = '"+firstName+"'";
           var label2 = "inputId_"+(rowNo-1);
           var value2 = "value = '"+(rowNo-1)+"'";
-          cells[i].innerHTML = "<input name="+label+" id = "+label+" onchange= 'usernameSuggest(this); passwordSuggest(this)' "+value+" class='w-full rounded'><input type='hidden' name="+label2+" id = "+label2+" "+value2+"><p class='ml-3 mt-1 py-0 text-red-600 bg-lime-300'>"+name_err+"</p>"
+          cells[i].innerHTML = "<input name="+label+" id = "+label+" onchange= 'usernameSuggest(this); passwordSuggest(this)' "+value+" class='w-full rounded'><input type='hidden' name="+label2+" id = "+label2+" "+value2+"><p class='mx-1 mt-1 py-0 text-red-600 bg-lime-300'>"+name_err+"</p>"
           break;
         case 1:
           var label = "lastName_"+(rowNo-1);
           var value = "value = '"+lastName+"'";
-          cells[i].innerHTML = "<input name="+label+" id = "+label+" onchange= 'usernameSuggest(this); passwordSuggest(this)' "+value+" class='w-full rounded'><p class='ml-3 mt-1 py-0 text-red-600 bg-lime-300'>"+name_err+"</p>"
+          cells[i].innerHTML = "<input name="+label+" id = "+label+" onchange= 'usernameSuggest(this); passwordSuggest(this)' "+value+" class='w-full rounded'><p class='mx-1 mt-1 py-0 text-red-600 bg-lime-300'>"+name_err+"</p>"
           break;
         case 2:
           var label = "username_"+(rowNo-1);
@@ -290,7 +301,9 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
           //cells[i].innerHTML = "<input name='password_"+(rowNo-1)+"'>";
           break;
         case 4:
-          cells[i].innerHTML = "Remove";
+          cells[i].innerHTML = "<button class='w-full bg-pink-300 rounded border border-black mb-1' type ='button' onclick='hideRow(this);'>Remove</button><input name='active_entry_"+(rowNo-1)+"' class='w-full' type='hidden' value='1'>";
+          //cells[i].classList.add('w-1')
+
           break;
           /*
         case 4:
@@ -302,7 +315,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
           */
       }
       if((i>1)&&(i<4)) {
-        cells[i].innerHTML = "<input name="+label+" id = "+label+" "+value+" class='w-full rounded'><p class='ml-3 mt-1 py-0 text-red-600 bg-lime-300'>"+error+"</p>";
+        cells[i].innerHTML = "<input name="+label+" id = "+label+" "+value+" class='w-full rounded'><p class='mx-1 mt-1 py-0 text-red-600 bg-lime-300'>"+error+"</p>";
       }
     }
     
@@ -363,27 +376,41 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
   //For each returned user registration that did not meet validation, create a new row in input table with previously entered indformation:
             
             if(isset($_POST['return'])) {
-              foreach($_POST['return'] as $array) {
-                foreach($array as $key => &$array_element) {
-                  if(!str_contains($key, "err")) {
-                  $array_element = htmlspecialchars($array_element);
+              if(count($_POST['return'])>0) {
+                foreach($_POST['return'] as $array) {
+                  foreach($array as $key => &$array_element) {
+                    if(!str_contains($key, "err")) {
+                    $array_element = htmlspecialchars($array_element);
+                    }
                   }
+                  //Define users as JSON arrays in Javascript:
+                  echo "var user".$array['inputId']." = ".json_encode($array);
+                  echo "
+";
+                  //Create new row using this JSON information
+                  echo "addInputRow(user".$array['inputId']."['first'], user".$array['inputId']."['last'], user".$array['inputId']."['username'], user".$array['inputId']."['password'], user".$array['inputId']."['email'], user".$array['inputId']."['name_err'], user".$array['inputId']."['username_err'], user".$array['inputId']."['password_err'], user".$array['inputId']."['email_err'])";
+                  echo "
+";
+
+
                 }
-                //Define users as JSON arrays in Javascript:
-                echo "var user".$array['inputId']." = ".json_encode($array);
-                echo "
-";
-                //Create new row using this JSON information
-                echo "addInputRow(user".$array['inputId']."['first'], user".$array['inputId']."['last'], user".$array['inputId']."['username'], user".$array['inputId']."['password'], user".$array['inputId']."['email'], user".$array['inputId']."['name_err'], user".$array['inputId']."['username_err'], user".$array['inputId']."['password_err'], user".$array['inputId']."['email_err'])";
-                echo "
-";
-
-
-              }
               
             }
+            else {
+              echo "addInputRow();";
+            }
+          }
 
       ?>
+
+
+function hideRow(button) {
+  var row = button.parentElement.parentElement;
+  var input = button.parentElement.childNodes[1];
+  console.log(input);
+  row.style.display = "none";
+  input.value='0';
+}
 </script>
 
 
