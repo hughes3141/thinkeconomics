@@ -3,13 +3,21 @@
 // Initialize the session
 session_start();
 
-
 $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
-/*
-echo $_SESSION['this_url'];
-echo "<br>";
-print_r($_SESSION);
-*/
+
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
+
+
+if (!isset($_SESSION['userid'])) {
+  
+  //header("location: /login.php");
+  
+}
+
+
+
 error_reporting(0);
 $style_input = <<<END
 

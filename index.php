@@ -38,7 +38,7 @@ include "header_tailwind.php"; ?>
             This website is all about making Economics easy and fun. Let's get started!
           </p>
           <button class="mx-auto lg:mx-0 hover:underline bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
-          onclick ="location.href = 'user_login2.0.php'">
+          onclick ="location.href = '/login.php'">
             Sign Up
           </button>
         </div>
@@ -305,7 +305,7 @@ include "header_tailwind.php"; ?>
               </div>
               <div class="flex items-center justify-center">
                 <button class="mx-auto lg:mx-0 hover:underline gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
-                onclick ="location.href = 'user_login2.0.php'">
+                onclick ="location.href = '/login.php'">
                   Sign Up
                 </button>
               </div>
@@ -329,7 +329,7 @@ include "header_tailwind.php"; ?>
               </div>
               <div class="flex items-center justify-center">
                 <button class="mx-auto lg:mx-0 hover:underline gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
-                onclick ="location.href = 'user_login2.0.php'">
+                onclick ="location.href = '/login.php'">
                   Sign Up
                 </button>
               </div>
@@ -353,7 +353,7 @@ include "header_tailwind.php"; ?>
               </div>
               <div class="flex items-center justify-center">
                 <button class="mx-auto lg:mx-0 hover:underline gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
-                onclick ="location.href = 'user_login2.0.php'">
+                onclick ="location.href = '/login.php'">
                   Sign Up
                 </button>
               </div>
@@ -395,7 +395,7 @@ include "header_tailwind.php"; ?>
         Get started today!
       </h3>
       <button class="mx-auto lg:mx-0 hover:underline bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
-      onclick ="location.href = 'user_login2.0.php'">
+      onclick ="location.href = '/login.php'">
         Sign Up
       </button>
     </section>

@@ -89,11 +89,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             //Check to see if privacy agreement has been agreed:
 
                               if($privacy_agree == 0) {
-                                
+                                /*
                                 $_SESSION['temp_userid'] = $id;
                                 echo "<script>window.location='/user/privacy_policy.php?login_redirect'</script>";
                                 exit();
-                                
+                                */
                               }
                               
                             

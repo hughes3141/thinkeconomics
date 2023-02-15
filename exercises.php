@@ -3,12 +3,23 @@
 // Initialize the session
 session_start();
 
-
 $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
 
 
-include "header_tailwind.php"; ?>
+if (!isset($_SESSION['userid'])) {
+  
+  //header("location: /login.php");
+  
+}
+
+
+include($path."/header_tailwind.php");
+
+?>
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">Exercises</h1>

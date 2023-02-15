@@ -1,7 +1,28 @@
 <?php
 
+// Initialize the session
 session_start();
 
+$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
+
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
+
+
+if (!isset($_SESSION['userid'])) {
+  
+  header("location: /login.php");
+  
+}
+
+else {
+  $userInfo = getUserInfo($_SESSION['userid']);
+  $userId = $_SESSION['userid'];
+  $schoolId = $userInfo['schoolid'];
+  $permissions = $userInfo['permissions'];
+  
+}
 
 ?>
 
@@ -29,51 +50,10 @@ session_start();
 <body>
 <?php include '../navbar.php';?>
 
-<?php 
-
-//print_r($_POST);
-
-if (isset($_SESSION['userid'])==false) {
-
-  $_SESSION['name'] = $_POST['name'];
-  $_SESSION['userid'] = $_POST['userid'];
-  $_SESSION['usertype'] = $_POST['usertype'];
-  $_SESSION['groupid'] = $_POST['groupid'];
-
-}
-
-//print_r($_SESSION);
-
-?>
 
 <h1>News Input</h1>
 
-<?php 
-
-if (isset($_SESSION['userid'])==false) {
-  
-  ?>
-    
-  <div id = 'logindiv'>
-  <h2>User Login:</h2>
-  <p>Please login to contribute to the news database:</p>
-
-  <?php include "../login_embed_envelope.php"; ?>
-    
-
-
-  </div>
-  
-  <?php
-  
-} else {
-  echo "<p>Logged in as ".$_SESSION['name']."</p>";
-}
-
-
-if (isset($_SESSION['userid'])) {
-
-  ?>
+<p>Logged in as <?=$userInfo['name_first']." ".$userInfo['name_last']?></p>
 
 
 
@@ -126,7 +106,7 @@ if (isset($_SESSION['userid'])) {
 
   <?php
 
-}
+
 
 //Set parameters: 
 
@@ -147,19 +127,6 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $query2 = "SELECT * FROM news_data ORDER BY id DESC";
 
-// Using OOP:
-
-$path = $_SERVER['DOCUMENT_ROOT'];
-$path .= "/../secrets/secrets.php";
-include($path);
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
 
 // prepare and bind
 $stmt = $conn->prepare("INSERT INTO news_data (headline, link, datePublished, explanation, explanation_long, topic, keyWords, dateCreated, user, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");

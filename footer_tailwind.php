@@ -169,7 +169,7 @@
 
     <script src="/tailwindcss/node_modules/flowbite/dist/flowbite.js"></script>
 
-
+    <script src="/javascript_functions.js"></script>
 
 
 
