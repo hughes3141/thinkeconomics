@@ -222,7 +222,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
       if ($hasSchool == 0) {
         ?>
-        <p>You need to make register to a school before you can create a class!</p>
+        <p>You need to register to a school before you can create a class!</p>
         <p>Go to <a href="school_registration.php" class="text-cyan-700 hover:underline">School Registration</a> to register your account to a school.</p>
         <?php
 

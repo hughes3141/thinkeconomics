@@ -47,7 +47,7 @@ include "../header_tailwind.php";
           <p class="pl-1 text-lg bg-sky-100 font-mono my-2">Logged in as <?php echo trim($userInfo['name_first']." ".$userInfo['name_last']);?></p>
         
         <?php
-          print_r($userInfo);
+          //print_r($userInfo);
         ?>
 
           <?php if(str_contains($permissions, "teacher")) 

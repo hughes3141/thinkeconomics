@@ -24,6 +24,11 @@ else {
   if (!(str_contains($permissions, 'teacher'))) {
     header("location: /index.php");
   }
+  $groupsList = getGroupsList($userId, true, $userId);
+  //print_r($groupsList);
+  $hasGroups = 0;
+  if(count($groupsList)>0) {
+    $hasGroups = 1; }
 }
 
 
@@ -119,6 +124,8 @@ include($path."/header_tailwind.php");
         if($_SERVER['REQUEST_METHOD']==='POST') {
           //print_r($_POST);
         }
+
+      if($hasGroups ==1) {
 
       ?>
       <p class="mb-1 ">This page allows you to manage the classes that you have set up in this platform.</p>
@@ -362,6 +369,16 @@ include($path."/header_tailwind.php");
 
     <?php
     }
+
+  }
+
+  if ($hasGroups == 0) {
+    ?>
+    <p>You need to make some classes before you can manage them!</p>
+    <p>Go to <a href="class_creator.php" class="text-cyan-700 underline hover:bg-sky-300">Class Creator</a> to make some new classes.</p>
+    <?php
+  }
+  
     ?>
 </div>
 </div>
