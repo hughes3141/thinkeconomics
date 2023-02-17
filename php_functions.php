@@ -52,6 +52,7 @@ Returns a list of groups for whom the $userId is listed as a teacher
 used in: 
 - user/user_populate.php
 -user/group_manager.php
+-assign_create1.0.php
 
 */
 
@@ -500,6 +501,9 @@ function getMCQquizInfo($quizId) {
 function getMCQquizzesByTopic($topic) {
   /*
   This function returns an array of all entries from mcq_quizzes table that match a $topic category
+
+  Used in:
+  -assign_create1.0
   */
 
   global $conn;
@@ -520,6 +524,60 @@ function getMCQquizzesByTopic($topic) {
   
 
 }
+
+function getExercises($table, $topic = null, $userCreate = null) {
+  /*
+  This function gets information on all SAQ or NDE excercises
+  */
+  global $conn;
+  $results = array();
+  $sql = "SELECT * FROM ".$table;
+  $switchVar = "";
+  
+  if($topic || $userCreate) {
+    $sql .= " WHERE ";
+  }
+  if($topic) {
+    $sql .= " topic = ? ";
+    $switchVar .= "topic";
+  }
+
+  if($topic && $userCreate) {
+    $sql .= " AND ";
+  }
+
+  if($userCreate) {
+    $sql .= " userCreate = ?";
+    $switchVar .= "userCreate";
+  }
+
+  $stmt=$conn->prepare($sql);
+  
+  switch ($switchVar) {
+    case "topic":
+      $stmt->bind_param("s", $topic);
+      break;
+    case "userCreate":
+      $stmt->bind_param("i", $userCreate);
+      break;
+    case "topicuserCreate":
+      $stmt->bind_param("si", $topic, $userCreate);
+      break;
+  }
+  
+  //$stmt->bind_param("s", $topic);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    
+    while($row = $result->fetch_assoc()){
+      array_push($results, $row);
+      
+    }
+    return $results;
+  }
+}
+
 
 
 function getGroupInfoById($groupId) {

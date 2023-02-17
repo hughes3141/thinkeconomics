@@ -22,6 +22,9 @@ else {
   if (!(str_contains($permissions, 'teacher'))) {
     header("location: /index.php");
   }
+
+  $groupsList = getGroupsList($userId);
+
 }  
 
 $style_input = ".hide {
@@ -66,154 +69,133 @@ include($path."/header_tailwind.php");
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1 ">Assignment Creator</h1>
-  <div class="container mx-auto px-0 mt-2 bg-white text-black ">
+  <div class="container mx-auto p-4 mt-2 bg-white text-black ">
+  
+  <?php
+  //print_r($userInfo);
+  echo "<br>";
+  //print_r($groupsList);
+  if($_SERVER['REQUEST_METHOD']==='POST') {
+    print_r($_POST);
+  }
+
+
+  ?>
 
 
 
 <form method="post" id ="form1">
-<p>
-<label for="assignName">Assignment Name</label>
-<input type="text" id="assignName" name="assignName" value = "<?php if (isset($_POST['assignName'])){echo $_POST['assignName'];}?>">
-</p>
-
-<p>
-
-<label for="assignType">Type:</label>
-<select id="assignType" name="type" onchange="this.form.submit();">
-  <option value=""></option>
-  <option value="mcq" <?php if($_POST) {
-    if($_POST['type']=="mcq"){
-      echo "selected";}
-      }
-      ?> >MCQ</option>
-
-<?php
-if(str_contains($userInfo['school_permissions'], "saq_dashboard")) 
-{ ?>
-
-  <option value="saq" <?php if($_POST) {
-    if($_POST['type']=="saq"){
-      echo "selected";}
-     } 
-     ?> >SAQ</option>
-  <option value="exercise" <?php if($_POST) {
-    if($_POST['type']=="exercise"){
-       echo "selected";}
-     } 
-     ?> >exercise</option>
-  <option value="nde" <?php if($_POST){
-    if($_POST['type']=="nde"){
-      echo "selected";}
-     }
-     ?> >Non Digital Entry</option>
-<?php
-}
-?>
-
-</select>
-</p>
-
-<?php
-if(isset($_POST['type'])) {
-  $assignType = $_POST['type'];
-
-  $teacherid = $userId;
-
-if($assignType == "mcq") {
-  $sql= "SELECT * FROM mcq_quizzes /*WHERE userCreate = ? ORDER BY dateCreated DESC*/";
-}
-else if ($assignType == "saq") {
-  $sql= "SELECT * FROM saq_exercises WHERE userCreate = ?";
-}
-else if ($assignType == "exercise") {
-  $sql= "SELECT * FROM exercise_list WHERE userCreate = ?";
-}
-else if ($assignType == "nde") {
-  $sql= "SELECT * FROM nde_exercises WHERE userCreate = ?";
-}
-
-
-  $stmt = $conn->prepare($sql);
-  //$stmt -> bind_param("s", $teacherid);
-  $stmt -> execute();
-
-$result = $stmt->get_result();
-}
-
-
-?>
-
-
-<p>
-<label for="exerciseid">Quiz/Exercise:</label>
-<!--
-<input type="text" id="exerciseid" name="exerciseid">
--->
-<select id="exerciseid" name="exerciseid" required>
-<option value=""></option>
+  <select name="groupId" class="w-full rounded border border-black" onchange="this.form.submit(); console.log(this.form);">
+    <option value =""></option>
       <?php
-        if($assignType == "mcq") {
+        $results = $groupsList;
+        foreach($results as $result) {
+          $selected = "";
+          if($_POST['groupId'] == $result['id']) {
+            $selected = " selected ";
+
+          }
+          ?>
+            <option value="<?=$result['id']?>"<?=$selected?>><?=$result['name']?></option>
+          
+          <?php
+        }
+    
+      ?>
+    <input type="" name="submit2" value="Select Group" class="hidden mt-3 rounded bg-sky-300 hover:bg-sky-200 focus:bg-sky-100 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block border border-black">
+  </select>
+
+  <?php
+
+  if(isset($_POST['groupId'])) {
+
+
+    ?>
+    <div>
+      <label for="assignName">Assignment Name:<label>
+        <div class="w-full mb-1.5">
+          <input id = "assignName" class="rounded border border-black w-full" type="text" name="assignName" value ="<?=(isset($_POST['assignName'])) ? $_POST['assignName'] : "" ?>">
+        </div>
+    </div>
+
+    <div>
+      <label for="assignType">Type:<label>
+        <div class="w-full mb-1.5">
+          <select id="assignType" name="type" onchange="this.form.submit();" class="rounded border border-black w-full">
+
+            <option value=""></option>
+            <option value="mcq" <?=(isset($_POST['type'])&&$_POST['type']=='mcq') ? "selected" : "" ?>>Multiple Choice Questions</option>
+            <?php 
+              if(str_contains($userInfo['school_permissions'], "saq_dashboard")) {
+                ?>
+            <option value="saq" <?=(isset($_POST['type'])&&$_POST['type']=='saq') ? "selected" : "" ?>>Short Answer Questions</option>
+            <option value="nde" <?=(isset($_POST['type'])&&$_POST['type']=='nde') ? "selected" : "" ?>>Non-Digital Entry</option>
+            <?php
+              }
+              ?>
+          </select>
+        </div>
+    </div>
+
+    <?php
+      $exercises = array();
+      $exerciseName= "exerciseName";
+      if(isset($_POST['type'])) {
+        if($_POST['type'] == "mcq") {
+          $exercises = getMCQquizzesByTopic("");
           $exerciseName= "quizName";
         }
-        else if ($assignType == "saq" or $assignType == "exercise" or $assignType == "nde") {
-          $exerciseName= "exerciseName";
+        if($_POST['type'] == "saq") {
+          $exercises = getExercises("saq_exercises");
         }
+        if($_POST['type'] == "nde") {
+          $exercises = getExercises("nde_exercises");
+        }      
+      //print_r($exercises);
+      }
+    ?>
 
-        if($result) {
-          while($row = $result->fetch_assoc()) {
-
-            echo "<option value='".$row['id']."'>(".$row['id'].") ".$row[$exerciseName]."</option>";
-          }
-        }
+    <?php
+    if(isset($_POST['type'])) {
       ?>
-</select>
-</p>
-<p>
-
-<?php
-$teacherid = $userId;
-$teacheridsql = '%\"'.$teacherid.'\"%';
-
-$sql= "SELECT * FROM groups WHERE teachers LIKE ? AND active = 1";
-$stmt = $conn->prepare($sql);
-$stmt -> bind_param("s", $teacheridsql);
-$stmt -> execute();
-
-$result = $stmt->get_result();
-
-
-
-?>
-
-<div id="classInput">
-  <div class="groupSelectorContainer">
-    <label for="groupid">Class:</label>
-    <select id="groupid" name ="groupid_0" class="groupSelector">
-      <option value=""></option>
-      <?php
-        if($result) {
-          while($row = $result->fetch_assoc()) {
-
-            echo "<option value='".$row['id']."'>".$row['name']."</option>";
-          }
-        }
-      ?>
-    </select>
     
-  </div>
-</div>
+    <div>
+      <label for="exerciseid">Quiz/Exercise:<label>
+        <div class="w-full mb-1.5">
+          <select id="exerciseid" name="exerciseid" class="rounded border border-black w-full" onChange="this.form.submit()">
+            <option value=""></option>
+            <?php
+              foreach($exercises as $exercise) {
+                ?>
 
-<button style="display:none" type="button" onclick="addClass()">Add class</button>
+                <option value="<?=$exercise['id']?>"><?=$exercise[$exerciseName]?></option>
 
-<input type="hidden" id="groupCountInput" name="classCount" value = "1">
+                <?php
+              }
 
-</p>
+            ?>
+          </select>
+        </div>
+    </div>
 
-<p>
+    <?php
+    }
+    ?>
+
+
+    <?php
+  }
+
+  ?>
+
+
+
+
+
 
 <label for="notes">Notes</label>
 <input type="text" id="notes" name="notes">
-</p>
+
 
 <p>
 
@@ -222,28 +204,7 @@ $result = $stmt->get_result();
 
 </p>
 
-<table style="table-layout: fixed; width: 300px;">
-  <tr>
-    <td>
-      <label for="reviewOn">Review On</label>
-      <input type="radio" id="reviewOn" name="review" value = "0" checked>
-    </td>
-    <td>
-      <label for="reviewOff">Review Off</label>
-      <input type="radio" id="reviewOff" name="review" value = "1">
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <label for="multiOn">Multi Submit</label>
-      <input type="radio" id="multiOn" name="multi" value = "0" checked>
-    </td>
-    <td>
-      <label for="multiOff">No Multi Submit</label>
-      <input type="radio" id="multiOff" name="multi" value = "1">
-    </td>
-  </tr>
-</table>
+
 
 <p>
   <input type="submit" value="Create Assignment" name ="btnSubmit">
