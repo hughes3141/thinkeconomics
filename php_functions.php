@@ -664,7 +664,7 @@ function getNewsArticlesByTopic($topic) {
 }
 
 function login_log($userid) {
-  //Very simple: this function logs when a user has logged in. Used primarily wiht login.php
+  //Very simple: this function logs when a user has logged in. Used primarily wiht login.php. Also used in newuser upon first registration.
   global $conn;
   date_default_timezone_set('Europe/London');
   $datetime = date("Y-m-d H:i:s");
@@ -1325,11 +1325,44 @@ function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $us
   }
 
   $stmt->bind_param("ssssssssisissiiss", $firstName, $lastName, $username, $password_hash, $usertype_std, $permissions, $usertype, $email_name, $active, $datetime, $privacy_bool, $datetime, $version, $schoolId, $userCreate, $groupIdArray, $passwordEntry);
+  
   $stmt->execute();
+
+  $results = ['username'=>$username, 'datetime'=>$datetime];
+
+  return $results;
 
 
 
 }
+
+/*
+Used in: 
+-newuser.php
+*/
+
+function getUserByUsernameDatetime($entry) {
+  //This function is designed for the specific use of retrieving id from table users in the immediate afterward of a new account being registered
+  //$entry is an array with ('username'=> , 'datetime'=> )
+
+  global $conn;
+  $return = "";
+  $sql = "SELECT id
+          FROM users
+          WHERE username = ? AND time_added = ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("ss", $entry['username'], $entry['datetime']);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result ->num_rows>0) {
+    $row = $result->fetch_assoc();
+    $return = $row['id'];
+  }
+  
+  return $return;
+
+}
+
 
 
 function updateGroupTeachers($groupId, $teacherId, $method = "add") {
