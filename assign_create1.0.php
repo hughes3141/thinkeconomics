@@ -53,7 +53,7 @@ table-layout: auto;
 }
 
 p {
-  margin-bottom: 5px;
+  //margin-bottom: 5px;
 }
 
   
@@ -61,7 +61,18 @@ p {
 
 
 
+if($_SERVER['REQUEST_METHOD'] == 'POST') {
+  if(isset($_POST['btnSubmit'])) {
+    createAssignment($userId, $_POST['assignName'], $_POST['exerciseid'], $_POST['notes'], $_POST['dueDate'], $_POST['type'], $_POST['groupId']);
 
+  }
+
+  if(isset($_POST['updateValue'])) {
+
+    $updateMessage = updateAssignment($userId, $_POST['id'], $_POST['assignName'], null, $_POST['notes'], $_POST['dueDate'], null, $_POST['groupid'], $_POST['assignReturn'], $_POST['reviewQs'], $_POST['multiSubmit']);
+  }
+
+}
 
 include($path."/header_tailwind.php");
 ?>
@@ -73,7 +84,7 @@ include($path."/header_tailwind.php");
   
   <?php
   //print_r($userInfo);
-  echo "<br>";
+  //echo "<br>";
   //print_r($groupsList);
   if($_SERVER['REQUEST_METHOD']==='POST') {
     print_r($_POST);
@@ -85,25 +96,28 @@ include($path."/header_tailwind.php");
 
 
 <form method="post" id ="form1">
-  <select name="groupId" class="w-full rounded border border-black" onchange="this.form.submit(); console.log(this.form);">
-    <option value =""></option>
-      <?php
-        $results = $groupsList;
-        foreach($results as $result) {
-          $selected = "";
-          if($_POST['groupId'] == $result['id']) {
-            $selected = " selected ";
+  <div>
+    <label for="groupSelect">Class:<label>
+    <select id="groupSelect" name="groupId" class="w-full rounded border border-black" onchange="this.form.submit(); console.log(this.form);">
+      <option value =""></option>
+        <?php
+          $results = $groupsList;
+          foreach($results as $result) {
+            $selected = "";
+            if($_POST['groupId'] == $result['id']) {
+              $selected = " selected ";
 
+            }
+            ?>
+              <option value="<?=$result['id']?>"<?=$selected?>><?=$result['name']?></option>
+            
+            <?php
           }
-          ?>
-            <option value="<?=$result['id']?>"<?=$selected?>><?=$result['name']?></option>
-          
-          <?php
-        }
-    
-      ?>
-    <input type="" name="submit2" value="Select Group" class="hidden mt-3 rounded bg-sky-300 hover:bg-sky-200 focus:bg-sky-100 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block border border-black">
-  </select>
+      
+        ?>
+      <input type="" name="submit2" value="Select Group" class="hidden mt-3 rounded bg-sky-300 hover:bg-sky-200 focus:bg-sky-100 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block border border-black">
+    </select>
+  </div>
 
   <?php
 
@@ -156,7 +170,7 @@ include($path."/header_tailwind.php");
     ?>
 
     <?php
-    if(isset($_POST['type'])) {
+    if(isset($_POST['type']) && $_POST['type']!="") {
       ?>
     
     <div>
@@ -167,23 +181,30 @@ include($path."/header_tailwind.php");
             <?php
               foreach($exercises as $exercise) {
                 ?>
-
-                <option value="<?=$exercise['id']?>"><?=$exercise[$exerciseName]?></option>
-
+                <option value="<?=$exercise['id']?>" <?=(isset($_POST['exerciseid'])&& $_POST['exerciseid'] == $exercise['id']) ? "selected" : ""?>><?=$exercise[$exerciseName]?></option>
                 <?php
               }
-
             ?>
           </select>
         </div>
     </div>
 
+    <div>
+    <label for="notes">Notes</label>
+      <div class="w-full mb-1.5">
+        <textarea type="text" id="notes" name="notes" class="rounded w-full"><?=(isset($_POST['notes'])) ? htmlspecialchars($_POST['notes']) : ""?></textarea>
+      </div>
+    </div>
+    <div>
+      <label for="dueDate">Due Date:</label>
+      <input type="datetime-local" id="dueDate" name="dueDate" class="rounded w-full" value = "<?=(isset($_POST['dueDate'])) ? $_POST['dueDate'] : date("Y-m-d 09:00:00")?>">
+    </div>
+    <div>
+      <input type="submit" value="Create Assignment" name ="btnSubmit" class=" mt-3 rounded bg-sky-300 hover:bg-sky-200 focus:bg-sky-100 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block border border-black">
+    </div>
+
     <?php
     }
-    ?>
-
-
-    <?php
   }
 
   ?>
@@ -192,95 +213,8 @@ include($path."/header_tailwind.php");
 
 
 
-
-<label for="notes">Notes</label>
-<input type="text" id="notes" name="notes">
-
-
-<p>
-
-<label for="dueDate">Due Date:</label>
-<input type="datetime-local" id="dueDate" name="dueDate">
-
-</p>
-
-
-
-<p>
-  <input type="submit" value="Create Assignment" name ="btnSubmit">
-</p>
-</form>
-
-
-
 <?php 
 
-
-if($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['updateValue'])) {
-
-  $teacherid = $userId;
-
-  $assignName = $_POST["assignName"];
-  $quizID = $_POST["exerciseid"];
-
-  $notes = $_POST["notes"];
-  $review = $_POST["review"];
-  $multi = $_POST["multi"];
-  $datetime = date("Y-m-d H:i:s");
-  $dueDate = $_POST["dueDate"];
-  $type = $_POST["type"];
-
-  $classIDArray = array();
-
-  for($x=0; $x<$_POST['classCount']; $x++) {
-    $classIDArray[$x] = $_POST['groupid_'.$x];
-    //echo $x.": ".$classIDArray[$x];
-  }
-
-  $classID_text = "";
-  foreach ($classIDArray as $val) {
-    $classID_text .= $val.", ";
-  }
-  $classID = rtrim($classID_text, " , ");
-
-
-
-
-  $classID_array = json_encode($classIDArray);
-
-  //echo "classID_array: ";
-  //print_r($classID_array);
-
-  $assignReturn = 1;
-
-    if ($review == 1) {
-      
-      $assignReturn = 0;
-    }
-
-
-
-//echo var_dump($_POST)."<br>";
-//echo $datetime;
-
-//echo "<br>".$assignName;
-
-$sql = "INSERT INTO assignments (assignName, quizid, groupid, reviewQs, multiSubmit, notes, dateCreated, type, dateDue, assignReturn, groupid_array, userCreate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("sisiissssisi", $assignName, $quizID, $classID, $review, $multi, $notes, $datetime, $type, $dueDate, $assignReturn, $classID_array, $teacherid);
-
-  if (isset($_POST['btnSubmit'])) {
-    //Execute
-    
-    $stmt->execute();
-    echo "New records created successfully";
-
-    //echo $assignName; echo $quizID; echo  $classID; echo  $review; echo  $multi; echo  $notes; echo  $datetime; echo  $type; echo  $dueDate; echo $assignReturn; echo  $classID_array;
-    
-  }
-
-}
 
 if(!isset($_GET['limit'])) {
   $limit = 10;
@@ -290,74 +224,72 @@ if(!isset($_GET['limit'])) {
 
 ?>
 
-<h2>Assigned Work</h2>
-<form method ="get" action="">
-  <label for = "limit_pick">Limit: </label>
-  <input type="number" id="limit_pick" min = "0" name="limit" value="<?=$limit?>">
-  <input type="submit" value="Change Limit">
-</form>
-<br>
-<table>
+<?php 
+if(isset($_POST['groupId'])) {
+  ?>
+  <h2>List of Assignments</h2>
+
+    <label for = "limit_pick">Limit: </label>
+    <input type="number" id="limit_pick" min = "0" name="limit" value="<?=$limit?>">
+    <input type="submit" value="Change Limit">
+
+
+  <?php
+
+  $assignments = getAssignmentsByGroup($_POST['groupId']);
+
+  //print_r($assignments);
+
+  ?>
+
+  <table class="w-full">
   <tr>
-    <th>id</th>
     <th>Assignment</th>
-    <th>Class</th>
     <th>Notes</th>
     <th>Dates</th>
-    <th>Controls</th>
+    <!--<th>Controls</th>-->
     <th>Edit</th>
   </tr>
 
+  <?php
+
+  foreach($assignments as $assignment) {
+    ?>
+
+    <tr>
+      <td>
+        <p><?=htmlspecialchars($assignment['assignName'])?></p>
+        <p><?=$assignment['type']?></p>
+        <p><?=$assignment['quizid']?></p>
+      </td>
+      <td>
+        <?=$assignment['notes']?>
+      </td>
+      <td>
+        <p>Due: </p>
+        <p><?=date("d/m/y g:ia",strtotime($assignment['dateDue']));?></p>
+        <p>Created: </p>
+        <p><?=date("d/m/y", strtotime($assignment['dateCreated']));?></p>
+      </td>
+      <td>
+        <button type="button">Edit</button>
+      </td>
+    </tr>
+
+    <?php
+  }
+
+}
+
+
+if(isset($updateMessage)) {
+  echo $updateMessage;
+}
+?>
+
+</form>
+
 <?php
-
-//Script for updating values:
-
-  function getAssignmentData($assignId) {
-    global $conn;
-    $stmt = $conn->prepare("SELECT * FROM assignments WHERE id = ?");
-    $stmt->bind_param("i", $assignId);
-    $stmt->execute();
-    $result=$stmt->get_result();
-    if($result->num_rows>0) {
-      $row = $result->fetch_assoc();
-      return $row;
-    }
-    
-  
-  }
-
-  //print_r($_POST);
-
-  if(isset($_POST['updateValue'])) {
-    $sql = "UPDATE assignments SET assignReturn = ?, dateDue = ?, notes = ?, assignName =?, groupid_array =?, groupid = ?, reviewQs = ?, multiSubmit = ? WHERE id = ?";
-
-    $groupid_array = explode(",",$_POST['groupid']);
-    $groupid_array = json_encode($groupid_array);
-    echo $groupid_array;
-
-    
-    $stmt = $conn->prepare($sql);
-    //print_r($_POST);
-    
-    $stmt->bind_param("isssssiii", $_POST['assignReturn'], $_POST['dateDue'], $_POST['notes'], $_POST['assignName'], $groupid_array, $_POST['groupid'], $_POST['reviewQs'], $_POST['multiSubmit'], $_POST['id']);
-  
-    //The following script validates to ensure that the user updating the assignment is hte assignment author:
-
-    $assignmentData = getAssignmentData($_POST['id']);
-    $assignmentDataUser = $assignmentData['userCreate'];
-  
-    if($assignmentDataUser == $_SESSION['userid']) {
-      $stmt->execute();
-      //header("Refresh:0");
-      echo "Record ".$_POST['id']." updated successfully.";
-    }
-    else {
-      echo "Value not updated: userid does not match userCreate";
-    }
-  }
-
-
-
 //Script for showing table values:
 
 
@@ -455,7 +387,8 @@ if ($result->num_rows>0) {
           </div>
           <div class="hide hide_<?=$row['id'];?>">
             Due:
-            <input type="datetime-local" name="dateDue" value="<?=$row['dateDue'];?>">
+            <input type="datetime-local" name="dueDate" value="<?=$row['dateDue'];?>">
+            <?=$row['dateDue']?>
           </div>
         </td>
         <td>

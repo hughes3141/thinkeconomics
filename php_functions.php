@@ -1539,4 +1539,99 @@ function getMCQresponseByUsernameTimestart($userId, $timeStart) {
 
 }
 
+
+function createAssignment($teacherid, $assignName, $quizID, $notes, $dueDate, $type, $classID, $return = 1) {
+  /*
+  Used in:
+  -assign_create1.0.php
+
+  */
+  global $conn;
+
+  $classID_array = array($classID);
+  $classID_array = json_encode($classID_array);
+
+  $datetime = date("Y-m-d H:i:s");
+
+  $sql = "INSERT INTO assignments (assignName, quizid, groupid, notes, dateCreated, type, dateDue, groupid_array, userCreate, assignReturn) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("siisssssii", $assignName, $quizID, $classID, $notes, $datetime, $type, $dueDate, $classID_array, $teacherid, $return);
+
+  $stmt->execute();
+
+}
+
+function getAssignmentData($assignId) {
+  /*
+  Used in:
+  -assign_create1.0
+  */
+
+  global $conn;
+  $sql = "SELECT * FROM assignments WHERE id = ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("i", $assignId);
+  $stmt->execute();
+  $result=$stmt->get_result();
+  if($result->num_rows>0) {
+    $row = $result->fetch_assoc();
+    return $row;
+  }
+  
+
+}
+
+function updateAssignment($userId, $assignId, $assignName, $quizID, $notes, $dueDate, $type, $classID, $return, $review, $multi) {
+  global $conn;
+
+  $classID_array = array($classID);
+  $classID_array = json_encode($classID_array);
+
+  $sql = "UPDATE assignments SET assignReturn = ?, dateDue = ?, notes = ?, assignName =?, groupid_array =?, groupid = ?, reviewQs = ?, multiSubmit = ? WHERE id = ?";
+  $stmt = $conn->prepare($sql);
+
+  $stmt->bind_param("issssiiii", $return, $dueDate, $notes, $assignName, $classID_array, $classID, $review, $multi, $assignId);
+
+  //The following script validates to ensure that the user updating the assignment is hte assignment author:
+
+  $assignmentData = getAssignmentData($assignId);
+  $assignmentDataUser = $assignmentData['userCreate'];
+
+  if($assignmentDataUser == $userId) {
+    $stmt->execute();
+    //header("Refresh:0");
+    return "Record ".$assignId." updated successfully.";
+  }
+  else {
+    return "Value not updated: userid does not match userCreate";
+  }
+
+
+}
+
+function getAssignmentsByGroup($groupId, $limit = 1000) {
+  global $conn;
+
+  $responses = array();
+
+  $sql = "SELECT * 
+  FROM assignments 
+  WHERE groupid = ?
+  ORDER BY dateDue desc 
+  LIMIT ?";
+
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("ii", $groupId, $limit);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($responses, $row);
+    }
+  }
+  return $responses;
+}
+
 ?>
