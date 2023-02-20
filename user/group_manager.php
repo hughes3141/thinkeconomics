@@ -102,7 +102,7 @@ $style_input = ".hide {
 
       if($className_err == "" AND $subject_err == "" AND $optionGroup_err == "" AND $finishDate_err == "" AND $teacherInput_error == "") {
 
-        updateGroupInformation($selectedGroupId, $_POST['name'], $_POST['subjectId'], $_POST['optionGroup'], $_POST['dateFinish']);
+        updateGroupInformation($selectedGroupId, $_POST['name'], $_POST['subjectId'], $_POST['optionGroup'], $_POST['dateFinish'], $_POST['examBoard']);
         
       }
       
@@ -218,6 +218,19 @@ include($path."/header_tailwind.php");
                 <input class="rounded border border-black w-full" type="text" name="optionGroup" value ="<?=$groupInfo['optionGroup']?>">
               </div>
           </div>
+          <div class="w-full mb-1.5">
+                <label>Exam Board:<label>
+                  <div class="">
+                    <select name="examBoard" class="rounded border border-black w-full" value ="<?=""?>">
+                      <option></option>
+                      <option <?=($groupInfo['examBoard']=="AQA") ? 'selected' : ''?> value="AQA">AQA</option>
+                      <option <?=($groupInfo['examBoard']=="Edexcel") ? 'selected' : ''?> value="Edexcel">Edexcel</option>
+                      <option <?=($groupInfo['examBoard']=="OCR") ? 'selected' : ''?> value="OCR">OCR</option>
+                      <option <?=($groupInfo['examBoard']=="Eduqas") ? 'selected' : ''?> value="Eduqas">Eduqas</option>
+                      <option <?=($groupInfo['examBoard']=="WJEC") ? 'selected' : ''?> value="WJEC">WJEC</option>
+                    </select>
+                  </div>
+              </div>
           <div class="w-full mb-1.5">
             <label>Finish Date:<label>
               <div>

@@ -1021,21 +1021,41 @@ function linkUserToSchool($userId, $schoolId) {
   $stmt->execute();
 }
 
+
+function getSubjectInfo($subjectId) {
+  global $conn;
+  $sql = "SELECT *
+          FROM subjects
+          WHERE id = ?";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("i", $subjectId);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    $row = $result->fetch_assoc();
+    $row['subjectName'] = $row['name'];
+    unset($row['name']);
+    return $row;
+  }
+}
+
+
 //Used in class_creator.php:
 
-function createGroup($userCreate, $name, $subjectId, $schoolId, $teachers, $dateFinish, $optionGroup) {
+function createGroup($userCreate, $name, $subjectId, $schoolId, $teachers, $dateFinish, $optionGroup, $examBoard) {
   //Used to create a group or class
 
   global $conn;
   $date = date("Y-m-d H:i:s");
   $sql = "INSERT INTO groups
-          (name, school, teachers, subjectId, optionGroup, dateFinish, active, userCreate, dateCreated)
-          VALUES (?,?,?,?,?,?,?,?,?)
+          (name, school, teachers, subjectId, optionGroup, dateFinish, active, userCreate, dateCreated, examBoard, subject, qualType)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
           ";
   $teachers = json_encode($teachers);
   $active = 1;
+  $subjectInfo = getSubjectInfo($subjectId);
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("sisissiis", $name, $schoolId, $teachers, $subjectId, $optionGroup, $dateFinish, $active, $userCreate, $date);
+  $stmt->bind_param("sisissiissss", $name, $schoolId, $teachers, $subjectId, $optionGroup, $dateFinish, $active, $userCreate, $date, $examBoard, $subjectInfo['subjectName'], $subjectInfo['level']);
   $stmt->execute();
   //echo "New record created";
 
@@ -1046,7 +1066,8 @@ function listSubjects() {
   global $conn;
   $responses = array();
   $sql = "SELECT *
-          FROM subjects";
+          FROM subjects
+          ORDER BY level, name";
   $stmt=$conn->prepare($sql);
   $stmt->execute();
   $result = $stmt->get_result();
@@ -1450,14 +1471,15 @@ function updateStudentGroup($groupId, $studentId, $method = "add") {
 
 }
 
-function updateGroupInformation($groupId, $name, $subjectId, $optionGroup, $dateFinish) {
+function updateGroupInformation($groupId, $name, $subjectId, $optionGroup, $dateFinish, $examBoard) {
 
   global $conn;
   $sql = "UPDATE groups
-          SET name =?, subjectId = ?, optionGroup =?, dateFinish = ?
+          SET name =?, subjectId = ?, optionGroup =?, dateFinish = ?, examBoard = ?, subject = ?, qualType = ?
           WHERE id = ?";
+  $subjectInfo = getSubjectInfo($subjectId);
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("sissi", $name, $subjectId, $optionGroup, $dateFinish, $groupId);
+  $stmt->bind_param("sisssssi", $name, $subjectId, $optionGroup, $dateFinish, $examBoard, $subjectInfo['subjectName'], $subjectInfo['level'], $groupId);
   $stmt->execute();
 }
 
