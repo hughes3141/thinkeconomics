@@ -121,8 +121,8 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       <?php
         //print_r($userInfo);
       if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        print_r($_POST);
-        print_r(getSubjectInfo($_POST['subjectId']));
+        //print_r($_POST);
+        //print_r(getSubjectInfo($_POST['subjectId']));
         echo $success_message;
       }
       ?>
