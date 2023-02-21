@@ -498,7 +498,7 @@ function getMCQquizInfo($quizId) {
 }
 
 
-function getMCQquizzesByTopic($topic) {
+function getMCQquizzesByTopic($topic = null) {
   /*
   This function returns an array of all entries from mcq_quizzes table that match a $topic category
 
@@ -508,9 +508,14 @@ function getMCQquizzesByTopic($topic) {
 
   global $conn;
   $quizzes = array();
-  $sql = "SELECT * FROM mcq_quizzes WHERE topic LIKE ?";
+  $sql = "SELECT * FROM mcq_quizzes ";
+  if($topic != null) {
+    $sql .= " WHERE topic LIKE ?";
+  }
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("s", $topic);
+  if($topic != null) {
+    $stmt->bind_param("s", $topic);
+  }
   $stmt->execute();
   $result = $stmt->get_result();
   if($result->num_rows>0) {

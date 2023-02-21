@@ -156,7 +156,7 @@ include($path."/header_tailwind.php");
       $exerciseName= "exerciseName";
       if(isset($_POST['type'])) {
         if($_POST['type'] == "mcq") {
-          $exercises = getMCQquizzesByTopic("");
+          $exercises = getMCQquizzesByTopic();
           $exerciseName= "quizName";
         }
         if($_POST['type'] == "saq") {
@@ -200,7 +200,14 @@ include($path."/header_tailwind.php");
       <input type="datetime-local" id="dueDate" name="dueDate" class="rounded w-full" value = "<?=(isset($_POST['dueDate'])) ? $_POST['dueDate'] : date("Y-m-d 09:00:00")?>">
     </div>
     <div>
+      <?php
+      if(isset($_POST['groupId'])&&$_POST['groupId']!="") {
+        ?>
+      
       <input type="submit" value="Create Assignment" name ="btnSubmit" class=" mt-3 rounded bg-sky-300 hover:bg-sky-200 focus:bg-sky-100 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block border border-black">
+      <?php
+      }
+      ?>
     </div>
 
     <?php
@@ -212,75 +219,94 @@ include($path."/header_tailwind.php");
 <?php 
 
 
-if(!isset($_GET['limit'])) {
+if(!isset($_POST['limit'])) {
   $limit = 10;
 } else {
-  $limit = $_GET['limit'];
+  if($_POST['limit'] >10) {
+    $limit = $_POST['limit'];
+  } else {
+    $limit = 10;
+  }
 }
 
 ?>
 
 <?php 
+
 if(isset($_POST['groupId'])) {
-  ?>
-  <h2>List of Assignments</h2>
+  $assignments = getAssignmentsByGroup($_POST['groupId'], $limit);
+}
+if(isset($_POST['groupId']) && $_POST['groupId']!="") {
+  if(count($assignments)>0) {
 
-    <label for = "limit_pick">Limit: </label>
-    <input type="number" id="limit_pick" min = "0" name="limit" value="<?=$limit?>">
-    <input type="submit" value="Change Limit">
+    if(count($assignments) < $limit) {
+      $limit=count($assignments);
+    }
 
-    
+    ?>
+    <h2 class="bg-pink-300 my-2">List of Assignments</h2>
 
+    <?php
+    if(count($assignments)>(9)) {
+      //echo $limit;
+      ?>
+      <div class ="w-1/4 ">
+        <label for = "limit_pick">Limit: </label>
+        <input class="rounded w-full mb-1.5 text-sm" type="number" id="limit_pick" min = "10" name="limit" value="<?=$limit?>">
+        <div>
+          <input class="w-full rounded border bg-sky-200" type="submit" value="Change Limit">
+        </div>
+      </div>
 
-  <?php
-
-  $assignments = getAssignmentsByGroup($_POST['groupId']);
-
-  //print_r($assignments);
-
-  ?>
-
-  <table class="w-full mt-3">
-  <tr>
-    <th>Assignment</th>
-    <th>Notes</th>
-    <th>Dates</th>
-    <!--<th>Controls</th>-->
-    <th>Edit</th>
-  </tr>
-
-  <?php
-
-  foreach($assignments as $assignment) {
+      <?php
+    }
+  
     ?>
 
+
+
+    <table class="w-full mt-3">
     <tr>
-      <td>
-        <p><?=htmlspecialchars($assignment['assignName'])?></p>
-        <p><?=$assignment['type']?></p>
-        <p><?=$assignment['quizid']?></p>
-      </td>
-      <td>
-        <?=$assignment['notes']?>
-      </td>
-      <td>
-        <p>Due: </p>
-        <p><?=date("d/m/y g:ia",strtotime($assignment['dateDue']));?></p>
-        <p>Created: </p>
-        <p><?=date("d/m/y", strtotime($assignment['dateCreated']));?></p>
-      </td>
-      <td>
-        <button type="button">Edit</button>
-      </td>
+      <th>Assignment</th>
+      <th>Notes</th>
+      <th>Dates</th>
+      <!--<th>Controls</th>-->
+      <th>Edit</th>
     </tr>
 
     <?php
+
+    foreach($assignments as $assignment) {
+      ?>
+
+      <tr>
+        <td>
+          <p><?=htmlspecialchars($assignment['assignName'])?></p>
+          <p><?=$assignment['type']?></p>
+          <p><?=$assignment['quizid']?></p>
+        </td>
+        <td>
+          <?=$assignment['notes']?>
+        </td>
+        <td>
+          <p>Due: </p>
+          <p><?=date("d/m/y g:ia",strtotime($assignment['dateDue']));?></p>
+          <p>Created: </p>
+          <p><?=date("d/m/y", strtotime($assignment['dateCreated']));?></p>
+        </td>
+        <td>
+          <button type="button">Edit</button>
+        </td>
+      </tr>
+
+      <?php
+      
+    }
+
+    ?>
+    </table>
+    <?php
   }
-
-  ?>
-  </table>
-  <?php
-
 }
 
 
