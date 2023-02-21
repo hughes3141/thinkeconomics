@@ -239,7 +239,7 @@ foreach($assignments as $value) {
 
 // THIS IS WHERE TO CHANGE THE LINK AFTER MAKING CHANGES TO MCQ PAGE
 
-			echo "<a href = '../mcq/login.php?assignid=".$value['id']."'>Link to MCQ</a>";
+			echo "<a href = '../mcq/mcq_exercise.php?assignid=".$value['id']."'>Link to MCQ</a>";
 			echo "</td>";
 			
 			
