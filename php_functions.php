@@ -53,6 +53,7 @@ used in:
 - user/user_populate.php
 -user/group_manager.php
 -assign_create1.0.php
+-assignment_list.php
 
 */
 
@@ -177,6 +178,52 @@ function getAssignmentsList($userId, $classId = null, $type = "all") {
 
   
   
+}
+
+function getAssignmentsListByTeacher($teacherId, $limit = 1000, $classId = null) {
+  global $conn;
+  $teacherIdSql = "%\"".$teacherId."\"%";
+  echo $teacherIdSql;
+
+  $sql = "SELECT a.*, g.teachers
+          FROM assignments a
+          LEFT JOIN groups g
+          ON a.groupid = g.id
+          WHERE g.teachers LIKE ? ";
+
+  if($classId) {
+    $sql .= " AND a.groupid = ? ";
+  }
+
+  $sql .= " ORDER BY dateCreated desc
+          LIMIT ?";
+
+          echo $sql;
+          echo $classId;
+
+$stmt=$conn->prepare($sql);
+if(!$classId) {
+  $stmt->bind_param("si", $teacherIdSql, $limit);
+} else {
+  $stmt->bind_param("sii", $teacherIdSql, $classId, $limit);
+}
+
+
+$stmt->execute();
+  $result=$stmt->get_result();
+
+  $assignments = array();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($assignments, $row);
+
+    }
+  }
+
+  return $assignments;
+
+
 }
 
 /*

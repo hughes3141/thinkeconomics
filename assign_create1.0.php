@@ -87,7 +87,7 @@ include($path."/header_tailwind.php");
   //echo "<br>";
   //print_r($groupsList);
   if($_SERVER['REQUEST_METHOD']==='POST') {
-    print_r($_POST);
+    //print_r($_POST);
   }
 
 
@@ -281,9 +281,21 @@ if(isset($_POST['groupId']) && $_POST['groupId']!="") {
 
       <tr>
         <td>
-          <p><?=htmlspecialchars($assignment['assignName'])?></p>
-          <p><?=$assignment['type']?></p>
-          <p><?=$assignment['quizid']?></p>
+          <p>Assignment Name: <?=htmlspecialchars($assignment['assignName'])?></p>
+          <p>Type: <?=$assignment['type']?></p>
+          <p>Link: <?php
+            if($assignment['type'] == "mcq") {
+              $quizInfo = getMCQquizInfo($assignment['quizid']);
+              echo "<a class='underline hover:bg-sky-100' target='_blank' href='/mcq/mcq_exercise.php?quizid=".$assignment['quizid']."'>".htmlspecialchars($quizInfo['quizName'])."</a>";
+
+            }
+            //Update below when ready for new assignment types e.g. saq or nde
+            else {
+              echo htmlspecialchars($assignment['quizid']);
+            }
+          
+          ?>
+
         </td>
         <td>
           <?=$assignment['notes']?>
@@ -292,10 +304,10 @@ if(isset($_POST['groupId']) && $_POST['groupId']!="") {
           <p>Due: </p>
           <p><?=date("d/m/y g:ia",strtotime($assignment['dateDue']));?></p>
           <p>Created: </p>
-          <p><?=date("d/m/y", strtotime($assignment['dateCreated']));?></p>
+          <p><?=date("d/m/y g:ia", strtotime($assignment['dateCreated']));?></p>
         </td>
         <td>
-          <button type="button">Edit</button>
+          <button class = "w-full border rounded bg-pink-300 p-2" type="button">Edit</button>
         </td>
       </tr>
 

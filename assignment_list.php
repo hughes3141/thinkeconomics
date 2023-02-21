@@ -5,12 +5,28 @@ session_start();
 
 $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
+
 
 if (!isset($_SESSION['userid'])) {
   
-  //header("location: /login.php");
+  header("location: /login.php");
   
 }
+
+else {
+  $userInfo = getUserInfo($_SESSION['userid']);
+  $userId = $_SESSION['userid'];
+  $permissions = $userInfo['permissions'];
+  if (!(str_contains($permissions, 'teacher'))) {
+    header("location: /index.php");
+  }
+
+  $groupsList = getGroupsList($userId);
+
+}  
 
 $style_input = ".hide {
   display: none;
@@ -54,9 +70,7 @@ $style_input = ".hide {
   
 
 
-$path = $_SERVER['DOCUMENT_ROOT'];
-include($path."/php_header.php");
-include($path."/php_functions.php");
+
 include ($path."/header_tailwind.php");
 
 
@@ -68,6 +82,16 @@ include ($path."/header_tailwind.php");
   <h1 class="font-mono text-2xl bg-pink-400 pl-1 ">Assignment List</h1>
   <div class="container mx-auto p-4 mt-2 bg-white text-black ">
 
+  <?php
+    print_r($groupsList);
+    echo "<br><br>";
+    if(isset($_GET['groupid'])) {$groupFromGet = getGroupInfoById($_GET['groupid']);
+    print_r($groupFromGet);
+    echo "<br><br>";
+    }
+
+  ?>
+
 
   <?php 
 
@@ -78,6 +102,19 @@ include ($path."/header_tailwind.php");
     $limit = $_GET['limit'];
   }
 
+ 
+  if(!isset($_GET['groupid'])) {
+    $assignments = getAssignmentsListByTeacher($userId, $limit);
+    } else {
+    $assignments = getAssignmentsListByTeacher($userId, $limit, $_GET['groupid']);
+  }
+
+
+  
+  //echo "<pre>";
+  //print_r($assignments);
+  //echo "</pre>";
+
   ?>
 
 
@@ -85,7 +122,24 @@ include ($path."/header_tailwind.php");
 
     <label for = "limit_pick">Limit: </label>
     <input type="number" id="limit_pick" min = "0" name="limit" value="<?=$limit?>">
+    <div>
+      <label>Class:</label>
+      <div>
+        <select name="groupid">
+          <option></option>
+          <?php
+          foreach($groupsList as $group) {
+            ?>
+            <option value="<?=$group['id']?>"><?=htmlspecialchars($group['name'])?></option>
+            <?php
+
+          }
+          ?>
+        </select>
+      </div>
+    </div>
     <input type="submit" value="Change Limit">
+    
   </form>
   <br>
   <table class="table-auto w-full" >
@@ -153,27 +207,13 @@ include ($path."/header_tailwind.php");
 
 
 
-  $sql = "SELECT * FROM assignments ORDER BY dateCreated desc LIMIT ?";
 
 
-  if(isset($_GET['limit'])) {
-    $_GET['limit']= intval($_GET['limit']);
-    //var_dump($_GET['limit']);
+  
 
-      $limit = $_GET['limit'];
-    
-  }
+  foreach ($assignments as $row) {
 
 
-
-  $stmt=$conn->prepare($sql);
-  $stmt->bind_param("i", $limit);
-  $stmt->execute();
-  $result= $stmt->get_result();
-
-  if ($result->num_rows>0) {
-    
-    while ($row = $result->fetch_assoc()) {
 
       ?>
       
@@ -292,8 +332,6 @@ include ($path."/header_tailwind.php");
 
         <?php
       
-    }
-    
   }
 
 
