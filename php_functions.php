@@ -181,9 +181,11 @@ function getAssignmentsList($userId, $classId = null, $type = "all") {
 }
 
 function getAssignmentsListByTeacher($teacherId, $limit = 1000, $classId = null) {
+  /*
+  This function is distinct from getAssignmentsList because it filters by teachers associatd with the class rather than the userCreate.
+  */
   global $conn;
   $teacherIdSql = "%\"".$teacherId."\"%";
-  echo $teacherIdSql;
 
   $sql = "SELECT a.*, g.teachers
           FROM assignments a
@@ -198,18 +200,15 @@ function getAssignmentsListByTeacher($teacherId, $limit = 1000, $classId = null)
   $sql .= " ORDER BY dateCreated desc
           LIMIT ?";
 
-          echo $sql;
-          echo $classId;
-
-$stmt=$conn->prepare($sql);
-if(!$classId) {
-  $stmt->bind_param("si", $teacherIdSql, $limit);
-} else {
-  $stmt->bind_param("sii", $teacherIdSql, $classId, $limit);
-}
+  $stmt=$conn->prepare($sql);
+  if(!$classId) {
+    $stmt->bind_param("si", $teacherIdSql, $limit);
+  } else {
+    $stmt->bind_param("sii", $teacherIdSql, $classId, $limit);
+  }
 
 
-$stmt->execute();
+  $stmt->execute();
   $result=$stmt->get_result();
 
   $assignments = array();
@@ -1614,7 +1613,7 @@ function getMCQresponseByUsernameTimestart($userId, $timeStart) {
 }
 
 
-function createAssignment($teacherid, $assignName, $quizID, $notes, $dueDate, $type, $classID, $return = 1) {
+function createAssignment($teacherid, $assignName, $quizID, $notes, $dueDate, $type, $classID, $return = 1, $active = 1) {
   /*
   Used in:
   -assign_create1.0.php
@@ -1627,10 +1626,10 @@ function createAssignment($teacherid, $assignName, $quizID, $notes, $dueDate, $t
 
   $datetime = date("Y-m-d H:i:s");
 
-  $sql = "INSERT INTO assignments (assignName, quizid, groupid, notes, dateCreated, type, dateDue, groupid_array, userCreate, assignReturn) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  $sql = "INSERT INTO assignments (assignName, quizid, groupid, notes, dateCreated, type, dateDue, groupid_array, userCreate, assignReturn, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("siisssssii", $assignName, $quizID, $classID, $notes, $datetime, $type, $dueDate, $classID_array, $teacherid, $return);
+  $stmt->bind_param("siisssssiii", $assignName, $quizID, $classID, $notes, $datetime, $type, $dueDate, $classID_array, $teacherid, $return, $active);
 
   $stmt->execute();
 
@@ -1656,16 +1655,16 @@ function getAssignmentData($assignId) {
 
 }
 
-function updateAssignment($userId, $assignId, $assignName, $quizID, $notes, $dueDate, $type, $classID, $return, $review, $multi) {
+function updateAssignment($userId, $assignId, $assignName, $quizID, $notes, $dueDate, $type, $classID, $return, $review, $multi, $active) {
   global $conn;
 
   $classID_array = array($classID);
   $classID_array = json_encode($classID_array);
 
-  $sql = "UPDATE assignments SET assignReturn = ?, dateDue = ?, notes = ?, assignName =?, groupid_array =?, groupid = ?, reviewQs = ?, multiSubmit = ? WHERE id = ?";
+  $sql = "UPDATE assignments SET assignReturn = ?, dateDue = ?, notes = ?, assignName =?, groupid_array =?, groupid = ?, reviewQs = ?, multiSubmit = ?, active = ? WHERE id = ?";
   $stmt = $conn->prepare($sql);
 
-  $stmt->bind_param("issssiiii", $return, $dueDate, $notes, $assignName, $classID_array, $classID, $review, $multi, $assignId);
+  $stmt->bind_param("issssiiiii", $return, $dueDate, $notes, $assignName, $classID_array, $classID, $review, $multi, $active, $assignId);
 
   //The following script validates to ensure that the user updating the assignment is hte assignment author:
 

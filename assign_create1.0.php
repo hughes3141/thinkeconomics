@@ -176,7 +176,7 @@ include($path."/header_tailwind.php");
     <div>
       <label for="exerciseid">Quiz/Exercise:<label>
         <div class="w-full mb-1.5">
-          <select id="exerciseid" name="exerciseid" class="rounded border border-black w-full" onChange="this.form.submit()">
+          <select id="exerciseid" name="exerciseid" class="rounded border border-black w-full" onChange="/*this.form.submit()*/">
             <option value=""></option>
             <?php
               foreach($exercises as $exercise) {
@@ -215,8 +215,9 @@ include($path."/header_tailwind.php");
   }
 
   ?>
+</form>
+  <?php
 
-<?php 
 
 
 if(!isset($_POST['limit'])) {
@@ -229,9 +230,7 @@ if(!isset($_POST['limit'])) {
   }
 }
 
-?>
 
-<?php 
 
 if(isset($_POST['groupId'])) {
   $assignments = getAssignmentsByGroup($_POST['groupId'], $limit);
@@ -244,6 +243,8 @@ if(isset($_POST['groupId']) && $_POST['groupId']!="") {
     }
 
     ?>
+
+
     <h2 class="bg-pink-300 my-2">List of Assignments</h2>
 
     <?php
@@ -294,7 +295,7 @@ if(isset($_POST['groupId']) && $_POST['groupId']!="") {
               echo htmlspecialchars($assignment['quizid']);
             }
           
-          ?>
+          ?></p>
 
         </td>
         <td>
@@ -307,7 +308,11 @@ if(isset($_POST['groupId']) && $_POST['groupId']!="") {
           <p><?=date("d/m/y g:ia", strtotime($assignment['dateCreated']));?></p>
         </td>
         <td>
-          <button class = "w-full border rounded bg-pink-300 p-2" type="button">Edit</button>
+          <form method ="get" action ="/assignment_list.php#row_<?=$assignment['id']?>">
+          <input type="hidden" name = "groupid" value="<?=$assignment['groupid']?>">
+          <input type="hidden" name = "assignid" value="<?=$assignment['id']?>">
+          <button class = "w-full border rounded bg-pink-300 p-2"  formtarget="_blank">Edit</button>
+          </form>
         </td>
       </tr>
 
@@ -327,10 +332,8 @@ if(isset($updateMessage)) {
 }
 ?>
 
-</form>
 
 
-<script>
-  </script>
+
 
 <?php     include($path."/footer_tailwind.php");?>

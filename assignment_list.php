@@ -26,7 +26,23 @@ else {
 
   $groupsList = getGroupsList($userId);
 
-}  
+}
+
+$updateMessage = "";
+
+
+
+if($_SERVER['REQUEST_METHOD'] == 'POST') {
+  if(isset($_POST['updateValue'])) {
+    $updateMessage = updateAssignment($userId, $_POST['id'], $_POST['assignName'], null, $_POST['notes'], $_POST['dateDue'], null, $_POST['groupid'], $_POST['assignReturn'], $_POST['reviewQs'], $_POST['multiSubmit'], 1);
+    //Ensure that changevisibility does not happen when directed from this same site:
+    unset($_GET['assignid']);
+
+
+  }
+
+
+}
 
 $style_input = ".hide {
   display: none;
@@ -78,17 +94,26 @@ include ($path."/header_tailwind.php");
 ?>
 
 
-<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-full">
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 w-full">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1 ">Assignment List</h1>
   <div class="container mx-auto p-4 mt-2 bg-white text-black ">
 
   <?php
-    print_r($groupsList);
-    echo "<br><br>";
+    echo "<pre>";
+    //print_r($groupsList);
+    echo "</pre>";
+    //echo "<br><br>";
     if(isset($_GET['groupid'])) {$groupFromGet = getGroupInfoById($_GET['groupid']);
-    print_r($groupFromGet);
-    echo "<br><br>";
+    //print_r($groupFromGet);
     }
+
+    if($_SERVER['REQUEST_METHOD'] == 'POST') {
+      //print_r($_POST); 
+    }
+    echo $updateMessage;
+    //print_r($_SESSION);
+
+
 
   ?>
 
@@ -130,12 +155,13 @@ include ($path."/header_tailwind.php");
           <?php
           foreach($groupsList as $group) {
             ?>
-            <option value="<?=$group['id']?>"><?=htmlspecialchars($group['name'])?></option>
+            <option value="<?=$group['id']?>" <?=(isset($_GET['groupid']) && $group['id'] == $_GET['groupid']) ? "selected" : ""?>><?=htmlspecialchars($group['name'])?></option>
             <?php
 
           }
           ?>
         </select>
+        
       </div>
     </div>
     <input type="submit" value="Change Limit">
@@ -144,7 +170,7 @@ include ($path."/header_tailwind.php");
   <br>
   <table class="table-auto w-full" >
     <tr>
-      <th>id</th>
+
       <th>Assignment</th>
       <th>Class</th>
       <th>Notes</th>
@@ -154,62 +180,6 @@ include ($path."/header_tailwind.php");
     </tr>
 
   <?php
-
-  //Script for updating values:
-
-    function getAssignmentData2($assignId) {
-      global $conn;
-      $stmt = $conn->prepare("SELECT * FROM assignments WHERE id = ?");
-      $stmt->bind_param("i", $assignId);
-      $stmt->execute();
-      $result=$stmt->get_result();
-      if($result->num_rows>0) {
-        $row = $result->fetch_assoc();
-        return $row;
-      }
-      
-    
-    }
-
-    //print_r($_POST);
-
-    if(isset($_POST['updateValue'])) {
-      $sql = "UPDATE assignments SET assignReturn = ?, dateDue = ?, notes = ?, assignName =?, groupid_array =?, groupid = ?, reviewQs = ?, multiSubmit = ? WHERE id = ?";
-
-      $groupid_array = explode(",",$_POST['groupid']);
-      $groupid_array = json_encode($groupid_array);
-      echo $groupid_array;
-
-      
-      $stmt = $conn->prepare($sql);
-      //print_r($_POST);
-      
-      $stmt->bind_param("isssssiii", $_POST['assignReturn'], $_POST['dateDue'], $_POST['notes'], $_POST['assignName'], $groupid_array, $_POST['groupid'], $_POST['reviewQs'], $_POST['multiSubmit'], $_POST['id']);
-    
-      //The following script validates to ensure that the user updating the assignment is hte assignment author:
-
-      $assignmentData = getAssignmentData($_POST['id']);
-      $assignmentDataUser = $assignmentData['userCreate'];
-    
-      if($assignmentDataUser == $_SESSION['userid']) {
-        $stmt->execute();
-        //header("Refresh:0");
-        echo "Record ".$_POST['id']." updated successfully.";
-      }
-      else {
-        echo "Value not updated: userid does not match userCreate";
-      }
-    }
-
-
-
-  //Script for showing table values:
-
-
-
-
-
-  
 
   foreach ($assignments as $row) {
 
@@ -222,22 +192,25 @@ include ($path."/header_tailwind.php");
         <form method="post" action="">
       <?php }?>
           <td>
-            <div>
-              <?=htmlspecialchars($row['id']);?>
-            </div>
-          </td>
-          <td>
             <div class="show_<?=$row['id'];?>">
-              <?=htmlspecialchars($row['assignName']);?>
-              <br>
+              <p class="">Assignment Name: <?=htmlspecialchars($row['assignName']);?></p>
             </div>
             <div class="hide hide_<?=$row['id'];?>">
-              <input type="text" name="assignName" value = "<?=$row['assignName'];?>">
+              <input class="w-full" type="text" name="assignName" value = "<?=$row['assignName'];?>">
             </div>
-              <?=htmlspecialchars($row['type']);?>
-              <br>
-              quizId: <?=htmlspecialchars($row['quizid']);?>
-              <br>
+              <p>Type: <?=htmlspecialchars($row['type']);?></p>
+              <p>Link: <?php
+                if($row['type'] == "mcq") {
+                  $quizInfo = getMCQquizInfo($row['quizid']);
+                  echo "<a class='underline hover:bg-sky-100' target='_blank' href='/mcq/mcq_exercise.php?quizid=".$row['quizid']."'>".htmlspecialchars($quizInfo['quizName'])."</a>";
+    
+                }
+                //Update below when ready for new assignment types e.g. saq or nde
+                else {
+                  echo htmlspecialchars($row['quizid']);
+                }
+              
+              ?></p>
             </div>
           </td>
           <td>
@@ -254,17 +227,23 @@ include ($path."/header_tailwind.php");
                   }
                   foreach ($groups as $groupId) {
                     $group = getGroupInfoById($groupId);
-                    echo $group['name'];
-                    echo " (".$groupId.")<br>";
+                    echo "<p>".$group['name'];
+                    //echo " (".$groupId.")";
+                    echo "</p>";
                   }
                 }
                 ?>
             </div>
             <div class="hide hide_<?=$row['id'];?>">
-            <input type="text" style="width: 60px;" name="groupid" value = "<?php
-              echo implode(",",$groups);
-            
-            ?>">
+              <select name="groupid" class="w-full" style="">
+                <?php
+                  foreach ($groupsList as $group) {
+                    ?>
+                    <option value="<?=$group['id']?>" <?=($group['id']==$row['groupid']) ? "selected" : ""?>><?=$group['name']?></option>
+                    <?php
+                  }
+                ?>
+              </select>
             </div>
           </td>
           <td>
@@ -272,56 +251,72 @@ include ($path."/header_tailwind.php");
               <?=htmlspecialchars($row['notes']);?>
             </div>
             <div class="hide hide_<?=$row['id'];?>">
-                <textarea name ="notes"><?=htmlspecialchars($row['notes']);?></textarea>
+                <textarea class="w-full" name ="notes"><?=htmlspecialchars($row['notes']);?></textarea>
 
             </div>
           </td>
           <td>
             <div class="show_<?=$row['id'];?>">
-              Due:<br>
-              <?=date("d/m/y g:ia",strtotime($row['dateDue']));?>
-              <br>
-              Created:
-              <?=date("d/m/y", strtotime($row['dateCreated']));?>
+              <p>Due:</p>
+          
+              <p><?=date("d/m/y g:ia",strtotime($row['dateDue']));?></p>
+              <p>Created:</p>
+              <p><?=date("d/m/y g:ia", strtotime($row['dateCreated']));?></p>
             </div>
             <div class="hide hide_<?=$row['id'];?>">
-              Due:
-              <input type="datetime-local" name="dateDue" value="<?=$row['dateDue'];?>">
+              <p>Due:</p>
+              <p><input class="w-full" type="datetime-local" name="dateDue" value="<?=$row['dateDue'];?>"></p>
             </div>
           </td>
           <td>
           <div class="show_<?=$row['id'];?>">
+            <?php
+              if($row['assignReturn'] == "1") {
+                echo "<p>Returned</p>";
+              } else {
+                echo "<p>Not Returned</p>";
+              }
+            ?>
+            <!--
             Review: <?=htmlspecialchars($row['reviewQs']);?>
             <br>
             Multi-Submit: <?=htmlspecialchars($row['multiSubmit']);?>
             <br>
             Returned:<?=htmlspecialchars($row['assignReturn']);?>
+            -->
           </div>
           <div class="hide hide_<?=$row['id'];?>">
-            Review:<input type="text" style="width: 60px;" name="reviewQs" value = "<?=$row['reviewQs'];?>">
-            <br>
+            <p>
+              <input type="radio" id="return_1_<?=$row['id']?>" name="assignReturn" value="1" <?=($row['assignReturn']=="1") ? "checked" : ""?>>
+              <label for="return_1_<?=$row['id']?>">Return</label>
+            </p>
+            <p>
+              <input type="radio" id="return_0_<?=$row['id']?>" name="assignReturn" value="0" <?=($row['assignReturn']=="0") ? "checked" : ""?>>
+              <label for="return_0_<?=$row['id']?>">No Return</label>
+            </p>
+            <div class="hidden">
+              Review:<input type="text" style="width: 60px;" name="reviewQs" value = "<?=$row['reviewQs'];?>">
 
-            Multi:<input type="text" style="width: 60px;" name="multiSubmit" value = "<?=$row['multiSubmit'];?>">
-            <br>
 
-            Returned:<input type="text" style="width: 60px;" name="assignReturn" value = "<?=$row['assignReturn'];?>">
+              Multi:<input type="text" style="width: 60px;" name="multiSubmit" value = "<?=$row['multiSubmit'];?>">
+            </div>
+
+
+            
           </div>
 
           </td>
 
-          
-
-          
           <td>
             
           <?php if($_SESSION['userid'] == $row['userCreate']) {?>
               <div>
-                <button type ="button" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>)"">Edit</button>
+                <button class="rounded border bg-pink-300 px-2 w-full mb-1.5" type ="button" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>)"">Edit</button>
               </div>
               <div class ="hide hide_<?=$row['id'];?>">
                 <input type="hidden" name = "id" value = "<?=$row['id'];?>">
 
-                <input type="submit" name="updateValue" value = "Update"></input>
+                <input class="rounded border bg-sky-200 px-2 w-full" type="submit" name="updateValue" value = "Update"></input>
               </div>
             <?php }?>
           </td>
@@ -344,6 +339,10 @@ include ($path."/header_tailwind.php");
 </div>
 
 <script>
+
+
+
+
 
 function changeVisibility(button, id) {
   
@@ -377,6 +376,19 @@ function changeVisibility(button, id) {
 
 
 }
+
+
+<?php
+
+  if(isset($_GET['assignid'])) {
+    ?>
+    let button = document.getElementById("button_<?=$_GET['assignid']?>");
+    let id = <?=$_GET['assignid']?>;
+    changeVisibility(button, id);
+    <?php
+  }
+
+?>
 
 var classIndex = [];
 
