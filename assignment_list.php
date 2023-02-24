@@ -162,7 +162,7 @@ include ($path."/header_tailwind.php");
   ?>
 
 
-  <form method ="get" action="">
+  <form method ="get" action="" id="control_form">
     <div class="mb-1.5">
       <label for="groupid">Class:</label>
       <div class="w-full">
@@ -351,7 +351,7 @@ include ($path."/header_tailwind.php");
             
           <?php if($_SESSION['userid'] == $row['userCreate']) {?>
               <div>
-                <button class="rounded border bg-pink-300 px-2 w-full mb-1.5" type ="button" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>)"">Edit</button>
+                <button class="rounded border bg-pink-300 px-2 w-full mb-1.5" type ="button" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id']?>); <?=(isset($_GET['assignid'])) ? "resetForm();" : ""?>" >Edit</button>
               </div>
               <div class ="hide hide_<?=$row['id'];?>">
                 <input type="hidden" name = "id" value = "<?=$row['id'];?>">
@@ -449,6 +449,10 @@ function reuseAssignment(input) {
   form.submit();
 }
 
+function resetForm() {
+  let form = document.getElementById("control_form");
+  form.submit();
+}
 
 
 var classIndex = [];
