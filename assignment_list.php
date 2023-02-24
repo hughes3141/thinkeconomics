@@ -33,6 +33,8 @@ $updateMessage = "";
 
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+
   if(isset($_POST['updateValue'])) {
     $updateMessage = updateAssignment($userId, $_POST['id'], $_POST['assignName'], null, $_POST['notes'], $_POST['dateDue'], null, $_POST['groupid'], $_POST['assignReturn'], $_POST['reviewQs'], $_POST['multiSubmit'], 1);
     //Ensure that changevisibility does not happen when directed from this same site:
@@ -134,9 +136,26 @@ include ($path."/header_tailwind.php");
     $assignments = getAssignmentsListByTeacher($userId, $limit, $_GET['groupid']);
   }
 
+  //If $_GET['assignid'] is declared this means it is coming from assign_create1.0.php and wants to be displayed on its own. Otherwise display all assignments in $assignments.
+
+  if(isset($_GET['assignid'])) {
+    function filterAssignment($assignid, $assignments) {
+      foreach ($assignments as $assignment) {
+        if ($assignment['id'] == $assignid) {
+          return $assignment;
+        }
+      }
+    }
+      $assignFilter = filterAssignment($_GET['assignid'], $assignments);
+      if($assignFilter) {
+        $assignments = array($assignFilter);
+      }
+  }
 
   
   //echo "<pre>";
+  //var_dump($assignFilter);
+
   //print_r($assignments);
   //echo "</pre>";
 
@@ -144,31 +163,41 @@ include ($path."/header_tailwind.php");
 
 
   <form method ="get" action="">
-
-    <label for = "limit_pick">Limit: </label>
-    <input type="number" id="limit_pick" min = "0" name="limit" value="<?=$limit?>">
-    <div>
-      <label>Class:</label>
-      <div>
-        <select name="groupid">
+    <div class="mb-1.5">
+      <label for="groupid">Class:</label>
+      <div class="w-full">
+        <select name="groupid" id="groupid" class="w-full rounded border border-black">
           <option></option>
           <?php
           foreach($groupsList as $group) {
             ?>
             <option value="<?=$group['id']?>" <?=(isset($_GET['groupid']) && $group['id'] == $_GET['groupid']) ? "selected" : ""?>><?=htmlspecialchars($group['name'])?></option>
             <?php
-
           }
           ?>
         </select>
-        
       </div>
     </div>
-    <input type="submit" value="Change Limit">
+    <div class="mb-1.5">
+      <label for = "limit_pick">Limit: </label>
+      <div class="w-full">
+        <input type="number" class="border border-black rounded" id="limit_pick" min = "0" name="limit" value="<?=$limit?>">
+      </div>
+    </div>
+    <input type="submit" value="See Assignments" class="mt-3 rounded bg-sky-300 hover:bg-sky-200 focus:bg-sky-100 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block border border-black">
     
   </form>
-  <br>
-  <table class="table-auto w-full" >
+
+  <?php
+
+  if(count($assignments)==0) {
+    echo "<p>No assignments to view for this group.</p>";
+
+  } else {
+    ?>
+  
+
+  <table class="table-auto w-full mt-3" >
     <tr>
 
       <th>Assignment</th>
@@ -180,6 +209,10 @@ include ($path."/header_tailwind.php");
     </tr>
 
   <?php
+  }
+
+
+
 
   foreach ($assignments as $row) {
 
@@ -199,10 +232,14 @@ include ($path."/header_tailwind.php");
               <input class="w-full" type="text" name="assignName" value = "<?=$row['assignName'];?>">
             </div>
               <p>Type: <?=htmlspecialchars($row['type']);?></p>
-              <p>Link: <?php
+                <?php
                 if($row['type'] == "mcq") {
                   $quizInfo = getMCQquizInfo($row['quizid']);
-                  echo "<a class='underline hover:bg-sky-100' target='_blank' href='/mcq/mcq_exercise.php?quizid=".$row['quizid']."'>".htmlspecialchars($quizInfo['quizName'])."</a>";
+                  ?>
+                  <p class="">Link: <a class='underline hover:bg-sky-100' target='_blank' href='/mcq/mcq_exercise.php?quizid=<?=$row['quizid']?>'><?=htmlspecialchars($quizInfo['quizName'])?></a></p>
+                  <p><a class='underline hover:bg-sky-100' target='_blank' href='/mcq/mcq_assignment_review3.0.php?assignid=<?=$row['id']?>'>Review Assignment</a></p>
+
+                  <?php
     
                 }
                 //Update below when ready for new assignment types e.g. saq or nde
@@ -210,8 +247,11 @@ include ($path."/header_tailwind.php");
                   echo htmlspecialchars($row['quizid']);
                 }
               
-              ?></p>
+              ?>
             </div>
+            <div class="show_<?=$row['id'];?>">
+                <button class="rounded border  px-2 w-1/3  " type="button" name="updateValue" value = "Reuse" onclick="reuseAssignment(<?=$row['id']?>);">Reuse</button>
+              </div>
           </td>
           <td>
             <div class="show_<?=$row['id'];?>">
@@ -318,12 +358,25 @@ include ($path."/header_tailwind.php");
 
                 <input class="rounded border bg-sky-200 px-2 w-full" type="submit" name="updateValue" value = "Update"></input>
               </div>
+              
             <?php }?>
-          </td>
+          
       <?php if($_SESSION['userid'] == $row['userCreate']) {?>
         </form>
       <?php }?>
+            <form id="form_2_<?=$row['id']?>" method = "post" action ="/assign_create1.0.php">
+              <input type="hidden" value="<?=$row['quizid']?>" name="exerciseid">
+              <input type="hidden" value="<?=$row['type']?>" name="type">
+              <input type="hidden" value="" name="groupId">
+              <input type="hidden" value="<?=$row['notes']?>" name="notes">
+              <input type="hidden" value="<?=$row['dateDue']?>" name="dateDue">
+              <input type="hidden" value="<?=$row['assignName']?>" name="assignName">
+            </form>
+          </td>
+
         </tr>
+
+        
 
         <?php
       
@@ -389,6 +442,14 @@ function changeVisibility(button, id) {
   }
 
 ?>
+
+function reuseAssignment(input) {
+  console.log(input);
+  var form = document.getElementById("form_2_"+input);
+  form.submit();
+}
+
+
 
 var classIndex = [];
 

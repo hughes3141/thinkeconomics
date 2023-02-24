@@ -96,8 +96,8 @@ include($path."/header_tailwind.php");
 
 
 <form method="post" id ="form1">
-  <div>
-    <label for="groupSelect">Class:<label>
+  <div class="mb-1.5">
+    <label for="groupSelect">Class:</label>
     <select id="groupSelect" name="groupId" class="w-full rounded border border-black" onchange="this.form.submit(); console.log(this.form);">
       <option value =""></option>
         <?php
@@ -115,8 +115,9 @@ include($path."/header_tailwind.php");
           }
       
         ?>
-      <input type="" name="submit2" value="Select Group" class="hidden mt-3 rounded bg-sky-300 hover:bg-sky-200 focus:bg-sky-100 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block border border-black">
+      
     </select>
+    <input type="" name="submit2" value="Select Group" class="hidden mt-3 rounded bg-sky-300 hover:bg-sky-200 focus:bg-sky-100 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block border border-black">
   </div>
 
   <?php
@@ -125,16 +126,16 @@ include($path."/header_tailwind.php");
 
 
     ?>
-    <div>
-      <label for="assignName">Assignment Name:<label>
-        <div class="w-full mb-1.5">
+    <div class="mb-1.5">
+      <label for="assignName">Assignment Name:</label>
+        <div class="w-full">
           <input id = "assignName" class="rounded border border-black w-full" type="text" name="assignName" value ="<?=(isset($_POST['assignName'])) ? $_POST['assignName'] : "" ?>">
         </div>
     </div>
 
-    <div>
-      <label for="assignType">Type:<label>
-        <div class="w-full mb-1.5">
+    <div class="mb-1.5">
+      <label for="assignType">Type:</label>
+        <div class="w-full">
           <select id="assignType" name="type" onchange="this.form.submit();" class="rounded border border-black w-full">
 
             <option value=""></option>
@@ -173,9 +174,9 @@ include($path."/header_tailwind.php");
     if(isset($_POST['type']) && $_POST['type']!="") {
       ?>
     
-    <div>
+    <div class="mb-1.5">
       <label for="exerciseid">Quiz/Exercise:<label>
-        <div class="w-full mb-1.5">
+        <div class="w-full">
           <select id="exerciseid" name="exerciseid" class="rounded border border-black w-full" onChange="/*this.form.submit()*/">
             <option value=""></option>
             <?php
@@ -189,9 +190,9 @@ include($path."/header_tailwind.php");
         </div>
     </div>
 
-    <div>
+    <div class="mb-1.5">
     <label for="notes">Notes</label>
-      <div class="w-full mb-1.5">
+      <div class="w-full">
         <textarea type="text" id="notes" name="notes" class="rounded w-full"><?=(isset($_POST['notes'])) ? htmlspecialchars($_POST['notes']) : ""?></textarea>
       </div>
     </div>
@@ -199,7 +200,7 @@ include($path."/header_tailwind.php");
       <label for="dueDate">Due Date:</label>
       <input type="datetime-local" id="dueDate" name="dueDate" class="rounded w-full" value = "<?=(isset($_POST['dueDate'])) ? $_POST['dueDate'] : date("Y-m-d 09:00:00")?>">
     </div>
-    <div>
+    <div class="mb-1.5">
       <?php
       if(isset($_POST['groupId'])&&$_POST['groupId']!="") {
         ?>
@@ -308,10 +309,11 @@ if(isset($_POST['groupId']) && $_POST['groupId']!="") {
           <p><?=date("d/m/y g:ia", strtotime($assignment['dateCreated']));?></p>
         </td>
         <td>
-          <form method ="get" action ="/assignment_list.php#row_<?=$assignment['id']?>">
+          <form method ="get" action ="/assignment_list.php">
           <input type="hidden" name = "groupid" value="<?=$assignment['groupid']?>">
           <input type="hidden" name = "assignid" value="<?=$assignment['id']?>">
-          <button class = "w-full border rounded bg-pink-300 p-2"  formtarget="_blank">Edit</button>
+          <button class = "w-full border rounded bg-pink-300 p-2"  >Edit</button>
+          <!-- formtarget="_blank" -->
           </form>
         </td>
       </tr>

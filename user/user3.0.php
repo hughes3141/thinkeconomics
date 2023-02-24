@@ -99,6 +99,9 @@ include "../header_tailwind.php";
                 <a class ="block" href="/assign_create1.0.php">Create Assignment</a>
               </p>
               <p class="ml-2 hover:bg-sky-100">
+                <a class ="block" href="/assignment_list.php">Assignment List</a>
+              </p>
+              <p class="ml-2 hover:bg-sky-100">
                 <a class ="block" href="/mcq/mcq_assignment_review3.0.php">MCQ Assignment Review</a>
               </p>
               <p class="ml-2 hover:bg-sky-100">
