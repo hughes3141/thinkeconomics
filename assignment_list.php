@@ -166,7 +166,7 @@ include ($path."/header_tailwind.php");
     <div class="mb-1.5">
       <label for="groupid">Class:</label>
       <div class="w-full">
-        <select name="groupid" id="groupid" class="w-full rounded border border-black">
+        <select name="groupid" id="groupid" class="w-full rounded border border-black" onchange="syncClassInput(); this.form.submit();">
           <option></option>
           <?php
           foreach($groupsList as $group) {
@@ -184,10 +184,14 @@ include ($path."/header_tailwind.php");
         <input type="number" class="border border-black rounded" id="limit_pick" min = "0" name="limit" value="<?=$limit?>">
       </div>
     </div>
-    <input type="submit" value="See Assignments" class="mt-3 rounded bg-sky-300 hover:bg-sky-200 focus:bg-sky-100 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block border border-black">
+    <input type="submit" value="See Assignments" class="mt-3 rounded bg-sky-300 hover:bg-sky-200 focus:bg-sky-100 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block border border-black" onclick="">
     
   </form>
-
+  <form action ="/assign_create1.0.php" method="post">
+    <input type="hidden" id="groupid2" name="groupId">
+    <input type="hidden" value= "" name="exerciseid">
+    <button class="mt-3 rounded bg-pink-300 hover:bg-sky-200 focus:bg-sky-100 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block border border-black">Create New Assignment</button>
+  </form>
   <?php
 
   if(count($assignments)==0) {
@@ -236,7 +240,8 @@ include ($path."/header_tailwind.php");
                 if($row['type'] == "mcq") {
                   $quizInfo = getMCQquizInfo($row['quizid']);
                   ?>
-                  <p class="">Link: <a class='underline hover:bg-sky-100' target='_blank' href='/mcq/mcq_exercise.php?quizid=<?=$row['quizid']?>'><?=htmlspecialchars($quizInfo['quizName'])?></a></p>
+                  <p class="">Link: <a class='underline hover:bg-sky-100' target='_blank' href='/mcq/mcq_exercise.php?assignid=<?=$row['id']?>'>/mcq/mcq_exercise.php?assignid=<?=$row['id']?></a></p>
+                        <!-- <?=htmlspecialchars($quizInfo['quizName'])?> -->
                   <p><a class='underline hover:bg-sky-100' target='_blank' href='/mcq/mcq_assignment_review3.0.php?assignid=<?=$row['id']?>'>Review Assignment</a></p>
 
                   <?php
@@ -453,6 +458,15 @@ function resetForm() {
   let form = document.getElementById("control_form");
   form.submit();
 }
+
+function syncClassInput() {
+  let classSelect = document.getElementById("groupid");
+  let classSelect2 = document.getElementById("groupid2");
+  //console.log(classSelect.value);
+  classSelect2.value = classSelect.value;
+}
+
+syncClassInput();
 
 
 var classIndex = [];

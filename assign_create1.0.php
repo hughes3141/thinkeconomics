@@ -122,7 +122,7 @@ include($path."/header_tailwind.php");
 
   <?php
 
-  if(isset($_POST['groupId'])) {
+  if(isset($_POST['groupId'])&&($_POST['groupId']!=""||$_POST['exerciseid']!="")) {
 
 
     ?>
@@ -198,7 +198,7 @@ include($path."/header_tailwind.php");
     </div>
     <div>
       <label for="dueDate">Due Date:</label>
-      <input type="datetime-local" id="dueDate" name="dueDate" class="rounded w-full" value = "<?=(isset($_POST['dueDate'])) ? $_POST['dueDate'] : date("Y-m-d 09:00:00")?>">
+      <input type="datetime-local" id="dueDate" name="dueDate" class="rounded w-full" value = "<?=(isset($_POST['dateDue'])) ? $_POST['dateDue'] : date("Y-m-d 09:00:00")?>">
     </div>
     <div class="mb-1.5">
       <?php
@@ -246,7 +246,7 @@ if(isset($_POST['groupId']) && $_POST['groupId']!="") {
     ?>
 
 
-    <h2 class="bg-pink-300 my-2">List of Assignments</h2>
+    <h2 class="bg-pink-300 my-2 pl-1 rounded text-xl text-white">List of Assignments</h2>
 
     <?php
     if(count($assignments)>(9)) {
@@ -285,12 +285,17 @@ if(isset($_POST['groupId']) && $_POST['groupId']!="") {
         <td>
           <p>Assignment Name: <?=htmlspecialchars($assignment['assignName'])?></p>
           <p>Type: <?=$assignment['type']?></p>
-          <p>Link: <?php
-            if($assignment['type'] == "mcq") {
-              $quizInfo = getMCQquizInfo($assignment['quizid']);
-              echo "<a class='underline hover:bg-sky-100' target='_blank' href='/mcq/mcq_exercise.php?quizid=".$assignment['quizid']."'>".htmlspecialchars($quizInfo['quizName'])."</a>";
+          <?php
+                if($assignment['type'] == "mcq") {
+                  $quizInfo = getMCQquizInfo($assignment['quizid']);
+                  ?>
+                  <p class="">Link: <a class='underline hover:bg-sky-100' target='_blank' href='/mcq/mcq_exercise.php?assignid=<?=$assignment['id']?>'>/mcq/mcq_exercise.php?assignid=<?=$assignment['id']?></a></p>
+                        <!-- <?=htmlspecialchars($quizInfo['quizName'])?> -->
+                  <p><a class='underline hover:bg-sky-100' target='_blank' href='/mcq/mcq_assignment_review3.0.php?assignid=<?=$assignment['id']?>'>Review Assignment</a></p>
 
-            }
+                  <?php
+    
+                }
             //Update below when ready for new assignment types e.g. saq or nde
             else {
               echo htmlspecialchars($assignment['quizid']);
