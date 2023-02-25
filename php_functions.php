@@ -54,6 +54,7 @@ used in:
 -user/group_manager.php
 -assign_create1.0.php
 -assignment_list.php
+-mcq_assignment_review.php
 
 */
 
@@ -130,7 +131,7 @@ function getAssignmentsList($userId, $classId = null, $type = "all") {
   Returns a list of assignments by the user who created it, optional filter by type by type.
 
   used in:
-  -mcq_assignment_review3.0.php 
+  -mcq_assignment_review.php 
   */
   global $conn;
 
@@ -1612,6 +1613,54 @@ function getMCQresponseByUsernameTimestart($userId, $timeStart) {
 
 }
 
+function getMCQquizResultsByAssignment($assignId) {
+  /*
+  Returns an array of MCQ quiz results given assignment ID.
+
+  Used in:
+  -mcq_assignment_review.php
+  */
+  global $conn;
+  $data = array();
+  $sql = "SELECT r.id, r.mark, r.percentage, r.answers, r.timeStart, r.datetime, ROUND(TIMESTAMPDIFF(SECOND, r.timeStart, r.datetime)/60,2) duration, r.assignID, r.userID, u.name_first, u.name_last, a.assignName, a.id assignId, a.dateDue
+          FROM responses r
+          LEFT JOIN users u
+          ON r.userID = u.id
+          LEFT JOIN assignments a
+          ON r.assignID = a.id
+          WHERE assignId = ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("i", $assignId);
+  $stmt->execute();
+  $result=$stmt->get_result();
+
+  if($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+      $row['answers'] = json_decode($row['answers']);
+      array_push($data, $row);
+    }
+  }
+
+  return $data;
+
+}
+
+function getMCQindividualQuestionResponse($question, $results_array) {
+  /*
+  This function will take a given $results_array and find the results for a given $question and return
+  $results_array is the json_decode output that we get from responses table that looks like this:
+  Array ( [0] => Array ( [0] => 1202.100116 [1] => C [2] => B [3] => ) 
+          [1] => Array ( [0] => 1101.170609 [1] => C [2] => C [3] => 1 ) . . . etc
+  */
+  foreach ($results_array as $result) {
+    if ($result[0] == $question) {
+      $output = array('question'=>$result[0], 'answer'=>$result[1], 'correct_answer'=>$result[2], "correct"=>$result[3]);
+      //print_r($output);
+      return $output;
+    }
+  }
+}
+
 
 function createAssignment($teacherid, $assignName, $quizID, $notes, $dueDate, $type, $classID, $return = 1, $active = 1) {
   /*
@@ -1683,19 +1732,35 @@ function updateAssignment($userId, $assignId, $assignName, $quizID, $notes, $due
 
 }
 
-function getAssignmentsByGroup($groupId, $limit = 1000) {
+function getAssignmentsByGroup($groupId, $limit = 1000, $type = null, $ascdsc = 'desc') {
+  /*
+  Used in:
+  -mcq_assignment_review.php
+
+  */
   global $conn;
 
   $responses = array();
 
   $sql = "SELECT * 
   FROM assignments 
-  WHERE groupid = ?
-  ORDER BY dateDue desc 
-  LIMIT ?";
+  WHERE groupid = ? ";
+
+  if($type) {
+    $sql .= " AND type = ? ";
+  }
+
+  $sql .= " ORDER BY dateDue ".$ascdsc." 
+   LIMIT ?";
 
   $stmt=$conn->prepare($sql);
+  
+  if($type) {
+    $stmt->bind_param("isi", $groupId, $type, $limit);
+  } else {
+
   $stmt->bind_param("ii", $groupId, $limit);
+  }
   $stmt->execute();
   $result = $stmt->get_result();
 

@@ -242,7 +242,7 @@ include ($path."/header_tailwind.php");
                   ?>
                   <p class="">Link: <a class='underline hover:bg-sky-100' target='_blank' href='/mcq/mcq_exercise.php?assignid=<?=$row['id']?>'>/mcq/mcq_exercise.php?assignid=<?=$row['id']?></a></p>
                         <!-- <?=htmlspecialchars($quizInfo['quizName'])?> -->
-                  <p><a class='underline hover:bg-sky-100' target='_blank' href='/mcq/mcq_assignment_review3.0.php?assignid=<?=$row['id']?>'>Review Assignment</a></p>
+                  <p><a class='underline hover:bg-sky-100' target='_blank' href='/mcq/mcq_assignment_review.php?assignid=<?=$row['id']?>'>Review Assignment</a></p>
 
                   <?php
     

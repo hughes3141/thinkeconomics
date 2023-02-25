@@ -291,7 +291,7 @@ if(isset($_POST['groupId']) && $_POST['groupId']!="") {
                   ?>
                   <p class="">Link: <a class='underline hover:bg-sky-100' target='_blank' href='/mcq/mcq_exercise.php?assignid=<?=$assignment['id']?>'>/mcq/mcq_exercise.php?assignid=<?=$assignment['id']?></a></p>
                         <!-- <?=htmlspecialchars($quizInfo['quizName'])?> -->
-                  <p><a class='underline hover:bg-sky-100' target='_blank' href='/mcq/mcq_assignment_review3.0.php?assignid=<?=$assignment['id']?>'>Review Assignment</a></p>
+                  <p><a class='underline hover:bg-sky-100' target='_blank' href='/mcq/mcq_assignment_review.php?assignid=<?=$assignment['id']?>'>Review Assignment</a></p>
 
                   <?php
     
