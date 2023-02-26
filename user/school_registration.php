@@ -81,9 +81,9 @@ if (count($_GET)>0) {
               <div class="mt-1.5">
                 <label class="font-bold">School Name/Postcode:</label>
                 <div>
-                  <input class ="w-full rounded font-mono border-2 border-black" type="text" name ="search" value="<?= isset($_GET['search']) ? $_GET['search'] :''?>">
+                  <input class ="w-full rounded font-mono border border-black" type="text" name ="search" value="<?= isset($_GET['search']) ? $_GET['search'] :''?>">
                 </div>
-                <input class= "mx-auto block w-full rounded bg-sky-200 my-2 border-2 border-black hover:bg-pink-300 py-2" type="submit" name="submit" value="Search Schools">
+                <input class= "mx-auto block w-full rounded bg-sky-200 my-2 border border-black hover:bg-pink-300 py-2" type="submit" name="submit" value="Search Schools">
               </div>
 
             </form>
@@ -135,7 +135,7 @@ if (count($_GET)>0) {
               <h2 class="font-mono text-lg bg-pink-300 mt-3">Confirmation</h2>
               <p class="mb-1">You are about to link your account to <span id="schoolNameSpan" class="font-bold"></span>. You should only do this if you are an active student or teacher of this school.</p>
               <p class="mb-1">Are you happy to proceed?</p>
-              <input type="submit" name="submit" class = "border-2 border-black block w-full py-2 bg-sky-200 hover:bg-pink-300" value = "Confirm">
+              <input type="submit" name="submit" class = "border border-black block w-full py-2 bg-sky-200 hover:bg-pink-300" value = "Confirm">
             </div>
             </form>  
         <?php

@@ -190,7 +190,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       //print_r($userInfo);
       if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //echo "<pre>";
-        print_r($_POST);
+        //print_r($_POST);
         //echo "</pre>";
         echo "<pre>";
         //print_r($_POST['return']);
@@ -212,7 +212,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
                 $results = getGroupsList($userId, true, $userId);
                 foreach($results as $result) {
                   ?>
-                    <option value="<?=$result['id']?>" <?=($result['id'] == $_POST['groupId']) ? "selected" : ""?>><?=$result['name']?></option>
+                    <option value="<?=$result['id']?>" <?=(($_SERVER['REQUEST_METHOD']==='POST')&&($result['id'] == $_POST['groupId'])) ? "selected" : ""?>><?=$result['name']?></option>
                   
                   <?php
                 }
@@ -241,7 +241,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       if ($hasGroups == 0) {
         ?>
         <p>You need to make some classes before you can populate them with students!</p>
-        <p>Go to <a href="class_creator.php" class="text-cyan-700 hover:underline">Class Creator</a> to make some new classes.</p>
+        <p>Go to <a href="class_creator.php" class="text-cyan-700 underline hover:bg-sky-300">Class Creator</a> to make some new classes.</p>
         <?php
       }
 

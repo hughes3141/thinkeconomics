@@ -101,7 +101,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
   }
 
   if($className_err == "" AND $subject_err == "" AND $optionGroup_err == "" AND $finishDate_err == "" AND $teacherInput_error == "") {
-    createGroup($userId, $_POST['name'], $_POST['subjectId'], $userInfo['schoolid'], $teachers, $_POST['dateFinish'],  $_POST['optionGroup']);
+    createGroup($userId, $_POST['name'], $_POST['subjectId'], $userInfo['schoolid'], $teachers, $_POST['dateFinish'],  $_POST['optionGroup'], $_POST['examBoard']);
     $success_message = "New class created successfully";
 
   }
@@ -122,6 +122,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         //print_r($userInfo);
       if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //print_r($_POST);
+        //print_r(getSubjectInfo($_POST['subjectId']));
         echo $success_message;
       }
       ?>
@@ -140,7 +141,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
                   <?= $className_err?>
                 </div>
             </div>
-            <div class="md:flex  md:space-y-0 md:space-x-4 mb-1.5">
+            <div class="md:grid md:grid-cols-2 gap-2 mb-1.5">
               <div class="w-full mb-1.5">
                 <label>Subject:<label>
                   <div class="mt-1.5">
@@ -168,6 +169,19 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
                   <div class=" mt-1 pl-2 text-red-600 bg-lime-300 rounded">
                   <?= $optionGroup_err?>
                 </div>
+              </div>
+              <div class="w-full mb-1.5">
+                <label>Exam Board:<label>
+                  <div class="mt-1.5">
+                    <select name="examBoard" class="rounded border border-black w-full text-sm" value ="<?=""?>">
+                        <option></option>
+                        <option <?=(isset($_POST['examBoard']) && $_POST['examBoard']=="AQA") ? 'selected' : ''?> value="AQA">AQA</option>
+                        <option <?=(isset($_POST['examBoard']) && $_POST['examBoard']=="Edexcel") ? 'selected' : ''?> value="Edexcel">Edexcel</option>
+                        <option <?=(isset($_POST['examBoard']) && $_POST['examBoard']=="OCR") ? 'selected' : ''?> value="OCR">OCR</option>
+                        <option <?=(isset($_POST['examBoard']) && $_POST['examBoard']=="Eduqas") ? 'selected' : ''?> value="Eduqas">Eduqas</option>
+                        <option <?=(isset($_POST['examBoard']) && $_POST['examBoard']=="WJEC") ? 'selected' : ''?> value="WJEC">WJEC</option>
+                    </select>
+                  </div>
               </div>
               <div class="w-full mb-1.5">
                 <label>Finish Date:<label>
@@ -222,7 +236,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
       if ($hasSchool == 0) {
         ?>
-        <p>You need to make register to a school before you can create a class!</p>
+        <p>You need to register to a school before you can create a class!</p>
         <p>Go to <a href="school_registration.php" class="text-cyan-700 hover:underline">School Registration</a> to register your account to a school.</p>
         <?php
 

@@ -52,6 +52,9 @@ Returns a list of groups for whom the $userId is listed as a teacher
 used in: 
 - user/user_populate.php
 -user/group_manager.php
+-assign_create1.0.php
+-assignment_list.php
+-mcq_assignment_review.php
 
 */
 
@@ -128,7 +131,7 @@ function getAssignmentsList($userId, $classId = null, $type = "all") {
   Returns a list of assignments by the user who created it, optional filter by type by type.
 
   used in:
-  -mcq_assignment_review3.0.php 
+  -mcq_assignment_review.php 
   */
   global $conn;
 
@@ -176,6 +179,51 @@ function getAssignmentsList($userId, $classId = null, $type = "all") {
 
   
   
+}
+
+function getAssignmentsListByTeacher($teacherId, $limit = 1000, $classId = null) {
+  /*
+  This function is distinct from getAssignmentsList because it filters by teachers associatd with the class rather than the userCreate.
+  */
+  global $conn;
+  $teacherIdSql = "%\"".$teacherId."\"%";
+
+  $sql = "SELECT a.*, g.teachers
+          FROM assignments a
+          LEFT JOIN groups g
+          ON a.groupid = g.id
+          WHERE g.teachers LIKE ? ";
+
+  if($classId) {
+    $sql .= " AND a.groupid = ? ";
+  }
+
+  $sql .= " ORDER BY dateCreated desc
+          LIMIT ?";
+
+  $stmt=$conn->prepare($sql);
+  if(!$classId) {
+    $stmt->bind_param("si", $teacherIdSql, $limit);
+  } else {
+    $stmt->bind_param("sii", $teacherIdSql, $classId, $limit);
+  }
+
+
+  $stmt->execute();
+  $result=$stmt->get_result();
+
+  $assignments = array();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($assignments, $row);
+
+    }
+  }
+
+  return $assignments;
+
+
 }
 
 /*
@@ -497,16 +545,24 @@ function getMCQquizInfo($quizId) {
 }
 
 
-function getMCQquizzesByTopic($topic) {
+function getMCQquizzesByTopic($topic = null) {
   /*
   This function returns an array of all entries from mcq_quizzes table that match a $topic category
+
+  Used in:
+  -assign_create1.0
   */
 
   global $conn;
   $quizzes = array();
-  $sql = "SELECT * FROM mcq_quizzes WHERE topic LIKE ?";
+  $sql = "SELECT * FROM mcq_quizzes ";
+  if($topic != null) {
+    $sql .= " WHERE topic LIKE ?";
+  }
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("s", $topic);
+  if($topic != null) {
+    $stmt->bind_param("s", $topic);
+  }
   $stmt->execute();
   $result = $stmt->get_result();
   if($result->num_rows>0) {
@@ -520,6 +576,60 @@ function getMCQquizzesByTopic($topic) {
   
 
 }
+
+function getExercises($table, $topic = null, $userCreate = null) {
+  /*
+  This function gets information on all SAQ or NDE excercises
+  */
+  global $conn;
+  $results = array();
+  $sql = "SELECT * FROM ".$table;
+  $switchVar = "";
+  
+  if($topic || $userCreate) {
+    $sql .= " WHERE ";
+  }
+  if($topic) {
+    $sql .= " topic = ? ";
+    $switchVar .= "topic";
+  }
+
+  if($topic && $userCreate) {
+    $sql .= " AND ";
+  }
+
+  if($userCreate) {
+    $sql .= " userCreate = ?";
+    $switchVar .= "userCreate";
+  }
+
+  $stmt=$conn->prepare($sql);
+  
+  switch ($switchVar) {
+    case "topic":
+      $stmt->bind_param("s", $topic);
+      break;
+    case "userCreate":
+      $stmt->bind_param("i", $userCreate);
+      break;
+    case "topicuserCreate":
+      $stmt->bind_param("si", $topic, $userCreate);
+      break;
+  }
+  
+  //$stmt->bind_param("s", $topic);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    
+    while($row = $result->fetch_assoc()){
+      array_push($results, $row);
+      
+    }
+    return $results;
+  }
+}
+
 
 
 function getGroupInfoById($groupId) {
@@ -606,7 +716,7 @@ function getNewsArticlesByTopic($topic) {
 }
 
 function login_log($userid) {
-  //Very simple: this function logs when a user has logged in. Used primarily wiht login.php
+  //Very simple: this function logs when a user has logged in. Used primarily wiht login.php. Also used in newuser upon first registration.
   global $conn;
   date_default_timezone_set('Europe/London');
   $datetime = date("Y-m-d H:i:s");
@@ -963,21 +1073,41 @@ function linkUserToSchool($userId, $schoolId) {
   $stmt->execute();
 }
 
+
+function getSubjectInfo($subjectId) {
+  global $conn;
+  $sql = "SELECT *
+          FROM subjects
+          WHERE id = ?";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("i", $subjectId);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    $row = $result->fetch_assoc();
+    $row['subjectName'] = $row['name'];
+    unset($row['name']);
+    return $row;
+  }
+}
+
+
 //Used in class_creator.php:
 
-function createGroup($userCreate, $name, $subjectId, $schoolId, $teachers, $dateFinish, $optionGroup) {
+function createGroup($userCreate, $name, $subjectId, $schoolId, $teachers, $dateFinish, $optionGroup, $examBoard) {
   //Used to create a group or class
 
   global $conn;
   $date = date("Y-m-d H:i:s");
   $sql = "INSERT INTO groups
-          (name, school, teachers, subjectId, optionGroup, dateFinish, active, userCreate, dateCreated)
-          VALUES (?,?,?,?,?,?,?,?,?)
+          (name, school, teachers, subjectId, optionGroup, dateFinish, active, userCreate, dateCreated, examBoard, subject, qualType)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
           ";
   $teachers = json_encode($teachers);
   $active = 1;
+  $subjectInfo = getSubjectInfo($subjectId);
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("sisissiis", $name, $schoolId, $teachers, $subjectId, $optionGroup, $dateFinish, $active, $userCreate, $date);
+  $stmt->bind_param("sisissiissss", $name, $schoolId, $teachers, $subjectId, $optionGroup, $dateFinish, $active, $userCreate, $date, $examBoard, $subjectInfo['subjectName'], $subjectInfo['level']);
   $stmt->execute();
   //echo "New record created";
 
@@ -988,7 +1118,8 @@ function listSubjects() {
   global $conn;
   $responses = array();
   $sql = "SELECT *
-          FROM subjects";
+          FROM subjects
+          ORDER BY level, name";
   $stmt=$conn->prepare($sql);
   $stmt->execute();
   $result = $stmt->get_result();
@@ -1267,11 +1398,44 @@ function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $us
   }
 
   $stmt->bind_param("ssssssssisissiiss", $firstName, $lastName, $username, $password_hash, $usertype_std, $permissions, $usertype, $email_name, $active, $datetime, $privacy_bool, $datetime, $version, $schoolId, $userCreate, $groupIdArray, $passwordEntry);
+  
   $stmt->execute();
+
+  $results = ['username'=>$username, 'datetime'=>$datetime];
+
+  return $results;
 
 
 
 }
+
+/*
+Used in: 
+-newuser.php
+*/
+
+function getUserByUsernameDatetime($entry) {
+  //This function is designed for the specific use of retrieving id from table users in the immediate afterward of a new account being registered
+  //$entry is an array with ('username'=> , 'datetime'=> )
+
+  global $conn;
+  $return = "";
+  $sql = "SELECT id
+          FROM users
+          WHERE username = ? AND time_added = ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("ss", $entry['username'], $entry['datetime']);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result ->num_rows>0) {
+    $row = $result->fetch_assoc();
+    $return = $row['id'];
+  }
+  
+  return $return;
+
+}
+
 
 
 function updateGroupTeachers($groupId, $teacherId, $method = "add") {
@@ -1359,14 +1523,15 @@ function updateStudentGroup($groupId, $studentId, $method = "add") {
 
 }
 
-function updateGroupInformation($groupId, $name, $subjectId, $optionGroup, $dateFinish) {
+function updateGroupInformation($groupId, $name, $subjectId, $optionGroup, $dateFinish, $examBoard) {
 
   global $conn;
   $sql = "UPDATE groups
-          SET name =?, subjectId = ?, optionGroup =?, dateFinish = ?
+          SET name =?, subjectId = ?, optionGroup =?, dateFinish = ?, examBoard = ?, subject = ?, qualType = ?
           WHERE id = ?";
+  $subjectInfo = getSubjectInfo($subjectId);
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("sissi", $name, $subjectId, $optionGroup, $dateFinish, $groupId);
+  $stmt->bind_param("sisssssi", $name, $subjectId, $optionGroup, $dateFinish, $examBoard, $subjectInfo['subjectName'], $subjectInfo['level'], $groupId);
   $stmt->execute();
 }
 
@@ -1446,6 +1611,165 @@ function getMCQresponseByUsernameTimestart($userId, $timeStart) {
     return $responseId['id'];
 
 
+}
+
+function getMCQquizResultsByAssignment($assignId) {
+  /*
+  Returns an array of MCQ quiz results given assignment ID.
+
+  Used in:
+  -mcq_assignment_review.php
+  */
+  global $conn;
+  $data = array();
+  $sql = "SELECT r.id, r.mark, r.percentage, r.answers, r.timeStart, r.datetime, ROUND(TIMESTAMPDIFF(SECOND, r.timeStart, r.datetime)/60,2) duration, r.assignID, r.userID, u.name_first, u.name_last, a.assignName, a.id assignId, a.dateDue
+          FROM responses r
+          LEFT JOIN users u
+          ON r.userID = u.id
+          LEFT JOIN assignments a
+          ON r.assignID = a.id
+          WHERE assignId = ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("i", $assignId);
+  $stmt->execute();
+  $result=$stmt->get_result();
+
+  if($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+      $row['answers'] = json_decode($row['answers']);
+      array_push($data, $row);
+    }
+  }
+
+  return $data;
+
+}
+
+function getMCQindividualQuestionResponse($question, $results_array) {
+  /*
+  This function will take a given $results_array and find the results for a given $question and return
+  $results_array is the json_decode output that we get from responses table that looks like this:
+  Array ( [0] => Array ( [0] => 1202.100116 [1] => C [2] => B [3] => ) 
+          [1] => Array ( [0] => 1101.170609 [1] => C [2] => C [3] => 1 ) . . . etc
+  */
+  foreach ($results_array as $result) {
+    if ($result[0] == $question) {
+      $output = array('question'=>$result[0], 'answer'=>$result[1], 'correct_answer'=>$result[2], "correct"=>$result[3]);
+      //print_r($output);
+      return $output;
+    }
+  }
+}
+
+
+function createAssignment($teacherid, $assignName, $quizID, $notes, $dueDate, $type, $classID, $return = 1, $active = 1) {
+  /*
+  Used in:
+  -assign_create1.0.php
+
+  */
+  global $conn;
+
+  $classID_array = array($classID);
+  $classID_array = json_encode($classID_array);
+
+  $datetime = date("Y-m-d H:i:s");
+
+  $sql = "INSERT INTO assignments (assignName, quizid, groupid, notes, dateCreated, type, dateDue, groupid_array, userCreate, assignReturn, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("siisssssiii", $assignName, $quizID, $classID, $notes, $datetime, $type, $dueDate, $classID_array, $teacherid, $return, $active);
+
+  $stmt->execute();
+
+}
+
+function getAssignmentData($assignId) {
+  /*
+  Used in:
+  -assign_create1.0
+  */
+
+  global $conn;
+  $sql = "SELECT * FROM assignments WHERE id = ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("i", $assignId);
+  $stmt->execute();
+  $result=$stmt->get_result();
+  if($result->num_rows>0) {
+    $row = $result->fetch_assoc();
+    return $row;
+  }
+  
+
+}
+
+function updateAssignment($userId, $assignId, $assignName, $quizID, $notes, $dueDate, $type, $classID, $return, $review, $multi, $active) {
+  global $conn;
+
+  $classID_array = array($classID);
+  $classID_array = json_encode($classID_array);
+
+  $sql = "UPDATE assignments SET assignReturn = ?, dateDue = ?, notes = ?, assignName =?, groupid_array =?, groupid = ?, reviewQs = ?, multiSubmit = ?, active = ? WHERE id = ?";
+  $stmt = $conn->prepare($sql);
+
+  $stmt->bind_param("issssiiiii", $return, $dueDate, $notes, $assignName, $classID_array, $classID, $review, $multi, $active, $assignId);
+
+  //The following script validates to ensure that the user updating the assignment is hte assignment author:
+
+  $assignmentData = getAssignmentData($assignId);
+  $assignmentDataUser = $assignmentData['userCreate'];
+
+  if($assignmentDataUser == $userId) {
+    $stmt->execute();
+    //header("Refresh:0");
+    return "Record ".$assignId." updated successfully.";
+  }
+  else {
+    return "Value not updated: userid does not match userCreate";
+  }
+
+
+}
+
+function getAssignmentsByGroup($groupId, $limit = 1000, $type = null, $ascdsc = 'desc') {
+  /*
+  Used in:
+  -mcq_assignment_review.php
+
+  */
+  global $conn;
+
+  $responses = array();
+
+  $sql = "SELECT * 
+  FROM assignments 
+  WHERE groupid = ? ";
+
+  if($type) {
+    $sql .= " AND type = ? ";
+  }
+
+  $sql .= " ORDER BY dateDue ".$ascdsc." 
+   LIMIT ?";
+
+  $stmt=$conn->prepare($sql);
+  
+  if($type) {
+    $stmt->bind_param("isi", $groupId, $type, $limit);
+  } else {
+
+  $stmt->bind_param("ii", $groupId, $limit);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($responses, $row);
+    }
+  }
+  return $responses;
 }
 
 ?>

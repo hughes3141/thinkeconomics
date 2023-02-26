@@ -107,14 +107,22 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
       $permissions .= ", teacher";
     }
 
-    //Enter new user information into users table
-    insertNewUserIntoUsers($firstName, $lastName, $username, $password1, $usertype, $email_name, $version, $privacy_bool, $usertype, $permissions);
+    //Enter new user information into users table.
+    //Store newly-minted 'username' and 'time_added' to $entry array, which is ['username'=> , 'datetime'=> ]
 
-   
+    $entry = insertNewUserIntoUsers($firstName, $lastName, $username, $password1, $usertype, $email_name, $version, $privacy_bool, $usertype, $permissions);
+
+    //Set session userid to newly-minted userid:
+    $userid = getUserByUsernameDatetime($entry);
+    $_SESSION['userid'] = $userid;
+
+    //Register login at login_log table:
+    login_log($userid);
+
 
     //Send to a new page
-    echo "<script>window.location = '/'</script>";
-    unset($_SESSION['userid']);
+    echo "<script>window.location = '/user/user3.0.php'</script>";
+    //unset($_SESSION['userid']);
     
   }
 
@@ -138,21 +146,21 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         print_r($_POST);
         echo "<p>";
       */
-        
+ 
       ?>
 
       <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" id="inputForm" autocomplete="off" >
       <div class="md:flex /*space-y-5*/ md:space-y-0 md:space-x-4">
         <div class="form-group w-full">
-                  <label class ="/*text-gray-600*/ pb-1  pt-1">First Name:</label>
+                  <label for = "firstName" class ="/*text-gray-600*/ pb-1  pt-1">First Name:</label>
                   <div class="mt-1.5">
-                    <input type="text" name="firstName" class="border px-3 py-2  text-sm w-full mb-2  rounded" placeholder ="First Name" value="<?php echo ($firstName!=="")? $firstName : ""; ?>">
+                    <input type="text" name="firstName" id="firstName" class="border px-3 py-2  text-sm w-full mb-2  rounded" placeholder ="First Name" value="<?php echo ($firstName!=="")? $firstName : ""; ?>" onchange="usernameSuggest();">
                   </div>
         </div>   
         <div class="form-group w-full">
-                  <label class ="/*text-gray-600*/ pb-1 pt-1">Last Name:</label>
+                  <label for="lastName" class ="/*text-gray-600*/ pb-1 pt-1">Last Name:</label>
                   <div class="mt-1.5">
-                    <input type="text" name="lastName" class="border px-3 py-2  text-sm w-full mb-2 rounded" placeholder ="Last Name" value="<?php echo ($lastName!=="")? $lastName : ""; ?>">
+                    <input type="text" name="lastName" id="lastName" class="border px-3 py-2  text-sm w-full mb-2 rounded" placeholder ="Last Name" value="<?php echo ($lastName!=="")? $lastName : ""; ?>" onchange="usernameSuggest();">
                   </div>
         </div>
       </div>
@@ -161,9 +169,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
       </div>
 
       <div class="form-group w-full">
-          <label class ="/*text-gray-600*/ pb-1 mb-2 pt-1">Username:</label>
+          <label for="userName" class ="/*text-gray-600*/ pb-1 mb-2 pt-1">Username:</label>
           <div class="mt-1.5">
-            <input type="text" name="username" class="border px-3 py-2  text-sm w-full mb-2 rounded" placeholder ="username" value="<?php 
+            <input type="text" id="userName" name="username" class="border px-3 py-2  text-sm w-full mb-2 rounded" placeholder ="username" value="<?php 
               if($username !=="" AND $username_err =="") {
                 echo $username;
               } else {
@@ -185,24 +193,25 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
 
       <div class="form-group w-full">
-                <label class ="/*text-gray-600*/ pb-1 mb-2 pt-1">Password:</label>
+                <label for = "password1" class ="/*text-gray-600*/ pb-1 mb-2 pt-1">Password:</label>
                 <div class="mt-1.5">
-                  <input type="password" name="password1" id="password1" class="border px-3 py-2  text-sm w-full mb-2 rounded" placeholder ="Password"  onchange = "//checkTwoPasswords()">
+                  <input type="password" name="password1" id="password1" class="border px-3 py-2  text-sm w-full mb-2 rounded" placeholder ="Password"  onchange = "validatePassword();">
                 </div>
 
 
       </div> 
       <div class="form-group w-full">
-                <label class ="/*text-gray-600*/ pb-1 mb-2 pt-1">Confirm Password:</label>
+                <label for ="password2" class ="/*text-gray-600*/ pb-1 mb-2 pt-1">Confirm Password:</label>
                 <div>
-                  <input type="password" name="password2" id="password2" class="border px-3 py-2  text-sm w-full mb-2 rounded" placeholder ="Password"  onchange = "//checkTwoPasswords()">
+                  <input type="password" name="password2" id="password2" class="border px-3 py-2  text-sm w-full mb-2 rounded" placeholder ="Password"  onchange = "validatePassword();">
                 </div>
 
 
                 <?php //value="<?= (($password2 != "") AND $password_err ="") ? $password2 : "";?>
 
       </div> 
-      <p class=" mt-1 py-0 pl-1 text-red-600 bg-lime-300 rounded"><?php echo $password_err; ?></p>
+      <p id="internalPasswordMessage1" class="hidden mt-1 pl-1 rounded"></p>
+      <p id="internalPasswordMessage" class=" mt-1 py-0 pl-1 text-red-600 bg-lime-300 rounded"><?php echo $password_err; ?></p>
       <p>Passwords must:
           <ul class="list-disc list-oustide">
             <li class="ml-6">Have minimum 6 characters</li>
@@ -219,12 +228,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                 <div>
                   <input type="text" name="email" id="email" class="border px-3 py-2  text-sm w-full mb-2 rounded" placeholder ="Email" value = "<?= $email_name !="" ? $email_name : "";?>">
                 </div>
-                <p class="pl-1 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $email_err; ?></p>
+                <p class="pl-1 mt-1 py-0 text-red-600 bg-lime-300 rounded"><?php echo $email_err; ?></p>
 
       </div>
 
       <div class="form-group">
-      <p>I am interested in regigtering for this website as a:</p>
+      <p>I am interested in registering for this website as a:</p>
         <select class="w-full rounded" name="user_type">
           <option value= "student" <?=(isset($_POST['user_type']) && $_POST['user_type']=="student") ? "selected" : ""?> >Student</option>
           <option value= "teacher" <?=(isset($_POST['user_type']) && $_POST['user_type']=="teacher") ? "selected" : ""?> >Teacher</option>
@@ -282,6 +291,61 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
   function submitForm() {
     let form = document.getElementById("inputForm");
     form.submit()
+  }
+
+  function usernameSuggest(inputElement) {
+    
+
+    var firstName = document.getElementById('firstName');
+    var lastName = document.getElementById('lastName');
+    var username = document.getElementById('userName');
+
+    if((firstName.value != "") && (lastName.value != "")) {
+
+      var suggest;
+      //suggest = firstName.value.toLowerCase().replace(/\s|'/g, "").substring(0,1)+lastName.value.toLowerCase().replace(/\s|'/g, "").replace(/-/g, '_').substring(0,5);
+      suggest = firstName.value.toLowerCase().replace(/[^a-zA-Z0-9]/g, '').substring(0,1);
+      suggest += lastName.value.toLowerCase().replace(/[^a-zA-Z0-9]/g, '').substring(0,5);
+      suggest = suggest.substring(0,16);
+      suggest = suggest+(Math.floor(Math.random() * 90 + 10));
+      
+      username.value = suggest;
+    }
+  }
+
+  function validatePassword() {
+    var password1 = document.getElementById("password1").value;
+    var password2 = document.getElementById("password2").value;
+    var message = document.getElementById("internalPasswordMessage");
+    
+    //console.log(password1, password2);
+    
+    if((password1 != "") && (password2 != "")) {
+      message.classList.remove('hidden');
+      if( password1 != password2) {
+        message.classList.add('text-red-600', 'bg-lime-300');
+        message.classList.remove('text-pink-400');
+        message.innerHTML="Passwords to not match";
+      }
+      else {
+        let pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/;
+
+        if(pattern.test(password1)) {
+          message.innerHTML="Password fits criteria!";
+          message.classList.add('text-pink-400');
+          message.classList.remove('bg-lime-300', 'text-red-600');
+        } else {
+          
+          message.innerHTML="Password doesn't fit criteria!";
+          message.classList.add('text-red-600', 'bg-lime-300');
+        }
+      }
+
+
+    } else if( (password1 == "") && (password2 == "")) {
+      message.innerHTML="";
+    }
+
   }
 </script>
 

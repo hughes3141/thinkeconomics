@@ -58,7 +58,7 @@ include "../header_tailwind.php";
             <h1 class="font-mono text-xl bg-pink-300 pl-1">Student Resources</h1>
       <?php if(str_contains($permissions, "teacher")) 
       { ?>
-            <p >These are the types of resosurces your students will see (though you need to add yourself to a class if you want to see them too!</p>
+            <p >These are the types of resosurces your students will see:</p>
         <?php 
       } ?>      
             <div class="m-3 border-pink-300 border-2 p-3">
@@ -97,6 +97,9 @@ include "../header_tailwind.php";
             <h2 class="font-mono text-lg bg-pink-200 pl-1">Assignments</h2>
               <p class="ml-2 hover:bg-sky-100">
                 <a class ="block" href="/assign_create1.0.php">Create Assignment</a>
+              </p>
+              <p class="ml-2 hover:bg-sky-100">
+                <a class ="block" href="/assignment_list.php">Assignment List</a>
               </p>
               <p class="ml-2 hover:bg-sky-100">
                 <a class ="block" href="/mcq/mcq_assignment_review3.0.php">MCQ Assignment Review</a>

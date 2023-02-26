@@ -10,6 +10,8 @@ module.exports = {
     "../admin.php",
     "../user_login2.0.php",
     "../login.php",
+    "../assign_create1.0.php",
+    "../assignment_list.php",
 
     "../user/**/*.{html,js,php}",
 

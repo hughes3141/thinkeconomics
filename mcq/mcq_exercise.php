@@ -162,6 +162,20 @@ include($path."/header_tailwind.php");
       ?>
     <h1 class="font-mono text-xl bg-pink-300 pl-1"><?=$quizInfo['quizName']?></h1>
     <p class="font-mono text-lg bg-pink-200 pl-1">Name: <?=$userInfo['name_first']?> <?=$userInfo['name_last']?></p>
+    <?php
+    if (str_contains($permissions, "teacher")) {
+      ?>
+      <form method="post" action = "/assign_create1.0.php" target="_blank">
+        <input type="hidden" name = "exerciseid" value ="<?=$quizInfo['id']?>"></input>
+        <input type="hidden" name = "type" value ="mcq"></input>
+        <input type="hidden" name = "groupId" value =""></input>
+        <p class="mt-2" >Teacher: <input class="bg-pink-200 p-1" type="submit" value="Create Assignment With this Exercise"></p>
+      </form>
+      <?php
+    }
+
+
+    ?>
 
 
     <form id="myForm" method="post" action="" style="display:none  ;">
