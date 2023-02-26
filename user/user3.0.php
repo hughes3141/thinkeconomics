@@ -58,7 +58,7 @@ include "../header_tailwind.php";
             <h1 class="font-mono text-xl bg-pink-300 pl-1">Student Resources</h1>
       <?php if(str_contains($permissions, "teacher")) 
       { ?>
-            <p >These are the types of resosurces your students will see (though you need to add yourself to a class if you want to see them too!</p>
+            <p >These are the types of resosurces your students will see:</p>
         <?php 
       } ?>      
             <div class="m-3 border-pink-300 border-2 p-3">
