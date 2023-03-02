@@ -104,11 +104,26 @@ include ($path."/header_tailwind.php");
       <?php 
     }
   ?>
+  <div>
+    <input type="radio" id="filter_all" name="filter" value="all" <?=(isset($_GET['filter'])&&$_GET['filter']=="all") ? "checked" : ""?>>
+    <label for="filter_all">All Results</label><br>
+    <input type="radio" id="filter_last" name="filter" value="last" <?=(isset($_GET['filter'])&&$_GET['filter']=="last") ? "checked" : ""?>>
+    <label for="filter_last">Last Response</label><br>
+    <input type="radio" id="filter_first" name="filter" value="first" <?=(isset($_GET['filter'])&&$_GET['filter']=="first") ? "checked" : ""?>>
+    <label for="filter_first">First Response</label>
+  </div>
 
+
+  <div>
+    <input type="radio" id="question_order_original" name="questionOrder" value="" <?=(!isset($_GET['questionOrder'])||$_GET['questionOrder']=="") ? "checked" : ""?>>
+    <label for="question_order_original">Original</label><br>  
+    <input type="radio" id="question_order_incorrect" name="questionOrder" value="incorrect" <?=(isset($_GET['questionOrder'])&&$_GET['questionOrder']=="incorrect") ? "checked" : ""?>>
+    <label for="question_order_incorrect">Incorrect</label><br>
     
+  </div>
 
 
-  <input type="submit" value ="Submit">
+  <input class="border border-black p-3 bg-pink-300 my-2" type="submit" value ="Submit">
   </form>
 <button onclick="nameToggle()" id="toggleButton">Click to Hide Names</button>
 
@@ -125,13 +140,69 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
   $questions = explode(",",$quizInfo['questions']);
   //print_r($questions);
   //echo "<br>";
+  //sort($questions);
+
+
   $results = getMCQquizResultsByAssignment($_GET['assignid']);
-  foreach ($results as $result) {
-    //print_r($quiz);
+  foreach ($results as $key => $result) {
+    //echo "<pre>";
+    //print_r($result);
+    //echo "</pre>";
     //echo "<br>";
-  
+
+    if(isset($_GET['filter'])) {
+      if($_GET['filter'] == "last") {
+        if($result['datetime'] != $result['maxdatetime']) {
+          unset($results[$key]);
+        }
+      }
+      if($_GET['filter'] == "first") {
+        if($result['datetime'] != $result['mindatetime']) {
+          unset($results[$key]);
+        }
+      }
+    }
   }
-  print_r($results[0]);
+  //print_r($results[0]);
+  //print_r($results);
+
+  echo "<br>";
+  $questionSummary =array();
+  foreach ($questions as $question) {
+    $questionSummaryInstance = array('question' => $question, 'correctCount'=>0, 'summary'=>array(), 'correct'=>"");
+    foreach($results as $result) {
+      for ($x=0; $x<count($result['answers']); $x++) {
+        if($result['answers'][$x][0]==$question) {
+          $questionSummaryInstance['correctCount'] += $result['answers'][$x][3];
+          $answerValue = $result['answers'][$x][1];
+          if(!array_key_exists($answerValue, $questionSummaryInstance['summary'])) {
+            $questionSummaryInstance['summary'][$answerValue] = 1;
+          } else {
+            $questionSummaryInstance['summary'][$answerValue]++;
+          }
+          $questionSummaryInstance['correct']=$result['answers'][$x][2];
+        }
+      }
+    }
+    ksort($questionSummaryInstance['summary']);
+    
+    //$questionSummary[$question] = $questionSummaryInstance;
+    array_push($questionSummary, $questionSummaryInstance);
+  }
+
+
+  //To sort by number correct
+  function cmp_by_correctCount($a, $b) {
+    {
+      if ($a['correctCount']==$b['correctCount']) return 0;
+      return ($a['correctCount']<$b['correctCount'])?-1:1;
+      }
+  }
+  
+  if(isset($_GET['questionOrder'])&&$_GET['questionOrder']=="incorrect") {
+    usort($questionSummary, "cmp_by_correctCount");
+  }
+  //print_r($questionSummary);
 
 ?>
 
@@ -142,9 +213,9 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
     <th class="percentColumn hideClass">&percnt;</th>
     <th class="hideClass">Exclude</th>
     <?php
-    foreach ($questions as $question) {
+    foreach ($questionSummary as $key => $question) {
       ?>
-      <th><?=$question?></th>
+      <th><?=$question['question']?></th>
 
       <?php
     }
@@ -156,18 +227,28 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
       ?>
     <tr>
       <td><p><?=htmlspecialchars($result['name_first'])?> <?=htmlspecialchars($result['name_last'])?></p>
+      <?php
+        /*
+        echo $result['datetime'];
+        echo $result['maxdatetime'];
+        echo "<br>";
+        echo $result['mindatetime'];
+        */
+      ?>
+
     </td>
     <td>
-      <p><?=date("d/m/y h:m:s", strtotime($result['datetime']))?></p>
+      <p><?=date("d/m/y", strtotime($result['datetime']))?></p>
+      <p><?=date("H:i:s", strtotime($result['datetime']))?></p>
       <p><?=$result['duration']?> min</p>
     </td>
       <td><?=$result['percentage']?></td>
       <td>Exclude Button</td>
       <?php
-      foreach ($questions as $question) {
-        $questionResponse = getMCQindividualQuestionResponse($question, $result['answers']);
+      foreach ($questionSummary as $question) {
+        $questionResponse = getMCQindividualQuestionResponse($question['question'], $result['answers']);
         ?>
-        <td <?=($questionResponse['correct'] == "") ? "class='bg-pink-100'" : ""?>>
+        <td <?=($questionResponse['correct'] == "") ? "class='bg-pink-200'" : ""?>>
           <p><?=$questionResponse['answer']?></p>
           <!--
           <p><?=$questionResponse['correct_answer']?></p>
@@ -184,7 +265,18 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
   }
   ?>
   <tr id="questionTableLastRow">
-    <td colspan=4 class="hideClass">Totals:</td>
+    <td colspan=1 class="hideClass">Totals:</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <?php
+    foreach ($questionSummary as $key=>$question) {
+      echo "<td>";
+      echo $question['correctCount'];
+      echo "</td>";
+    }
+
+    ?>
   </tr>
 
 </table>
@@ -217,6 +309,41 @@ if ($result) {
 
 
 <div id ="summary_div">
+  <?php
+  foreach ($questionSummary as $key=>$question) {
+    ?>
+    <h2>Question <?=$key + 1?></h2>
+    <p><em><?=$question['question']?></em></p>
+    <img src="question_img/<?=$question['question']?>.JPG" alt="question <?=$question['question']?>">
+    <p>Number Correct: <?=$question['correctCount']."/".count($results)?></p>
+    <p>Summary: <?php
+      $count = 0;
+      foreach($question['summary'] as $key=>$response) {
+        if($key == "") {
+          unset($question['summary'][$key]);
+        } else {
+          $correct = "";
+          if($key == $question['correct']) {
+            $correct = " class = 'bg-pink-100' ";
+          }
+          echo "<span ".$correct.">".$key.": ".$response."</span>";
+          $count ++;
+          if($count < (count($question['summary']))) {
+            echo ", ";
+          }
+        }
+      }
+      //echo "<br>";
+      //echo count($question['summary']);
+    ?></p>
+
+
+
+
+    <?php
+  }
+
+  ?>
 </div>
 
 <div id="testDiv">

@@ -1622,15 +1622,23 @@ function getMCQquizResultsByAssignment($assignId) {
   */
   global $conn;
   $data = array();
-  $sql = "SELECT r.id, r.mark, r.percentage, r.answers, r.timeStart, r.datetime, ROUND(TIMESTAMPDIFF(SECOND, r.timeStart, r.datetime)/60,2) duration, r.assignID, r.userID, u.name_first, u.name_last, a.assignName, a.id assignId, a.dateDue
+  $sql = "SELECT r.id, r.mark, r.percentage, r.answers, r.timeStart, r.datetime, d.maxdatetime, d.mindatetime, ROUND(TIMESTAMPDIFF(SECOND, r.timeStart, r.datetime)/60,2) duration, r.assignID, r.userID, u.name_first, u.name_last, a.assignName, a.dateDue
           FROM responses r
+          LEFT JOIN (
+            SELECT userID, MAX(datetime) AS maxdatetime, MIN(datetime) AS mindatetime
+            FROM responses
+            WHERE assignID = ?
+            GROUP BY userID
+          ) d ON r.userID = d.userID
           LEFT JOIN users u
           ON r.userID = u.id
           LEFT JOIN assignments a
           ON r.assignID = a.id
-          WHERE assignId = ?";
+          WHERE assignId = ?
+          ORDER BY r.datetime
+          "; 
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("i", $assignId);
+  $stmt->bind_param("ii", $assignId, $assignId);
   $stmt->execute();
   $result=$stmt->get_result();
 
