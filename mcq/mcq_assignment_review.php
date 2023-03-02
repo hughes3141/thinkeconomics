@@ -314,7 +314,7 @@ if ($result) {
     ?>
     <h2>Question <?=$key + 1?></h2>
     <p><em><?=$question['question']?></em></p>
-    <img src="question_img/<?=$question['question']?>.JPG" alt="question <?=$question['question']?>">
+    <img src="question_img/<?=trim($question['question'])?>.JPG" alt="question <?=$question['question']?>">
     <p>Number Correct: <?=$question['correctCount']."/".count($results)?></p>
     <p>Summary: <?php
       $count = 0;
