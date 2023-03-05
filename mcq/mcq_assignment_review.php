@@ -65,7 +65,7 @@ include ($path."/header_tailwind.php");
   <h1 class="font-mono text-2xl bg-pink-400 pl-1 ">Multiple Choice Questions Assignment Review</h1>
   <div class="container mx-auto p-4 mt-2 bg-white text-black ">
   
-  <form method="get">
+  <form method="get" id="controlForm">
     <label for ="classid">Class:</label>
     <select name="classid" onchange="this.form.submit()">
       <option></option>
@@ -105,7 +105,7 @@ include ($path."/header_tailwind.php");
     }
   ?>
   <div>
-    <input type="radio" id="filter_all" name="filter" value="all" <?=(isset($_GET['filter'])&&$_GET['filter']=="all") ? "checked" : ""?>>
+    <input type="radio" id="filter_all" name="filter" value="all" <?=((isset($_GET['filter']))&&$_GET['filter']=="all")||!isset($_GET['filter']) ? "checked" : ""?>>
     <label for="filter_all">All Results</label><br>
     <input type="radio" id="filter_last" name="filter" value="last" <?=(isset($_GET['filter'])&&$_GET['filter']=="last") ? "checked" : ""?>>
     <label for="filter_last">Last Response</label><br>
@@ -122,12 +122,19 @@ include ($path."/header_tailwind.php");
     
   </div>
 
+  <div>
+    <input type="text" id="excludeInput" name="excluded" value="<?=(isset($_GET['excluded'])) ? $_GET['excluded'] : ""?>">
+  </div>
 
-  <input class="border border-black p-3 bg-pink-300 my-2" type="submit" value ="Submit">
+
+  <input class="border border-black p-3 bg-pink-300 my-2" type="submit" value ="Submit" onclick="clearExcludedInput();">
   </form>
 <button onclick="nameToggle()" id="toggleButton">Click to Hide Names</button>
 
 <?php
+
+$questionSummary =array();
+
 if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
   $assignmentInfo = getAssignmentInfoById($_GET['assignid']);
 
@@ -142,6 +149,11 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
   //echo "<br>";
   //sort($questions);
 
+  $excluded = array();
+  if(isset($_GET['excluded'])) {
+    $excluded = explode(",",$_GET['excluded']);
+  }
+  //print_r($excluded);
 
   $results = getMCQquizResultsByAssignment($_GET['assignid']);
   foreach ($results as $key => $result) {
@@ -162,12 +174,15 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
         }
       }
     }
+    if(in_array($result['id'], $excluded)) {
+      unset($results[$key]);
+    }
   }
   //print_r($results[0]);
   //print_r($results);
 
-  echo "<br>";
-  $questionSummary =array();
+  //echo "<br>";
+  
   foreach ($questions as $question) {
     $questionSummaryInstance = array('question' => $question, 'correctCount'=>0, 'summary'=>array(), 'correct'=>"");
     foreach($results as $result) {
@@ -206,10 +221,10 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
 
 ?>
 
-<table id ="questionTable">
-  <tr id ="questionTableRow">
+<table id ="questionTable" class= "w-full">
+  <tr id ="questionTableRow" style='min-height= 72'>
     <th class="nameColumn hideClass">Student Name</th>
-    <th>Time</th>
+    <th class="hideClass">Time</th>
     <th class="percentColumn hideClass">&percnt;</th>
     <th class="hideClass">Exclude</th>
     <?php
@@ -226,7 +241,7 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
     foreach($results as $result) {
       ?>
     <tr>
-      <td><p><?=htmlspecialchars($result['name_first'])?> <?=htmlspecialchars($result['name_last'])?></p>
+      <td class="hideClass"><p><?=htmlspecialchars($result['name_first'])?> <?=htmlspecialchars($result['name_last'])?></p>
       <?php
         /*
         echo $result['datetime'];
@@ -237,13 +252,15 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
       ?>
 
     </td>
-    <td>
+    <td class="hideClass">
       <p><?=date("d/m/y", strtotime($result['datetime']))?></p>
       <p><?=date("H:i:s", strtotime($result['datetime']))?></p>
       <p><?=$result['duration']?> min</p>
     </td>
-      <td><?=$result['percentage']?></td>
-      <td>Exclude Button</td>
+      <td class="hideClass"><?=$result['percentage']?></td>
+      <td class="hideClass">
+        <button class="rounded bg-sky-100 p-1 border border-black" onclick="updateExcludedInput(<?=$result['id']?>);">Exclude Result</button>
+      </td>
       <?php
       foreach ($questionSummary as $question) {
         $questionResponse = getMCQindividualQuestionResponse($question['question'], $result['answers']);
@@ -265,10 +282,8 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
   }
   ?>
   <tr id="questionTableLastRow">
-    <td colspan=1 class="hideClass">Totals:</td>
-    <td></td>
-    <td></td>
-    <td></td>
+    <td colspan=4 class="hideClass">Totals:</td>
+    
     <?php
     foreach ($questionSummary as $key=>$question) {
       echo "<td>";
@@ -390,21 +405,31 @@ $data = json_encode($data);
 <script>
 
 
+function updateExcludedInput(responseId) {
+  //alert('this works');
+  let excludeInput = document.getElementById("excludeInput");
+  let form = document.getElementById("controlForm");
+  var excludeds = excludeInput.value;
+  if(excludeds =="") {
+    excludeds = responseId;
+  } else {
+    excludeds +=","+responseId;
+  }
+  excludeInput.value = excludeds;
 
+  form.submit();
+  
+}
+
+function clearExcludedInput(){
+  let excludeInput = document.getElementById("excludeInput");
+  excludeInput.value="";
+}
 
 
 var testDiv = document.getElementById("testDiv");
 
 
-
-
-for(var i=0; i<data.length; i++) {
-    var p = document.createElement("p");
-    p.innerHTML = data[i]['answers'];
-    //testDiv.appendChild(p);
-
-
-}
 
 
 
@@ -444,8 +469,8 @@ function populate() {
 
 <?php
 
-echo "var assignmentName ='".$assignName."';
-";
+//echo "var assignmentName ='".$assignName."';
+//";
 /*
 $query = "SELECT * FROM responses WHERE assignID = '".$_GET['assignid']."'";
 if ($result = mysqli_query($link, $query)) {	
@@ -463,7 +488,7 @@ if ($result = mysqli_query($link, $query)) {
 */
 ?>
 
-document.getElementById("nameOfAssignment").innerHTML=assignmentName;
+//document.getElementById("nameOfAssignment").innerHTML=assignmentName;
 
 function questionTab() {
 
@@ -722,8 +747,11 @@ function question_review() {
 
 
 var toggle = 0;
+console.log(toggle);
 
 function nameToggle() {
+  //alert('this works');
+  console.log(toggle);
 	
 
 	
