@@ -123,7 +123,7 @@ include ($path."/header_tailwind.php");
   </div>
 
   <div>
-    <input type="text" id="excludeInput" name="excluded" value="<?=(isset($_GET['excluded'])) ? $_GET['excluded'] : ""?>">
+    <input type="hidden" id="excludeInput" name="excluded" value="<?=(isset($_GET['excluded'])) ? $_GET['excluded'] : ""?>">
   </div>
 
 
@@ -241,7 +241,7 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
     foreach($results as $result) {
       ?>
     <tr>
-      <td class="hideClass"><p><?=htmlspecialchars($result['name_first'])?> <?=htmlspecialchars($result['name_last'])?></p>
+      <td class="hideClass text-lg" align="center"><p><?=htmlspecialchars($result['name_first'])?> <?=htmlspecialchars($result['name_last'])?></p>
       <?php
         /*
         echo $result['datetime'];
@@ -252,21 +252,21 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
       ?>
 
     </td>
-    <td class="hideClass">
+    <td class="hideClass" align="center">
       <p><?=date("d/m/y", strtotime($result['datetime']))?></p>
       <p><?=date("H:i:s", strtotime($result['datetime']))?></p>
       <p><?=$result['duration']?> min</p>
     </td>
-      <td class="hideClass"><?=$result['percentage']?></td>
-      <td class="hideClass">
+      <td class="hideClass" align="center"><?=$result['percentage']?></td>
+      <td class="hideClass" align="center">
         <button class="rounded bg-sky-100 p-1 border border-black" onclick="updateExcludedInput(<?=$result['id']?>);">Exclude Result</button>
       </td>
       <?php
       foreach ($questionSummary as $question) {
         $questionResponse = getMCQindividualQuestionResponse($question['question'], $result['answers']);
         ?>
-        <td <?=($questionResponse['correct'] == "") ? "class='bg-pink-200'" : ""?>>
-          <p><?=$questionResponse['answer']?></p>
+        <td align="center" class = "text-lg <?=($questionResponse['correct'] == "") ? "bg-pink-200" : ""?>">
+          <p class=""><?=$questionResponse['answer']?></p>
           <!--
           <p><?=$questionResponse['correct_answer']?></p>
           <p><?=$questionResponse['correct']?></p>
@@ -286,8 +286,8 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
     
     <?php
     foreach ($questionSummary as $key=>$question) {
-      echo "<td>";
-      echo $question['correctCount'];
+      echo "<td align='center'>";
+      echo $question['correctCount']."/".count($results);
       echo "</td>";
     }
 
