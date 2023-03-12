@@ -41,9 +41,7 @@ table {
 	border-collapse: collapse;
 }
 
-h2 {
-	border-top: 1px solid black;
-}
+
 
 .incorrect {
 	
@@ -58,80 +56,6 @@ td a {
       
 ";
 
-include ($path."/header_tailwind.php");
-?>
-
-<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 w-full">
-  <h1 class="font-mono text-2xl bg-pink-400 pl-1 ">Multiple Choice Questions Assignment Review</h1>
-  <div class="container mx-auto p-4 mt-2 bg-white text-black ">
-  
-  <form method="get" id="controlForm">
-    <label for ="classid">Class:</label>
-    <select name="classid" onchange="this.form.submit()">
-      <option></option>
-      <?php
-      foreach($groups as $row) {
-        ?>
-
-        <option value="<?=$row['id']?>" <?=(isset($_GET['classid'])&&$row['id']==$_GET['classid']) ? "selected" : ""?>><?=htmlspecialchars($row['name'])?></option>
-
-        <?php
-      }
-      ?>
-    </select>
-    <?php
-
-    if(isset($_GET['classid'])) {
-
-      //$assignments = getAssignmentsList($userId, $_GET['classid'], "mcq");
-      $assignments = getAssignmentsByGroup($_GET['classid'], 1000, "mcq");
-      //print_r($assignments);
-      ?>
-      <label for ="assignid">Assignment Name:</label>
-      <select name="assignid">
-        <option></option>
-        <?php
-          foreach($assignments as $assignment) {
-            ?>
-            <option value = "<?=$assignment['id']?>" <?=(isset($_GET['assignid'])&&$assignment['id']==$_GET['assignid']) ? "selected" : ""?>><?=htmlspecialchars($assignment['assignName'])?></option>
-
-            <?php
-          }
-
-        ?>
-      </select>
-
-      <?php 
-    }
-  ?>
-  <div>
-    <input type="radio" id="filter_all" name="filter" value="all" <?=((isset($_GET['filter']))&&$_GET['filter']=="all")||!isset($_GET['filter']) ? "checked" : ""?>>
-    <label for="filter_all">All Results</label><br>
-    <input type="radio" id="filter_last" name="filter" value="last" <?=(isset($_GET['filter'])&&$_GET['filter']=="last") ? "checked" : ""?>>
-    <label for="filter_last">Last Response</label><br>
-    <input type="radio" id="filter_first" name="filter" value="first" <?=(isset($_GET['filter'])&&$_GET['filter']=="first") ? "checked" : ""?>>
-    <label for="filter_first">First Response</label>
-  </div>
-
-
-  <div>
-    <input type="radio" id="question_order_original" name="questionOrder" value="" <?=(!isset($_GET['questionOrder'])||$_GET['questionOrder']=="") ? "checked" : ""?>>
-    <label for="question_order_original">Original</label><br>  
-    <input type="radio" id="question_order_incorrect" name="questionOrder" value="incorrect" <?=(isset($_GET['questionOrder'])&&$_GET['questionOrder']=="incorrect") ? "checked" : ""?>>
-    <label for="question_order_incorrect">Incorrect</label><br>
-    
-  </div>
-
-  <div>
-    <input type="hidden" id="excludeInput" name="excluded" value="<?=(isset($_GET['excluded'])) ? $_GET['excluded'] : ""?>">
-  </div>
-
-
-  <input class="border border-black p-3 bg-pink-300 my-2" type="submit" value ="Submit" onclick="clearExcludedInput();">
-  </form>
-<button onclick="nameToggle()" id="toggleButton">Click to Hide Names</button>
-
-<?php
 
 $questionSummary =array();
 
@@ -183,8 +107,8 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
 
   //echo "<br>";
   
-  foreach ($questions as $question) {
-    $questionSummaryInstance = array('question' => $question, 'correctCount'=>0, 'summary'=>array(), 'correct'=>"");
+  foreach ($questions as $key=>$question) {
+    $questionSummaryInstance = array('question' => $question, 'correctCount'=>0, 'summary'=>array(), 'correct'=>"", 'question_no' => ($key + 1));
     foreach($results as $result) {
       for ($x=0; $x<count($result['answers']); $x++) {
         if($result['answers'][$x][0]==$question) {
@@ -218,8 +142,154 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
     usort($questionSummary, "cmp_by_correctCount");
   }
   //print_r($questionSummary);
+}
 
+
+include ($path."/header_tailwind.php");
 ?>
+
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 w-full">
+  <h1 class="font-mono text-2xl bg-pink-400 pl-1 ">Multiple Choice Questions Assignment Review</h1>
+  <div class="container mx-auto p-4 mt-2 bg-white text-black ">
+  
+  <form method="get" id="controlForm">
+    <label for ="classid">Class:</label>
+    <select class="rounded" name="classid" onchange="this.form.submit()">
+      <option></option>
+      <?php
+      foreach($groups as $row) {
+        ?>
+
+        <option value="<?=$row['id']?>" <?=(isset($_GET['classid'])&&$row['id']==$_GET['classid']) ? "selected" : ""?>><?=htmlspecialchars($row['name'])?></option>
+
+        <?php
+      }
+      ?>
+    </select>
+    <?php
+
+    if(isset($_GET['classid'])) {
+
+      //$assignments = getAssignmentsList($userId, $_GET['classid'], "mcq");
+      $assignments = getAssignmentsByGroup($_GET['classid'], 1000, "mcq");
+      //print_r($assignments);
+      ?>
+      <label for ="assignid">Assignment Name:</label>
+      <select class="rounded" name="assignid" onchange="this.form.submit()">
+        <option></option>
+        <?php
+          foreach($assignments as $assignment) {
+            ?>
+            <option value = "<?=$assignment['id']?>" <?=(isset($_GET['assignid'])&&$assignment['id']==$_GET['assignid']) ? "selected" : ""?>><?=htmlspecialchars($assignment['assignName'])?> (<?=date("d.m.y", strtotime($assignment['dateDue']))?>)</option>
+
+            <?php
+          }
+
+        ?>
+      </select>
+
+      <?php 
+    }
+  ?>
+  <div>
+    <input type="radio" id="filter_all" name="filter" value="all" <?=((isset($_GET['filter']))&&$_GET['filter']=="all")||!isset($_GET['filter']) ? "checked" : ""?>>
+    <label for="filter_all">All Results</label><br>
+    <input type="radio" id="filter_last" name="filter" value="last" <?=(isset($_GET['filter'])&&$_GET['filter']=="last") ? "checked" : ""?>>
+    <label for="filter_last">Last Response</label><br>
+    <input type="radio" id="filter_first" name="filter" value="first" <?=(isset($_GET['filter'])&&$_GET['filter']=="first") ? "checked" : ""?>>
+    <label for="filter_first">First Response</label>
+  </div>
+
+
+  <div>
+    <input type="radio" id="question_order_original" name="questionOrder" value="" <?=(!isset($_GET['questionOrder'])||$_GET['questionOrder']=="") ? "checked" : ""?>>
+    <label for="question_order_original">Original</label><br>  
+    <input type="radio" id="question_order_incorrect" name="questionOrder" value="incorrect" <?=(isset($_GET['questionOrder'])&&$_GET['questionOrder']=="incorrect") ? "checked" : ""?>>
+    <label for="question_order_incorrect">Incorrect</label><br>
+    
+  </div>
+
+  <div>
+    <input type="hidden" id="excludeInput" name="excluded" value="<?=(isset($_GET['excluded'])) ? $_GET['excluded'] : ""?>">
+  </div>
+
+
+  <input class="border border-black p-3 bg-pink-300 my-2 rounded" type="submit" value ="Submit" onclick="clearExcludedInput();">
+  </form>
+
+  
+
+
+
+<?php
+/*
+print_r($questionSummary);
+echo "<br>";
+print_r($questions);
+*/
+
+//If you have any responses in your question summary:
+
+if (count($questionSummary)>0) {
+
+  //Create a table:
+  ?>
+
+<div class="flex flex-wrap justify-center space-x-1">
+  <div class="basis-1/4">
+    <button class = "w-full border border-black p-3 bg-sky-100 my-2 rounded" onclick="toggleHide(this, 'student_complete_summary', 'Show Class Summary', 'Hide Class Summary', 'grid')" id="summary_toggle_button">Show Class Summary</button>
+  </div>
+  <div class="basis-1/4">
+    <button class = "w-full border border-black p-3 bg-sky-100 my-2 rounded" onclick="nameToggle()" id="toggleButton">Hide Names</button>
+  </div>    
+  <div class="basis-1/4">
+    <button class = "w-full border border-black p-3 bg-sky-100 my-2 rounded" onclick="toggleHide(this, 'questions_summary', 'Hide Question Summaries', 'Show Question Summaries')" id="question_summary_toggle_button">Hide Question Summaries</button>
+</div>
+
+</div>
+
+<div class="student_complete_summary grid grid-cols-2 space-x-2 mb-2" style="display:none">
+  <?php
+  $students_completed = array();
+  $students = getGroupUsers($_GET['classid']);
+  foreach ($students as $key=>$student) {
+    foreach($results as $result) {
+      if($result['userID'] == $student['id']) {
+        array_push($students_completed, $student);
+        unset($students[$key]);
+        break;
+      }
+    }
+  }
+  ?>
+  <div class="border rounded p-1">
+    <h3 class="font-semibold underline">Completed Work By:</h3>
+    <?php
+    foreach ($students_completed as $student) {
+      ?>
+      <p><?=$student['name_first']." ".$student['name_last']?>
+      <?php
+    }
+    ?>
+  </div>  
+  <div class="border rounded  p-1">
+    <h3 class="font-semibold underline">Awaiting Work From:</h3>
+    <?php
+    foreach ($students as $student) {
+      ?>
+      <p><?=$student['name_first']." ".$student['name_last']?>
+      <?php
+    }
+    ?>
+  </div>  
+</div>
+
+
+<div>
+
+</div>
+
+
 
 <table id ="questionTable" class= "w-full">
   <tr id ="questionTableRow" style='min-height= 72'>
@@ -228,22 +298,30 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
     <th class="percentColumn hideClass">&percnt;</th>
     <th class="hideClass">Exclude</th>
     <?php
+    
+    //Populate columns based on the questions from the assignment:
+
     foreach ($questionSummary as $key => $question) {
       ?>
-      <th><?=$question['question']?></th>
-
+      <th><?=$question['question_no']?>
+      <br>
+        <span class="hidden xl:inline"><?=$question['question']?></span>
+      </th>
       <?php
     }
-      
     ?>
   </tr>
   <?php
+
+    //Populate rows for the number of results in $results:
+
     foreach($results as $result) {
       ?>
     <tr>
       <td class="hideClass text-lg" align="center"><p><?=htmlspecialchars($result['name_first'])?> <?=htmlspecialchars($result['name_last'])?></p>
       <?php
         /*
+        //Extra info on maxdatetime and mindatetime
         echo $result['datetime'];
         echo $result['maxdatetime'];
         echo "<br>";
@@ -251,39 +329,37 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
         */
       ?>
 
-    </td>
-    <td class="hideClass" align="center">
-      <p><?=date("d/m/y", strtotime($result['datetime']))?></p>
-      <p><?=date("H:i:s", strtotime($result['datetime']))?></p>
-      <p><?=$result['duration']?> min</p>
-    </td>
+      </td>
+      <td class="hideClass" align="center">
+        <p><?=date("d/m/y", strtotime($result['datetime']))?></p>
+        <p><?=date("H:i:s", strtotime($result['datetime']))?></p>
+        <p><?=$result['duration']?> min</p>
+      </td>
       <td class="hideClass" align="center"><?=$result['percentage']?></td>
       <td class="hideClass" align="center">
         <button class="rounded bg-sky-100 p-1 border border-black" onclick="updateExcludedInput(<?=$result['id']?>);">Exclude Result</button>
       </td>
-      <?php
-      foreach ($questionSummary as $question) {
-        $questionResponse = getMCQindividualQuestionResponse($question['question'], $result['answers']);
-        ?>
-        <td align="center" class = "text-lg <?=($questionResponse['correct'] == "") ? "bg-pink-200" : ""?>">
-          <p class=""><?=$questionResponse['answer']?></p>
-          <!--
-          <p><?=$questionResponse['correct_answer']?></p>
-          <p><?=$questionResponse['correct']?></p>
-      -->
-        </td>
         <?php
-      }  
-      ?>
+        foreach ($questionSummary as $question) {
+          $questionResponse = getMCQindividualQuestionResponse($question['question'], $result['answers']);
+          ?>
+      <td align="center" class = "text-lg <?=($questionResponse['correct'] == "") ? "bg-pink-200" : ""?>">
+        <p class=""><?=$questionResponse['answer']?></p>
+        <!--
+        <p><?=$questionResponse['correct_answer']?></p>
+        <p><?=$questionResponse['correct']?></p>
+        -->
+      </td>
+          <?php
+        }  
+        ?>
     </tr>
       <?php
     }
-
-  }
+  
   ?>
   <tr id="questionTableLastRow">
     <td colspan=4 class="hideClass">Totals:</td>
-    
     <?php
     foreach ($questionSummary as $key=>$question) {
       echo "<td align='center'>";
@@ -297,6 +373,7 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
 </table>
 
 <?php
+}
 
 
 /*
@@ -327,11 +404,11 @@ if ($result) {
   <?php
   foreach ($questionSummary as $key=>$question) {
     ?>
-    <h2>Question <?=$key + 1?></h2>
+    <h2 class="text-lg bg-pink-100 mt-2 border-t-2 border-black">Question <?=$question['question_no']?></h2>
     <p><em><?=$question['question']?></em></p>
-    <img src="question_img/<?=trim($question['question'])?>.JPG" alt="question <?=$question['question']?>">
+    <img  src="question_img/<?=trim($question['question'])?>.JPG" alt="question <?=$question['question']?>">
     <p>Number Correct: <?=$question['correctCount']."/".count($results)?></p>
-    <p>Summary: <?php
+    <p class="questions_summary">Summary: <?php
       $count = 0;
       foreach($question['summary'] as $key=>$response) {
         if($key == "") {
@@ -764,7 +841,7 @@ function nameToggle() {
 			
 			
 		toggle = 1;
-		document.getElementById("toggleButton").innerHTML = "Click to Show Names";
+		document.getElementById("toggleButton").innerHTML = "Show Names";
 		}	
 	
 	else {
@@ -776,7 +853,7 @@ function nameToggle() {
 		
 		}
 	toggle = 0;
-	document.getElementById("toggleButton").innerHTML = "Click to Hide Names";
+	document.getElementById("toggleButton").innerHTML = "Hide Names";
 	}
 	
 	

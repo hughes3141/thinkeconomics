@@ -56,3 +56,28 @@ function changeVisibility(button, id) {
 
 
 }
+
+function toggleHide(button, hide_class, original_message, toggle_message, display_type="block") {
+  let toggleClass = document.getElementsByClassName(hide_class);
+  function f() {
+    for (var i=0; i<toggleClass.length; i++) {
+      if(toggleClass[i].style.display=="none") {
+        toggleClass[i].style.display=display_type;
+      }
+      else if (toggleClass[i].style.display!="none") {
+        toggleClass[i].style.display="none";
+      }
+    }
+  }
+  if(button.innerHTML ==original_message) {
+    button.innerHTML = toggle_message;
+    f();
+ 
+  }
+  else if(button.innerHTML ==toggle_message) {
+    button.innerHTML = original_message;
+    f();
+
+  }
+
+}
