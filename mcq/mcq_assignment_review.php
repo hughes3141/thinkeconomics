@@ -58,6 +58,7 @@ td a {
 
 
 $questionSummary =array();
+$results = array();
 
 if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
   $assignmentInfo = getAssignmentInfoById($_GET['assignid']);
@@ -153,59 +154,88 @@ include ($path."/header_tailwind.php");
   <div class="container mx-auto p-4 mt-2 bg-white text-black ">
   
   <form method="get" id="controlForm">
-    <label for ="classid">Class:</label>
-    <select class="rounded" name="classid" onchange="this.form.submit()">
-      <option></option>
-      <?php
-      foreach($groups as $row) {
-        ?>
-
-        <option value="<?=$row['id']?>" <?=(isset($_GET['classid'])&&$row['id']==$_GET['classid']) ? "selected" : ""?>><?=htmlspecialchars($row['name'])?></option>
-
-        <?php
-      }
-      ?>
-    </select>
+    <div class="w-full">
+      <label class="py-1" for ="classid">Class:</label>
+      <div class="mt-1.5">
+        <select class="border px-3 py-2  text-sm w-full mb-2 rounded" name="classid" onchange="clearAssignmentsOnClassChange(this)">
+          <option></option>
+          <?php
+          foreach($groups as $row) {
+            ?>
+            <option value="<?=$row['id']?>" <?=(isset($_GET['classid'])&&$row['id']==$_GET['classid']) ? "selected" : ""?>><?=htmlspecialchars($row['name'])?></option>
+            <?php
+          }
+          ?>
+        </select>
+      </div> 
+    </div>
+    
     <?php
 
     if(isset($_GET['classid'])) {
 
       //$assignments = getAssignmentsList($userId, $_GET['classid'], "mcq");
       $assignments = getAssignmentsByGroup($_GET['classid'], 1000, "mcq");
-      //print_r($assignments);
       ?>
-      <label for ="assignid">Assignment Name:</label>
-      <select class="rounded" name="assignid" onchange="this.form.submit()">
-        <option></option>
-        <?php
-          foreach($assignments as $assignment) {
-            ?>
-            <option value = "<?=$assignment['id']?>" <?=(isset($_GET['assignid'])&&$assignment['id']==$_GET['assignid']) ? "selected" : ""?>><?=htmlspecialchars($assignment['assignName'])?> (<?=date("d.m.y", strtotime($assignment['dateDue']))?>)</option>
-
+      <div class="w-full">
+        <label class="py-1" for ="assignid">Assignment Name:</label>
+        <div class="mt-1.5">
+          <select id="assignid" class="border px-3 py-2  text-sm w-full mb-2 rounded" name="assignid" onchange="this.form.submit()">
+            <option></option>
             <?php
-          }
+              foreach($assignments as $assignment) {
+                ?>
+                <option value = "<?=$assignment['id']?>" <?=(isset($_GET['assignid'])&&$assignment['id']==$_GET['assignid']) ? "selected" : ""?>><?=htmlspecialchars($assignment['assignName'])?> (<?=date("d.m.y", strtotime($assignment['dateDue']))?>)</option>
 
-        ?>
-      </select>
+                <?php
+              }
 
+            ?>
+          </select>
+        </div>
+      </div>
       <?php 
     }
   ?>
+
+<?php
+
+
+//If you have any responses in your question summary:
+
+if (count($results)>0) {
+
+  //Create input controls
+  ?>
+
+
   <div>
-    <input type="radio" id="filter_all" name="filter" value="all" <?=((isset($_GET['filter']))&&$_GET['filter']=="all")||!isset($_GET['filter']) ? "checked" : ""?>>
-    <label for="filter_all">All Results</label><br>
-    <input type="radio" id="filter_last" name="filter" value="last" <?=(isset($_GET['filter'])&&$_GET['filter']=="last") ? "checked" : ""?>>
-    <label for="filter_last">Last Response</label><br>
-    <input type="radio" id="filter_first" name="filter" value="first" <?=(isset($_GET['filter'])&&$_GET['filter']=="first") ? "checked" : ""?>>
-    <label for="filter_first">First Response</label>
+    <h3 class="mt-1.5 bg-pink-200">Results Type:</h3>
+    <p>
+      <input type="radio" id="filter_all" name="filter" value="all" <?=((isset($_GET['filter']))&&$_GET['filter']=="all")||!isset($_GET['filter']) ? "checked" : ""?>>
+      <label for="filter_all">All Results</label>
+    </p>
+    <p>
+      <input type="radio" id="filter_last" name="filter" value="last" <?=(isset($_GET['filter'])&&$_GET['filter']=="last") ? "checked" : ""?>>
+      <label for="filter_last">Last Response</label>
+    </p>
+    <p>
+      <input type="radio" id="filter_first" name="filter" value="first" <?=(isset($_GET['filter'])&&$_GET['filter']=="first") ? "checked" : ""?>>
+      <label for="filter_first">First Response</label>
+    </p>
   </div>
 
 
   <div>
-    <input type="radio" id="question_order_original" name="questionOrder" value="" <?=(!isset($_GET['questionOrder'])||$_GET['questionOrder']=="") ? "checked" : ""?>>
-    <label for="question_order_original">Original</label><br>  
+    <h3 class="mt-1.5 bg-pink-200">Order Questions By:</h3>
+    </p>
+      <input type="radio" id="question_order_original" name="questionOrder" value="" <?=(!isset($_GET['questionOrder'])||$_GET['questionOrder']=="") ? "checked" : ""?>>
+      <label for="question_order_original">Original (Same as assignment)</label>
+    </p>
+    <p>
     <input type="radio" id="question_order_incorrect" name="questionOrder" value="incorrect" <?=(isset($_GET['questionOrder'])&&$_GET['questionOrder']=="incorrect") ? "checked" : ""?>>
-    <label for="question_order_incorrect">Incorrect</label><br>
+    <label for="question_order_incorrect">Incorrect (Show most difficult questions first)</label>
+    </p>
     
   </div>
 
@@ -214,36 +244,24 @@ include ($path."/header_tailwind.php");
   </div>
 
 
-  <input class="border border-black p-3 bg-pink-300 my-2 rounded" type="submit" value ="Submit" onclick="clearExcludedInput();">
+  <input class="border border-black p-3 bg-pink-300 my-2 rounded w-full" type="submit" value ="Submit" onclick="clearExcludedInput();">
   </form>
 
   
 
 
 
-<?php
-/*
-print_r($questionSummary);
-echo "<br>";
-print_r($questions);
-*/
 
-//If you have any responses in your question summary:
 
-if (count($questionSummary)>0) {
-
-  //Create a table:
-  ?>
-
-<div class="flex flex-wrap justify-center space-x-1">
-  <div class="basis-1/4">
+<div class="flex flex-wrap justify-center">
+  <div class="basis-1/3">
     <button class = "w-full border border-black p-3 bg-sky-100 my-2 rounded" onclick="toggleHide(this, 'student_complete_summary', 'Show Class Summary', 'Hide Class Summary', 'grid')" id="summary_toggle_button">Show Class Summary</button>
   </div>
-  <div class="basis-1/4">
+  <div class="basis-1/3 px-2">
     <button class = "w-full border border-black p-3 bg-sky-100 my-2 rounded" onclick="nameToggle()" id="toggleButton">Hide Names</button>
   </div>    
-  <div class="basis-1/4">
-    <button class = "w-full border border-black p-3 bg-sky-100 my-2 rounded" onclick="toggleHide(this, 'questions_summary', 'Hide Question Summaries', 'Show Question Summaries')" id="question_summary_toggle_button">Hide Question Summaries</button>
+  <div class="basis-1/3">
+    <button class = "w-full border border-black p-3 bg-sky-100 my-2 rounded m" onclick="toggleHide(this, 'questions_summary', 'Hide Question Summaries', 'Show Question Summaries')" id="question_summary_toggle_button">Hide Question Summaries</button>
 </div>
 
 </div>
@@ -285,13 +303,7 @@ if (count($questionSummary)>0) {
 </div>
 
 
-<div>
-
-</div>
-
-
-
-<table id ="questionTable" class= "w-full">
+<table id ="questionTable" class= "w-full table-fixed">
   <tr id ="questionTableRow" style='min-height= 72'>
     <th class="nameColumn hideClass">Student Name</th>
     <th class="hideClass">Time</th>
@@ -305,7 +317,7 @@ if (count($questionSummary)>0) {
       ?>
       <th><?=$question['question_no']?>
       <br>
-        <span class="hidden xl:inline"><?=$question['question']?></span>
+        <span class="hidden <?=(count($questionSummary)>7) ? "text-sm ":"" ?><?=(count($questionSummary)<11) ? "xl:inline":"" ?>"><?=$question['question']?></span>
       </th>
       <?php
     }
@@ -372,28 +384,20 @@ if (count($questionSummary)>0) {
 
 </table>
 
+
+<div>
+  <form method = "get" target ="_blank" action = "mcq_assignment_review_images.php">
+    <input type="hidden" name="questions" value = "<?php
+      foreach ($questionSummary as $question) {
+        echo trim($question['question']).",";
+      }
+    ?>">
+    <input class ="border border-black rounded p-1 mt-2 bg-sky-100"type = "submit" value ="Images only">
+  </form>
+</div>
+
 <?php
 }
-
-
-/*
-use getAssignmentInfoById():
-
-
-//$sql = "SELECT * FROM assignments WHERE id = '".$assignId."'";
-$sql = "SELECT * FROM assignments WHERE id = ?";
-$stmt=$conn->prepare($sql);
-$stmt->bind_param("i", $assignId);
-$stmt->execute();
-$result=$stmt->get_result();
-if ($result) {
-	$row = $result->fetch_assoc();
-	$quizid = $row['quizid'];
-	$assignName=$row['assignName'];
-	echo $quizid."<br>";
-}
-*/
-
 
 ?>
 
@@ -438,43 +442,10 @@ if ($result) {
   ?>
 </div>
 
-<div id="testDiv">
+
+
+
 </div>
-
-
-
-<?php
-
-/*
-use getMCQquizResultsByAssignment($_GET['assignid']); 
-
-$data = array();
-$sql = "SELECT name, mark, percentage, answers, timeStart, datetime, userID FROM responses WHERE assignId = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $assignId);
-$stmt->execute();
-$result=$stmt->get_result();
-
-if($result->num_rows > 0) {
-  while($row = $result->fetch_assoc()) {
-    //print_r($row);
-    //echo "<br>";
-    
-    $row['answers'] = json_decode($row['answers']);
-    //print_r($row['answers']);
-    array_push($data, $row);
-  }
-}
-
-//print_r($data);
-
-$data = json_encode($data);
-//echo $data;
-
-*/
-?>
-
-  </div>
 </div>
 
 </body>
@@ -503,30 +474,25 @@ function clearExcludedInput(){
   excludeInput.value="";
 }
 
+function clearAssignmentsOnClassChange(form_id) {
+  let assignid = document.getElementById("assignid");
+  console.log(assignid);
+  if(assignid != null) {
+    assignid.value = "";
+  }
 
-var testDiv = document.getElementById("testDiv");
-
-
-
-
-
-var questions = [<?php 
-
-$sql = "SELECT questions FROM mcq_quizzes WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $quizid);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-	$row = $result->fetch_assoc();
-	echo $row['questions'];
-
+  form_id.form.submit();
 }
 
-?>];
 
-//console.log(questions);
+
+
+
+
+
+
+
+
 
 var index = [];
 
@@ -621,7 +587,7 @@ var indexQuestions = [];
 	}
 	
 	indexQuestionsGlobal = indexQuestions;
-	console.log(indexQuestions);
+	//console.log(indexQuestions);
 
 
 }
@@ -824,11 +790,11 @@ function question_review() {
 
 
 var toggle = 0;
-console.log(toggle);
+//console.log(toggle);
 
 function nameToggle() {
   //alert('this works');
-  console.log(toggle);
+  //console.log(toggle);
 	
 
 	
