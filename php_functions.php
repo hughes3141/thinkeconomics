@@ -1556,9 +1556,14 @@ function getMCQquizResults($userId, $responseId = null) {
   global $conn;
   $responses = array();
 
-  //AAAHHH fix the responses table to have quizID, not join on quiz_name!!!
-  $sql = "SELECT r.*, a.assignName, a.id assignId, a.dateDue
+  $sql = "SELECT r.*, ROUND(TIMESTAMPDIFF(SECOND, r.timeStart, r.datetime)/60,2) duration, u.name_first, u.name_last, q.quizName quizNamefromDB, a.assignName, a.id assignId, a.dateDue
           FROM responses r
+          
+          LEFT JOIN users u
+          ON r.userID = u.id
+
+          LEFT JOIN mcq_quizzes q
+          ON r.quizID = q.id
           
           LEFT JOIN assignments a
           ON r.assignID = a.id

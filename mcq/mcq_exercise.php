@@ -35,6 +35,7 @@ if(isset($_GET['assignid'])) {
 
 if(isset($_GET['quizid'])) {
   $quizInfo = getMCQquizInfo($_GET['quizid']);
+  $quizid = $quizInfo['id'];
 }
 
 
@@ -108,10 +109,10 @@ $style_input = ".hide {
 
       /*!!!The below command determines where the results are sent to*/
 
-      $sql = "INSERT INTO `responses` (`name`, `answers`, `mark`, `percentage`, `quiz_name`, `timeStart`, `datetime`, `assignID`, `userID`) VALUES (?,?,?,?,?,?,?,?,?)";
+      $sql = "INSERT INTO `responses` (`answers`, `mark`, `percentage`, `quiz_name`, `timeStart`, `datetime`, `assignID`, `userID`, `quizId`) VALUES (?,?,?,?,?,?,?,?,?)";
 
       $stmt = $conn->prepare($sql);
-      $stmt->bind_param("sssssssii", $name, $record2, $score, $percentage, $quizname, $timeStart, $timeEnd, $assignid, $userid);
+      $stmt->bind_param("ssssssiii", $record2, $score, $percentage, $quizname, $timeStart, $timeEnd, $assignid, $userid, $quizid);
       //$stmt->execute();
 
       // This element is added to ensure that  the same completed assignment is not submitted twice
