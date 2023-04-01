@@ -577,6 +577,37 @@ function getMCQquizzesByTopic($topic = null) {
 
 }
 
+function getMCQquestionDetails($topic) {
+
+  /*
+  This function will call details for individual MCQ questions.
+  
+  Used in:
+  -mcq_questions.php
+  */
+
+  global $conn;
+  $results = array();
+
+  $sql ="SELECT id, No, Answer, Topic, keywords, question, options, explanation, examBoard, component
+        FROM question_bank_3
+        WHERE topic = ?";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("s", $topic);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+
+  return $results;
+
+
+
+}
+
 function getExercises($table, $topic = null, $userCreate = null) {
   /*
   This function gets information on all SAQ or NDE excercises

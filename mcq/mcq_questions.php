@@ -34,8 +34,10 @@ $style_input = "
   
   ";
 
-
-
+$questions = array();
+if(isset($_GET['topic'])) {
+  $questions = getMCQquestionDetails($_GET['topic']);
+}
 
 
 include($path."/header_tailwind.php");
@@ -51,6 +53,9 @@ include($path."/header_tailwind.php");
       if($_SERVER['REQUEST_METHOD']==='POST') {
         print_r($_POST);  
       }
+      echo "<pre>";
+      print_r($questions);
+      echo "</pre>";
       ?>
 
       <div>
@@ -73,6 +78,23 @@ include($path."/header_tailwind.php");
           <button class="w-full rounded bg-sky-300 hover:bg-sky-200 border border-black mb-2" type="button" onclick="addInputRow();">Add row</button> 
           <button>Submit</button>
       </form>
+      </div>
+
+      <div>
+        <form method ="get"  action="">
+          <label for="topic_select">Topic:</label>
+          <input type="text" name="topic"></input>
+          <input type="submit" value="Select">
+        </form>
+      </div>
+      
+      <div>
+        <?php
+        if(count($questions)>0) {
+          ?>
+          <?php
+        }
+        ?>
       </div>
 
 
