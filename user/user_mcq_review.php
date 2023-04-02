@@ -78,6 +78,13 @@ include($path."/header_tailwind.php");
                             <img src = "https://www.thinkeconomics.co.uk/mcq/question_img/<?=$question[0]?>.JPG">
                             <p class ="userAnswer <?=$question['3']=="1" ? "" : "wrongAnswer"?>">Your Answer: <?=$question[1]?></p>
                             <p class ="correctAnswer">Correct Answer:<?=$question[2]?></p>
+                            <p><?php
+                              $explanations = json_decode($question['explanation']);
+                              $explanations = (array) $explanations;
+                              foreach($explanations as $key2=>$explanation) {
+                                ?><?=$key2?>: <?=$explanation?><?php
+                              }
+                            ?></p>
                         </div>
                         <?php
                     }

@@ -34,13 +34,17 @@ $style_input = "
   
   ";
 
-$questions = array();
-if(isset($_GET['topic'])) {
-  $questions = getMCQquestionDetails($_GET['topic']);
-}
-
 
 include($path."/header_tailwind.php");
+
+if($_SERVER['REQUEST_METHOD']==='POST') {
+  updateMCQquestion($_POST['id'], $userId, $_POST['explanation']);
+}
+
+$questions = array();
+if(isset($_GET['topic'])) {
+  $questions = getMCQquestionDetails(null, null, $_GET['topic']);
+}
 
 
 
@@ -54,8 +58,9 @@ include($path."/header_tailwind.php");
         print_r($_POST);  
       }
       echo "<pre>";
-      print_r($questions);
+      //print_r($questions);
       echo "</pre>";
+
       ?>
 
       <div>
@@ -92,6 +97,44 @@ include($path."/header_tailwind.php");
         <?php
         if(count($questions)>0) {
           ?>
+          <table>
+            <tr>
+              <th>id</th>
+              <th>No</th>
+              <th>Question</th>
+
+
+            </tr>
+            <?php
+              foreach($questions as $question) {
+                ?>
+                <form method="post"  action="">
+                  <input type="hidden" name="id" value="<?=$question['id']?>">
+                  <tr>
+                    <td><?=$question['id']?></td>
+                    <td><?=$question['No']?></td>
+                    <td>
+                      <p><?=$question['question']?></p>
+                      <p><img class = "w-3/4" src = "question_img/<?=$question['No']?>.JPG"></p>
+                      <p><?=$question['Topic']?></p>
+                      <p>Answer: <?=$question['Answer']?>
+                      <p><label for="">Explanation: </label><textarea name="explanation" class="resize"><?php
+                          $explanations = json_decode($question['explanation']);
+                          //var_dump($explanations);
+                          $explanations = (array) $explanations;
+                          if(isset($explanations[$userId])) {
+                            echo $explanations[$userId];
+                          }
+                          //print_r($explanations);
+                        ?></textarea></p>
+                      <p><input type="submit" value= "Update"><p>
+                    </td>
+                  </tr>
+                </form>
+                <?php
+              }
+            ?>
+          </table>
           <?php
         }
         ?>

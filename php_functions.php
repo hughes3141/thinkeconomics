@@ -577,7 +577,7 @@ function getMCQquizzesByTopic($topic = null) {
 
 }
 
-function getMCQquestionDetails($topic) {
+function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
 
   /*
   This function will call details for individual MCQ questions.
@@ -605,6 +605,55 @@ function getMCQquestionDetails($topic) {
   return $results;
 
 
+
+}
+
+function updateMCQquestionExplanation($id, $explanation) {
+  /*
+  Designed soley to update MCQ Question Explanation
+  */
+
+  global $conn;
+  $sql = "UPDATE question_bank_3
+  SET explanation = ?
+  WHERE id = ?";
+
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("si", $explanation, $id);
+  $stmt->execute();
+
+}
+
+function updateMCQquestion($id, $userId, $explanation) {
+  /*
+  Used to update MCQ question information with id = $id
+
+  Used in: mcq_questions.php
+  */
+
+  global $conn;
+
+  $currentExplanation = "";
+
+  $sql = "SELECT explanation
+          FROM question_bank_3
+          WHERE id = ?";
+  
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("i", $id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    $row = $result->fetch_assoc();
+    $currentExplanation = $row['explanation'];
+  }
+
+  $currentExplanation = json_decode($currentExplanation);
+  $currentExplanation = (array) $currentExplanation;
+  //print_r($currentExplanation);
+  $currentExplanation[$userId] = $explanation;
+  $currentExplanation = json_encode($currentExplanation);
+  updateMCQquestionExplanation($id, $currentExplanation);  
 
 }
 
