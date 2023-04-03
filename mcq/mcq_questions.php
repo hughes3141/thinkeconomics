@@ -55,7 +55,7 @@ if(isset($_GET['topic'])) {
     <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
       <?php
       if($_SERVER['REQUEST_METHOD']==='POST') {
-        print_r($_POST);  
+        //print_r($_POST);  
       }
       echo "<pre>";
       //print_r($questions);
@@ -88,7 +88,7 @@ if(isset($_GET['topic'])) {
       <div>
         <form method ="get"  action="">
           <label for="topic_select">Topic:</label>
-          <input type="text" name="topic"></input>
+          <input type="text" name="topic" value="<?=isset($_GET['topic']) ? $_GET['topic'] : "" ?>"</input>
           <input type="submit" value="Select">
         </form>
       </div>
@@ -118,7 +118,8 @@ if(isset($_GET['topic'])) {
                       <p><img class = "w-3/4" src = "question_img/<?=$question['No']?>.JPG"></p>
                       <p><?=$question['Topic']?></p>
                       <p>Answer: <?=$question['Answer']?>
-                      <p><label for="">Explanation: </label><textarea name="explanation" class="resize"><?php
+                      <p><label for="">Explanation: </label></p>
+                      <p><textarea name="explanation" class="resize w-full"><?php
                           $explanations = json_decode($question['explanation']);
                           //var_dump($explanations);
                           $explanations = (array) $explanations;

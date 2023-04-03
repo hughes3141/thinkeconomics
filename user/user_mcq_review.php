@@ -71,6 +71,8 @@ include($path."/header_tailwind.php");
                     //print_r($questions);
 
                     foreach($questions as $key=>$question) {
+                        $questionDetails = getMCQquestionDetails(null, $question[0]);
+                        //print_r($questionDetails);
                         ?>
                         <div class="questionSummary">
                             <h2>Question: <?=(intval($key) +1)?></h2>
@@ -78,13 +80,26 @@ include($path."/header_tailwind.php");
                             <img src = "https://www.thinkeconomics.co.uk/mcq/question_img/<?=$question[0]?>.JPG">
                             <p class ="userAnswer <?=$question['3']=="1" ? "" : "wrongAnswer"?>">Your Answer: <?=$question[1]?></p>
                             <p class ="correctAnswer">Correct Answer:<?=$question[2]?></p>
-                            <p><?php
-                              $explanations = json_decode($question['explanation']);
+                            <?php
+                              $explanations = json_decode($questionDetails['explanation']);
                               $explanations = (array) $explanations;
-                              foreach($explanations as $key2=>$explanation) {
-                                ?><?=$key2?>: <?=$explanation?><?php
+                              if(count($explanations) > 0) {
+                                ?>
+                                <div class="m-5">
+                                  <p class="underline">Explanation<?=count($explanations)>1 ? "s" : ""?>:</p>
+                                  <?php
+                                    foreach($explanations as $key2=>$explanation) {
+                                    $username = getUserInfo($key2)['username'];
+                                    ?>
+                                    <p class="text-pink-300"><?=$username?>:</p>
+                                    <p class ="whitespace-pre-line font-sans"><?=$explanation?></p>
+                                    <?php
+                                }
+                                ?>
+                                </div>
+                                <?php
                               }
-                            ?></p>
+                            ?>
                         </div>
                         <?php
                     }

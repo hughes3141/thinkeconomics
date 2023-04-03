@@ -584,16 +584,38 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
   
   Used in:
   -mcq_questions.php
+  -user_mcq_review.php
   */
 
   global $conn;
   $results = array();
 
   $sql ="SELECT id, No, Answer, Topic, keywords, question, options, explanation, examBoard, component
-        FROM question_bank_3
-        WHERE topic = ?";
+        FROM question_bank_3";
+
+  if($id) {
+    $sql .= "  WHERE id = ?";
+  }
+  if($questionNo) {
+    $sql .= "  WHERE No = ?";
+  }
+  if($topic) {
+    $sql .= "  WHERE topic = ?";
+  }
+
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("s", $topic);
+
+  if($id) {
+    $stmt->bind_param("i", $id);
+  }
+  if($questionNo) {
+    $stmt->bind_param("s", $questionNo);
+  }
+  if($topic) {
+    $stmt->bind_param("s", $topic);
+  }
+
+  
   $stmt->execute();
   $result = $stmt->get_result();
   if($result->num_rows>0) {
@@ -601,7 +623,9 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
       array_push($results, $row);
     }
   }
-
+  if (!$topic && count($results) == 1) {
+    $results = $results[0];
+  }
   return $results;
 
 
