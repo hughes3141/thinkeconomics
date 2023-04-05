@@ -407,10 +407,11 @@ if (count($results)>0) {
 <div id ="summary_div">
   <?php
   foreach ($questionSummary as $key=>$question) {
+    $questionName = trim($question['question']);
     ?>
     <h2 class="text-lg bg-pink-100 mt-2 border-t-2 border-black">Question <?=$question['question_no']?></h2>
-    <p><em><?=$question['question']?></em></p>
-    <img  src="question_img/<?=trim($question['question'])?>.JPG" alt="question <?=$question['question']?>">
+    <p><em><?=$questionName?></em></p>
+    <img  src="question_img/<?=$questionName?>.JPG" alt="question <?=$questionName?>">
     <p>Number Correct: <?=$question['correctCount']."/".count($results)?></p>
     <p class="questions_summary">Summary: <?php
       $count = 0;
@@ -432,10 +433,25 @@ if (count($results)>0) {
       //echo "<br>";
       //echo count($question['summary']);
     ?></p>
+    <?php
+      $questionDetails = getMCQquestionDetails(null, $questionName);
+      $explanations = json_decode($questionDetails['explanation']);
+      $explanations = (array) $explanations;
+      //print_r($explanations);
+      if(count($explanations) > 0) {
+        ?>
+        <button class="border border-black rounded bg-pink-100 p-1 mt-2">Click for Explanation<?=count($explanations)>1 ? "s" : ""?></button>
+        <?php
+        foreach($explanations as $key2=>$explanation) {
+          $username = getUserInfo($key2)['username'];
+          ?>
+          <p class="text-pink-300"><?=$username?>:</p>
+          <p class ="whitespace-pre-line font-sans"><?=$explanation?></p>
 
-
-
-
+          <?php
+        }
+      }
+    ?>
     <?php
   }
 

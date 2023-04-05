@@ -163,8 +163,11 @@ include "../header_tailwind.php";
                 
                 
                 <p class="ml-2 font-bold">New resources</p>
+                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_questions.php">MCQ Question Manager</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_assignment_review3.0.php">MCQ Assignment Review</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_preview_simple.php">MCQ Quiz Preview (Simple)</a></p>
+
+
               <h3 class="font-mono text-md bg-pink-100 pl-1">Short Answer Questions</h3>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../saq/saq_list1.1.php">SAQ Question List and Input</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../saq/saq_exercisecreate1.0.php">SAQ Exercise List and Input</a></p>

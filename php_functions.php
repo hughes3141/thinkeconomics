@@ -585,6 +585,7 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
   Used in:
   -mcq_questions.php
   -user_mcq_review.php
+  -mcq_assignment_review.php
   */
 
   global $conn;
@@ -614,7 +615,6 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
   if($topic) {
     $stmt->bind_param("s", $topic);
   }
-
   
   $stmt->execute();
   $result = $stmt->get_result();
@@ -674,8 +674,12 @@ function updateMCQquestion($id, $userId, $explanation) {
 
   $currentExplanation = json_decode($currentExplanation);
   $currentExplanation = (array) $currentExplanation;
+  if($explanation == "") {
+    unset($currentExplanation[$userId]);
+  } else {
+    $currentExplanation[$userId] = $explanation;
+  }
   //print_r($currentExplanation);
-  $currentExplanation[$userId] = $explanation;
   $currentExplanation = json_encode($currentExplanation);
   updateMCQquestionExplanation($id, $currentExplanation);  
 

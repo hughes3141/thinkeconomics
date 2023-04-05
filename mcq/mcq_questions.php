@@ -42,9 +42,14 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 }
 
 $questions = array();
-if(isset($_GET['topic'])) {
+if(isset($_GET['questionNo']) && $_GET['questionNo'] !="") {
+  $result = getMCQquestionDetails(null, $_GET['questionNo']);
+  array_push($questions, $result);
+}
+if(isset($_GET['topic']) && $_GET['topic'] !="") {
   $questions = getMCQquestionDetails(null, null, $_GET['topic']);
 }
+
 
 
 
@@ -89,6 +94,9 @@ if(isset($_GET['topic'])) {
         <form method ="get"  action="">
           <label for="topic_select">Topic:</label>
           <input type="text" name="topic" value="<?=isset($_GET['topic']) ? $_GET['topic'] : "" ?>"</input>
+          <label for="questionNo_select">Question No:</label>
+          <input type="text" name="questionNo" value="<?=isset($_GET['questionNo']) ? $_GET['questionNo'] : "" ?>"</input>
+
           <input type="submit" value="Select">
         </form>
       </div>
@@ -119,7 +127,7 @@ if(isset($_GET['topic'])) {
                       <p><?=$question['Topic']?></p>
                       <p>Answer: <?=$question['Answer']?>
                       <p><label for="">Explanation: </label></p>
-                      <p><textarea name="explanation" class="resize w-full"><?php
+                      <p><textarea name="explanation" class="resize w-full" spellcheck="true"><?php
                           $explanations = json_decode($question['explanation']);
                           //var_dump($explanations);
                           $explanations = (array) $explanations;
