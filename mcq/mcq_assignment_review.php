@@ -439,17 +439,22 @@ if (count($results)>0) {
       $explanations = (array) $explanations;
       //print_r($explanations);
       if(count($explanations) > 0) {
+        $originalMessage = "Click for Explanation".(count($explanations)>1 ? "s" : "");
         ?>
-        <button class="border border-black rounded bg-pink-100 p-1 mt-2">Click for Explanation<?=count($explanations)>1 ? "s" : ""?></button>
-        <?php
-        foreach($explanations as $key2=>$explanation) {
-          $username = getUserInfo($key2)['username'];
-          ?>
-          <p class="text-pink-300"><?=$username?>:</p>
-          <p class ="whitespace-pre-line font-sans"><?=$explanation?></p>
-
+        <button class="border border-black rounded bg-pink-100 p-1 mt-2" onclick = "toggleHide(this, 'hide_<?=$questionName?>', '<?=$originalMessage?>', 'Click to Hide')"><?=$originalMessage?></button>
+        <div class="hide_<?=$questionName?>" style="display:none;">
           <?php
-        }
+          foreach($explanations as $key2=>$explanation) {
+            $username = getUserInfo($key2)['username'];
+            ?>
+            <p class="text-pink-300"><?=$username?>:</p>
+            <p class ="whitespace-pre-line font-sans"><?=$explanation?></p>
+
+            <?php
+          }
+          ?>
+        </div>
+        <?php
       }
     ?>
     <?php
