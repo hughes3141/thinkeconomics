@@ -433,6 +433,34 @@ if (count($results)>0) {
       //echo "<br>";
       //echo count($question['summary']);
     ?></p>
+    <div>
+      <?php
+      /*
+      The following loads information for students who got the correct answer; however it takes too long to load.
+      $correctStudents = array();
+      print_r($question);
+      $correctAnswer = $question['correct'];
+      echo $correctAnswer;
+      echo "<pre>";
+      //print_r($results);
+      echo "</pre>";
+      foreach($results as $result) {
+        foreach($result['answers'] as $questionResponse) {
+          if ($questionResponse[0] == $question['question']) {
+            if ($questionResponse[1] == $question['correct']) {
+              array_push($correctStudents, $result['userID']);
+            }
+          }
+        }
+      }
+      foreach ($correctStudents as &$student) {
+        $student = getUserInfo($student)['name_first']." ".getUserInfo($student)['name_last'];
+      }
+      print_r($correctStudents);
+      echo count($correctStudents);
+      */
+      ?>
+    </div>
     <?php
       $questionDetails = getMCQquestionDetails(null, $questionName);
       $explanations = json_decode($questionDetails['explanation']);
