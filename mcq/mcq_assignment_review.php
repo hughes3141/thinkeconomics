@@ -441,8 +441,8 @@ if (count($results)>0) {
       if(count($explanations) > 0) {
         $originalMessage = "Click for Explanation".(count($explanations)>1 ? "s" : "");
         ?>
-        <button class="border border-black rounded bg-pink-100 p-1 mt-2" onclick = "toggleHide(this, 'hide_<?=$questionName?>', '<?=$originalMessage?>', 'Click to Hide')"><?=$originalMessage?></button>
-        <div class="hide_<?=$questionName?>" style="display:none;">
+        <button class="border border-black rounded bg-pink-100 p-1 mt-2" onclick = "toggleHide(this, 'hide_<?=$questionDetails['id']?>', '<?=$originalMessage?>', 'Click to Hide')"><?=$originalMessage?></button>
+        <div class="hide_<?=$questionDetails['id']?>" style="display:none;">
           <?php
           foreach($explanations as $key2=>$explanation) {
             $username = getUserInfo($key2)['username'];
