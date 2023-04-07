@@ -159,7 +159,7 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
   //print_r($questionSummary);
 
 
-  //Have easy reference table of names of all users who have completed this assignment:
+  //Easy reference table of names of all users who have completed this assignment:
   $users_completed = array();
 
   foreach($results as $result) {
@@ -167,7 +167,19 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
     $users_completed[$result['userID']] =$user_result['name_first']." ".$user_result['name_last'];
 
   }
-
+  
+  
+  //Easy reference array to summarise question responses by user:
+  $questionSummaryByUser = array();
+  foreach($questionSummary as $question) {
+    foreach ($question['summary_by_user'] as $key=>$option) {
+      foreach($option as &$record) {
+        $record = $users_completed[$record];
+      }
+      $questionSummaryByUser[$question['question']][$key] = $option;
+    }
+  }
+  
 }
 
 
@@ -427,6 +439,7 @@ if (count($results)>0) {
 
 echo "<pre>";
 //print_r($questionSummary);
+//  print_r($questionSummaryByUser);
 //var_dump($questionSummary);
 echo "<br>";
 //print_r($results);
@@ -469,10 +482,18 @@ echo "</pre>";
 
     <?php
     $questionDetails = getMCQquestionDetails(null, $questionName);
+ 
     ?>
-    <button class="border border-black rounded bg-sky-100 p-1 mt-2" onclick = "toggleHide(this, 'summary_by_user_<?=$questionDetails['id']?>', 'Click to Show User Summary', 'Click to Hide')">Click to Show User Summary</button>
-    <div class="summary_by_user_<?=$questionDetails['id']?>" style="display:none;">
+
+
+
+    <?php if(count($results)>0) {
+      ?>
+    
+      <button class="border border-black rounded bg-sky-100 p-1 mt-2" onclick = "toggleHide(this, 'summary_by_user_<?=$questionDetails['id']?>', 'Click to Show User Summary', 'Click to Hide User Summary')">Click to Show User Summary</button>
+      <div class="summary_by_user_<?=$questionDetails['id']?>" style="display:none;">
       <?php
+    }
       foreach($question['summary_by_user'] as $key=>$responses) {
         if($key == $question['correct']) {
         //if(true == true) {
@@ -498,7 +519,15 @@ echo "</pre>";
       }
       ?>
     </div>
+    
     <?php
+    if (count($results)>0) {
+      ?>
+      <button class="border border-black rounded bg-sky-100 p-1 mt-2" onclick = "showRandomStudent('<?=$questionDetails['No']?>','<?=$questionDetails['Answer']?>')">Random Correct Student</button>
+      <div class="border-2 border-pink-300 rounded p-2 my-2 " id="random_correct_div_<?=$questionDetails['No']?>" style="display:none">Random Correct Student: <span id="random_correct_<?=$questionDetails['No']?>"></span></div>
+
+      <?php
+    }
       $questionDetails = getMCQquestionDetails(null, $questionName);
       $explanations = json_decode($questionDetails['explanation']);
       $explanations = (array) $explanations;
@@ -522,6 +551,8 @@ echo "</pre>";
         <?php
       }
     ?>
+
+    
     <?php
   }
 
@@ -571,10 +602,21 @@ function clearAssignmentsOnClassChange(form_id) {
 }
 
 
+var questions_summary_by_user = <?=json_encode($questionSummaryByUser)?>;
+console.log(questions_summary_by_user);
 
 
+function showRandomStudent(questionName, answer) {
+  let questionData = questions_summary_by_user[questionName][answer];
+  const randomElement = questionData[Math.floor(Math.random() * questionData.length)];
+  let randomShow = document.getElementById("random_correct_"+questionName);
+  let randomShowDiv = document.getElementById("random_correct_div_"+questionName);
+  randomShow.innerHTML = randomElement;
+  randomShowDiv.style='block';
 
-
+  
+  
+}
 
 
 
