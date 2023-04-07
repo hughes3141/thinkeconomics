@@ -59,6 +59,7 @@ td a {
 
 $questionSummary =array();
 $results = array();
+$users_completed = array();
 
 if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
   $assignmentInfo = getAssignmentInfoById($_GET['assignid']);
@@ -109,24 +110,37 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
   //echo "<br>";
   
   foreach ($questions as $key=>$question) {
-    $questionSummaryInstance = array('question' => $question, 'correctCount'=>0, 'summary'=>array(), 'correct'=>"", 'question_no' => ($key + 1));
+    $questionSummaryInstance = array('question' => trim($question), 'correctCount'=>0, 'summary'=>array(), 'correct'=>"", 'question_no' => ($key + 1), 'summary_by_user'=>array());
     foreach($results as $result) {
       for ($x=0; $x<count($result['answers']); $x++) {
         if($result['answers'][$x][0]==$question) {
           $questionSummaryInstance['correctCount'] += $result['answers'][$x][3];
           $answerValue = $result['answers'][$x][1];
+
+          //Populate summary key with summary of question counts:
           if(!array_key_exists($answerValue, $questionSummaryInstance['summary'])) {
             $questionSummaryInstance['summary'][$answerValue] = 1;
           } else {
             $questionSummaryInstance['summary'][$answerValue]++;
           }
+          
+          //Populate summary_by_user key with summary of students by answer
+          if(!array_key_exists($answerValue, $questionSummaryInstance['summary_by_user'])) {
+            $questionSummaryInstance['summary_by_user'][$answerValue] = array($result['userID']);
+          } else {
+            array_push($questionSummaryInstance['summary_by_user'][$answerValue], $result['userID']);
+          }
+
           $questionSummaryInstance['correct']=$result['answers'][$x][2];
         }
       }
     }
+
+    //Sort summary arrays by A, B, C, D etc:
     ksort($questionSummaryInstance['summary']);
+    ksort($questionSummaryInstance['summary_by_user']);
     
-    //$questionSummary[$question] = $questionSummaryInstance;
+    //$questionSummary[trim($question)] = $questionSummaryInstance;
     array_push($questionSummary, $questionSummaryInstance);
   }
 
@@ -143,6 +157,17 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
     usort($questionSummary, "cmp_by_correctCount");
   }
   //print_r($questionSummary);
+
+
+  //Have easy reference table of names of all users who have completed this assignment:
+  $users_completed = array();
+
+  foreach($results as $result) {
+    $user_result = getUserInfo($result['userID']);
+    $users_completed[$result['userID']] =$user_result['name_first']." ".$user_result['name_last'];
+
+  }
+
 }
 
 
@@ -399,6 +424,16 @@ if (count($results)>0) {
 <?php
 }
 
+
+echo "<pre>";
+//print_r($questionSummary);
+//var_dump($questionSummary);
+echo "<br>";
+//print_r($results);
+//print_r($students);
+//print_r($users_completed);
+echo "</pre>";
+
 ?>
 
 
@@ -430,35 +465,37 @@ if (count($results)>0) {
           }
         }
       }
-      //echo "<br>";
-      //echo count($question['summary']);
     ?></p>
-    <div>
+
+    <?php
+    $questionDetails = getMCQquestionDetails(null, $questionName);
+    ?>
+    <button class="border border-black rounded bg-sky-100 p-1 mt-2" onclick = "toggleHide(this, 'summary_by_user_<?=$questionDetails['id']?>', 'Click to Show User Summary', 'Click to Hide')">Click to Show User Summary</button>
+    <div class="summary_by_user_<?=$questionDetails['id']?>" style="display:none;">
       <?php
-      /*
-      The following loads information for students who got the correct answer; however it takes too long to load.
-      $correctStudents = array();
-      print_r($question);
-      $correctAnswer = $question['correct'];
-      echo $correctAnswer;
-      echo "<pre>";
-      //print_r($results);
-      echo "</pre>";
-      foreach($results as $result) {
-        foreach($result['answers'] as $questionResponse) {
-          if ($questionResponse[0] == $question['question']) {
-            if ($questionResponse[1] == $question['correct']) {
-              array_push($correctStudents, $result['userID']);
-            }
+      foreach($question['summary_by_user'] as $key=>$responses) {
+        if($key == $question['correct']) {
+        //if(true == true) {
+          if($key =="") {
+            $key = "No response";
           }
+          if($key == $question['correct']) {
+            $correct = " class = 'bg-pink-100' ";
+          }
+          ?>
+          <p><span <?=$correct?> ><?=$key?></span>: 
+          <?php
+            foreach ($responses as $key=>$user) {
+              echo $users_completed[$user];
+              if($key < (count($responses)-1)){
+                echo ", ";
+              }
+            }
+          ?>
+          </p>
+          <?php
         }
       }
-      foreach ($correctStudents as &$student) {
-        $student = getUserInfo($student)['name_first']." ".getUserInfo($student)['name_last'];
-      }
-      print_r($correctStudents);
-      echo count($correctStudents);
-      */
       ?>
     </div>
     <?php
