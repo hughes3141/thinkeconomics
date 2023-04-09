@@ -1038,6 +1038,51 @@ function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endD
 
 }
 
+function getFlashcardsQuestions($topics = null, $userId) {
+  global $conn;
+  $results = array();
+
+  if($topics) {
+    $numTopics = count($topics);
+    $placeholder = str_repeat("?, ", $numTopics -1)." ?";
+  }
+  $sql = "SELECT *
+          FROM saq_question_bank_3 q
+          LEFT JOIN flashcard_responses r
+          ON q.id = r.questionId
+          WHERE ";
+
+  if($topics) {
+    $sql .= "q.topic IN ($placeholder) AND ";
+  }
+  
+  $sql .= "q.type LIKE '%flashCard%'
+          AND r.userID = ?
+          LIMIT 100
+  ";
+
+  $bindArray = array();
+  $bindArray = $topics;
+
+  $stmt = $conn->prepare($sql);
+
+  if($topics) {
+    $paramTypes = str_repeat("s", $numTopics)."i";
+    array_push($bindArray, $userId);
+    $stmt->bind_param($paramTypes, ...$bindArray);
+  } else {
+    $stmt->bind_param('i', $userId);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row=$result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+  
+}
 
 function loginLogReturn($limit = null, $likeName = null) {
   global $conn;

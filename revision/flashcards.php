@@ -13,8 +13,11 @@ include($path."/php_functions.php");
 if (!isset($_SESSION['userid'])) {
   
   header("location: /login.php");
+  $userId = $_SESSION['userid'];
   
 }
+
+
 
 else {
   $userInfo = getUserInfo($_SESSION['userid']);
@@ -26,6 +29,20 @@ else {
   //print_r($userGroups);
   
 }
+
+$style_input = "
+
+td, th {
+	
+	border: 1px solid black;
+	padding: 3px;
+}
+
+table {
+	
+	border-collapse: collapse;
+}
+";
 
 
 
@@ -51,8 +68,54 @@ include($path."/header_tailwind.php");
 
 
   <?php
+  if(isset($_GET['topic'])) {
+    $_GET['topics'] = $_GET['topic'];
 
-        $userId = $_SESSION['userid'];
+  }
+
+  if(isset($_GET['topics'])) {
+    $topics = $_GET['topics'];
+    $topics = explode(",", $topics);
+  }
+  
+  if(isset($_GET['topics']) || isset($_GET['topic'])) {
+    $questions = getFlashcardsQuestions($topics, $userId);
+  }
+  else {
+    $questions = getFlashcardsQuestions(null, $userId);
+  }
+  echo count($questions);
+
+
+  ?>
+
+  <table>
+    <tr>
+      <td>id</td>
+      <td>topic</td>
+      <td>Question</td>
+      <td>userId</td>
+    </tr>
+    <?php
+    foreach ($questions as $question) {
+      ?>
+      <tr>
+        <td><?=$question['id']?></td>
+        <td><?=$question['topic']?></td>
+        <td><?=$question['question']?></td>
+        <td><?=$question['userId']?></td>
+      </tr>
+      <?php
+    }
+    ?>
+  </table>
+
+  <?php
+
+echo "<pre>";
+print_r($questions);
+echo "</pre>";
+        
 
 
         date_default_timezone_set("Europe/London");
@@ -335,13 +398,16 @@ include($path."/header_tailwind.php");
 
 
               //print_r($questions);
+              /*
               foreach($questions as $question) {
                 $last = lastResponse($question['id']);
-                //echo "<br>".$question['id'].": ".$question['question']." || "./*$last['gotRight'].*/" ".$last['timeSubmit']." cardCat:".$last['cardCategory']." timeSince: ".timeBetween($last['timeSubmit']);
+                //echo "<br>".$question['id'].": ".$question['question']." || "./*$last['gotRight'].*//*" ".$last['timeSubmit']." cardCat:".$last['cardCategory']." timeSince: ".timeBetween($last['timeSubmit']);
                 
                 
                 
               }
+              */
+              
               //echo "<br>Total questions: ".count($questions);
 
 
@@ -370,7 +436,7 @@ include($path."/header_tailwind.php");
               }
 
               $questionSkip = 0;
-              
+              /*
               while (count($questions)>0) {
 
                   $qCount = count($questions);
@@ -428,6 +494,7 @@ include($path."/header_tailwind.php");
 
                     }          
               }
+              */
               //echo "<script>console.log(".$questionSkip.")</script>";
 
               if(count($questions) == 0) {
