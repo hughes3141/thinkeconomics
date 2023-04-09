@@ -577,6 +577,114 @@ function getMCQquizzesByTopic($topic = null) {
 
 }
 
+function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
+
+  /*
+  This function will call details for individual MCQ questions.
+  
+  Used in:
+  -mcq_questions.php
+  -user_mcq_review.php
+  -mcq_assignment_review.php
+  */
+
+  global $conn;
+  $results = array();
+
+  $sql ="SELECT id, No, Answer, Topic, keywords, question, options, explanation, examBoard, component
+        FROM question_bank_3";
+
+  if($id) {
+    $sql .= "  WHERE id = ?";
+  }
+  if($questionNo) {
+    $sql .= "  WHERE No = ?";
+  }
+  if($topic) {
+    $sql .= "  WHERE topic = ?";
+  }
+
+  $stmt=$conn->prepare($sql);
+
+  if($id) {
+    $stmt->bind_param("i", $id);
+  }
+  if($questionNo) {
+    $stmt->bind_param("s", $questionNo);
+  }
+  if($topic) {
+    $stmt->bind_param("s", $topic);
+  }
+  
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  if (!$topic && count($results) == 1) {
+    $results = $results[0];
+  }
+  return $results;
+
+
+
+}
+
+function updateMCQquestionExplanation($id, $explanation) {
+  /*
+  Designed soley to update MCQ Question Explanation
+  */
+
+  global $conn;
+  $sql = "UPDATE question_bank_3
+  SET explanation = ?
+  WHERE id = ?";
+
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("si", $explanation, $id);
+  $stmt->execute();
+
+}
+
+function updateMCQquestion($id, $userId, $explanation) {
+  /*
+  Used to update MCQ question information with id = $id
+
+  Used in: mcq_questions.php
+  */
+
+  global $conn;
+
+  $currentExplanation = "";
+
+  $sql = "SELECT explanation
+          FROM question_bank_3
+          WHERE id = ?";
+  
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("i", $id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    $row = $result->fetch_assoc();
+    $currentExplanation = $row['explanation'];
+  }
+
+  $currentExplanation = json_decode($currentExplanation);
+  $currentExplanation = (array) $currentExplanation;
+  if($explanation == "") {
+    unset($currentExplanation[$userId]);
+  } else {
+    $currentExplanation[$userId] = $explanation;
+  }
+  //print_r($currentExplanation);
+  $currentExplanation = json_encode($currentExplanation);
+  updateMCQquestionExplanation($id, $currentExplanation);  
+
+}
+
 function getExercises($table, $topic = null, $userCreate = null) {
   /*
   This function gets information on all SAQ or NDE excercises
@@ -1556,9 +1664,14 @@ function getMCQquizResults($userId, $responseId = null) {
   global $conn;
   $responses = array();
 
-  //AAAHHH fix the responses table to have quizID, not join on quiz_name!!!
-  $sql = "SELECT r.*, a.assignName, a.id assignId, a.dateDue
+  $sql = "SELECT r.*, ROUND(TIMESTAMPDIFF(SECOND, r.timeStart, r.datetime)/60,2) duration, u.name_first, u.name_last, q.quizName quizNamefromDB, a.assignName, a.id assignId, a.dateDue
           FROM responses r
+          
+          LEFT JOIN users u
+          ON r.userID = u.id
+
+          LEFT JOIN mcq_quizzes q
+          ON r.quizID = q.id
           
           LEFT JOIN assignments a
           ON r.assignID = a.id
