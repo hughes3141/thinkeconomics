@@ -1046,9 +1046,20 @@ function getFlashcardsQuestions($topics = null, $userId) {
     $numTopics = count($topics);
     $placeholder = str_repeat("?, ", $numTopics -1)." ?";
   }
-  $sql = "SELECT *
+  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, r.userId, r.gotRight, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory
           FROM saq_question_bank_3 q
-          LEFT JOIN flashcard_responses r
+          LEFT JOIN (
+            SELECT rr.id, rr.questionId, rr.userId, rr.timeSubmit, rr.gotRight, rr.cardCategory, t.most_recent, rr.timeStart
+            FROM flashcard_responses rr
+            INNER JOIN (
+              SELECT questionId, MAX(timeSubmit) as most_recent
+              FROM flashcard_responses
+              WHERE userId = ?
+              GROUP BY questionId
+            ) t
+            ON rr.questionId = t.questionId AND rr.timeSubmit = t.most_recent
+            WHERE rr.userId = ?
+            ) r
           ON q.id = r.questionId
           WHERE ";
 
@@ -1057,8 +1068,9 @@ function getFlashcardsQuestions($topics = null, $userId) {
   }
   
   $sql .= "q.type LIKE '%flashCard%'
-          AND r.userID = ?
-          LIMIT 100
+          
+          ORDER BY q.topic, r.questionId, r.timeSubmit
+          
   ";
 
   $bindArray = array();
@@ -1067,11 +1079,13 @@ function getFlashcardsQuestions($topics = null, $userId) {
   $stmt = $conn->prepare($sql);
 
   if($topics) {
-    $paramTypes = str_repeat("s", $numTopics)."i";
-    array_push($bindArray, $userId);
+    $paramTypes = "ii".str_repeat("s", $numTopics);
+    //array_push($bindArray, $userId);
+    array_unshift($bindArray, $userId);
+    array_unshift($bindArray, $userId);
     $stmt->bind_param($paramTypes, ...$bindArray);
   } else {
-    $stmt->bind_param('i', $userId);
+    $stmt->bind_param('ii', $userId, $userId);
   }
   $stmt->execute();
   $result = $stmt->get_result();

@@ -97,7 +97,7 @@ include($path."/header_tailwind.php");
       <td>userId</td>
     </tr>
     <?php
-    foreach ($questions as $question) {
+    //foreach ($questions as $question) {
       ?>
       <tr>
         <td><?=$question['id']?></td>
@@ -106,14 +106,42 @@ include($path."/header_tailwind.php");
         <td><?=$question['userId']?></td>
       </tr>
       <?php
-    }
+    //}
     ?>
   </table>
 
   <?php
 
 echo "<pre>";
-print_r($questions);
+//print_r($questions);
+
+echo "<b>Never Completed</b>:<br>";
+foreach($questions as $question) {
+  if ($question['timeSubmit'] == "") {
+    //print_r($question);
+    echo $question['question']."<br>";
+  }
+}
+echo "<b>Last Time Wrong</b>:<br>";
+foreach($questions as $question) {
+  if ($question['gotRight'] == "0") {
+    echo $question['question']." ".$question['timeSubmit']." ".$question['cardCategory']."<br>";
+  }
+}
+echo "<b>Last Time Don't Know</b>:<br>";
+foreach($questions as $question) {
+  if ($question['gotRight'] == "1") {
+    echo $question['question']." ".$question['timeSubmit']." ".$question['cardCategory']."<br>";
+  }
+}
+
+echo "<b>Last Time Right</b>:<br>";
+foreach($questions as $question) {
+  if ($question['gotRight'] == "2") {
+    echo $question['question']." ".$question['timeSubmit']." ".$question['cardCategory']."<br>";
+  }
+}
+
 echo "</pre>";
         
 
