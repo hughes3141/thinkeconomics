@@ -1039,6 +1039,12 @@ function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endD
 }
 
 function getFlashcardsQuestions($topics = null, $userId) {
+  /*
+  This function returns Flashcard quesiton information that will then be used in flashcards.php. This will return information on all flashcard questions in a the database given the filter, plus information on the last time a given $userId has attempted the question. Returns a ranked array of questions that can then be used to generate flashcards.php
+
+  used in: 
+  -flashcards.php
+  */
   global $conn;
   $results = array();
 
@@ -1046,7 +1052,7 @@ function getFlashcardsQuestions($topics = null, $userId) {
     $numTopics = count($topics);
     $placeholder = str_repeat("?, ", $numTopics -1)." ?";
   }
-  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, r.userId, r.gotRight, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory
+  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, r.userId, r.gotRight, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory
           FROM saq_question_bank_3 q
           LEFT JOIN (
             SELECT rr.id, rr.questionId, rr.userId, rr.timeSubmit, rr.gotRight, rr.cardCategory, t.most_recent, rr.timeStart
@@ -1091,10 +1097,65 @@ function getFlashcardsQuestions($topics = null, $userId) {
   $result = $stmt->get_result();
   if($result->num_rows>0) {
     while($row=$result->fetch_assoc()) {
+      if($row['timeSubmit']=="") {
+        $row['rank'] =1;
+      }
+      else {
+        $submit_timeStamp = strtotime($row['timeSubmit']);
+        $current_timeStamp = time();
+        $seconds = $current_timeStamp - $submit_timeStamp;
+        $row['seconds'] = $seconds;
+        $row['rank'] = 1+(24*3600)/($seconds+1);
+        if($row['cardCategory'] == "1") {
+          $row['rank'] += 1;
+        } elseif ($row['cardCategory']>=2) {
+          $row['rank'] +=2;
+        }
+      }
       array_push($results, $row);
     }
   }
+  array_multisort(array_column($results, 'rank'), SORT_ASC, $results);
   return $results;
+  
+}
+
+function insertFlashcardResponse($questionId, $userId, $gotRight, $timeStart, $timeSubmit, $cardCategory) {
+  /*
+  This function inserts a new record when a flashcard question has been completed by a student.
+  
+  Used in:
+  -flaschards.php
+  */
+
+  global $conn;
+
+  $stmt = $conn->prepare("INSERT INTO flashcard_responses (questionId,  userId, gotRight, timeStart, timeSubmit, cardCategory, timeDuration, dateSubmit) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+
+
+  $seconds = strtotime($timeSubmit) - strtotime($timeStart);
+  $date = date("Y-m-d", strtotime($timeSubmit));
+
+  if($gotRight === "0" || $gotRight === "1") {
+    $cardCategory = 0;
+  }
+  else if ($gotRight = 2) {
+    if ($cardCategory == "0" || $cardCategory == "") {
+      $cardCategory = 1;
+    } else if ($cardCategory == "1") {
+      $cardCategory = 2;
+    } else if ($cardCategory == "2") {
+      $cardCategory = 2;
+    }
+  }
+
+  $stmt->bind_param("iiissiis", $questionId, $userId, $gotRight, $timeStart, $timeSubmit, $cardCategory, $seconds, $date);
+  $stmt->execute();
+
+
+
+
+
   
 }
 

@@ -56,100 +56,6 @@ Notes on command GET variables:
     - $_GET['restrict'] = 'minutes' : 3 mins and 5 mins
 */
 
-include($path."/header_tailwind.php");
-
-?>
-
-<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
-
-  <h1 class="font-mono text-2xl bg-pink-400 pl-1 ">Revision Flashcards</h1>
-  <div class="container mx-auto px-0 mt-2 bg-white text-black ">
-
-
-
-  <?php
-  if(isset($_GET['topic'])) {
-    $_GET['topics'] = $_GET['topic'];
-
-  }
-
-  if(isset($_GET['topics'])) {
-    $topics = $_GET['topics'];
-    $topics = explode(",", $topics);
-  }
-  
-  if(isset($_GET['topics']) || isset($_GET['topic'])) {
-    $questions = getFlashcardsQuestions($topics, $userId);
-  }
-  else {
-    $questions = getFlashcardsQuestions(null, $userId);
-  }
-  echo count($questions);
-
-
-  ?>
-
-  <table>
-    <tr>
-      <td>id</td>
-      <td>topic</td>
-      <td>Question</td>
-      <td>userId</td>
-    </tr>
-    <?php
-    //foreach ($questions as $question) {
-      ?>
-      <tr>
-        <td><?=$question['id']?></td>
-        <td><?=$question['topic']?></td>
-        <td><?=$question['question']?></td>
-        <td><?=$question['userId']?></td>
-      </tr>
-      <?php
-    //}
-    ?>
-  </table>
-
-  <?php
-
-echo "<pre>";
-//print_r($questions);
-
-echo "<b>Never Completed</b>:<br>";
-foreach($questions as $question) {
-  if ($question['timeSubmit'] == "") {
-    //print_r($question);
-    echo $question['question']."<br>";
-  }
-}
-echo "<b>Last Time Wrong</b>:<br>";
-foreach($questions as $question) {
-  if ($question['gotRight'] == "0") {
-    echo $question['question']." ".$question['timeSubmit']." ".$question['cardCategory']."<br>";
-  }
-}
-echo "<b>Last Time Don't Know</b>:<br>";
-foreach($questions as $question) {
-  if ($question['gotRight'] == "1") {
-    echo $question['question']." ".$question['timeSubmit']." ".$question['cardCategory']."<br>";
-  }
-}
-
-echo "<b>Last Time Right</b>:<br>";
-foreach($questions as $question) {
-  if ($question['gotRight'] == "2") {
-    echo $question['question']." ".$question['timeSubmit']." ".$question['cardCategory']."<br>";
-  }
-}
-
-echo "</pre>";
-        
-
-
-        date_default_timezone_set("Europe/London");
-        $t = time();
-
-
         function lastResponse($questionId) {
 
           /*
@@ -160,7 +66,7 @@ echo "</pre>";
           */
 
           global $conn;
-          global $t;  
+          $t = time();
           global $userId;
           
 
@@ -201,6 +107,48 @@ echo "</pre>";
           }
           */
         }
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  $lastResponse = lastResponse($_POST['questionId']);
+  //print_r($lastResponse);
+  if ($lastResponse['timeStart'] === $_POST['timeStart']) {
+    //echo "This was a duplicate and will not be entered";
+  }
+  else {
+    insertFlashcardResponse($_POST['questionId'], $userId, $_POST['rightWrong'], $_POST['timeStart'], date("Y-m-d H:i:s", time()), $_POST['cardCategory']);
+    print_r($_POST);
+  }
+}
+
+include($path."/header_tailwind.php");
+
+?>
+
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
+
+  <h1 class="font-mono text-2xl bg-pink-400 pl-1 ">Revision Flashcards</h1>
+  <div class="container mx-auto px-0 mt-2 bg-white text-black ">
+
+
+
+  <?php
+  if(isset($_GET['topic'])) {
+    $_GET['topics'] = $_GET['topic'];
+
+  }
+
+  if(isset($_GET['topics'])) {
+    $topics = $_GET['topics'];
+    $topics = explode(",", $topics);
+  }
+  
+  if(isset($_GET['topics']) || isset($_GET['topic'])) {
+    $questions = getFlashcardsQuestions($topics, $userId);
+  }
+  else {
+    $questions = getFlashcardsQuestions(null, $userId);
+  }
+  echo count($questions);
 
 
 
@@ -254,7 +202,7 @@ echo "</pre>";
           $timeStart = $_POST['timeStart'];
           
 
-          $timeSubmit = date("Y-m-d H:i:s",$t);
+          $timeSubmit = date("Y-m-d H:i:s",time());
           //echo "<br>".$timeSubmit."<br>";
 
           $seconds = secondsBetween($timeStart, $timeSubmit);
@@ -284,7 +232,7 @@ echo "</pre>";
           }
           else {
             
-            $stmt->execute();
+            //$stmt->execute();
               
             //echo "New records created successfully";
 
@@ -323,131 +271,6 @@ echo "</pre>";
         }
 
 
-  ?>
-
-
-
-
-        <h1 class="hidden">Flashcard Example</h1>
-
-            <?php
-
-            //Find the teacher of the group the student is in
-              //Note: this will need to be changed to refledct that multiple teachers may teach a group
-
-              $sql="SELECT * FROM groups WHERE id = ?";
-              $stmt = $conn->prepare($sql);
-              $stmt->bind_param("i", $userGroups[0]);
-              $stmt->execute();
-              $result = $stmt->get_result();
-              $user = $result->fetch_assoc();
-
-              //print_r($user);
-
-              $teachers = $user['teachers'];
-
-              //echo "<br>".$teachers;
-
-              $teachers = json_decode($teachers);
-
-              //echo "<br>";
-              //print_r($teachers);
-
-              //This is what needs to be changed: only the first teacher in the array is included.
-              // Change with fucntion that loops through numbe of teachers. Could be done below, e.g. WHERE userCreate LIKE ? OR WHERE userCreate LIKE ? etc.
-
-              $teacher = $teachers[0];
-
-              //echo "<br>".$teacher;
-
-
-              //Get topics as GET variables
-
-              //print_r($_GET);
-
-
-              
-              if(isset($_GET['topic'])) {
-                $_GET['topics'] = $_GET['topic'];
-              }
-
-              //Array of questions set by the teacher, filtered by topic:
-
-              $questions = array();
-              //Select questions made by the teacher, filter by topic
-
-              $bindArray = array();
-              $paramType = "";
-
-              $sql="SELECT * FROM saq_question_bank_3 WHERE";
-
-                if(isset($_GET['topics'])) {
-
-                  $topics = explode(",", $_GET['topics']);
-                  $sql .= "  (";
-                  $count=count($topics);
-                  for($x=0; $x<$count; $x++) {
-                    $sql .= "topic = ? ";
-                    if($x<$count-1) {
-                      $sql .= " OR ";
-                    } 
-                    $paramType .="s";
-                  }
-                  $sql .= ") AND";
-                  $bindArray = $topics;
-                }
-              $sql .=  "  userCreate = ? AND type LIKE '%flashCard%'";
-
-              //echo $sql;
-              #just using "AND model_answer <> ''" so we return cards with answers
-              $stmt = $conn->prepare($sql);
-              array_push($bindArray, $teacher);
-
-              $stmt->bind_param($paramType."i", ...$bindArray);
-              $stmt->execute();
-              $result = $stmt->get_result();
-              if($result ->num_rows >0) {
-                while ($row=$result->fetch_assoc()) {
-                  //print_r($row);
-                  
-                  // Following for testing purposes to isolate to one question, randomly question where id = 613
-                  //if($row['id']==613) {array_push($questions, $row);}
-
-                  //Push each row into the $questions array.
-
-                  array_push($questions, $row);
-
-
-                  
-                }
-              }
-
-
-
-
-              //print_r($questions);
-              /*
-              foreach($questions as $question) {
-                $last = lastResponse($question['id']);
-                //echo "<br>".$question['id'].": ".$question['question']." || "./*$last['gotRight'].*//*" ".$last['timeSubmit']." cardCat:".$last['cardCategory']." timeSince: ".timeBetween($last['timeSubmit']);
-                
-                
-                
-              }
-              */
-              
-              //echo "<br>Total questions: ".count($questions);
-
-
-              /*
-              The below loop does the following:
-                -Identifies random question from the $questions array.
-                -Check to see candidate's last response to this question.
-                -Performs the logic:
-                  If(The question is eligible to be answered) : Break loop
-                  Else IF (the question is ineligible) : Remove question from $queseetions
-
-              */
 
               $bin1Duration = 3 * 24*60;
               $bin2Duration = 5 *24*60;
@@ -542,36 +365,29 @@ echo "</pre>";
                 
                 
                 
-
+            $question = $questions[0];
             ?>
 
-            <?php if(isset($_GET['topics'])) {echo "<p class='ml-1'>Topic: ".htmlspecialchars($questions[$randomQuestion]['topic'])."</p>";}?>
+            <?php if(isset($_GET['topics'])) {echo "<p class='ml-1'>Topic: ".htmlspecialchars($question['topic'])."</p>";}?>
 
             <div id="flashcard" class="font-sans  p-3 m-2">
             
-            <?php 
-            
-            //print_r(lastResponse($questions[$randomQuestion]['id']));
-            //echo "<br>".count($questions)."<br>";
-            
-            ?>
-
               <form method="post">
               
                 <h2 class ="text-lg">Question:</h2>
               
-                <input type="hidden" name="questionId" value = "<?=htmlspecialchars($questions[$randomQuestion]['id'])?>">
+                <input type="hidden" name="questionId" value = "<?=htmlspecialchars($question['qId'])?>">
                 <input type="hidden" name="timeStart" value = "<?=date("Y-m-d H:i:s",time())?>">
-                <input type="hidden" name="cardCategory" value = "<?=$lastResponse['cardCategory']?>">
+                <input type="hidden" name="cardCategory" value = "<?=$question['cardCategory']?>">
                 
-                <p class="mb-3" style="white-space: pre-line;"><?php echo htmlspecialchars($questions[$randomQuestion]['question']);?></p>
+                <p class="mb-3" style="white-space: pre-line;"><?php echo htmlspecialchars($question['question']);?></p>
 
                 <p><?php //print_r(lastResponse($questions[$randomQuestion]['id']));?>
 
                 <?php
 
-                  if($questions[$randomQuestion]['img'] != "") {
-                    ?><img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($questions[$randomQuestion]['img'])?>" alt = "<?=htmlspecialchars($questions[$randomQuestion]['img'])?>">
+                  if($question['img'] != "") {
+                    ?><img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($questions[$randomQuestion]['img'])?>" alt = "<?=htmlspecialchars($question['img'])?>">
                     <?php
                   }
                 ?>
@@ -584,12 +400,12 @@ echo "</pre>";
                 
                 <div id ="answerDiv" class="hidden">
                   <h2 class ="text-lg">Answer:</h2>
-                  <p class="mb-3" style="white-space: pre-line;"><?=htmlspecialchars($questions[$randomQuestion]['model_answer']);?></p>
+                  <p class="mb-3" style="white-space: pre-line;"><?=htmlspecialchars($question['model_answer']);?></p>
 
                   <?php
 
-                  if($questions[$randomQuestion]['answer_img'] != "") {
-                    ?><img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($questions[$randomQuestion]['answer_img'])?>" alt = "<?=htmlspecialchars($questions[$randomQuestion]['answer_img_alt'])?>">
+                  if($question['answer_img'] != "") {
+                    ?><img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($question['answer_img'])?>" alt = "<?=htmlspecialchars($question['answer_img_alt'])?>">
                     <?php
                   }
                   ?>
@@ -608,7 +424,18 @@ echo "</pre>";
 
             <?php } ?>
 
+            <?php
+
+              echo "<pre>";
+              print_r($questions);
+
+              echo "</pre>";
+
+              ?>
+
   </div>
+
+
 
 
 </div>
