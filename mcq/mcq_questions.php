@@ -38,7 +38,12 @@ $style_input = "
 include($path."/header_tailwind.php");
 
 if($_SERVER['REQUEST_METHOD']==='POST') {
-  updateMCQquestion($_POST['id'], $userId, $_POST['explanation']);
+
+  if(isset($_POST['submit'])) {
+    if($_POST['submit'] == 'Update') {
+      updateMCQquestion($_POST['id'], $userId, $_POST['explanation']);
+    }
+  }
 }
 
 $questions = array();
@@ -60,7 +65,7 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
     <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
       <?php
       if($_SERVER['REQUEST_METHOD']==='POST') {
-        //print_r($_POST);  
+        print_r($_POST);  
       }
       echo "<pre>";
       //print_r($questions);
@@ -74,7 +79,7 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
           <table id="inputTable" class="w-full table-fixed mb-2 border border-black">
             <thead>
               <tr>
-                <th>Question No</th>
+                <th>Question</th>
                 <th>Question Text</th>
                 <th>Options</th>
                 <th>Image Source</th>
@@ -136,7 +141,7 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                           }
                           //print_r($explanations);
                         ?></textarea></p>
-                      <p><input type="submit" value= "Update"><p>
+                      <p><input type="submit" name="submit" value= "Update"><p>
                     </td>
                   </tr>
                 </form>
@@ -161,14 +166,50 @@ function addInputRow() {
   var table = document.getElementById("inputTable");
   var rowNo = table.rows.length;
   var row = table.insertRow(rowNo);
+  var num = (rowNo - 1);
+
+  //Find the values of last inserted row:
+
+  var lastQuestionNo = document.getElementById("questionNo_"+ (num-1));
+  if (lastQuestionNo) {
+    lastQuestionNo = lastQuestionNo.value;
+  }
+  //console.log(lastQuestionNo);
+
+  var lastExamBoard = document.getElementById("examBoard_"+ (num-1));
+  if (lastExamBoard) {
+    lastExamBoard = lastExamBoard.value;
+  }
+  console.log(lastExamBoard);
+
+
   var cells = [];
   for (var i=0; i<5; i++) {
     cells[i] = row.insertCell(i);
+    
     switch(i) {
       case 0:
-        var label = "questionNo_"+(rowNo-1);
-        var value = "value = '"+(rowNo)+"'";
-        cells[i].innerHTML = "<input name="+label+" id= "+label+" "+value+"class='w-full rounded'>";
+        var label = (rowNo-1);
+        var value = num+1;
+        if(lastQuestionNo) {
+          value = parseInt(lastQuestionNo) + 1;
+        }
+        cells[i].innerHTML = "<label for = 'questionNo_"+num+"'>Question Number:</label><br><input name='questionNo_"+num+"' id= 'questionNo_"+num+"' class='w-full rounded' value= '"+value+"'>";
+        cells[i].innerHTML += "<label for ='examBoard_"+num+"'>Exam Board:</label><br>";
+        
+        //Compose options for exam board select tag:
+        var options = "";
+        var examBoards = ['Eduqas', 'AQA', 'WJEC', 'Edexcel', 'OCR'];
+        for (var j = 0; j<examBoards.length; j++) {
+          var selected = "";
+          if(examBoards[j] == lastExamBoard) {
+            selected = " selected ";
+          }
+          options += "<option value = '"+examBoards[j]+"' "+selected+">"+examBoards[j]+"</option>"
+        }
+        cells[i].innerHTML += "<select name = 'examBoard_"+num+"' id= 'examBoard_"+num+"'>"+options+"</select>";
+
+        
         break;
       case 1:
         var label = "questionText_"+(rowNo-1);

@@ -2013,7 +2013,7 @@ function getAssignmentsByGroup($groupId, $limit = 1000, $type = null, $ascdsc = 
   return $responses;
 }
 
-function newUploadsRecord($userid, $path, $altText = "") {
+function newUploadsRecord($userid, $path, $altText = "", $root) {
   /*
   Update upload_record table with new records
 
@@ -2024,10 +2024,10 @@ function newUploadsRecord($userid, $path, $altText = "") {
   global $conn;
   $datetime = date("Y-m-d H:i:s");
   $sql = "INSERT INTO upload_record
-          (userCreate, dateTime, path, altText)
-          VALUES (?,?,?,?)";
+          (userCreate, dateTime, path, altText, uploadRoot)
+          VALUES (?,?,?,?,?)";
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("isss", $userid, $datetime, $path, $altText);
+  $stmt->bind_param("issss", $userid, $datetime, $path, $altText, $root);
   $stmt->execute();
 
   echo $altText." is this as in the function.";

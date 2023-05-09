@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $uploadMessage .=  "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded.";
       
       //Update upload_record:
-      newUploadsRecord($userId, $target_file, $_POST['altText']);
+      newUploadsRecord($userId, $target_file, $_POST['altText'], $path);
 
     } else {
       $uploadMessage .=  "Sorry, there was an error uploading your file.";
