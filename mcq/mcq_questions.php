@@ -39,6 +39,50 @@ include($path."/header_tailwind.php");
 
 if($_SERVER['REQUEST_METHOD']==='POST') {
 
+  if(isset($_POST['submit'])&&($_POST['submit']="submit")) {
+    $questionsCollect = array();
+    $inputCount = $_POST['inputCount'];
+
+    for($x=0; $x<$inputCount; $x++) {
+      $options = ['A', 'B', 'C', 'D', 'E'];
+      $optionsArray = array();
+
+      for($y=0; $y<$_POST['optionsNumber_'.$x]; $y++) {
+        $optionsArray[$options[$y]] = $_POST['option_'.$x."_".$y];
+      }
+      $optionsArray = json_encode($optionsArray);
+
+      $newQuestion = array(
+        'questionNo' => $_POST['questionNo_'.$x],
+        'examBoard' => $_POST['examBoard_'.$x],
+        'unitNo'=> $_POST['unitNo_'.$x],
+        'unitName' => $_POST['unitName_'.$x],
+        'year' => $_POST['year_'.$x],
+        'questionText' => $_POST['questionText_'.$x],
+        'options' => $optionsArray,
+        'imageId' => $_POST['imageId_'.$x],
+        'answer' => $_POST['answer_'.$x], 
+        'topic' => $_POST['topic_'.$x], 
+        'topics' => $_POST['topics_'.$x], 
+        'keyWords' => $_POST['keyWords_'.$x],
+        'active_entry' => $_POST['active_entry_'.$x],
+      );
+      array_push($questionsCollect, $newQuestion);
+    }
+
+    foreach($questionsCollect as $question) {
+      //Filter for those entires that are active entries (i.e. not from hidden rows)
+
+      if($question['active_entry'] == "1") { 
+        
+      }
+
+    }
+
+    
+
+  }
+
   if(isset($_POST['submit'])) {
     if($_POST['submit'] == 'Update') {
       updateMCQquestion($_POST['id'], $userId, $_POST['explanation']);
@@ -65,7 +109,8 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
     <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
       <?php
       if($_SERVER['REQUEST_METHOD']==='POST') {
-        print_r($_POST);  
+        //print_r($_POST);
+        print_r($questionsCollect);
       }
       echo "<pre>";
       //print_r($questions);
@@ -84,14 +129,15 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                 <th>Options</th>
                 <th>Image Source</th>
                 <th>Details</th>
+                <th>Remove</th>
 
               </tr>
             </thead>
 
           </table>
-          <input type = "hidden" id="inputCount" name="inputCount">
+          <input type = "" id="inputCount" name="inputCount">
           <button class="w-full rounded bg-sky-300 hover:bg-sky-200 border border-black mb-2" type="button" onclick="addInputRow();">Add row</button> 
-          <button>Submit</button>
+          <button name="submit" value ="submit">Submit</button>
       </form>
       </div>
 
@@ -162,11 +208,49 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
 
 <script>
 
+const examBoardNumbers = {Eduqas:5, AQA:4, WJEC:5, Edexcel:4, OCR:4};
+//const examBoardNumbers = [['Eduqas',5], ['AQA',4], ['WJEC',5], ['Edexcel',4], ['OCR',4]];
+var options = ['A', 'B', 'C', 'D', 'E'];
+
+function addOptions(examBoard, num, targetObj) {
+  
+  var output = "";
+  //console.log(examBoardNumbers);
+  var optionsNumber = examBoardNumbers[examBoard];
+  //console.log(output);
+  for(var i=0; i<optionsNumber; i++) {
+    output += "<label for = 'option_"+num+"_"+options[i]+"'>"+options[i]+": </label><textarea name='option_"+num+"_"+i+"' id= 'option_"+num+"_"+options[i]+"' class='resize w-3/5 p-0 h-6 rounded' value= '"+options[i]+"'>"+options[i]+"</textarea><br>"
+  }
+  output += "<input type='hidden' name = 'optionsNumber_"+num+"' value='"+optionsNumber+"'></input>";
+
+  document.getElementById(targetObj).innerHTML = output;
+  
+}
+
+function addAnswerSelect(examBoard, num, targetObj) {
+  var label = 'answer_'+num;
+  var output = "";
+  var optionsNumber = examBoardNumbers[examBoard];
+  var options = ['', 'A', 'B', 'C', 'D', 'E'];
+  output += "<label for = "+label+">Answer: </label>";
+  var choices = "";
+  for(var j=0; j<(optionsNumber+1); j++) {
+    choices += "<option value = '"+options[j]+"'>"+options[j]+"</option>";
+  }
+  output += "<select name="+label+" id= "+label+" class='w-3/5 rounded'>"+choices+"</select>";
+
+  document.getElementById(targetObj).innerHTML = output;
+}
+
+
+
 function addInputRow() {
   var table = document.getElementById("inputTable");
   var rowNo = table.rows.length;
   var row = table.insertRow(rowNo);
   var num = (rowNo - 1);
+  var examBoards = ['Eduqas', 'AQA', 'WJEC', 'Edexcel', 'OCR'];
+  
 
   //Find the values of last inserted row:
 
@@ -180,11 +264,32 @@ function addInputRow() {
   if (lastExamBoard) {
     lastExamBoard = lastExamBoard.value;
   }
-  console.log(lastExamBoard);
+  //console.log(lastExamBoard);
+
+  var lastUnitNo = document.getElementById("unitNo_"+ (num-1));
+  if (lastUnitNo) {
+    lastUnitNo = lastUnitNo.value;
+  } else {
+    lastUnitNo = 1;
+  }
+
+  var lastUnitName = document.getElementById("unitName_"+ (num-1));
+  if (lastUnitName) {
+    lastUnitName = lastUnitName.value;
+  } else {
+    lastUnitName = "";
+  }
+
+  var lastYear = document.getElementById("year_"+ (num-1));
+  if (lastYear) {
+    lastYear = lastYear.value;
+  } else {
+    lastYear = "";
+  }
 
 
   var cells = [];
-  for (var i=0; i<5; i++) {
+  for (var i=0; i<6; i++) {
     cells[i] = row.insertCell(i);
     
     switch(i) {
@@ -194,12 +299,13 @@ function addInputRow() {
         if(lastQuestionNo) {
           value = parseInt(lastQuestionNo) + 1;
         }
+
+        //Question Number:
         cells[i].innerHTML = "<label for = 'questionNo_"+num+"'>Question Number:</label><br><input name='questionNo_"+num+"' id= 'questionNo_"+num+"' class='w-full rounded' value= '"+value+"'>";
-        cells[i].innerHTML += "<label for ='examBoard_"+num+"'>Exam Board:</label><br>";
-        
+
         //Compose options for exam board select tag:
+        cells[i].innerHTML += "<label for ='examBoard_"+num+"'>Exam Board:</label><br>";
         var options = "";
-        var examBoards = ['Eduqas', 'AQA', 'WJEC', 'Edexcel', 'OCR'];
         for (var j = 0; j<examBoards.length; j++) {
           var selected = "";
           if(examBoards[j] == lastExamBoard) {
@@ -207,9 +313,17 @@ function addInputRow() {
           }
           options += "<option value = '"+examBoards[j]+"' "+selected+">"+examBoards[j]+"</option>"
         }
-        cells[i].innerHTML += "<select name = 'examBoard_"+num+"' id= 'examBoard_"+num+"'>"+options+"</select>";
+        cells[i].innerHTML += "<select name = 'examBoard_"+num+"' id= 'examBoard_"+num+"' onchange='addOptions(this.value, "+num+", \"optionsTarget_"+num+"\"); addAnswerSelect(this.value, "+num+", \"dropdownTarget_"+num+"\")'>"+options+"</select>";
 
-        
+        //Unit Number:
+        cells[i].innerHTML += "<br><label for = 'unitNo_"+num+"'>Unit Number:</label><br><input name='unitNo_"+num+"' id= 'unitNo_"+num+"' class='w-full rounded' value= '"+lastUnitNo+"'>";
+
+        //Unit Name:
+        cells[i].innerHTML += "<br><label for = 'unitName_"+num+"'>Unit Name:</label><br><input name='unitName_"+num+"' id= 'unitName_"+num+"' class='w-full rounded' value= '"+lastUnitName+"'>";
+
+        //Year:
+        cells[i].innerHTML += "<br><label for = 'year_"+num+"'>Year:</label><br><input name='year_"+num+"' id= 'year_"+num+"' class='w-full rounded' value= '"+lastYear+"'>";
+
         break;
       case 1:
         var label = "questionText_"+(rowNo-1);
@@ -217,22 +331,69 @@ function addInputRow() {
         cells[i].innerHTML = "<textarea name="+label+" id= "+label+" "+"class='w-full rounded p-1'></textarea>";
         break;
       case 2:
+        /*
         var label = "options_"+(rowNo-1);
         //var value = "value = '"+(rowNo)+"'";
         cells[i].innerHTML = "<textarea name="+label+" id= "+label+" "+"class='w-full rounded p-1'></textarea>";
         break;
+        */
+       cells[i].innerHTML = "<div id='optionsTarget_"+num+"'>";
+       break;
+
       case 3:
-        var label = "imageSRC_"+(rowNo-1);
-        var value = "value = '"+(rowNo)+"'";
-        cells[i].innerHTML = "<input name="+label+" id= "+label+" "+value+"class='w-full rounded'>";
+        var label = "imageId_"+num;
+        //var value = "value = '"+(rowNo)+"'";
+        cells[i].innerHTML = "<label for = "+label+">Image Upload Id: </label><input name="+label+" id= "+label+" class='w-full rounded'>";
+        break;
+
+      case 4:
+        //Answer:
+        //Uses addAnswerSelect
+        cells[i].innerHTML = "<div id='dropdownTarget_"+num+"'></div>"
+
+        //Topic:
+        var label = 'topic_'+num;
+        cells[i].innerHTML += "<label for = "+label+">Topic: </label><input name="+label+" id= "+label+" class='w-full rounded'>";
+
+        //Multiple Topics:
+        var label = 'topics_'+num;
+        cells[i].innerHTML += "<label for = "+label+">Topics: </label><input name="+label+" id= "+label+" class='w-full rounded'>";
+
+        //Key Words:
+        var label = 'keyWords_'+num;
+        cells[i].innerHTML += "<label for = "+label+">Key Words: </label><input name="+label+" id= "+label+" class='w-full rounded'>";
+
+        break;
+      case 5:
+        cells[i].innerHTML = "<button class='w-full bg-pink-300 rounded border border-black mb-1' type ='button' onclick='hideRow(this);'>Remove</button>"
+        cells[i].innerHTML += "<input name='active_entry_"+num+"' class='w-full' type='hidden' value='1'>";
         break;
     }
   }
 
+  //Update option values:
+  var thisExamBoard = document.getElementById("examBoard_"+num).value;
+  console.log(thisExamBoard);
+  addOptions(thisExamBoard, num, "optionsTarget_"+num);
+
+  //Update Answer Values:
+  addAnswerSelect(thisExamBoard, num, "dropdownTarget_"+num);
+
+  //Update input number
+  var inputCount = document.getElementById("inputCount").value ++;
 }
 
 addInputRow();
-addInputRow();
+
+function hideRow(button) {
+  var row = button.parentElement.parentElement;
+  var input = button.parentElement.childNodes[1];
+  console.log(row);
+  console.log(input);
+  row.style.display = "none";
+  input.value='0';
+}
+
 
 
 </script>
