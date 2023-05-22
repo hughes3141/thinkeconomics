@@ -37,6 +37,23 @@ $style_input = "
 
 include($path."/header_tailwind.php");
 
+//Exam board code key. A legacy item from when these were coded in excel.
+
+$examBoardCodeKey = array(
+  ["Original", 10],
+  ["Eduqas", 11],
+  ["AQA", 12],
+  ["WJEC", 13],
+  ["OCR", array(
+    ["AL", 15],
+    ["AS", 16]
+  )],
+  ["Edexcel", array(
+    ["AL", 17],
+    ["AS", 18]
+  )]
+);
+
 if($_SERVER['REQUEST_METHOD']==='POST') {
 
   if(isset($_POST['submit'])&&($_POST['submit']="submit")) {
@@ -55,6 +72,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       $newQuestion = array(
         'questionNo' => $_POST['questionNo_'.$x],
         'examBoard' => $_POST['examBoard_'.$x],
+        'level' => $_POST['level_'.$x],
         'unitNo'=> $_POST['unitNo_'.$x],
         'unitName' => $_POST['unitName_'.$x],
         'year' => $_POST['year_'.$x],
@@ -73,10 +91,55 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
     foreach($questionsCollect as $question) {
       //Filter for those entires that are active entries (i.e. not from hidden rows)
 
-      if($question['active_entry'] == "1") { 
+      if($question['active_entry'] == "1") {
+        //print_r($question);
+        $questionCode = "";
+        
+        //Complete exam board question code:
+        foreach($examBoardCodeKey as $examBoard) {
+          if($examBoard[0] == $question['examBoard']) {
+            if(is_array($examBoard[1])) {
+              foreach($examBoard[1] as $level) {
+                if($level[0] == $question['level']) {
+                  $questionCode .= $level[1];
+                }
+              }
+            }
+            else {
+              $questionCode .= $examBoard[1];
+            }           
+          }
+        }
+        
+        //Add Unit Number:
+        $questionCode .= "0".$question['unitNo'].".";
+
+        //Add year
+        $year = $question['year'];
+        $year = trim($year);
+        if(strlen($year)>2) {
+          $year = substr($year, -2);
+        }
+        $questionCode .= $year;
+
+        //Add month of june (change later if necessary to enter january exams):
+        $questionCode .= "06";
+
+        //Add question number
+        $questionNo = $question['questionNo'];
+        if($questionNo<10) {
+          $questionNo = "0".$questionNo;
+        }
+        $questionCode .=$questionNo;
+
+
+
+        echo $questionCode;
+        echo "<br>";
+
+        
         
       }
-
     }
 
     
@@ -111,10 +174,13 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
       if($_SERVER['REQUEST_METHOD']==='POST') {
         //print_r($_POST);
         print_r($questionsCollect);
+
       }
       echo "<pre>";
       //print_r($questions);
+      //print_r($examBoardCodeKey);
       echo "</pre>";
+      
 
       ?>
 
@@ -284,7 +350,14 @@ function addInputRow() {
   if (lastYear) {
     lastYear = lastYear.value;
   } else {
-    lastYear = "";
+    lastYear = "<?=date('Y')?>";
+  }
+
+  var lastLevel = document.getElementById("level_"+ (num-1));
+  if (lastLevel) {
+    lastLevel = lastLevel.value;
+  } else {
+    lastLevel = "";
   }
 
 
@@ -301,7 +374,7 @@ function addInputRow() {
         }
 
         //Question Number:
-        cells[i].innerHTML = "<label for = 'questionNo_"+num+"'>Question Number:</label><br><input name='questionNo_"+num+"' id= 'questionNo_"+num+"' class='w-full rounded' value= '"+value+"'>";
+        cells[i].innerHTML = "<label for = 'questionNo_"+num+"'>Question Number:</label><br><input  name='questionNo_"+num+"' id= 'questionNo_"+num+"' class='w-full rounded' value= '"+value+"'>";
 
         //Compose options for exam board select tag:
         cells[i].innerHTML += "<label for ='examBoard_"+num+"'>Exam Board:</label><br>";
@@ -315,8 +388,20 @@ function addInputRow() {
         }
         cells[i].innerHTML += "<select name = 'examBoard_"+num+"' id= 'examBoard_"+num+"' onchange='addOptions(this.value, "+num+", \"optionsTarget_"+num+"\"); addAnswerSelect(this.value, "+num+", \"dropdownTarget_"+num+"\")'>"+options+"</select>";
 
+        //Level:
+        var options = "";
+        var levels = ['AL', 'AS'];
+        for (var j=0; j<levels.length; j++) {
+          var selected = "";
+          if(levels[j] == lastLevel) {
+            selected = " selected ";
+          }
+          options += "<option value = '"+levels[j]+"' "+selected+">"+levels[j]+"</option>";
+        }
+        cells[i].innerHTML += "<br><label for ='level_"+num+"'>Level:</label><br><select name = 'level_"+num+"' id= 'level_"+num+"'>"+options+"</select>";
+
         //Unit Number:
-        cells[i].innerHTML += "<br><label for = 'unitNo_"+num+"'>Unit Number:</label><br><input name='unitNo_"+num+"' id= 'unitNo_"+num+"' class='w-full rounded' value= '"+lastUnitNo+"'>";
+        cells[i].innerHTML += "<br><label for = 'unitNo_"+num+"'>Unit Number:</label><br><input type='number' min ='1' max = '6' name='unitNo_"+num+"' id= 'unitNo_"+num+"' class='w-full rounded' value= '"+lastUnitNo+"'>";
 
         //Unit Name:
         cells[i].innerHTML += "<br><label for = 'unitName_"+num+"'>Unit Name:</label><br><input name='unitName_"+num+"' id= 'unitName_"+num+"' class='w-full rounded' value= '"+lastUnitName+"'>";
