@@ -78,7 +78,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         'year' => $_POST['year_'.$x],
         'questionText' => $_POST['questionText_'.$x],
         'options' => $optionsArray,
-        'imageId' => $_POST['imageId_'.$x],
+        'assetId' => $_POST['assetId_'.$x],
         'answer' => $_POST['answer_'.$x], 
         'topic' => $_POST['topic_'.$x], 
         'topics' => $_POST['topics_'.$x], 
@@ -132,10 +132,9 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         }
         $questionCode .=$questionNo;
 
+        //print_r($question);
 
-
-        echo $questionCode;
-        echo "<br>";
+        insertMCQquestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['options'], $question['answer'], $question['assetId'], $question['topic'], $question['topics'], $question['keyWords']);
 
         
         
@@ -240,7 +239,17 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                     <td><?=$question['No']?></td>
                     <td>
                       <p><?=$question['question']?></p>
-                      <p><img class = "w-3/4" src = "question_img/<?=$question['No']?>.JPG"></p>
+                      <?php
+                        $imgSource = "";
+                        if($question['path']!="") {
+                          //$imgSource = $path.$question['path'];
+                          $imgSource = "https://www.thinkeconomics.co.uk".$question['path'];
+                        }
+                        else {
+                          $imgSource = "question_img/".$question['No'].".JPG";
+                        }
+                      ?>
+                      <p><img class = "w-3/4" src = "<?=$imgSource?>"></p>
                       <p><?=$question['Topic']?></p>
                       <p>Answer: <?=$question['Answer']?>
                       <p><label for="">Explanation: </label></p>
@@ -253,6 +262,9 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                           }
                           //print_r($explanations);
                         ?></textarea></p>
+                        <p>
+                          <?php print_r($question);?>
+                        </p>
                       <p><input type="submit" name="submit" value= "Update"><p>
                     </td>
                   </tr>
@@ -407,7 +419,7 @@ function addInputRow() {
         cells[i].innerHTML += "<br><label for = 'unitName_"+num+"'>Unit Name:</label><br><input name='unitName_"+num+"' id= 'unitName_"+num+"' class='w-full rounded' value= '"+lastUnitName+"'>";
 
         //Year:
-        cells[i].innerHTML += "<br><label for = 'year_"+num+"'>Year:</label><br><input name='year_"+num+"' id= 'year_"+num+"' class='w-full rounded' value= '"+lastYear+"'>";
+        cells[i].innerHTML += "<br><label for = 'year_"+num+"'>Year:</label><br><input type = 'number' min = '2000' max = '2050' name='year_"+num+"' id= 'year_"+num+"' class='w-full rounded' value= '"+lastYear+"'>";
 
         break;
       case 1:
@@ -426,9 +438,12 @@ function addInputRow() {
        break;
 
       case 3:
-        var label = "imageId_"+num;
+        var label = "assetId_"+num;
         //var value = "value = '"+(rowNo)+"'";
-        cells[i].innerHTML = "<label for = "+label+">Image Upload Id: </label><input name="+label+" id= "+label+" class='w-full rounded'>";
+        cells[i].innerHTML = "<label for = "+label+">Asset  Id: </label><input name="+label+" id= "+label+" class='w-full rounded'>";
+
+
+
         break;
 
       case 4:

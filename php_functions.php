@@ -591,8 +591,10 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
   global $conn;
   $results = array();
 
-  $sql ="SELECT id, No, Answer, Topic, keywords, question, options, explanation, examBoard, component
-        FROM question_bank_3";
+  $sql ="SELECT q.id, q.No, q.Answer, q.Topic, q.keywords, q.question, q.options, q.explanation, q.examBoard, q.component, q.assetId, a.path
+        FROM question_bank_3 q
+        LEFT JOIN upload_record a
+          ON a.id = q.assetId";
 
   if($id) {
     $sql .= "  WHERE id = ?";
@@ -603,6 +605,8 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
   if($topic) {
     $sql .= "  WHERE topic = ?";
   }
+
+
 
   $stmt=$conn->prepare($sql);
 
@@ -682,6 +686,28 @@ function updateMCQquestion($id, $userId, $explanation) {
   //print_r($currentExplanation);
   $currentExplanation = json_encode($currentExplanation);
   updateMCQquestionExplanation($id, $currentExplanation);  
+
+}
+
+function insertMCQquestion($userCreate, $questionCode, $questionNo, $examBoard, $level, $unitNo, $unitName, $year, $questionText, $options, $answer, $assetId, $topic, $topics, $keyWords) {
+  /*
+  This function inserts a new MCQ question.
+  Used in:
+  -mcq/mcq_questions.php
+  */
+
+  global $conn;
+  date_default_timezone_set('Europe/London');
+  $datetime = date("Y-m-d H:i:s");
+  $active = 1;
+
+  $sql = "INSERT INTO question_bank_3
+          (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, options, Answer, assetId, Topic, topics, keywords, dateCreate, active)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("issssssssssissssi", $userCreate, $questionCode, $questionNo, $examBoard, $level, $unitNo, $unitName, $year, $questionText, $options, $answer, $assetId, $topic, $topics, $keyWords, $datetime, $active);
+  $stmt->execute();
+
 
 }
 
