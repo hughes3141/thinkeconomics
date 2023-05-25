@@ -51,7 +51,8 @@ $examBoardCodeKey = array(
   ["Edexcel", array(
     ["AL", 17],
     ["AS", 18]
-  )]
+  )],
+  ["CIE", 19]
 );
 
 if($_SERVER['REQUEST_METHOD']==='POST') {
@@ -69,6 +70,11 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       }
       $optionsArray = json_encode($optionsArray);
 
+      $specPaper = "";
+      if(isset($_POST['specPaper'])) {
+        $specPaper = $_POST['specPaper'];
+      }
+
       $newQuestion = array(
         'questionNo' => $_POST['questionNo_'.$x],
         'examBoard' => $_POST['examBoard_'.$x],
@@ -84,6 +90,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         'topics' => $_POST['topics_'.$x], 
         'keyWords' => $_POST['keyWords_'.$x],
         'active_entry' => $_POST['active_entry_'.$x],
+        'specPaper' => $specPaper
       );
       array_push($questionsCollect, $newQuestion);
     }
@@ -122,8 +129,16 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         }
         $questionCode .= $year;
 
+
+
         //Add month of june (change later if necessary to enter january exams):
         $questionCode .= "06";
+
+        //Substitute for '0000' code if spec paper:
+        if($question['specPaper'] == 1) {
+          $questionCode = substr($questionCode, 0, -4);
+          $questionCode .= "0000";
+        }
 
         //Add question number
         $questionNo = $question['questionNo'];
@@ -154,8 +169,18 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
 $questions = array();
 if(isset($_GET['questionNo']) && $_GET['questionNo'] !="") {
+  
   $result = getMCQquestionDetails(null, $_GET['questionNo']);
-  array_push($questions, $result);
+  //There's a bit of formatting that has to happen here to filter out a poor design in the original function, which outputs a single array result rather than an array wiht a single result array[0]. If the result is singular, make a new array with this output as its [0]:
+  if(isset($result['id'])) {
+    array_push($questions, $result);
+    //Or else just return the array wiht many different sub-arrays:
+  } else {
+    $questions = $result;
+  }
+
+
+
 }
 if(isset($_GET['topic']) && $_GET['topic'] !="") {
   $questions = getMCQquestionDetails(null, null, $_GET['topic']);
@@ -171,8 +196,9 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
     <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
       <?php
       if($_SERVER['REQUEST_METHOD']==='POST') {
-        //print_r($_POST);
+        print_r($_POST);
         print_r($questionsCollect);
+
 
       }
       echo "<pre>";
@@ -186,6 +212,9 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
       <div>
         <h2>Create New Questions</h2>
         <form method="post" action = "">
+          <p>
+          <input type='checkbox' id = 'specPaper' name = 'specPaper' value = '1'><label for = 'specPaper'>Spec Paper</label>
+          </p>
           <table id="inputTable" class="w-full table-fixed mb-2 border border-black">
             <thead>
               <tr>
@@ -200,7 +229,7 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
             </thead>
 
           </table>
-          <input type = "" id="inputCount" name="inputCount">
+          <input type = "hidden" id="inputCount" name="inputCount">
           <button class="w-full rounded bg-sky-300 hover:bg-sky-200 border border-black mb-2" type="button" onclick="addInputRow();">Add row</button> 
           <button name="submit" value ="submit">Submit</button>
       </form>
@@ -286,7 +315,7 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
 
 <script>
 
-const examBoardNumbers = {Eduqas:5, AQA:4, WJEC:5, Edexcel:4, OCR:4};
+const examBoardNumbers = {Eduqas:5, AQA:4, WJEC:5, Edexcel:4, OCR:4, CIE:4};
 //const examBoardNumbers = [['Eduqas',5], ['AQA',4], ['WJEC',5], ['Edexcel',4], ['OCR',4]];
 var options = ['A', 'B', 'C', 'D', 'E'];
 
@@ -327,7 +356,7 @@ function addInputRow() {
   var rowNo = table.rows.length;
   var row = table.insertRow(rowNo);
   var num = (rowNo - 1);
-  var examBoards = ['Eduqas', 'AQA', 'WJEC', 'Edexcel', 'OCR'];
+  var examBoards = ['Eduqas', 'AQA', 'WJEC', 'Edexcel', 'OCR', 'CIE'];
   
 
   //Find the values of last inserted row:
@@ -357,6 +386,7 @@ function addInputRow() {
   } else {
     lastUnitName = "";
   }
+
 
   var lastYear = document.getElementById("year_"+ (num-1));
   if (lastYear) {
@@ -417,6 +447,9 @@ function addInputRow() {
 
         //Unit Name:
         cells[i].innerHTML += "<br><label for = 'unitName_"+num+"'>Unit Name:</label><br><input name='unitName_"+num+"' id= 'unitName_"+num+"' class='w-full rounded' value= '"+lastUnitName+"'>";
+
+        //Spec Paper:
+        //cells[i].innerHTML += "<input type='checkbox' id = 'specPaper_"+num+"' name = 'specPaper_"+num+"' value = '1'><label for = 'specPaper_"+num+"'>Spec Paper</label>";
 
         //Year:
         cells[i].innerHTML += "<br><label for = 'year_"+num+"'>Year:</label><br><input type = 'number' min = '2000' max = '2050' name='year_"+num+"' id= 'year_"+num+"' class='w-full rounded' value= '"+lastYear+"'>";

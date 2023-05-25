@@ -600,7 +600,7 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
     $sql .= "  WHERE id = ?";
   }
   if($questionNo) {
-    $sql .= "  WHERE No = ?";
+    $sql .= "  WHERE No LIKE ?";
   }
   if($topic) {
     $sql .= "  WHERE topic = ?";
@@ -614,6 +614,7 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
     $stmt->bind_param("i", $id);
   }
   if($questionNo) {
+    $questionNo = $questionNo."%";
     $stmt->bind_param("s", $questionNo);
   }
   if($topic) {
@@ -627,9 +628,11 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
       array_push($results, $row);
     }
   }
+  
   if (!$topic && count($results) == 1) {
     $results = $results[0];
   }
+  
   return $results;
 
 
