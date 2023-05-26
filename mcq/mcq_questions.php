@@ -76,15 +76,17 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       $specPaper = "";
       if(isset($_POST['specPaper'])) {
         $specPaper = $_POST['specPaper'];
+        //Putting this in here just as a default for specification year publication:
+        //$_POST['year'] = "2015";
       }
 
       $newQuestion = array(
         'questionNo' => $_POST['questionNo_'.$x],
-        'examBoard' => $_POST['examBoard_'.$x],
-        'level' => $_POST['level_'.$x],
-        'unitNo'=> $_POST['unitNo_'.$x],
-        'unitName' => $_POST['unitName_'.$x],
-        'year' => $_POST['year_'.$x],
+        'examBoard' => $_POST['examBoard'],
+        'level' => $_POST['level'],
+        'unitNo'=> $_POST['unitNo'],
+        'unitName' => $_POST['unitName'],
+        'year' => $_POST['year'],
         'questionText' => $_POST['questionText_'.$x],
         'options' => $optionsArray,
         'assetId' => $_POST['assetId_'.$x],
@@ -152,7 +154,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
         //print_r($question);
 
-        insertMCQquestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['options'], $question['answer'], $question['assetId'], $question['topic'], $question['topics'], $question['keyWords']);
+        //insertMCQquestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['options'], $question['answer'], $question['assetId'], $question['topic'], $question['topics'], $question['keyWords']);
 
         
         
@@ -199,8 +201,8 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
     <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
       <?php
       if($_SERVER['REQUEST_METHOD']==='POST') {
-        print_r($_POST);
-        print_r($questionsCollect);
+        //print_r($_POST);
+        p//rint_r($questionsCollect);
 
 
       }
@@ -215,17 +217,34 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
       <div>
         <h2>Create New Questions</h2>
         <form method="post" action = "">
-          <p>
-          <input type='checkbox' id = 'specPaper' name = 'specPaper' value = '1'><label for = 'specPaper'>Spec Paper</label>
-          </p>
           <table id="inputControl" class="w-full table-fixed mb-2 border border-black">
             <thead>
               <tr>
-                <th>Exam Board</th>
-                <th>Level</th>
-                <th>Unit Number</th>
-                <th>Unit Name</th>
-                <th>Year</th>
+                <th><label for="examBoard">Exam Board</label></th>
+                <th><label for="level">Level</label></th>
+                <th><label for="unitNo">Unit Number</label></th>
+                <th><label for="unitName">Unit Name</label></th>
+                <th><label for="year">Year</label></th>
+              </tr>
+              <tr>
+                <td>
+                  <select class="w-full h-16" name="examBoard" id="examBoard" onchange="changeDropdowns();"></select>
+                </td>
+                <td>
+                  <select class="w-full h-16" name="level" id="level"></select>
+                </td>
+                <td>
+                  <input type='number' min ='1' max = '6' name='unitNo' id= 'unitNo' class='w-full h-16 rounded' value= '<?=($_SERVER['REQUEST_METHOD']==='POST') ? $_POST['unitNo'] : ""?>'>
+                </td>
+                <td>
+                  <input name='unitName' id= 'unitName' class='w-full rounded h-16 border border-black' value= '<?=($_SERVER['REQUEST_METHOD']==='POST') ? $_POST['unitName'] : ""?>'>
+                </td>
+                <td>
+                  <input type = 'number' min = '2000' max = '2050' name='year' id= 'year' class='w-full rounded' value= '<?=($_SERVER['REQUEST_METHOD']==='POST') ? $_POST['year'] : date('Y')?>'>
+                  <p>
+                    <input type='checkbox' id = 'specPaper' name = 'specPaper' value = '1' onchange="yearDisable();"><label for = 'specPaper'> Spec Paper</label>
+                  </p>
+                </td>
               </tr>
             </thead>
           </table>
@@ -233,7 +252,7 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
             <thead>
               <tr>
                 <th>Question</th>
-                <th>Question Text</th>
+                <th class="w-1/3">Question Text</th>
                 <th>Options</th>
                 <th>Image Source</th>
                 <th>Details</th>
@@ -331,6 +350,9 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
 
 const examBoardNumbers = {Eduqas:5, AQA:4, WJEC:5, Edexcel:4, OCR:4, CIE:4};
 //const examBoardNumbers = [['Eduqas',5], ['AQA',4], ['WJEC',5], ['Edexcel',4], ['OCR',4]];
+
+var examBoards = ['Eduqas', 'AQA', 'WJEC', 'Edexcel', 'OCR', 'CIE'];
+var levels = ['AL', 'AS'];
 var options = ['A', 'B', 'C', 'D', 'E'];
 
 function addOptions(examBoard, num, targetObj) {
@@ -345,6 +367,7 @@ function addOptions(examBoard, num, targetObj) {
   output += "<input type='hidden' name = 'optionsNumber_"+num+"' value='"+optionsNumber+"'></input>";
 
   document.getElementById(targetObj).innerHTML = output;
+  //console.log(document.getElementById(targetObj));
   
 }
 
@@ -358,9 +381,63 @@ function addAnswerSelect(examBoard, num, targetObj) {
   for(var j=0; j<(optionsNumber+1); j++) {
     choices += "<option value = '"+options[j]+"'>"+options[j]+"</option>";
   }
-  output += "<select name="+label+" id= "+label+" class='w-3/5 rounded'>"+choices+"</select>";
+  output += "<select name="+label+" id= "+label+" class='w-full rounded'>"+choices+"</select>";
 
   document.getElementById(targetObj).innerHTML = output;
+}
+
+function changeDropdowns() {
+  var thisExamBoard = document.getElementById("examBoard").value;
+  var optionsTarget = document.getElementsByClassName("optionsTarget");
+  for(var i=0; i<optionsTarget.length; i++) {
+    //console.log(optionsTarget[i]);
+    addOptions(thisExamBoard, i, 'optionsTarget_'+i);
+  }
+
+  var dropdownTarget = document.getElementsByClassName("dropdownTarget");
+  for(var i=0; i<dropdownTarget.length; i++) {
+    //console.log(optionsTarget[i]);
+    addAnswerSelect(thisExamBoard, i, 'dropdownTarget_'+i);
+  }
+
+}
+
+//Populate examboard select:
+var examBoardSelect = document.getElementById("examBoard");
+for(var i=0; i<examBoards.length; i++) {
+  var option = document.createElement("option");
+  if(examBoards[i] == "<?=($_SERVER['REQUEST_METHOD']==='POST') ? $_POST['examBoard'] : ""?>") {
+    option.selected = true;
+  }
+  option.text = examBoards[i];
+  option.value = examBoards[i];
+  examBoardSelect.add(option);
+}
+
+//Populate level select
+var levelSelect = document.getElementById("level");
+for(var i=0; i<levels.length; i++) {
+  var option = document.createElement("option");
+  if(levels[i] == "<?=($_SERVER['REQUEST_METHOD']==='POST') ? $_POST['level'] : ""?>") {
+    option.selected = true;
+  }
+  option.text = levels[i];
+  option.value = levels[i];
+  levelSelect.add(option);
+}
+
+function yearDisable() {
+  var yearInput = document.getElementById("year");
+  var specInput = document.getElementById("specPaper")
+
+  if(specInput.checked == true) {
+    //yearInput.disabled = true;
+    yearInput.value = 2015;
+    yearInput.classList.add("text-slate-200");
+  } else {
+    //yearInput.disabled = false;
+    yearInput.classList.remove("text-slate-200");
+  }
 }
 
 
@@ -380,7 +457,7 @@ function addInputRow() {
     lastQuestionNo = lastQuestionNo.value;
   }
   //console.log(lastQuestionNo);
-
+/*
   var lastExamBoard = document.getElementById("examBoard_"+ (num-1));
   if (lastExamBoard) {
     lastExamBoard = lastExamBoard.value;
@@ -416,10 +493,11 @@ function addInputRow() {
     lastLevel = "";
   }
 
-
+*/
   var cells = [];
   for (var i=0; i<6; i++) {
     cells[i] = row.insertCell(i);
+    cells[i].classList.add('align-top')
     
     switch(i) {
       case 0:
@@ -430,9 +508,14 @@ function addInputRow() {
         }
 
         //Question Number:
-        cells[i].innerHTML = "<label for = 'questionNo_"+num+"'>Question Number:</label><br><input  name='questionNo_"+num+"' id= 'questionNo_"+num+"' class='w-full rounded' value= '"+value+"'>";
+        cells[i].innerHTML = "<p><label for = 'questionNo_"+num+"'>No.</label></p><p><input  name='questionNo_"+num+"' id= 'questionNo_"+num+"' class='p-2 w-full rounded border border-black text-center' value= '"+value+"'><p>";
+
+        //Answer:
+        //Uses addAnswerSelect
+        cells[i].innerHTML += "<p><div id='dropdownTarget_"+num+"' class='dropdownTarget'></div></p>"
 
         //Compose options for exam board select tag:
+          /*
         cells[i].innerHTML += "<label for ='examBoard_"+num+"'>Exam Board:</label><br>";
         var options = "";
         for (var j = 0; j<examBoards.length; j++) {
@@ -442,9 +525,11 @@ function addInputRow() {
           }
           options += "<option value = '"+examBoards[j]+"' "+selected+">"+examBoards[j]+"</option>"
         }
-        cells[i].innerHTML += "<select name = 'examBoard_"+num+"' id= 'examBoard_"+num+"' onchange='addOptions(this.value, "+num+", \"optionsTarget_"+num+"\"); addAnswerSelect(this.value, "+num+", \"dropdownTarget_"+num+"\")'>"+options+"</select>";
+        */
+        //cells[i].innerHTML += "<select name = 'examBoard_"+num+"' id= 'examBoard_"+num+"' onchange='addOptions(this.value, "+num+", \"optionsTarget_"+num+"\"); addAnswerSelect(this.value, "+num+", \"dropdownTarget_"+num+"\")'>"+options+"</select>";
 
         //Level:
+        /*
         var options = "";
         var levels = ['AL', 'AS'];
         for (var j=0; j<levels.length; j++) {
@@ -454,25 +539,26 @@ function addInputRow() {
           }
           options += "<option value = '"+levels[j]+"' "+selected+">"+levels[j]+"</option>";
         }
-        cells[i].innerHTML += "<br><label for ='level_"+num+"'>Level:</label><br><select name = 'level_"+num+"' id= 'level_"+num+"'>"+options+"</select>";
+        */
+        //cells[i].innerHTML += "<br><label for ='level_"+num+"'>Level:</label><br><select name = 'level_"+num+"' id= 'level_"+num+"'>"+options+"</select>";
 
         //Unit Number:
-        cells[i].innerHTML += "<br><label for = 'unitNo_"+num+"'>Unit Number:</label><br><input type='number' min ='1' max = '6' name='unitNo_"+num+"' id= 'unitNo_"+num+"' class='w-full rounded' value= '"+lastUnitNo+"'>";
+        //cells[i].innerHTML += "<br><label for = 'unitNo_"+num+"'>Unit Number:</label><br><input type='number' min ='1' max = '6' name='unitNo_"+num+"' id= 'unitNo_"+num+"' class='w-full rounded' value= '"+lastUnitNo+"'>";
 
         //Unit Name:
-        cells[i].innerHTML += "<br><label for = 'unitName_"+num+"'>Unit Name:</label><br><input name='unitName_"+num+"' id= 'unitName_"+num+"' class='w-full rounded' value= '"+lastUnitName+"'>";
+        //cells[i].innerHTML += "<br><label for = 'unitName_"+num+"'>Unit Name:</label><br><input name='unitName_"+num+"' id= 'unitName_"+num+"' class='w-full rounded' value= '"+lastUnitName+"'>";
 
         //Spec Paper:
         //cells[i].innerHTML += "<input type='checkbox' id = 'specPaper_"+num+"' name = 'specPaper_"+num+"' value = '1'><label for = 'specPaper_"+num+"'>Spec Paper</label>";
 
         //Year:
-        cells[i].innerHTML += "<br><label for = 'year_"+num+"'>Year:</label><br><input type = 'number' min = '2000' max = '2050' name='year_"+num+"' id= 'year_"+num+"' class='w-full rounded' value= '"+lastYear+"'>";
+        //cells[i].innerHTML += "<br><label for = 'year_"+num+"'>Year:</label><br><input type = 'number' min = '2000' max = '2050' name='year_"+num+"' id= 'year_"+num+"' class='w-full rounded' value= '"+lastYear+"'>";
 
         break;
       case 1:
         var label = "questionText_"+(rowNo-1);
         //var value = "value = '"+(rowNo)+"'";
-        cells[i].innerHTML = "<textarea name="+label+" id= "+label+" "+"class='w-full rounded p-1'></textarea>";
+        cells[i].innerHTML = "<textarea name="+label+" id= "+label+" "+"class='w-full rounded p-1 h-60'></textarea>";
         break;
       case 2:
         /*
@@ -481,7 +567,7 @@ function addInputRow() {
         cells[i].innerHTML = "<textarea name="+label+" id= "+label+" "+"class='w-full rounded p-1'></textarea>";
         break;
         */
-       cells[i].innerHTML = "<div id='optionsTarget_"+num+"'>";
+       cells[i].innerHTML = "<div id='optionsTarget_"+num+"' class='optionsTarget'>";
        break;
 
       case 3:
@@ -494,9 +580,7 @@ function addInputRow() {
         break;
 
       case 4:
-        //Answer:
-        //Uses addAnswerSelect
-        cells[i].innerHTML = "<div id='dropdownTarget_"+num+"'></div>"
+
 
         //Topic:
         var label = 'topic_'+num;
@@ -514,13 +598,14 @@ function addInputRow() {
       case 5:
         cells[i].innerHTML = "<button class='w-full bg-pink-300 rounded border border-black mb-1' type ='button' onclick='hideRow(this);'>Remove</button>"
         cells[i].innerHTML += "<input name='active_entry_"+num+"' class='w-full' type='hidden' value='1'>";
+        cells[i].classList.add('align-middle')
         break;
     }
   }
 
   //Update option values:
-  var thisExamBoard = document.getElementById("examBoard_"+num).value;
-  console.log(thisExamBoard);
+  var thisExamBoard = document.getElementById("examBoard").value;
+  //console.log(thisExamBoard);
   addOptions(thisExamBoard, num, "optionsTarget_"+num);
 
   //Update Answer Values:
