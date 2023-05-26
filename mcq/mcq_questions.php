@@ -42,7 +42,10 @@ include($path."/header_tailwind.php");
 $examBoardCodeKey = array(
   ["Original", 10],
   ["Eduqas", 11],
-  ["AQA", 12],
+  ["AQA", array(
+    ["AL", 12],
+    ["AS", 14]
+  )],
   ["WJEC", 13],
   ["OCR", array(
     ["AL", 15],
@@ -215,6 +218,17 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
           <p>
           <input type='checkbox' id = 'specPaper' name = 'specPaper' value = '1'><label for = 'specPaper'>Spec Paper</label>
           </p>
+          <table id="inputControl" class="w-full table-fixed mb-2 border border-black">
+            <thead>
+              <tr>
+                <th>Exam Board</th>
+                <th>Level</th>
+                <th>Unit Number</th>
+                <th>Unit Name</th>
+                <th>Year</th>
+              </tr>
+            </thead>
+          </table>
           <table id="inputTable" class="w-full table-fixed mb-2 border border-black">
             <thead>
               <tr>
