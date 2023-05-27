@@ -202,7 +202,7 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
       <?php
       if($_SERVER['REQUEST_METHOD']==='POST') {
         //print_r($_POST);
-        p//rint_r($questionsCollect);
+        //print_r($questionsCollect);
 
 
       }
@@ -252,9 +252,8 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
             <thead>
               <tr>
                 <th>Question</th>
-                <th class="w-1/3">Question Text</th>
+                <th class="w-1/2">Question Text</th>
                 <th>Options</th>
-                <th>Image Source</th>
                 <th>Details</th>
                 <th>Remove</th>
 
@@ -300,7 +299,7 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                     <td><?=$question['id']?></td>
                     <td><?=$question['No']?></td>
                     <td>
-                      <p><?=$question['question']?></p>
+                      <p class="whitespace-pre-line"><?=$question['question']?></p>
                       <?php
                         $imgSource = "";
                         if($question['path']!="") {
@@ -457,45 +456,9 @@ function addInputRow() {
     lastQuestionNo = lastQuestionNo.value;
   }
   //console.log(lastQuestionNo);
-/*
-  var lastExamBoard = document.getElementById("examBoard_"+ (num-1));
-  if (lastExamBoard) {
-    lastExamBoard = lastExamBoard.value;
-  }
-  //console.log(lastExamBoard);
 
-  var lastUnitNo = document.getElementById("unitNo_"+ (num-1));
-  if (lastUnitNo) {
-    lastUnitNo = lastUnitNo.value;
-  } else {
-    lastUnitNo = 1;
-  }
-
-  var lastUnitName = document.getElementById("unitName_"+ (num-1));
-  if (lastUnitName) {
-    lastUnitName = lastUnitName.value;
-  } else {
-    lastUnitName = "";
-  }
-
-
-  var lastYear = document.getElementById("year_"+ (num-1));
-  if (lastYear) {
-    lastYear = lastYear.value;
-  } else {
-    lastYear = "<?=date('Y')?>";
-  }
-
-  var lastLevel = document.getElementById("level_"+ (num-1));
-  if (lastLevel) {
-    lastLevel = lastLevel.value;
-  } else {
-    lastLevel = "";
-  }
-
-*/
   var cells = [];
-  for (var i=0; i<6; i++) {
+  for (var i=0; i<5; i++) {
     cells[i] = row.insertCell(i);
     cells[i].classList.add('align-top')
     
@@ -514,46 +477,6 @@ function addInputRow() {
         //Uses addAnswerSelect
         cells[i].innerHTML += "<p><div id='dropdownTarget_"+num+"' class='dropdownTarget'></div></p>"
 
-        //Compose options for exam board select tag:
-          /*
-        cells[i].innerHTML += "<label for ='examBoard_"+num+"'>Exam Board:</label><br>";
-        var options = "";
-        for (var j = 0; j<examBoards.length; j++) {
-          var selected = "";
-          if(examBoards[j] == lastExamBoard) {
-            selected = " selected ";
-          }
-          options += "<option value = '"+examBoards[j]+"' "+selected+">"+examBoards[j]+"</option>"
-        }
-        */
-        //cells[i].innerHTML += "<select name = 'examBoard_"+num+"' id= 'examBoard_"+num+"' onchange='addOptions(this.value, "+num+", \"optionsTarget_"+num+"\"); addAnswerSelect(this.value, "+num+", \"dropdownTarget_"+num+"\")'>"+options+"</select>";
-
-        //Level:
-        /*
-        var options = "";
-        var levels = ['AL', 'AS'];
-        for (var j=0; j<levels.length; j++) {
-          var selected = "";
-          if(levels[j] == lastLevel) {
-            selected = " selected ";
-          }
-          options += "<option value = '"+levels[j]+"' "+selected+">"+levels[j]+"</option>";
-        }
-        */
-        //cells[i].innerHTML += "<br><label for ='level_"+num+"'>Level:</label><br><select name = 'level_"+num+"' id= 'level_"+num+"'>"+options+"</select>";
-
-        //Unit Number:
-        //cells[i].innerHTML += "<br><label for = 'unitNo_"+num+"'>Unit Number:</label><br><input type='number' min ='1' max = '6' name='unitNo_"+num+"' id= 'unitNo_"+num+"' class='w-full rounded' value= '"+lastUnitNo+"'>";
-
-        //Unit Name:
-        //cells[i].innerHTML += "<br><label for = 'unitName_"+num+"'>Unit Name:</label><br><input name='unitName_"+num+"' id= 'unitName_"+num+"' class='w-full rounded' value= '"+lastUnitName+"'>";
-
-        //Spec Paper:
-        //cells[i].innerHTML += "<input type='checkbox' id = 'specPaper_"+num+"' name = 'specPaper_"+num+"' value = '1'><label for = 'specPaper_"+num+"'>Spec Paper</label>";
-
-        //Year:
-        //cells[i].innerHTML += "<br><label for = 'year_"+num+"'>Year:</label><br><input type = 'number' min = '2000' max = '2050' name='year_"+num+"' id= 'year_"+num+"' class='w-full rounded' value= '"+lastYear+"'>";
-
         break;
       case 1:
         var label = "questionText_"+(rowNo-1);
@@ -571,15 +494,6 @@ function addInputRow() {
        break;
 
       case 3:
-        var label = "assetId_"+num;
-        //var value = "value = '"+(rowNo)+"'";
-        cells[i].innerHTML = "<label for = "+label+">Asset  Id: </label><input name="+label+" id= "+label+" class='w-full rounded'>";
-
-
-
-        break;
-
-      case 4:
 
 
         //Topic:
@@ -594,8 +508,13 @@ function addInputRow() {
         var label = 'keyWords_'+num;
         cells[i].innerHTML += "<label for = "+label+">Key Words: </label><input name="+label+" id= "+label+" class='w-full rounded'>";
 
+        //Asset ID:
+        var label = "assetId_"+num;
+        //var value = "value = '"+(rowNo)+"'";
+        cells[i].innerHTML += "<label for = "+label+">Asset  Id: </label><input name="+label+" id= "+label+" class='w-full rounded'>";
+
         break;
-      case 5:
+      case 4:
         cells[i].innerHTML = "<button class='w-full bg-pink-300 rounded border border-black mb-1' type ='button' onclick='hideRow(this);'>Remove</button>"
         cells[i].innerHTML += "<input name='active_entry_"+num+"' class='w-full' type='hidden' value='1'>";
         cells[i].classList.add('align-middle')
