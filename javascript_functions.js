@@ -57,22 +57,23 @@ function changeVisibility(button, id) {
 
 }
 
-function toggleHide(button, hide_class, original_message, toggle_message, display_type="block", show_class = null) {
-  let toggleClass = document.getElementsByClassName(hide_class);
-  let showClass = document.getElementsByClassName(show_class);
+function toggleHide(button, toggle_class, original_message, toggle_message, display_type="block") {
+  let toggleClass = document.getElementsByClassName(toggle_class);
+  //console.log(toggleClass);
   function f() {
     for (var i=0; i<toggleClass.length; i++) {
       
-      if(toggleClass[i].style.display=="none") {
+      if((toggleClass[i].style.display=="none")||(toggleClass[i].classList.contains('hidden'))) {
         toggleClass[i].style.display=display_type;
-        showClass[i].style.display="none";
+        toggleClass[i].classList.remove('hidden')
+
       }
       else if (toggleClass[i].style.display!="none") {
         toggleClass[i].style.display="none";
-        showClass[i].style.display=display_type;
       }
       //console.log(toggleClass[i]);
     }
+
   }
   if(button.innerHTML ==original_message) {
     button.innerHTML = toggle_message;

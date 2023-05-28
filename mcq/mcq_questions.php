@@ -58,9 +58,12 @@ $examBoardCodeKey = array(
   ["CIE", 19]
 );
 
+$updateBool = 0;
+
 if($_SERVER['REQUEST_METHOD']==='POST') {
 
-  if(isset($_POST['submit'])&&($_POST['submit']="submit")) {
+  if(isset($_POST['submit'])&&($_POST['submit']=="submit")) {
+    $updateBool = 1;
     $questionsCollect = array();
     $inputCount = $_POST['inputCount'];
 
@@ -154,7 +157,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
         //print_r($question);
 
-        insertMCQquestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['options'], $question['answer'], $question['assetId'], $question['topic'], $question['topics'], $question['keyWords']);
+        //insertMCQquestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['options'], $question['answer'], $question['assetId'], $question['topic'], $question['topics'], $question['keyWords']);
 
         
         
@@ -201,7 +204,7 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
     <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
       <?php
       if($_SERVER['REQUEST_METHOD']==='POST') {
-        //print_r($_POST);
+        print_r($_POST);
         //print_r($questionsCollect);
 
 
@@ -234,13 +237,13 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                   <select class="w-full h-16" name="level" id="level"></select>
                 </td>
                 <td>
-                  <input type='number' min ='1' max = '6' name='unitNo' id= 'unitNo' class='w-full h-16 rounded' value= '<?=($_SERVER['REQUEST_METHOD']==='POST') ? $_POST['unitNo'] : ""?>'>
+                  <input type='number' min ='1' max = '6' name='unitNo' id= 'unitNo' class='w-full h-16 rounded' value= '<?=$updateBool ==1 ? $_POST['unitNo'] : ""?>'>
                 </td>
                 <td>
-                  <input name='unitName' id= 'unitName' class='w-full rounded h-16 border border-black' value= '<?=($_SERVER['REQUEST_METHOD']==='POST') ? $_POST['unitName'] : ""?>'>
+                  <input name='unitName' id= 'unitName' class='w-full rounded h-16 border border-black' value= '<?=$updateBool ==1 ? $_POST['unitName'] : ""?>'>
                 </td>
                 <td>
-                  <input type = 'number' min = '2000' max = '2050' name='year' id= 'year' class='w-full rounded' value= '<?=($_SERVER['REQUEST_METHOD']==='POST') ? $_POST['year'] : date('Y')?>'>
+                  <input type = 'number' min = '2000' max = '2050' name='year' id= 'year' class='w-full rounded' value= '<?=$updateBool ==1 ? $_POST['year'] : date('Y')?>'>
                   <p>
                     <input type='checkbox' id = 'specPaper' name = 'specPaper' value = '1' onchange="yearDisable();"><label for = 'specPaper'> Spec Paper</label>
                   </p>
@@ -299,7 +302,7 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                     <td><?=$question['id']?></td>
                     <td><?=$question['No']?></td>
                     <td>
-                      <p class="whitespace-pre-line"><?=$question['question']?></p>
+                      <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question']?></p>
                       <?php
                         $imgSource = "";
                         if($question['path']!="") {
@@ -312,7 +315,7 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                       ?>
                       <p><img class = "w-3/4" src = "<?=$imgSource?>"></p>
                       <p><?=$question['Topic']?></p>
-                      <p>Answer: <?=$question['Answer']?>
+                      <p class="toggleClass_<?=$question['id']?> hidden">Answer: <?=$question['Answer']?>
                       <p><label for="">Explanation: </label></p>
                       <p><textarea name="explanation" class="resize w-full" spellcheck="true"><?php
                           $explanations = json_decode($question['explanation']);
@@ -326,7 +329,9 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                         <p>
                           <?php print_r($question);?>
                         </p>
-                      <p><input type="submit" name="submit" value= "Update"><p>
+                      <p><button type="button" onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit", "Hide Edit", "block");'>Edit</button>
+                      <input type="submit" name="submit" value= "Update">
+                      <p>
                     </td>
                   </tr>
                 </form>
@@ -405,7 +410,7 @@ function changeDropdowns() {
 var examBoardSelect = document.getElementById("examBoard");
 for(var i=0; i<examBoards.length; i++) {
   var option = document.createElement("option");
-  if(examBoards[i] == "<?=($_SERVER['REQUEST_METHOD']==='POST') ? $_POST['examBoard'] : ""?>") {
+  if(examBoards[i] == "<?=$updateBool ==1 ? $_POST['examBoard'] : ""?>") {
     option.selected = true;
   }
   option.text = examBoards[i];
@@ -417,7 +422,7 @@ for(var i=0; i<examBoards.length; i++) {
 var levelSelect = document.getElementById("level");
 for(var i=0; i<levels.length; i++) {
   var option = document.createElement("option");
-  if(levels[i] == "<?=($_SERVER['REQUEST_METHOD']==='POST') ? $_POST['level'] : ""?>") {
+  if(levels[i] == "<?=$updateBool ==1 ? $_POST['level'] : ""?>") {
     option.selected = true;
   }
   option.text = levels[i];
