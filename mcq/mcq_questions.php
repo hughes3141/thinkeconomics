@@ -68,6 +68,8 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
     $inputCount = $_POST['inputCount'];
 
     for($x=0; $x<$inputCount; $x++) {
+      
+      //Create array for options
       $options = ['A', 'B', 'C', 'D', 'E'];
       $optionsArray = array();
 
@@ -157,7 +159,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
         //print_r($question);
 
-        //insertMCQquestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['options'], $question['answer'], $question['assetId'], $question['topic'], $question['topics'], $question['keyWords']);
+        insertMCQquestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['options'], $question['answer'], $question['assetId'], $question['topic'], $question['topics'], $question['keyWords']);
 
         
         
@@ -170,7 +172,16 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
   if(isset($_POST['submit'])) {
     if($_POST['submit'] == 'Update') {
-      //updateMCQquestion($_POST['id'], $userId, $_POST['explanation']);
+
+      //Create array for options:
+      $options = ['A', 'B', 'C', 'D', 'E'];
+      $optionsArray = array();
+      for($x=0; $x<$_POST['optionCount']; $x++) {
+        $optionsArray[$options[$x]] = $_POST['option_'.$x];
+      }
+      $optionsArray = json_encode($optionsArray);
+      
+      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords']);
     }
   }
 }
@@ -204,8 +215,9 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
     <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
       <?php
       if($_SERVER['REQUEST_METHOD']==='POST') {
-        print_r($_POST);
+        //print_r($_POST);
         //print_r($questionsCollect);
+        //echo "<br>"; print_r($optionsArray);
 
 
       }
@@ -266,7 +278,7 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
           </table>
           <input type = "hidden" id="inputCount" name="inputCount">
           <button class="w-full rounded bg-sky-300 hover:bg-sky-200 border border-black mb-2" type="button" onclick="addInputRow();">Add row</button> 
-          <button name="submit" value ="submit">Submit</button>
+          <button name="submit" class= "w-full bg-pink-300 rounded border border-black mb-1" value ="submit">Submit</button>
       </form>
       </div>
 
@@ -277,7 +289,7 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
           <label for="questionNo_select">Question No:</label>
           <input type="text" name="questionNo" value="<?=isset($_GET['questionNo']) ? $_GET['questionNo'] : "" ?>"</input>
 
-          <input type="submit" value="Select">
+          <input type="submit"  value="Select">
         </form>
       </div>
       
@@ -300,8 +312,11 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                   <input type="hidden" name="id" value="<?=$question['id']?>">
                   <tr>
                     <td><?=$question['id']?></td>
-                    <td><?=$question['No']?></td>
                     <td>
+                      <?=$question['No']?>
+                    </td>
+                    <td>
+                      <p><?=$question['examBoard']?> <?=$question['unitName']?> <?=$question['qualLevel']?></p>
                       <div>
                         <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question']?></p>
                         <textarea  name="question" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question']?></textarea>
@@ -327,6 +342,11 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                         </div>
                       </div>
                       <div>
+                        <h3 class="<?=($question['keywords']=="") ? "toggleClass_".$question['id']." hidden" : ""?>">Key Words:</h3>
+                        <p class="toggleClass_<?=$question['id']?>"><?=$question['keywords']?></p>
+                        <input type="text" name = "keywords" class="toggleClass_<?=$question['id']?> hidden" value = "<?=$question['keywords']?>">
+                      </div>
+                      <div>
                         <h3>Answer:</h3>
                         <p class="toggleClass_<?=$question['id']?>"><?=$question['Answer']?></p>
                         <input type="text" name = "answer" class="toggleClass_<?=$question['id']?> hidden" value = "<?=$question['Answer']?>">
@@ -340,7 +360,7 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                             //var_dump($explanations);
                             if(count($explanations)>0) {
                               ?>
-                              <h3>Explanation: </h3>
+                              <h3>Explanation<?=(count($explanations)>1) ? "s" : ""?>: </h3>
                               <?php
                             }
                             if(isset($explanations[$userId])) {
@@ -351,7 +371,7 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                               ?>
                               <div class="toggleClass_<?=$question['id']?> ml-3 border border-pink-300">
                                 <p class="whitespace-pre-line"><?=getUserInfo($key)['username']?>:</p>
-                                <p class="whitespace-pre-line"><?=$explanation?>:<p>
+                                <p class="whitespace-pre-line"><?=$explanation?><p>
                               </div>
                               <?php
 
@@ -364,7 +384,7 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                         </div>                    
                       <div>
                         <h3>Options:</h3>
-                        <div>
+                        <div class="toggleClass_<?=$question['id']?>">
                             <?php
                               $options =(array) json_decode($question['options']);
                               echo "<ul>";
@@ -375,17 +395,34 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                                 <?php
                               }
                               echo "</ul>";
-                              print_r($options);
+                              //print_r($options);
                             ?>
+                        </div>
+                        <div class="toggleClass_<?=$question['id']?> hidden">
+                            <?php
+                            echo "<ul>";
+                            $optionCount = 0;
+                            foreach ($options as $key=>$option) {
+                              
+                              ?>
+                              <li><label for="option_<?=$optionCount?>"><?=$key?></label>: <textarea id="option_<?=$optionCount?>" class="w-full"name="option_<?=$optionCount?>" onfocus="this.select()" spellcheck="true"><?=$option?></textarea></li>
+                              <?php
+                              $optionCount ++;
+                              
+                            }
+                            echo "</ul>";
+                            //echo $optionCount;
+                            ?>
+                            <input type="hidden" name="optionCount" value="<?=$optionCount?>">
                         </div>
 
 
                       </div>
                         <p>
-                          <?php print_r($question);?>
+                          <?php //print_r($question);?>
                         </p>
-                      <p><button type="button" onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit", "Hide Edit", "block");'>Edit</button>
-                      <input type="submit" name="submit" value= "Update">
+                      <p><button type="button" class="w-full bg-pink-300 rounded border border-black mb-1" onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit", "Hide Edit", "block");'>Edit</button>
+                      <input type="submit" class="w-full bg-sky-200 rounded border border-black mb-1 toggleClass_<?=$question['id']?> hidden" name="submit" value= "Update">
                       <p>
                     </td>
                   </tr>
