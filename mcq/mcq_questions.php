@@ -170,7 +170,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
   if(isset($_POST['submit'])) {
     if($_POST['submit'] == 'Update') {
-      updateMCQquestion($_POST['id'], $userId, $_POST['explanation']);
+      //updateMCQquestion($_POST['id'], $userId, $_POST['explanation']);
     }
   }
 }
@@ -302,7 +302,10 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                     <td><?=$question['id']?></td>
                     <td><?=$question['No']?></td>
                     <td>
-                      <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question']?></p>
+                      <div>
+                        <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question']?></p>
+                        <textarea  name="question" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question']?></textarea>
+                      </div>
                       <?php
                         $imgSource = "";
                         if($question['path']!="") {
@@ -314,18 +317,70 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                         }
                       ?>
                       <p><img class = "w-3/4" src = "<?=$imgSource?>"></p>
-                      <p><?=$question['Topic']?></p>
-                      <p class="toggleClass_<?=$question['id']?> hidden">Answer: <?=$question['Answer']?>
-                      <p><label for="">Explanation: </label></p>
-                      <p><textarea name="explanation" class="resize w-full" spellcheck="true"><?php
-                          $explanations = json_decode($question['explanation']);
-                          //var_dump($explanations);
-                          $explanations = (array) $explanations;
-                          if(isset($explanations[$userId])) {
-                            echo $explanations[$userId];
-                          }
-                          //print_r($explanations);
-                        ?></textarea></p>
+                      <div>
+                        <h3>Topic:</h3>
+                        <p class="toggleClass_<?=$question['id']?>"><?=$question['Topic']?></p>
+                        <p class="toggleClass_<?=$question['id']?>"><?=$question['topics']?></p>
+                        <div class="toggleClass_<?=$question['id']?> hidden">
+                          <p>Primary Topic: <input type="text" name = "topic"  value = "<?=$question['Topic']?>"></p>
+                          <p>Secondary Topics: <input type="text" name = "topics" value = "<?=$question['topics']?>"></p>
+                        </div>
+                      </div>
+                      <div>
+                        <h3>Answer:</h3>
+                        <p class="toggleClass_<?=$question['id']?>"><?=$question['Answer']?></p>
+                        <input type="text" name = "answer" class="toggleClass_<?=$question['id']?> hidden" value = "<?=$question['Answer']?>">
+                      </div>
+                      <div>
+                          <?php
+                            $explanations = json_decode($question['explanation']);
+                            $userExplanation = "";
+                            //var_dump($explanations);
+                            $explanations = (array) $explanations;
+                            //var_dump($explanations);
+                            if(count($explanations)>0) {
+                              ?>
+                              <h3>Explanation: </h3>
+                              <?php
+                            }
+                            if(isset($explanations[$userId])) {
+                              $userExplanation = $explanations[$userId];
+                            }
+                            //print_r($explanations);
+                            foreach ($explanations as $key => $explanation) {
+                              ?>
+                              <div class="toggleClass_<?=$question['id']?> ml-3 border border-pink-300">
+                                <p class="whitespace-pre-line"><?=getUserInfo($key)['username']?>:</p>
+                                <p class="whitespace-pre-line"><?=$explanation?>:<p>
+                              </div>
+                              <?php
+
+                            }
+                          ?>
+                          <div class="toggleClass_<?=$question['id']?> hidden">
+                            <h3>Explanation:</h3>
+                            <p><textarea name="explanation" class="resize w-full " spellcheck="true"><?=$userExplanation?></textarea></p>
+                          </div>
+                        </div>                    
+                      <div>
+                        <h3>Options:</h3>
+                        <div>
+                            <?php
+                              $options =(array) json_decode($question['options']);
+                              echo "<ul>";
+                              foreach ($options as $key=>$option) {
+                                ?>
+                                <li><?=$key?>: <?=$option?></li>
+
+                                <?php
+                              }
+                              echo "</ul>";
+                              print_r($options);
+                            ?>
+                        </div>
+
+
+                      </div>
                         <p>
                           <?php print_r($question);?>
                         </p>

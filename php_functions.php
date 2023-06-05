@@ -591,7 +591,7 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
   global $conn;
   $results = array();
 
-  $sql ="SELECT q.id, q.No, q.Answer, q.Topic, q.keywords, q.question, q.options, q.explanation, q.examBoard, q.component, q.assetId, a.path
+  $sql ="SELECT q.id, q.No, q.Answer, q.Topic, q.topics, q.keywords, q.question, q.options, q.explanation, q.examBoard, q.component, q.assetId, a.path
         FROM question_bank_3 q
         LEFT JOIN upload_record a
           ON a.id = q.assetId";
@@ -655,7 +655,7 @@ function updateMCQquestionExplanation($id, $explanation) {
 
 }
 
-function updateMCQquestion($id, $userId, $explanation) {
+function updateMCQquestion($id, $userId, $explanation, $question) {
   /*
   Used to update MCQ question information with id = $id
 
@@ -688,7 +688,14 @@ function updateMCQquestion($id, $userId, $explanation) {
   }
   //print_r($currentExplanation);
   $currentExplanation = json_encode($currentExplanation);
-  updateMCQquestionExplanation($id, $currentExplanation);  
+  updateMCQquestionExplanation($id, $currentExplanation);
+  
+  $sql = "UPDATE question_bank_3
+          SET question = ?
+          WHERE id = ?";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("", );
+  $stmt->execute();
 
 }
 
