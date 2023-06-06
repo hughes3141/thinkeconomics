@@ -59,6 +59,7 @@ $examBoardCodeKey = array(
 );
 
 $updateBool = 0;
+$updateQuestionBool = 0;
 
 if($_SERVER['REQUEST_METHOD']==='POST') {
 
@@ -170,7 +171,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
   }
 
-  $updateQuestionBool = 0;
+  
   if(isset($_POST['submit'])) {
     if($_POST['submit'] == 'Update') {
 
@@ -183,7 +184,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       }
       $optionsArray = json_encode($optionsArray);
       
-      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords']);
+      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly']);
       ?>
       <?php
     }
@@ -214,12 +215,21 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
 
 ?>
 
+<!-- 
+
+$_GET controls:
+-test => isset = shows print_r for $_POST variables
+
+-->
+
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
     <h1 class="font-mono text-2xl bg-pink-400 pl-1">MCQ Questions</h1>
     <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
       <?php
       if($_SERVER['REQUEST_METHOD']==='POST') {
-        //print_r($_POST);
+        if(isset($_GET['test'])) {        
+          print_r($_POST);
+        }
         //print_r($questionsCollect);
         //echo "<br>"; print_r($optionsArray);
 
@@ -392,13 +402,19 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                             <?php
                               $options =(array) json_decode($question['options']);
                               echo "<ul>";
+                              $optionsNonStandard = 0;
                               foreach ($options as $key=>$option) {
+                                if($key != $option) {
+                                  $optionsNonStandard = 1;
                                 ?>
-                                <li><?=$key?>: <?=$option?></li>
-
+                                  <li><?=$key?>: <?=$option?></li>
                                 <?php
+                                }
                               }
                               echo "</ul>";
+                              if($optionsNonStandard == 0) {
+                                echo "Standard Options";
+                              }
                               //print_r($options);
                             ?>
                         </div>
@@ -407,7 +423,6 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                             echo "<ul>";
                             $optionCount = 0;
                             foreach ($options as $key=>$option) {
-                              
                               ?>
                               <li><label for="option_<?=$optionCount?>"><?=$key?></label>: <textarea id="option_<?=$optionCount?>" class="w-full"name="option_<?=$optionCount?>" onfocus="this.select()" spellcheck="true"><?=$option?></textarea></li>
                               <?php
@@ -416,14 +431,34 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                             }
                             echo "</ul>";
                             //echo $optionCount;
+                            echo $optionsNonStandard;
                             ?>
                             <input type="hidden" name="optionCount" value="<?=$optionCount?>">
                         </div>
-
+                      </div>
+                      <!-- Text Only Input:-->
+                      <div>
+                        <div class="toggleClass_<?=$question['id']?>">
+                          <p><?=($question['textOnly']==1) ? "Text Only Enabled" : ""?><p>
+                        </div>
+                        <div class="toggleClass_<?=$question['id']?> hidden">
+                          <p>
+                            <input id="textOnly_yes" name="textOnly" type="radio" value="1" <?=($question['textOnly']==1) ? "checked" : ""?>>
+                            <label for="textOnly_yes">Text Only</label>
+                          </p>
+                          <p>
+                            <input id="textOnly_no" name="textOnly" type="radio" value="0" <?=($question['textOnly']==0) ? "checked" : ""?>>
+                            <label for="textOnly_no">No Text Only</label>
+                          </p>
+                        </div>
 
                       </div>
                         <p>
-                          <?php //print_r($question);?>
+                          <?php 
+                            if(isset($_GET['test'])) {
+                              print_r($question);
+                            }
+                          ?>
                         </p>
                       <p><button type="button" class="w-full bg-pink-300 rounded border border-black mb-1" onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit", "Hide Edit", "block");'>Edit</button>
                       <input type="submit" class="w-full bg-sky-200 rounded border border-black mb-1 toggleClass_<?=$question['id']?> hidden" name="submit" value= "Update">
