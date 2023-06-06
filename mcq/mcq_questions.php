@@ -184,7 +184,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       }
       $optionsArray = json_encode($optionsArray);
       
-      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly']);
+      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['topicsAQA'], $_POST['topicsEdexcel'], $_POST['topicsOCR'], $_POST['topicsCIE']);
       ?>
       <?php
     }
@@ -347,12 +347,36 @@ $_GET controls:
                       ?>
                       <p><img class = "w-3/4" src = "<?=$imgSource?>"></p>
                       <div>
-                        <h3>Topic:</h3>
-                        <p class="toggleClass_<?=$question['id']?>"><?=$question['Topic']?></p>
-                        <p class="toggleClass_<?=$question['id']?>"><?=$question['topics']?></p>
+                        <h3>Topics:</h3>
+                        <div class="toggleClass_<?=$question['id']?>">
+                          <p><?=$question['Topic']?> <?=$question['topics']?> <?=$question['topicsAQA']?> <?=$question['topicsEdexcel']?> <?=$question['topicsOCR']?> <?=$question['topicsCIE']?></p>
+                        </div>
                         <div class="toggleClass_<?=$question['id']?> hidden">
-                          <p>Primary Topic: <input type="text" name = "topic"  value = "<?=$question['Topic']?>"></p>
-                          <p>Secondary Topics: <input type="text" name = "topics" value = "<?=$question['topics']?>"></p>
+                          <label>Primary Topic:</label>
+                            <p><input type="text" name = "topic"  value = "<?=$question['Topic']?>"></p>
+                          <label>Secondary Topics:</label>
+                            <p><input type="text" name = "topics" value = "<?=$question['topics']?>"></p>
+
+                          <label for="topicsAQA_input">AQA Topics:</label>
+                          <p>
+                            <input type ="text" id="topicsAQA_input" name="topicsAQA" value = "<?=$question['topicsAQA']?>">
+                        </p>
+
+                        <label for="topicsEdexcel_input">Edexcel Topics:</label>
+                          <p>
+                            <input type ="text" id="topicsEdexcel_input" name="topicsEdexcel" value = "<?=$question['topicsEdexcel']?>">
+                        </p>
+
+                        <label for="topicsOCR_input">OCR Topics:</label>
+                          <p>
+                            <input type ="text" id="topicsOCR_input" name="topicsOCR" value = "<?=$question['topicsOCR']?>">
+                        </p>
+
+                        <label for="topicsCIE_input">CIE Topics:</label>
+                          <p>
+                            <input type ="text" id="topicsCIE_input" name="topicsCIE" value = "<?=$question['topicsEdexcel']?>">
+                        </p>
+
                         </div>
                       </div>
                       <div>
@@ -431,7 +455,6 @@ $_GET controls:
                             }
                             echo "</ul>";
                             //echo $optionCount;
-                            echo $optionsNonStandard;
                             ?>
                             <input type="hidden" name="optionCount" value="<?=$optionCount?>">
                         </div>
