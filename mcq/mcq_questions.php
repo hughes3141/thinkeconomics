@@ -170,9 +170,11 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
   }
 
+  $updateQuestionBool = 0;
   if(isset($_POST['submit'])) {
     if($_POST['submit'] == 'Update') {
 
+      $updateQuestionBool = 1;
       //Create array for options:
       $options = ['A', 'B', 'C', 'D', 'E'];
       $optionsArray = array();
@@ -182,6 +184,8 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       $optionsArray = json_encode($optionsArray);
       
       updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords']);
+      ?>
+      <?php
     }
   }
 }
@@ -310,8 +314,8 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
                 ?>
                 <form method="post"  action="">
                   <input type="hidden" name="id" value="<?=$question['id']?>">
-                  <tr>
-                    <td><?=$question['id']?></td>
+                  <tr id="<?=$question['id']?>">
+                    <td ><?=$question['id']?></td>
                     <td>
                       <?=$question['No']?>
                     </td>
@@ -641,6 +645,18 @@ function hideRow(button) {
   row.style.display = "none";
   input.value='0';
 }
+
+<?php
+if($updateQuestionBool == 1) {
+    ?>
+      //console.log(document.getElementById('<?=$_POST['id']?>'));
+      document.getElementById('<?=$_POST['id']?>').scrollIntoView();
+    <?php
+  
+}
+?>
+
+
 
 
 
