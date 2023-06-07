@@ -1090,6 +1090,8 @@ function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endD
         FROM saq_question_bank_3 q
         JOIN flashcard_responses r
         ON q.id = r.questionId
+        LEFT JOIN upload_record a
+        
         WHERE q.userCreate = 1 AND q.type LIKE '%flashCard%'";
   
   //Clause to filter by $classid if set:

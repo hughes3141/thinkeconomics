@@ -375,6 +375,9 @@ include($path."/header_tailwind.php");
               <form method="post">
               
                 <h2 class ="text-lg">Question:</h2>
+                <?php
+                print_r($question);
+                ?>
               
                 <input type="hidden" name="questionId" value = "<?=htmlspecialchars($question['qId'])?>">
                 <input type="hidden" name="timeStart" value = "<?=date("Y-m-d H:i:s",time())?>">
@@ -427,7 +430,7 @@ include($path."/header_tailwind.php");
             <?php
 
               echo "<pre>";
-              print_r($questions);
+              //print_r($questions);
 
               echo "</pre>";
 
