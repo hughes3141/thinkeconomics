@@ -722,9 +722,14 @@ function insertMCQquestion($userCreate, $questionCode, $questionNo, $examBoard, 
 
 }
 
+//SAQ Question handling
+
 function getExercises($table, $topic = null, $userCreate = null) {
   /*
   This function gets information on all SAQ or NDE excercises
+
+  Used in: 
+  -saq_list1.1.php
   */
   global $conn;
   $results = array();
@@ -801,8 +806,16 @@ function getGroupInfoById($groupId) {
 function getQuestionById($questionId) {
   //Returns detail of SAQ_question_bank_3 from input id
 
+  /*
+  Used in: 
+  -saq/saq2.0.php
+  */
+
+
   global $conn;
-  $sql = "SELECT * FROM saq_question_bank_3 WHERE id = ?";
+  $sql = "SELECT * 
+          FROM saq_question_bank_3
+          WHERE id = ?";
   $stmt=$conn->prepare($sql);
   $stmt->bind_param("i", $questionId);
   $stmt->execute();
@@ -812,6 +825,47 @@ function getQuestionById($questionId) {
     $row = $result->fetch_assoc();
     return $row;
   }
+
+
+}
+
+function getQuestionInfo($questionId = null) {
+  /*
+  Updated version of above function, geteQuestionById
+
+  Used to find details of SAQ questions by given parameters
+  Used in:
+  -
+  */
+
+  global $conn;
+  $params="";
+  $bindArray = array();
+  $results = array();
+
+  $sql = "SELECT *
+          FROM saq_question_bank_3";
+
+  if($questionId) {
+    $sql .= " WHERE id = ? ";
+    $params .= "i";
+    array_push($bindArray, $questionId);
+  }
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
 
 
 }
@@ -2050,7 +2104,7 @@ function getAssignmentsByGroup($groupId, $limit = 1000, $type = null, $ascdsc = 
   return $responses;
 }
 
-function newUploadsRecord($userid, $path, $altText = "", $root) {
+function newUploadsRecord($userid, $path, $altText = "", $root, $notes) {
   /*
   Update upload_record table with new records
 
@@ -2061,14 +2115,54 @@ function newUploadsRecord($userid, $path, $altText = "", $root) {
   global $conn;
   $datetime = date("Y-m-d H:i:s");
   $sql = "INSERT INTO upload_record
-          (userCreate, dateTime, path, altText, uploadRoot)
-          VALUES (?,?,?,?,?)";
+          (userCreate, dateTime, path, altText, uploadRoot, notes)
+          VALUES (?,?,?,?,?,?)";
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("issss", $userid, $datetime, $path, $altText, $root);
+  $stmt->bind_param("isssss", $userid, $datetime, $path, $altText, $root, $notes);
   $stmt->execute();
 
   echo $altText." is this as in the function.";
 
+
+}
+
+function getUploadsInfo($assetId = null) {
+  /*
+  Used to retrieve inforation on assets contained in upload_record
+
+  Used in:
+  -asset_list.php
+  */
+
+  global $conn;
+  $params="";
+  $bindArray = array();
+  $results = array();
+
+  $sql=   "SELECT *
+          FROM upload_record";
+  
+  if($assetId) {
+    $sql .= " WHERE id = ? ";
+    $params .= "i";
+    array_push($bindArray, $assetId);
+
+  }
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
 
 }
 

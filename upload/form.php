@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $uploadMessage .=  "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded.";
       
       //Update upload_record:
-      newUploadsRecord($userId, $target_file, $_POST['altText'], $path);
+      newUploadsRecord($userId, $target_file, $_POST['altText'], $path, $_POST['notes']);
 
     } else {
       $uploadMessage .=  "Sorry, there was an error uploading your file.";
@@ -123,6 +123,10 @@ include($path."/header_tailwind.php");
     <p>
       <label>Alt Text</label>
       <textarea name= "altText"></textarea>
+    </p>
+    <p>
+      <label>Notes</label>
+      <textarea name= "notes"></textarea>
     </p>
     <input type="submit" value="Upload Image" name="submit">
   </form>
