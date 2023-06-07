@@ -98,9 +98,13 @@ print_r($_POST);
 //print_r($_GET);
 echo date("Y-m-d H:i:s");
 
-$stmt = $conn->prepare("INSERT INTO saq_question_bank_3 (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, topic_order, time_added) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+$sql = "INSERT INTO saq_question_bank_3 
+        (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, topic_order, time_added, questionAssetId, answerAssetId) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-//$stmt->bind_param("ssisssisssss", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $topic_order, $timeAdded);
+$stmt = $conn->prepare($sql);
+
+$stmt->bind_param("ssisssisssssii", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $topic_order, $timeAdded, $questionAsset, $answerAsset);
 
 
 
@@ -120,6 +124,8 @@ if (isset($_POST['submit'])) {
     $answer_img_alt = $_POST['image_ans_alt_'.$x];
     $topic_order = $_POST['topic_order_'.$x];
     $timeAdded = date("Y-m-d H:i:s");
+    $questionAsset = $_POST['questionAsset_'.$x];
+    $answerAsset = $_POST['answerAsset_'.$x];
   
     $stmt->execute();
     
@@ -132,7 +138,7 @@ if (isset($_POST['submit'])) {
 if(isset($_POST['updateValue'])) {
   $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?, topic_order = ? WHERE id = ?";
   
-  //$stmt = $conn->prepare($sql);
+  $stmt = $conn->prepare($sql);
   //print_r($_POST);
   
   $stmt->bind_param("sssssssssi", $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $_POST['topic_order'], $_POST['id']);
@@ -534,7 +540,7 @@ function addRow() {
   //cell2.innerHTML = '';
   cell2.innerHTML = '<label for="points_'+inst+'">Points:</label><input type="number" id ="points_'+inst+'" name="points_'+inst+'"></input>';
   cell3.innerHTML = '<label for="type_'+inst+'">Source:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input>';
-  cell4.innerHTML = '<label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><label for="image_ans_'+inst+'">Answer img src:</label><br><input type="text" id ="image_ans_'+inst+'" name="image_ans_'+inst+'"></input><br><label for="image_ans_alt'+inst+'">Answer img_alt:</label><br><input type="text" id ="image_ans_alt'+inst+'" name="image_ans_alt_'+inst+'"></input><br><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="text" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'">';
+  cell4.innerHTML = '<p>→</p><label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><label for="image_ans_'+inst+'">Answer img src:</label><br><input type="text" id ="image_ans_'+inst+'" name="image_ans_'+inst+'"></input><br><label for="image_ans_alt'+inst+'">Answer img_alt:</label><br><input type="text" id ="image_ans_alt'+inst+'" name="image_ans_alt_'+inst+'"></input><br><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="text" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'">';
   
   topicListAmend(inst);
   sourceAmend(inst)

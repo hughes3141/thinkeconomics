@@ -116,7 +116,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
   else {
     insertFlashcardResponse($_POST['questionId'], $userId, $_POST['rightWrong'], $_POST['timeStart'], date("Y-m-d H:i:s", time()), $_POST['cardCategory']);
-    print_r($_POST);
+    if(isset($_GET['test'])){
+      print_r($_POST);
+    }
   }
 }
 
@@ -148,7 +150,9 @@ include($path."/header_tailwind.php");
   else {
     $questions = getFlashcardsQuestions(null, $userId);
   }
-  echo count($questions);
+  if(isset($_GET['test'])) {
+    echo count($questions);
+  }
 
 
 
@@ -376,7 +380,9 @@ include($path."/header_tailwind.php");
               
                 <h2 class ="text-lg">Question:</h2>
                 <?php
-                print_r($question);
+                if(isset($_GET['test'])){
+                  print_r($question);
+                }
                 ?>
               
                 <input type="hidden" name="questionId" value = "<?=htmlspecialchars($question['qId'])?>">
@@ -388,9 +394,22 @@ include($path."/header_tailwind.php");
                 <p><?php //print_r(lastResponse($questions[$randomQuestion]['id']));?>
 
                 <?php
+                  $questionImg = null;
+                  $questionAlt = null;
 
                   if($question['img'] != "") {
-                    ?><img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($questions[$randomQuestion]['img'])?>" alt = "<?=htmlspecialchars($question['img'])?>">
+                    $questionImg = htmlspecialchars($question['img']);
+                    $questionAlt = htmlspecialchars($question['img']);
+                  }
+
+                  if($question['qPath'] != "") {
+                    $questionImg = htmlspecialchars($question['qPath']);
+                    $questionAlt = htmlspecialchars($question['qAlt']);
+                  }
+
+                  if($questionImg) {
+                    ?>
+                    <img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($questionImg)?>" alt = "<?=htmlspecialchars($questionAlt)?>">
                     <?php
                   }
                 ?>
@@ -407,8 +426,23 @@ include($path."/header_tailwind.php");
 
                   <?php
 
+                  $answerImg = null;
+                  $answerAlt = null;
+
+
+
                   if($question['answer_img'] != "") {
-                    ?><img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($question['answer_img'])?>" alt = "<?=htmlspecialchars($question['answer_img_alt'])?>">
+                    $answerImg = htmlspecialchars($question['answer_img']);
+                    $answerAlt = htmlspecialchars($question['answer_img_alt']);
+                  }
+
+                  if($question['aPath'] != "") {
+                    $answerImg = htmlspecialchars($question['aPath']);
+                    $answerAlt = htmlspecialchars($question['aAlt']);
+                  }
+
+                  if($answerImg) {
+                    ?><img class = "mx-auto content-center object-center" src= "<?=$answerImg?>" alt = "<?=$answerAlt?>">
                     <?php
                   }
                   ?>

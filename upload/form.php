@@ -39,7 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   //Process server upload:
 
-  print_r($_POST);
+  if(isset($_GET['test'])) {
+    print_r($_POST);
+  }
 
   $uploadMessage = "";
 
@@ -118,6 +120,7 @@ include($path."/header_tailwind.php");
       <select name="filepath" id = "filepath">
         <option value ='/assets/'>Assets</option>
         <option value = '/mcq/question_img/'>MCQ Image</option>
+        <option value = '/assets/flashcard_img/'>Flashcard Image</option>
       </select>
     </p>
     <p>

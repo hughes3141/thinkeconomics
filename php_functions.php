@@ -1090,8 +1090,6 @@ function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endD
         FROM saq_question_bank_3 q
         JOIN flashcard_responses r
         ON q.id = r.questionId
-        LEFT JOIN upload_record a
-        
         WHERE q.userCreate = 1 AND q.type LIKE '%flashCard%'";
   
   //Clause to filter by $classid if set:
@@ -1145,7 +1143,7 @@ function getFlashcardsQuestions($topics = null, $userId) {
     $numTopics = count($topics);
     $placeholder = str_repeat("?, ", $numTopics -1)." ?";
   }
-  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, r.userId, r.gotRight, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory
+  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, r.userId, r.gotRight, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory, q.questionAssetId, aq.path qPath, aq.altText qAlt, aa.path aPath, aa.altText aAlt
           FROM saq_question_bank_3 q
           LEFT JOIN (
             SELECT rr.id, rr.questionId, rr.userId, rr.timeSubmit, rr.gotRight, rr.cardCategory, t.most_recent, rr.timeStart
@@ -1160,6 +1158,10 @@ function getFlashcardsQuestions($topics = null, $userId) {
             WHERE rr.userId = ?
             ) r
           ON q.id = r.questionId
+          LEFT JOIN upload_record aq
+          ON q.questionAssetId = aq.id
+          LEFT JOIN upload_record aa
+          ON q.answerAssetId = aa.id
           WHERE ";
 
   if($topics) {
