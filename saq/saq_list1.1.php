@@ -125,7 +125,13 @@ if (isset($_POST['submit'])) {
     $topic_order = $_POST['topic_order_'.$x];
     $timeAdded = date("Y-m-d H:i:s");
     $questionAsset = $_POST['questionAsset_'.$x];
+    if($_POST['questionAsset_'.$x] == "") {
+      $questionAsset = null;
+    }
     $answerAsset = $_POST['answerAsset_'.$x];
+    if($_POST['answerAsset_'.$x] == "") {
+      $answerAsset = null;
+    }
   
     $stmt->execute();
     
@@ -136,12 +142,21 @@ if (isset($_POST['submit'])) {
 }
 
 if(isset($_POST['updateValue'])) {
-  $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?, topic_order = ? WHERE id = ?";
+  $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?, topic_order = ?, questionAssetId =?, answerAssetId = ? WHERE id = ?";
   
   $stmt = $conn->prepare($sql);
   //print_r($_POST);
+
+  $questionAsset = $_POST['questionAsset'];
+  if($_POST['questionAsset'] == "") {
+    $questionAsset = null;
+  }
+  $answerAsset = $_POST['answerAsset'];
+  if($_POST['answerAsset'] == "") {
+    $answerAsset = null;
+  }
   
-  $stmt->bind_param("sssssssssi", $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $_POST['topic_order'], $_POST['id']);
+  $stmt->bind_param("sssssssssiii", $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $_POST['topic_order'], $questionAsset, $answerAsset, $_POST['id']);
 
   $questionData = getQuestionData($_POST['id']);
   $questionDataUser = $questionData['userCreate'];
@@ -321,7 +336,11 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
           <div class="show_<?=$row['id'];?>">
             <?=htmlspecialchars($row['question']);?>
           </div>
+          <div class= "hide hide_<?=$row['id'];?>">
             <textarea class="hide hide_<?=$row['id'];?>" name ="question"><?=htmlspecialchars($row['question'])?></textarea>
+            <br>
+            <input type="number" name="questionAsset" value="<?=$row['questionAssetId']?>">
+        </div>
         </td>
         <td class="col4">
           <div class="show_<?=$row['id'];?>">
@@ -344,9 +363,14 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         <td class="col7">
           <div class="show_<?=$row['id'];?>" style="white-space: pre-line;"><?=htmlspecialchars($row['model_answer']);?>
           </div>
-            <textarea class="hide hide_<?=$row['id'];?>" name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
-            <input type ="text" class="hide hide_<?=$row['id'];?>" name ="answer_img" value = "<?=htmlspecialchars($row['answer_img'])?>"></input>  
-            <input type ="text" class="hide hide_<?=$row['id'];?>" name ="answer_img_alt" value = "<?=htmlspecialchars($row['answer_img_alt'])?>"></input>
+          <div class="hide hide_<?=$row['id'];?>">
+            <textarea name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
+            <input type ="text" name ="answer_img" value = "<?=htmlspecialchars($row['answer_img'])?>"></input>  
+            <input type ="text" name ="answer_img_alt" value = "<?=htmlspecialchars($row['answer_img_alt'])?>"></input>
+            <br>
+            <input type="number" name="answerAsset" value="<?=$row['answerAssetId']?>">
+          </div>
+            
         </td>
 
         <td>
