@@ -1254,6 +1254,35 @@ function insertFlashcardResponse($questionId, $userId, $gotRight, $timeStart, $t
   
 }
 
+function sortWithinTopic($table, $id, $topic, $newPlace) {
+  /*
+  A function to sort out topic_order column e.g. as in saq_question_bank_3 so that questions can be moved around.
+
+
+  */
+
+  global $conn;
+
+  $responses = array();
+
+  $sql = "SELECT id, topic_order, question
+          FROM ".$table." 
+          WHERE topic = ?";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("s", $topic);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($responses, $row);
+
+    }
+  }
+
+  return $responses;
+  
+}
+
 function loginLogReturn($limit = null, $likeName = null) {
   global $conn;
   $responses = array();

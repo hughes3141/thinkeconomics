@@ -142,7 +142,7 @@ if (isset($_POST['submit'])) {
 }
 
 if(isset($_POST['updateValue'])) {
-  $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?, topic_order = ?, questionAssetId =?, answerAssetId = ? WHERE id = ?";
+  $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?,  questionAssetId =?, answerAssetId = ? WHERE id = ?";
   
   $stmt = $conn->prepare($sql);
   //print_r($_POST);
@@ -156,7 +156,7 @@ if(isset($_POST['updateValue'])) {
     $answerAsset = null;
   }
   
-  $stmt->bind_param("sssssssssiii", $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $_POST['topic_order'], $questionAsset, $answerAsset, $_POST['id']);
+  $stmt->bind_param("ssssssssiii", $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $questionAsset, $answerAsset, $_POST['id']);
 
   $questionData = getQuestionData($_POST['id']);
   $questionDataUser = $questionData['userCreate'];
@@ -181,6 +181,11 @@ if(isset($_POST['updateValue'])) {
 <?php
 if($_SERVER['REQUEST_METHOD']==='POST') {
   print_r($_POST);
+}
+
+if(isset($_GET['test'])) {
+  $resultsbyTopic = sortWithinTopic("saq_question_bank_3", null, $_GET['topic'], null);
+  print_r($resultsbyTopic);
 }
 
 ?>
@@ -326,7 +331,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         <td class="col2">
           <div class="show_<?=$row['id'];?>">
             <?=htmlspecialchars($row['topic']);?><br>
-            <?= ($row['topic_order'] != "0" ? htmlspecialchars($row['topic_order']) : "")?>
+            <?= (/*$row['topic_order']  != "0" ? */htmlspecialchars($row['topic_order']) /*: ""*/)?>
             <?//=htmlspecialchars($row['topic_order'])?>
           </div>
             <input type="text" class="hide hide_<?=$row['id'];?>" name ="topic" value ="<?=htmlspecialchars($row['topic'])?>" style="width:100px;"></input>
