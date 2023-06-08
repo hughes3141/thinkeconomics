@@ -1254,6 +1254,22 @@ function insertFlashcardResponse($questionId, $userId, $gotRight, $timeStart, $t
   
 }
 
+function updateTopicOrder($id, $newPlace) {
+  /*
+  A function to update the topic_order column of saq_question_bank_3
+
+  Soley used as supporting function for sortWithinTopic() below;
+  */
+
+  global $conn;
+  $sql = "UPDATE saq_question_bank_3
+          SET topic_order = ?
+          WHERE id = ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("ii", $newPlace, $id);
+  $stmt->execute();
+}
+
 function sortWithinTopic($table, $id, $topic, $newPlace) {
   /*
   A function to sort out topic_order column e.g. as in saq_question_bank_3 so that questions can be moved around.
@@ -1264,22 +1280,52 @@ function sortWithinTopic($table, $id, $topic, $newPlace) {
   global $conn;
 
   $responses = array();
+  $changedResponse = array();
 
   $sql = "SELECT id, topic_order, question
           FROM ".$table." 
-          WHERE topic = ?";
+          WHERE topic = ?
+          ORDER BY topic_order";
   $stmt=$conn->prepare($sql);
   $stmt->bind_param("s", $topic);
   $stmt->execute();
   $result = $stmt->get_result();
   if($result->num_rows>0) {
+    $index = 0;
     while($row = $result->fetch_assoc()) {
       array_push($responses, $row);
+      //$responses[$row['id']] = $row;
+      if($row['id'] == $id) {
+        $changedResponse = $row;
+        $oldPlace = $index;
+      }
+      $index ++;
+    }
+  }
+  //$oldPlace = $changedResponse['topic_order'];
+  $changedId = $changedResponse['id'];
 
+  if($newPlace < 0 ) {
+    $newPlace = 0;
+  }
+  if ($newPlace >= count($responses)) {
+    $newPlace = count($responses)-1;
+  }
+
+  if($newPlace < $oldPlace) {
+    updateTopicOrder($changedId, $newPlace);
+    for($x=$newPlace; $x<$oldPlace; $x++) {
+      updateTopicOrder($responses[$x]['id'], ($x+1));
+    }
+  }
+  if($newPlace > $oldPlace) {
+    updateTopicOrder($changedId, $newPlace);
+    for($x=$oldPlace; $x<$newPlace; $x++) {
+      updateTopicOrder($responses[($x+1)]['id'], $x);
     }
   }
 
-  return $responses;
+  //return $responses;
   
 }
 

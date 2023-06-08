@@ -142,6 +142,9 @@ if (isset($_POST['submit'])) {
 }
 
 if(isset($_POST['updateValue'])) {
+
+  sortWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
+
   $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?,  questionAssetId =?, answerAssetId = ? WHERE id = ?";
   
   $stmt = $conn->prepare($sql);
@@ -184,8 +187,13 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 }
 
 if(isset($_GET['test'])) {
-  $resultsbyTopic = sortWithinTopic("saq_question_bank_3", null, $_GET['topic'], null);
+  /*
+  $resultsbyTopic = sortWithinTopic("saq_question_bank_3", 77, $_GET['topic'], null);
+  echo "<pre>";
   print_r($resultsbyTopic);
+  echo "</pre>";
+  */
+  
 }
 
 ?>
@@ -291,14 +299,25 @@ if(isset($_GET['test'])) {
 
 
   $topicGet = $_GET['topic'];
+  $sql = "SELECT * FROM saq_question_bank_3 WHERE Topic= ? ORDER BY case when topic_order = 0 then 1 else 0 end, topic_order ASC";
+
+  $sql = "SELECT * 
+          FROM saq_question_bank_3 
+          WHERE Topic= ? 
+          ORDER BY topic_order";
 
 
-  $stmt = $conn->prepare("SELECT * FROM saq_question_bank_3 WHERE Topic= ? ORDER BY case when topic_order = 0 then 1 else 0 end, topic_order ASC");
+  $stmt = $conn->prepare($sql);
 
   $stmt->bind_param("s", $topicGet);
 
   if(isset($_GET['type'])) {
-    $stmt = $conn->prepare("SELECT * FROM saq_question_bank_3 WHERE Topic= ? AND type LIKE ? ORDER BY case when topic_order is null then 1 else 0 end, topic_order ASC");
+    $sql = "SELECT * FROM saq_question_bank_3 WHERE Topic= ? AND type LIKE ? ORDER BY case when topic_order is null then 1 else 0 end, topic_order ASC";
+    $sql = "SELECT * FROM saq_question_bank_3
+            WHERE Topic= ? 
+            AND type LIKE ? 
+            ORDER BY topic_order";
+    $stmt = $conn->prepare($sql);
     $typeSql = "%".$_GET['type']."%";
     $stmt->bind_param("ss", $topicGet, $typeSql);
 
