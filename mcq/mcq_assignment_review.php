@@ -462,6 +462,7 @@ echo "</pre>";
     <p><em><?=$questionName?></em></p>
     <img  src="question_img/<?=$questionName?>.JPG" alt="question <?=$questionName?>">
     <p>Number Correct: <?=$question['correctCount']."/".count($results)?></p>
+    <p>Correct Answer: <?=$question['correct']?></p>
     <p class="questions_summary">Summary: <?php
       $count = 0;
       foreach($question['summary'] as $key=>$response) {
