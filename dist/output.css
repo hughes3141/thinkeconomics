@@ -792,6 +792,10 @@ input[type="range"]::-ms-fill-lower {
   margin: 0.75rem;
 }
 
+.m-5 {
+  margin: 1.25rem;
+}
+
 .m-2 {
   margin: 0.5rem;
 }
@@ -987,6 +991,35 @@ input[type="range"]::-ms-fill-lower {
   height: 100%;
 }
 
+.h-9 {
+  height: 2.25rem;
+}
+
+.h-10 {
+  height: 2.5rem;
+}
+
+.h-16 {
+  height: 4rem;
+}
+
+.h-20 {
+  height: 5rem;
+}
+
+.h-max {
+  height: -moz-max-content;
+  height: max-content;
+}
+
+.h-80 {
+  height: 20rem;
+}
+
+.h-60 {
+  height: 15rem;
+}
+
 .w-full {
   width: 100%;
 }
@@ -1031,6 +1064,18 @@ input[type="range"]::-ms-fill-lower {
   width: 0.25rem;
 }
 
+.w-3\/4 {
+  width: 75%;
+}
+
+.w-3\/5 {
+  width: 60%;
+}
+
+.w-1\/2 {
+  width: 50%;
+}
+
 .max-w-5xl {
   max-width: 64rem;
 }
@@ -1055,6 +1100,10 @@ input[type="range"]::-ms-fill-lower {
   flex-grow: 1;
 }
 
+.basis-1\/3 {
+  flex-basis: 33.333333%;
+}
+
 .table-auto {
   table-layout: auto;
 }
@@ -1071,12 +1120,20 @@ input[type="range"]::-ms-fill-lower {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.resize {
+  resize: both;
+}
+
 .list-none {
   list-style-type: none;
 }
 
 .list-disc {
   list-style-type: disc;
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .flex-row {
@@ -1129,6 +1186,12 @@ input[type="range"]::-ms-fill-lower {
 
 .gap-4 {
   gap: 1rem;
+}
+
+.space-x-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(0.5rem * var(--tw-space-x-reverse));
+  margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
 .divide-y > :not([hidden]) ~ :not([hidden]) {
@@ -1204,6 +1267,10 @@ input[type="range"]::-ms-fill-lower {
 
 .border-b-4 {
   border-bottom-width: 4px;
+}
+
+.border-t-2 {
+  border-top-width: 2px;
 }
 
 .border-transparent {
@@ -1457,6 +1524,10 @@ input[type="range"]::-ms-fill-lower {
   text-align: center;
 }
 
+.align-top {
+  vertical-align: top;
+}
+
 .align-middle {
   vertical-align: middle;
 }
@@ -1599,6 +1670,11 @@ input[type="range"]::-ms-fill-lower {
 .text-pink-400 {
   --tw-text-opacity: 1;
   color: rgb(241 126 184 / var(--tw-text-opacity));
+}
+
+.text-slate-200 {
+  --tw-text-opacity: 1;
+  color: rgb(226 232 240 / var(--tw-text-opacity));
 }
 
 .underline {
@@ -2030,6 +2106,10 @@ input[type="range"]::-ms-fill-lower {
 @media (min-width: 1280px) {
   .xl\:mt-20 {
     margin-top: 5rem;
+  }
+
+  .xl\:inline {
+    display: inline;
   }
 
   .xl\:w-1\/12 {
