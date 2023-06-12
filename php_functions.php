@@ -591,18 +591,22 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
   global $conn;
   $results = array();
 
-  $sql ="SELECT id, No, Answer, Topic, keywords, question, options, explanation, examBoard, component
-        FROM question_bank_3";
+  $sql ="SELECT q.id, q.No, q.Answer, q.Topic, q.topics, q.keywords, q.question, q.options, q.explanation, q.examBoard, q.component, q.assetId, q.unitName, q.qualLevel, q.textOnly, q.topicsAQA, q.topicsEdexcel, q.topicsOCR, q.topicsCIE, a.path
+        FROM question_bank_3 q
+        LEFT JOIN upload_record a
+          ON a.id = q.assetId";
 
   if($id) {
     $sql .= "  WHERE id = ?";
   }
   if($questionNo) {
-    $sql .= "  WHERE No = ?";
+    $sql .= "  WHERE No LIKE ?";
   }
   if($topic) {
     $sql .= "  WHERE topic = ?";
   }
+
+
 
   $stmt=$conn->prepare($sql);
 
@@ -610,6 +614,7 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
     $stmt->bind_param("i", $id);
   }
   if($questionNo) {
+    $questionNo = $questionNo."%";
     $stmt->bind_param("s", $questionNo);
   }
   if($topic) {
@@ -623,9 +628,11 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
       array_push($results, $row);
     }
   }
+  
   if (!$topic && count($results) == 1) {
     $results = $results[0];
   }
+  
   return $results;
 
 
@@ -648,7 +655,7 @@ function updateMCQquestionExplanation($id, $explanation) {
 
 }
 
-function updateMCQquestion($id, $userId, $explanation) {
+function updateMCQquestion($id, $userId, $explanation, $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $topicsAQA, $topicsEdexcel, $toipcsOCR, $topicsCIE) {
   /*
   Used to update MCQ question information with id = $id
 
@@ -681,13 +688,48 @@ function updateMCQquestion($id, $userId, $explanation) {
   }
   //print_r($currentExplanation);
   $currentExplanation = json_encode($currentExplanation);
-  updateMCQquestionExplanation($id, $currentExplanation);  
+  updateMCQquestionExplanation($id, $currentExplanation);
+  
+  //Update other values that are not explanation:
+  $sql = "UPDATE question_bank_3
+          SET question = ?, options = ?, Topic = ?, topics = ?, Answer = ?, keywords = ?, textOnly = ?, topicsAQA = ?, topicsEdexcel = ?, topicsOCR = ?, topicsCIE = ?
+          WHERE id = ?";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("ssssssissssi", $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $topicsAQA, $topicsEdexcel, $toipcsOCR, $topicsCIE, $id);
+  $stmt->execute();
 
 }
+
+function insertMCQquestion($userCreate, $questionCode, $questionNo, $examBoard, $level, $unitNo, $unitName, $year, $questionText, $options, $answer, $assetId, $topic, $topics, $keyWords) {
+  /*
+  This function inserts a new MCQ question.
+  Used in:
+  -mcq/mcq_questions.php
+  */
+
+  global $conn;
+  date_default_timezone_set('Europe/London');
+  $datetime = date("Y-m-d H:i:s");
+  $active = 1;
+
+  $sql = "INSERT INTO question_bank_3
+          (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, options, Answer, assetId, Topic, topics, keywords, dateCreate, active)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("issssssssssissssi", $userCreate, $questionCode, $questionNo, $examBoard, $level, $unitNo, $unitName, $year, $questionText, $options, $answer, $assetId, $topic, $topics, $keyWords, $datetime, $active);
+  $stmt->execute();
+
+
+}
+
+//SAQ Question handling
 
 function getExercises($table, $topic = null, $userCreate = null) {
   /*
   This function gets information on all SAQ or NDE excercises
+
+  Used in: 
+  -saq_list1.1.php
   */
   global $conn;
   $results = array();
@@ -764,8 +806,16 @@ function getGroupInfoById($groupId) {
 function getQuestionById($questionId) {
   //Returns detail of SAQ_question_bank_3 from input id
 
+  /*
+  Used in: 
+  -saq/saq2.0.php
+  */
+
+
   global $conn;
-  $sql = "SELECT * FROM saq_question_bank_3 WHERE id = ?";
+  $sql = "SELECT * 
+          FROM saq_question_bank_3
+          WHERE id = ?";
   $stmt=$conn->prepare($sql);
   $stmt->bind_param("i", $questionId);
   $stmt->execute();
@@ -775,6 +825,47 @@ function getQuestionById($questionId) {
     $row = $result->fetch_assoc();
     return $row;
   }
+
+
+}
+
+function getQuestionInfo($questionId = null) {
+  /*
+  Updated version of above function, geteQuestionById
+
+  Used to find details of SAQ questions by given parameters
+  Used in:
+  -
+  */
+
+  global $conn;
+  $params="";
+  $bindArray = array();
+  $results = array();
+
+  $sql = "SELECT *
+          FROM saq_question_bank_3";
+
+  if($questionId) {
+    $sql .= " WHERE id = ? ";
+    $params .= "i";
+    array_push($bindArray, $questionId);
+  }
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
 
 
 }
@@ -1038,6 +1129,205 @@ function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endD
 
 }
 
+function getFlashcardsQuestions($topics = null, $userId) {
+  /*
+  This function returns Flashcard quesiton information that will then be used in flashcards.php. This will return information on all flashcard questions in a the database given the filter, plus information on the last time a given $userId has attempted the question. Returns a ranked array of questions that can then be used to generate flashcards.php
+
+  used in: 
+  -flashcards.php
+  */
+  global $conn;
+  $results = array();
+
+  if($topics) {
+    $numTopics = count($topics);
+    $placeholder = str_repeat("?, ", $numTopics -1)." ?";
+  }
+  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, r.userId, r.gotRight, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory, q.questionAssetId, aq.path qPath, aq.altText qAlt, aa.path aPath, aa.altText aAlt
+          FROM saq_question_bank_3 q
+          LEFT JOIN (
+            SELECT rr.id, rr.questionId, rr.userId, rr.timeSubmit, rr.gotRight, rr.cardCategory, t.most_recent, rr.timeStart
+            FROM flashcard_responses rr
+            INNER JOIN (
+              SELECT questionId, MAX(timeSubmit) as most_recent
+              FROM flashcard_responses
+              WHERE userId = ?
+              GROUP BY questionId
+            ) t
+            ON rr.questionId = t.questionId AND rr.timeSubmit = t.most_recent
+            WHERE rr.userId = ?
+            ) r
+          ON q.id = r.questionId
+          LEFT JOIN upload_record aq
+          ON q.questionAssetId = aq.id
+          LEFT JOIN upload_record aa
+          ON q.answerAssetId = aa.id
+          WHERE ";
+
+  if($topics) {
+    $sql .= "q.topic IN ($placeholder) AND ";
+  }
+  
+  $sql .= "q.type LIKE '%flashCard%'
+          
+          ORDER BY q.topic, r.questionId, r.timeSubmit
+          
+  ";
+
+  $bindArray = array();
+  $bindArray = $topics;
+
+  $stmt = $conn->prepare($sql);
+
+  if($topics) {
+    $paramTypes = "ii".str_repeat("s", $numTopics);
+    //array_push($bindArray, $userId);
+    array_unshift($bindArray, $userId);
+    array_unshift($bindArray, $userId);
+    $stmt->bind_param($paramTypes, ...$bindArray);
+  } else {
+    $stmt->bind_param('ii', $userId, $userId);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row=$result->fetch_assoc()) {
+      if($row['timeSubmit']=="") {
+        $row['rank'] =1;
+      }
+      else {
+        $submit_timeStamp = strtotime($row['timeSubmit']);
+        $current_timeStamp = time();
+        $seconds = $current_timeStamp - $submit_timeStamp;
+        $row['seconds'] = $seconds;
+        $row['rank'] = 1+(24*3600)/($seconds+1);
+        if($row['cardCategory'] == "1") {
+          $row['rank'] += 1;
+        } elseif ($row['cardCategory']>=2) {
+          $row['rank'] +=2;
+        }
+      }
+      array_push($results, $row);
+    }
+  }
+  array_multisort(array_column($results, 'rank'), SORT_ASC, $results);
+  return $results;
+  
+}
+
+function insertFlashcardResponse($questionId, $userId, $gotRight, $timeStart, $timeSubmit, $cardCategory) {
+  /*
+  This function inserts a new record when a flashcard question has been completed by a student.
+  
+  Used in:
+  -flaschards.php
+  */
+
+  global $conn;
+
+  $stmt = $conn->prepare("INSERT INTO flashcard_responses (questionId,  userId, gotRight, timeStart, timeSubmit, cardCategory, timeDuration, dateSubmit) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+
+
+  $seconds = strtotime($timeSubmit) - strtotime($timeStart);
+  $date = date("Y-m-d", strtotime($timeSubmit));
+
+  if($gotRight === "0" || $gotRight === "1") {
+    $cardCategory = 0;
+  }
+  else if ($gotRight = 2) {
+    if ($cardCategory == "0" || $cardCategory == "") {
+      $cardCategory = 1;
+    } else if ($cardCategory == "1") {
+      $cardCategory = 2;
+    } else if ($cardCategory == "2") {
+      $cardCategory = 2;
+    }
+  }
+
+  $stmt->bind_param("iiissiis", $questionId, $userId, $gotRight, $timeStart, $timeSubmit, $cardCategory, $seconds, $date);
+  $stmt->execute();
+
+
+
+
+
+  
+}
+
+function updateTopicOrder($id, $newPlace) {
+  /*
+  A function to update the topic_order column of saq_question_bank_3
+
+  Soley used as supporting function for sortWithinTopic() below;
+  */
+
+  global $conn;
+  $sql = "UPDATE saq_question_bank_3
+          SET topic_order = ?
+          WHERE id = ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("ii", $newPlace, $id);
+  $stmt->execute();
+}
+
+function sortWithinTopic($table, $id, $topic, $newPlace) {
+  /*
+  A function to sort out topic_order column e.g. as in saq_question_bank_3 so that questions can be moved around.
+
+
+  */
+
+  global $conn;
+
+  $responses = array();
+  $changedResponse = array();
+
+  $sql = "SELECT id, topic_order, question
+          FROM ".$table." 
+          WHERE topic = ?
+          ORDER BY topic_order";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("s", $topic);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    $index = 0;
+    while($row = $result->fetch_assoc()) {
+      array_push($responses, $row);
+      //$responses[$row['id']] = $row;
+      if($row['id'] == $id) {
+        $changedResponse = $row;
+        $oldPlace = $index;
+      }
+      $index ++;
+    }
+  }
+  //$oldPlace = $changedResponse['topic_order'];
+  $changedId = $changedResponse['id'];
+
+  if($newPlace < 0 ) {
+    $newPlace = 0;
+  }
+  if ($newPlace >= count($responses)) {
+    $newPlace = count($responses)-1;
+  }
+
+  if($newPlace < $oldPlace) {
+    updateTopicOrder($changedId, $newPlace);
+    for($x=$newPlace; $x<$oldPlace; $x++) {
+      updateTopicOrder($responses[$x]['id'], ($x+1));
+    }
+  }
+  if($newPlace > $oldPlace) {
+    updateTopicOrder($changedId, $newPlace);
+    for($x=$oldPlace; $x<$newPlace; $x++) {
+      updateTopicOrder($responses[($x+1)]['id'], $x);
+    }
+  }
+
+  //return $responses;
+  
+}
 
 function loginLogReturn($limit = null, $likeName = null) {
   global $conn;
@@ -1891,6 +2181,68 @@ function getAssignmentsByGroup($groupId, $limit = 1000, $type = null, $ascdsc = 
     }
   }
   return $responses;
+}
+
+function newUploadsRecord($userid, $path, $altText = "", $root, $notes) {
+  /*
+  Update upload_record table with new records
+
+  used in:
+  -upload/form.php
+  */
+
+  global $conn;
+  $datetime = date("Y-m-d H:i:s");
+  $sql = "INSERT INTO upload_record
+          (userCreate, dateTime, path, altText, uploadRoot, notes)
+          VALUES (?,?,?,?,?,?)";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("isssss", $userid, $datetime, $path, $altText, $root, $notes);
+  $stmt->execute();
+
+  echo $altText." is this as in the function.";
+
+
+}
+
+function getUploadsInfo($assetId = null) {
+  /*
+  Used to retrieve inforation on assets contained in upload_record
+
+  Used in:
+  -asset_list.php
+  */
+
+  global $conn;
+  $params="";
+  $bindArray = array();
+  $results = array();
+
+  $sql=   "SELECT *
+          FROM upload_record";
+  
+  if($assetId) {
+    $sql .= " WHERE id = ? ";
+    $params .= "i";
+    array_push($bindArray, $assetId);
+
+  }
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
 }
 
 ?>

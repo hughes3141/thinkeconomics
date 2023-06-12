@@ -198,9 +198,14 @@ include "../header_tailwind.php";
           ?>
           
           <h1 class="font-mono text-xl bg-pink-300 pl-1">Admin Resources</h1>
+          <h3 class="font-mono text-md bg-pink-100 pl-1">Admin</h3>
           <p class="ml-2 hover:bg-sky-100"><a class ="block" href="/user/admin_users.php" >User Details Edit</a></p>
           <p class="ml-2 hover:bg-sky-100"><a class ="block" href="/user/login_log.php" >User Login Log</a></p>
           <p class="ml-2 hover:bg-sky-100"><a class ="block" href="/user/school_creator.php" >School Create and Manage</a></p>
+
+          <h3 class="font-mono text-md bg-pink-100 pl-1">Uploads/Assets</h3>
+          <p class="ml-2 hover:bg-sky-100"><a class ="block" href="/upload/form.php" >Upload Form</a></p>
+          <p class="ml-2 hover:bg-sky-100"><a class ="block" href="/upload/asset_list.php" >Asset List</a></p>
           
                 
           

@@ -184,6 +184,7 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
 
 
 include ($path."/header_tailwind.php");
+
 ?>
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 w-full">
@@ -461,6 +462,7 @@ echo "</pre>";
     <p><em><?=$questionName?></em></p>
     <img  src="question_img/<?=$questionName?>.JPG" alt="question <?=$questionName?>">
     <p>Number Correct: <?=$question['correctCount']."/".count($results)?></p>
+    <p>Correct Answer: <?=$question['correct']?></p>
     <p class="questions_summary">Summary: <?php
       $count = 0;
       foreach($question['summary'] as $key=>$response) {
@@ -602,7 +604,7 @@ function clearAssignmentsOnClassChange(form_id) {
 }
 
 
-var questions_summary_by_user = <?=json_encode($questionSummaryByUser)?>;
+var questions_summary_by_user = <?=(isset($questionSummaryByUser)) ? json_encode($questionSummaryByUser) : "''"?>;
 console.log(questions_summary_by_user);
 
 

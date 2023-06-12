@@ -98,9 +98,13 @@ print_r($_POST);
 //print_r($_GET);
 echo date("Y-m-d H:i:s");
 
-$stmt = $conn->prepare("INSERT INTO saq_question_bank_3 (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, topic_order, time_added) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+$sql = "INSERT INTO saq_question_bank_3 
+        (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, topic_order, time_added, questionAssetId, answerAssetId) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-$stmt->bind_param("ssisssisssss", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $topic_order, $timeAdded);
+$stmt = $conn->prepare($sql);
+
+$stmt->bind_param("ssisssisssssii", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $topic_order, $timeAdded, $questionAsset, $answerAsset);
 
 
 
@@ -120,6 +124,14 @@ if (isset($_POST['submit'])) {
     $answer_img_alt = $_POST['image_ans_alt_'.$x];
     $topic_order = $_POST['topic_order_'.$x];
     $timeAdded = date("Y-m-d H:i:s");
+    $questionAsset = $_POST['questionAsset_'.$x];
+    if($_POST['questionAsset_'.$x] == "") {
+      $questionAsset = null;
+    }
+    $answerAsset = $_POST['answerAsset_'.$x];
+    if($_POST['answerAsset_'.$x] == "") {
+      $answerAsset = null;
+    }
   
     $stmt->execute();
     
@@ -130,12 +142,24 @@ if (isset($_POST['submit'])) {
 }
 
 if(isset($_POST['updateValue'])) {
-  $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?, topic_order = ? WHERE id = ?";
+
+  sortWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
+
+  $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?,  questionAssetId =?, answerAssetId = ? WHERE id = ?";
   
   $stmt = $conn->prepare($sql);
   //print_r($_POST);
+
+  $questionAsset = $_POST['questionAsset'];
+  if($_POST['questionAsset'] == "") {
+    $questionAsset = null;
+  }
+  $answerAsset = $_POST['answerAsset'];
+  if($_POST['answerAsset'] == "") {
+    $answerAsset = null;
+  }
   
-  $stmt->bind_param("sssssssssi", $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $_POST['topic_order'], $_POST['id']);
+  $stmt->bind_param("ssssssssiii", $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $questionAsset, $answerAsset, $_POST['id']);
 
   $questionData = getQuestionData($_POST['id']);
   $questionDataUser = $questionData['userCreate'];
@@ -156,6 +180,23 @@ if(isset($_POST['updateValue'])) {
 
 
 <h1>Short Answer Question List</h1>
+
+<?php
+if($_SERVER['REQUEST_METHOD']==='POST') {
+  print_r($_POST);
+}
+
+if(isset($_GET['test'])) {
+  /*
+  $resultsbyTopic = sortWithinTopic("saq_question_bank_3", 77, $_GET['topic'], null);
+  echo "<pre>";
+  print_r($resultsbyTopic);
+  echo "</pre>";
+  */
+  
+}
+
+?>
 
 
 
@@ -258,14 +299,25 @@ if(isset($_POST['updateValue'])) {
 
 
   $topicGet = $_GET['topic'];
+  $sql = "SELECT * FROM saq_question_bank_3 WHERE Topic= ? ORDER BY case when topic_order = 0 then 1 else 0 end, topic_order ASC";
+
+  $sql = "SELECT * 
+          FROM saq_question_bank_3 
+          WHERE Topic= ? 
+          ORDER BY topic_order";
 
 
-  $stmt = $conn->prepare("SELECT * FROM saq_question_bank_3 WHERE Topic= ? ORDER BY case when topic_order = 0 then 1 else 0 end, topic_order ASC");
+  $stmt = $conn->prepare($sql);
 
   $stmt->bind_param("s", $topicGet);
 
   if(isset($_GET['type'])) {
-    $stmt = $conn->prepare("SELECT * FROM saq_question_bank_3 WHERE Topic= ? AND type LIKE ? ORDER BY case when topic_order is null then 1 else 0 end, topic_order ASC");
+    $sql = "SELECT * FROM saq_question_bank_3 WHERE Topic= ? AND type LIKE ? ORDER BY case when topic_order is null then 1 else 0 end, topic_order ASC";
+    $sql = "SELECT * FROM saq_question_bank_3
+            WHERE Topic= ? 
+            AND type LIKE ? 
+            ORDER BY topic_order";
+    $stmt = $conn->prepare($sql);
     $typeSql = "%".$_GET['type']."%";
     $stmt->bind_param("ss", $topicGet, $typeSql);
 
@@ -298,7 +350,7 @@ if(isset($_POST['updateValue'])) {
         <td class="col2">
           <div class="show_<?=$row['id'];?>">
             <?=htmlspecialchars($row['topic']);?><br>
-            <?= ($row['topic_order'] != "0" ? htmlspecialchars($row['topic_order']) : "")?>
+            <?= (/*$row['topic_order']  != "0" ? */htmlspecialchars($row['topic_order']) /*: ""*/)?>
             <?//=htmlspecialchars($row['topic_order'])?>
           </div>
             <input type="text" class="hide hide_<?=$row['id'];?>" name ="topic" value ="<?=htmlspecialchars($row['topic'])?>" style="width:100px;"></input>
@@ -308,7 +360,11 @@ if(isset($_POST['updateValue'])) {
           <div class="show_<?=$row['id'];?>">
             <?=htmlspecialchars($row['question']);?>
           </div>
+          <div class= "hide hide_<?=$row['id'];?>">
             <textarea class="hide hide_<?=$row['id'];?>" name ="question"><?=htmlspecialchars($row['question'])?></textarea>
+            <br>
+            <input type="number" name="questionAsset" value="<?=$row['questionAssetId']?>">
+        </div>
         </td>
         <td class="col4">
           <div class="show_<?=$row['id'];?>">
@@ -331,9 +387,14 @@ if(isset($_POST['updateValue'])) {
         <td class="col7">
           <div class="show_<?=$row['id'];?>" style="white-space: pre-line;"><?=htmlspecialchars($row['model_answer']);?>
           </div>
-            <textarea class="hide hide_<?=$row['id'];?>" name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
-            <input type ="text" class="hide hide_<?=$row['id'];?>" name ="answer_img" value = "<?=htmlspecialchars($row['answer_img'])?>"></input>  
-            <input type ="text" class="hide hide_<?=$row['id'];?>" name ="answer_img_alt" value = "<?=htmlspecialchars($row['answer_img_alt'])?>"></input>
+          <div class="hide hide_<?=$row['id'];?>">
+            <textarea name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
+            <input type ="text" name ="answer_img" value = "<?=htmlspecialchars($row['answer_img'])?>"></input>  
+            <input type ="text" name ="answer_img_alt" value = "<?=htmlspecialchars($row['answer_img_alt'])?>"></input>
+            <br>
+            <input type="number" name="answerAsset" value="<?=$row['answerAssetId']?>">
+          </div>
+            
         </td>
 
         <td>
@@ -523,11 +584,11 @@ function addRow() {
 
   cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><select id ="topic_'+inst+'" name="topic_'+inst+'" class="topicSelector"></select><br><label for="topic_order_'+inst+'">Topic Order:</label><input style="width:50px" type="number" step="0.1" name="topic_order_'+inst+'" id="topic_order_'+inst+'"></input>';
   
-  cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" required></textarea><br><label for="image_'+inst+'">Question img src:</label><br><input type="text" id ="image_'+inst+'" name="image_'+inst+'"></input>';
+  cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" required></textarea><br><label for="image_'+inst+'">Question img src:</label><br><input type="text" id ="image_'+inst+'" name="image_'+inst+'"></input><br><label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input type="text" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'">';
   //cell2.innerHTML = '';
   cell2.innerHTML = '<label for="points_'+inst+'">Points:</label><input type="number" id ="points_'+inst+'" name="points_'+inst+'"></input>';
   cell3.innerHTML = '<label for="type_'+inst+'">Source:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input>';
-  cell4.innerHTML = '<label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><label for="image_ans_'+inst+'">Answer img src:</label><br><input type="text" id ="image_ans_'+inst+'" name="image_ans_'+inst+'"></input><br><label for="image_ans_alt'+inst+'">Answer img_alt:</label><br><input type="text" id ="image_ans_alt'+inst+'" name="image_ans_alt_'+inst+'"></input>';
+  cell4.innerHTML = '<p>→</p><label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><label for="image_ans_'+inst+'">Answer img src:</label><br><input type="text" id ="image_ans_'+inst+'" name="image_ans_'+inst+'"></input><br><label for="image_ans_alt'+inst+'">Answer img_alt:</label><br><input type="text" id ="image_ans_alt'+inst+'" name="image_ans_alt_'+inst+'"></input><br><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="text" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'">';
   
   topicListAmend(inst);
   sourceAmend(inst)
