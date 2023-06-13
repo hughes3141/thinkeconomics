@@ -5,3 +5,4 @@ dist/output.css
 *.wav
 node_modules
 assets
+saq/files
