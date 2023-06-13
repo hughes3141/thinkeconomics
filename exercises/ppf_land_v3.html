@@ -1,0 +1,270 @@
+<html>
+<head>
+
+	<style>
+	
+	
+	table, th, td {
+		border: 1px solid black;
+		/*font-size: 30pt;
+		 border-collapse: collapse; */
+   
+}
+	
+	</style>
+
+</head>
+
+
+<body>
+
+<!-- Version 1 is working with the imperfect factor substitution 
+	 Vesion 2 achieved an ability to change factor substitution. However realised that variable input was based on checkboxes instead of clic.
+	 Vesrion 2.1 seeks to resolve click issue
+	 Version 3 Includes Canvas-->
+
+<canvas id="myCanvas" width="700" height="500" style="border:1px solid;"></canvas>
+
+<br>
+<br>
+
+<button id="perfbut">Perfect Factor Substitution</button><span>   </span><button id="imperfbut">Imperfect Factor Substitution</button><span>   </span><button id="zerobut">Zero Factor Substitution</button>
+
+<br>
+<br>
+
+	<table>
+  <tr>
+    <th>Region</th>
+    <th>Produce Corn</th>
+	<th>Produce Radios</th></tr>
+<tr><td>1 bottom land</td><td><input type="checkbox" id ="ch11" onclick="check11()"></td><td><input type="checkbox" id ="ch12" onclick="check12()"></td></tr>
+<tr><td>2 countryside</td><td><input type="checkbox" id ="ch21" onclick="check21()"></td><td><input type="checkbox" id ="ch22" onclick="check22()"></td></tr>
+<tr><td>3 countryside</td><td><input type="checkbox" id ="ch31" onclick="check31()"></td><td><input type="checkbox" id ="ch32" onclick="check32()"></td></tr>
+<tr><td>4 middle land</td><td><input type="checkbox" id ="ch41" onclick="check41()"></td><td><input type="checkbox" id ="ch42" onclick="check42()"></td></tr>
+<tr><td>5 middle land</td><td><input type="checkbox" id ="ch51" onclick="check51()"></td><td><input type="checkbox" id ="ch52" onclick="check52()"></td></tr>
+<tr><td>6 middle land</td><td><input type="checkbox" id ="ch61" onclick="check61()"></td><td><input type="checkbox" id ="ch62" onclick="check62()"></td></tr>
+<tr><td>7 home county</td><td><input type="checkbox" id ="ch71" onclick="check71()"></td><td><input type="checkbox" id ="ch72" onclick="check72()"></td></tr>
+<tr><td>8 home county</td><td><input type="checkbox" id ="ch81" onclick="check81()"></td><td><input type="checkbox" id ="ch82" onclick="check82()"></td></tr>
+<tr><td>9 big smoke  </td><td><input type="checkbox" id ="ch91" onclick="check91()"></td><td><input type="checkbox" id ="ch92" onclick="check92()"></td></tr>
+
+	</table>
+<br>
+
+
+<button id="button">Click me!!!</button>
+<br>
+<br>
+<button id="drawbutton">Draw</button>
+<br>
+<table>
+<tr><th>Corn Production</th><th>Radio Production</th></tr>
+<tr><td id="cornprod"></td><td id="radprod"></td></tr>
+
+</table>
+
+<div id="demo">Hello</div>
+
+<script>
+
+	var corn;
+	var radios;
+	var regionrad = [0,0,0,0,0,0,0,0,0];
+	var regioncor = [0,0,0,0,0,0,0,0,0];
+	
+	
+	var imperfect1 = [5,4,4,3,3,3,2,2,1];
+	var imperfect2 = [1,2,2,3,3,3,4,4,5];
+	
+	var perfect1 = [3,3,3,3,3,3,3,3,3];
+	var perfect2 = [3,3,3,3,3,3,3,3,3];
+	
+	var zero1 = [3,3,3,3,3,0,0,0,0];
+	var zero2 = [0,0,0,0,0,3,3,3,3];
+	
+	var xvar1 = perfect1;
+	var xvar2 = perfect2;
+	
+	document.getElementById("imperfbut").onclick = function() {
+	xvar1 = imperfect1;
+	xvar2 = imperfect2;
+	}
+	
+	document.getElementById("perfbut").onclick = function() {
+	xvar1 = perfect1;
+	xvar2 = perfect2;
+	}
+	
+	document.getElementById("zerobut").onclick = function() {
+	xvar1 = zero1;
+	xvar2 = zero2;
+	}
+
+
+	{function check11() {
+	document.getElementById("ch12").checked = false;
+	}
+	
+	function check12() {
+	document.getElementById("ch11").checked = false;
+	}
+	
+	
+	
+	function check21() {
+	document.getElementById("ch22").checked = false;
+	}
+	function check22() {
+	document.getElementById("ch21").checked = false;
+	
+	}
+	
+	function check31() {
+	document.getElementById("ch32").checked = false;
+	
+	}
+	function check32() {
+	document.getElementById("ch31").checked = false;
+	
+	}
+	
+	function check41() {
+	document.getElementById("ch42").checked = false;
+	
+	}
+	function check42() {
+	document.getElementById("ch41").checked = false;
+	
+	}
+	
+	function check51() {
+	document.getElementById("ch52").checked = false;
+	
+	}
+	function check52() {
+	document.getElementById("ch51").checked = false;
+	
+	}
+	
+	function check61() {
+	document.getElementById("ch62").checked = false;
+	
+	}
+	function check62() {
+	document.getElementById("ch61").checked = false;
+	}
+	
+	function check71() {
+	document.getElementById("ch72").checked = false;
+	}
+	function check72() {
+	document.getElementById("ch71").checked = false;
+	}
+	
+	function check81() {
+	document.getElementById("ch82").checked = false;
+	}
+	function check82() {
+	document.getElementById("ch81").checked = false;
+	}
+	
+	function check91() {
+	document.getElementById("ch92").checked = false;
+	}
+	function check92() {
+	document.getElementById("ch91").checked = false;
+	}
+	
+	
+	}
+	document.getElementById("button").onclick = function() {
+	{
+	if(document.getElementById("ch11").checked == true) {regioncor[0] = 		xvar1[0]; 	regionrad[0] = 0;}
+	if(document.getElementById("ch12").checked == true) {regioncor[0] = 0; 	regionrad[0] = 		xvar2[0];}
+	
+	if(document.getElementById("ch21").checked == true) {regioncor[1] = 		xvar1[1]; 	regionrad[1] = 0;}
+	if(document.getElementById("ch22").checked == true) {regioncor[1] = 0; 	regionrad[1] = 		xvar2[1];}
+	
+	if(document.getElementById("ch31").checked == true) {regioncor[2] = 		xvar1[2]; 	regionrad[2] = 0;}
+	if(document.getElementById("ch32").checked == true) {regioncor[2] = 0; 	regionrad[2] = 		xvar2[2];}
+	
+	if(document.getElementById("ch41").checked == true) {regioncor[3] = 		xvar1[3]; 	regionrad[3] = 0;}
+	if(document.getElementById("ch42").checked == true) {regioncor[3] = 0; 	regionrad[3] = 		xvar2[3];}
+		
+	if(document.getElementById("ch51").checked == true) {regioncor[4] = 		xvar1[4]; 	regionrad[4] = 0;}
+	if(document.getElementById("ch52").checked == true) {regioncor[4] = 0; 	regionrad[4] = 		xvar2[4];}
+		
+	if(document.getElementById("ch61").checked == true) {regioncor[5] = 		xvar1[5]; 	regionrad[5] = 0;}
+	if(document.getElementById("ch62").checked == true) {regioncor[5] = 0; 	regionrad[5] = 		xvar2[5];}
+		
+	if(document.getElementById("ch71").checked == true) {regioncor[6] = 		xvar1[6]; 	regionrad[6] = 0;}
+	if(document.getElementById("ch72").checked == true) {regioncor[6] = 0; 	regionrad[6] = 		xvar2[6];}
+		
+	if(document.getElementById("ch81").checked == true) {regioncor[7] = 		xvar1[7]; 	regionrad[7] = 0;}
+	if(document.getElementById("ch82").checked == true) {regioncor[7] = 0; 	regionrad[7] = 		xvar2[7];}
+		
+	if(document.getElementById("ch91").checked == true) {regioncor[8] = 		xvar1[8]; 	regionrad[8] = 0;}
+	if(document.getElementById("ch92").checked == true) {regioncor[8] = 0; 	regionrad[8] = 		xvar2[8];}
+	}
+	
+	corn = regioncor[0] + regioncor[1] + regioncor[2] + regioncor[3] + regioncor[4] + regioncor[5] + regioncor[6] +
+	regioncor[7] + regioncor[8];
+	
+	radios = regionrad[0]+ regionrad[1]+ regionrad[2]+ regionrad[3]+ regionrad[4]+ regionrad[5]+ regionrad[6]+ 
+	regionrad[7]+ regionrad[8];
+	
+	document.getElementById("cornprod").innerHTML= corn;
+	document.getElementById("radprod").innerHTML= radios;
+	document.getElementById("demo").innerHTML= regioncor +"  // "+ regionrad+" &&& " +xvar1+"///"+xvar2;
+	
+	
+	}
+	
+	
+	
+	
+	
+		var c = document.getElementById("myCanvas");
+		var ctx = c.getContext("2d");
+		ctx.moveTo(50,450);
+		ctx.lineTo(50,50);
+
+		ctx.moveTo(50,450);
+		ctx.lineTo(450,450);
+		ctx.moveTo(50, 450);
+		ctx.stroke();
+		ctx.font = "20px Arial"
+		ctx.fillText("Radio Units", 460 ,480)
+		ctx.font = "20px Arial"
+		
+		ctx.save();
+		ctx.translate(100,300);
+		ctx.rotate(-0.5*Math.PI);
+		ctx.fillText("Corn Units" , 200, -70);
+		ctx.restore();
+		
+		ctx.font = "10px Arial";
+		ctx.fillText("27", 15, 40);
+		
+		
+		function draw() {
+		xval = 50 + (radios*13);
+		yval = 450 - (corn*13);
+	
+		ctx.lineTo(xval,yval);
+			
+		ctx.stroke();
+		
+		
+		
+		
+		}
+
+	document.getElementById("drawbutton").onclick=function() {draw()};
+
+</script>
+
+</body>
+
+
+</html>
