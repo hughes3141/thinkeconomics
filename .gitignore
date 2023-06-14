@@ -6,3 +6,12 @@ dist/output.css
 node_modules
 assets
 saq/files
+notes/files
+exercises/files
+mathsgames
+mcq/question_img
+utilities
+thinkeconomics
+
+revision/flashcard_record_get.php
+revision/flashcards_test.php
