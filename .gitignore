@@ -1,19 +1,20 @@
-/admin/files
+/admin/files/
 #dist/output.css
 *.pdf
 *.jpg
 *.wav
-/node_modules
-/assets
-/saq/files
-/notes/files
-/exercises/files
-/mathsgames
-/mcq/question_img
-/utilities
+/node_modules/
+/assets/
+/saq/files/
+/notes/files/
+/exercises/files/
+/mathsgames/
+/mcq/question_img/
+/utilities/
 thinkeconomics
 
-/tailwindcss/node_modules
+tailwindcss/node_modules/
+
 
 
 

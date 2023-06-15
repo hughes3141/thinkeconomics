@@ -1215,6 +1215,98 @@ function getFlashcardsQuestions($topics = null, $userId) {
   
 }
 
+function getSAQQuestions($questionId = null, $topics = null, $subjectId = null) {
+  /*
+  Used to find information about questions in saq_question_bank_3 for a given number of parameters
+
+  Used in:
+  -quick_quiz.php
+  */
+  global $conn;
+  $params="";
+  $bindArray = array();
+  $results = array();
+
+  $sql_0 = "SELECT q.*, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt
+          FROM saq_question_bank_3 q
+          LEFT JOIN upload_record aq
+          ON aq.id = q.questionAssetId
+          LEFT JOIN upload_record aa
+          ON aa.id = q.answerAssetId";
+
+  $sql = $sql_0;
+  
+  if($questionId) {
+    $sql .= " WHERE id = ? ";
+    $params .= "i";
+    array_push($bindArray, $questionId);
+  }
+
+  if($topics) {
+    $topics = explode(",", $topics);
+    $numTopics = count($topics);
+    //$placeholder = str_repeat("?, ", $numTopics -1)." ?";
+
+    $sql = $sql_0;
+    $params = "";
+    $bindArray = array();
+
+    $sql .= " WHERE ";
+
+    foreach($topics as $key=>$topic) {
+      $sql .= "topic LIKE ? ";
+      if($key < ($numTopics-1)) {
+        $sql .= " AND ";
+      }
+      $topic = $topic."%";
+      
+      $params .= "s";
+      array_push($bindArray, $topic);
+    }
+  }
+
+  if($subjectId) {
+    if($params != "") {
+      $sql .= " AND ";
+    } else {
+      $sql .= " WHERE ";
+    }
+
+    $sql .= " subjectId = ? ";
+    $params .= "i";
+    array_push($bindArray, $subjectId);
+
+
+  }
+
+  /*
+  echo $sql;
+  echo "<br>";
+  print_r($bindArray);
+  echo "<br>".$params;
+  */
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+  
+  
+
+  
+
+}
+
 function insertFlashcardResponse($questionId, $userId, $gotRight, $timeStart, $timeSubmit, $cardCategory) {
   /*
   This function inserts a new record when a flashcard question has been completed by a student.
