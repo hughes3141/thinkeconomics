@@ -67,6 +67,9 @@ index = [
 			
 			["1.4.1 Resource Allocation",
 			"https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/ETw_Ibf0RIVOgoqxmhkMAwIB13ysWkdXM2OwkGY9nchsHQ?e=1oz5Kk"],
+
+			["1.4.1 Rationality and Prospect Theory",
+			"https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/ERflF8Mjr5pBr86fwtGi0G4B2el2W_KycaSJV24KemrXyw?e=3OWTsk"],
 			
 			["1.7.1 Externalities",
 			"https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/EZp33BS4rZpMneBwHHGyhhsB4qbHp65eDLxStHZlchn4Qg?e=GVu4hA"],
