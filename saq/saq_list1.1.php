@@ -147,7 +147,7 @@ if (isset($_POST['submit'])) {
 
 if(isset($_POST['updateValue'])) {
 
-  changeOrderNumberWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
+  changeOrderNumber2("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
 
   $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?,  questionAssetId =?, answerAssetId = ?, flashCard = ? WHERE id = ?";
   

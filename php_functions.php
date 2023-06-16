@@ -1434,6 +1434,60 @@ function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace) {
   
 }
 
+function changeOrderNumber2($table, $id, $topic, $newPlace) {
+  global $conn;
+
+//Step 1: Update the topic_order for the specified id and topic
+
+$sql = "UPDATE saq_question_bank_3
+        SET topic_order = ?
+        WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ii", $newPlace, $id);
+$stmt->execute();
+
+//Step 2: Update topic_order for other rows with the same topic
+
+$sql = "SELECT COUNT(*) as count FROM saq_question_bank_3
+        WHERE topic = ? AND id <> ? AND topic_order < ? ";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("sii", $topic, $id, $newPlace);
+$stmt->execute();
+
+$responses = array();
+ $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($responses, $row);
+    }
+  }
+  $count = 0;
+  //print_r($responses);
+  $count = $responses[0]['count'];
+  //echo $count;
+  $count = $count;
+
+$sql = "UPDATE saq_question_bank_3
+        SET topic_order = ? + 1
+        WHERE topic = ? AND id <> ?";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("isi", $count, $topic, $id);
+$stmt->execute();
+
+//Step 3: Reorder topic_order for the rows with the same topic
+$sql = "UPDATE saq_question_bank_3
+        SET topic_order = topic_order - 1
+        WHERE topic = ? AND topic_order > ?";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("si", $topic, $newPlace);
+$stmt->execute();
+
+
+}
+
 function loginLogReturn($limit = null, $likeName = null) {
   global $conn;
   $responses = array();
