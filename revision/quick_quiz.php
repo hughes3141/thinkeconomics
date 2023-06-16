@@ -18,105 +18,79 @@ include($path."/php_functions.php");
 include ($path."/header_tailwind.php");
 
 
-              //Get topics as GET variables
+//Get topics as GET variables
+$topics = null;
 
-              //print_r($_GET);
+if(isset($_GET['topic'])) {
+  $topics = $_GET['topic'];
+}
 
+if(isset($_GET['topics'])) {
+  $topics = $_GET['topics'];
+}
 
-              
-              if(isset($_GET['topic'])) {
-                $_GET['topics'] = $_GET['topic'];
-              }
+$questionNosBool = 0;
+if(isset($_GET['questionNos'])) {
+  $questionNosBool = 1;
+}
 
-              $questionNosBool = 0;
-              if(isset($_GET['questionNos'])) {
-                $questionNosBool = 1;
-              }
+$topicShowBool = 0;
+if(isset($_GET['topicShow'])) {
+  $topicShowBool = 1;
+}
 
-              $topicShowBool = 0;
-              if(isset($_GET['topicShow'])) {
-                $topicShowBool = 1;
-              }
-              
-
-
-
-              //Array of questions set by the teacher, filtered by topic:
-
-              $questions = array();
-              //Select questions made by the teacher, filter by topic
-
-              $bindArray = array();
-              $paramType = "";
-
-              $sql="SELECT * FROM saq_question_bank_3 WHERE";
-
-                if(isset($_GET['topics'])) {
-
-                  $topics = explode(",", $_GET['topics']);
-                  $sql .= "  (";
-                  $count=count($topics);
-                  for($x=0; $x<$count; $x++) {
-                    $sql .= "topic = ? ";
-                    if($x<$count-1) {
-                      $sql .= " OR ";
-                    } 
-                    $paramType .="s";
-                  }
-                  $sql .= ") AND";
-                  $bindArray = $topics;
-                }
-              //$sql .=  "  userCreate = ? AND type LIKE '%flashCard%'";
-              $sql .=  "  ( subjectId = '1') AND type LIKE '%flashCard%'";
-
-              //echo $sql;
-              #just using "AND model_answer <> ''" so we return cards with answers
-              $stmt = $conn->prepare($sql);
-              //array_push($bindArray, $teacher);
-
-              //$stmt->bind_param($paramType."i", ...$bindArray);
-
-              if(count($bindArray)>0) {
-                $stmt->bind_param($paramType, ...$bindArray);
-              }
-              $stmt->execute();
-              $result = $stmt->get_result();
-              if($result ->num_rows >0) {
-                while ($row=$result->fetch_assoc()) {
-                  //print_r($row);
-                  
-                  // Following for testing purposes to isolate to one question, randomly question where id = 613
-                  //if($row['id']==613) {array_push($questions, $row);}
-
-                  //Push each row into the $questions array.
-
-                  array_push($questions, $row);
+$noQImgBool = 0;
+if(isset($_GET['noQImg'])) {
+  $noQImgBool = 1;
+}
 
 
-                  
-                }
-              }
+/*
+The following function calls rows from saq_question_bank_3 with the following parameters:
+  -questionId = null
+  -topic LIKE $_GET['topic'] or ['topics']
+  -flashCard bool true
+  -subjectId = 1 (Economics)
+  -userId = 1
+*/
+$questions = getSAQQuestions(null,  $topics, 1, 1, 1);
 
-              $randomQuestions=array();
-              $number = 10;
+if (isset($_GET['test'])) {
+  echo count($questions)."<br>";
+  print_r($questions);
+}
 
-              if(isset($_GET['number'])) {
-                $number = $_GET['number'];
-              }
 
-              //echo $number;
 
-              for($x=0; $x<$number; $x++) {
-                $max = count($questions) -1;
-                if($max>=0) {
-                  $random = rand(0,$max);
-                  array_push($randomQuestions, $questions[$random]);
-                  array_splice($questions,$random,1);
-                }
+$randomQuestions=array();
+$number = 10;
 
-              }
+if(isset($_GET['number'])) {
+  $number = $_GET['number'];
+}
 
-              //print_r($randomQuestions);
+//echo $number;
+
+for($x=0; $x<$number; $x++) {
+  $max = count($questions) -1;
+  if($max>=0) {
+    $random = rand(0,$max);
+    if($noQImgBool == 0) {
+      array_push($randomQuestions, $questions[$random]);
+    } else {
+      if($questions[$random]['img'] == "" and $questions[$random]['q_path'] == "" ) {
+        array_push($randomQuestions, $questions[$random]);
+      } else {
+        $x --;
+      }
+    }
+    
+    array_splice($questions,$random,1);
+  }
+
+}
+
+//print_r($randomQuestions);
 
               
 
@@ -130,6 +104,8 @@ GET Variables:
   number:number of questions =10
   questionNos if set then question numbers displayed
   topicShow if set then topics are displayed
+  noQImg: filters out questions that have image in question
+  test: shows testing data e.g. print_r;
 
 
 -->
@@ -138,6 +114,14 @@ GET Variables:
 <div id="wholeContainer" class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
 
   <h1 class="font-mono text-2xl bg-pink-400 pl-1 ">Quick Revision Quiz</h1>
+  
+  <?php
+
+
+      //print_r($questions);
+
+  ?>
+
   <div id="gridContainer" class="container mx-auto px-0 mt-2 bg-white text-black ">
     <div id="gridContainer2" class="grid md:grid-cols-2 gap-4">    
       <?php 
@@ -165,7 +149,12 @@ GET Variables:
               ?>
                   <img class = "mx-auto object-center " src= "<?=htmlspecialchars($question['img'])?>" alt = "">
             <?php
-          }
+              }
+            if($question['q_path'] != "") {
+              ?>
+              <img class = "mx-auto object-center " src= "<?=htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
+              <?php
+            }
 
           ?>
 
@@ -176,6 +165,12 @@ GET Variables:
 
           if($question['answer_img'] != "") {
             ?><img class = "object-center " src= "<?=htmlspecialchars($question['answer_img'])?>" alt = "<?=htmlspecialchars($question['answer_img_alt'])?>">
+            <?php
+          }
+
+          if($question['a_path'] != "") {
+            ?>
+              <img class = "object-center " src= "<?=htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
             <?php
           }
           
