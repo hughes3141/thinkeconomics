@@ -1359,7 +1359,7 @@ function insertFlashcardResponse($questionId, $userId, $gotRight, $timeStart, $t
   
 }
 
-function updateTopicOrder($id, $newPlace) {
+function updateTopicOrder($id, $newPlace, $table="saq_question_bank_3") {
   /*
   A function to update the topic_order column of saq_question_bank_3
 
@@ -1367,126 +1367,49 @@ function updateTopicOrder($id, $newPlace) {
   */
 
   global $conn;
-  $sql = "UPDATE saq_question_bank_3
-          SET topic_order = ?
+  $sql = "UPDATE saq_question_bank_3 SET topic_order = ?
           WHERE id = ?";
+
+  //echo $sql; 
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("ii", $newPlace, $id);
   $stmt->execute();
 }
 
+
 function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace) {
-  /*
-  A function to sort out topic_order column e.g. as in saq_question_bank_3 so that questions can be moved around.
-
-
-  */
-
   global $conn;
-
-  $responses = array();
-  $changedResponse = array();
-
-  $sql = "SELECT id, topic_order, question
-          FROM ".$table." 
-          WHERE topic = ?
+  
+  $sql = "SELECT id, topic_order
+          FROM saq_question_bank_3
+          WHERE topic = ? AND id <> ?
           ORDER BY topic_order";
-  $stmt=$conn->prepare($sql);
-  $stmt->bind_param("s", $topic);
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("si", $topic, $id);
   $stmt->execute();
   $result = $stmt->get_result();
-  if($result->num_rows>0) {
-    $index = 0;
-    while($row = $result->fetch_assoc()) {
-      array_push($responses, $row);
-      //$responses[$row['id']] = $row;
-      if($row['id'] == $id) {
-        $changedResponse = $row;
-        $oldPlace = $index;
-      }
-      $index ++;
-    }
-  }
-  //$oldPlace = $changedResponse['topic_order'];
-  $changedId = $changedResponse['id'];
 
-  if($newPlace < 0 ) {
-    $newPlace = 0;
-  }
-  if ($newPlace >= count($responses)) {
-    $newPlace = count($responses)-1;
-  }
-
-  if($newPlace < $oldPlace) {
-    updateTopicOrder($changedId, $newPlace);
-    for($x=$newPlace; $x<$oldPlace; $x++) {
-      updateTopicOrder($responses[$x]['id'], ($x+1));
-    }
-  }
-  if($newPlace > $oldPlace) {
-    updateTopicOrder($changedId, $newPlace);
-    for($x=$oldPlace; $x<$newPlace; $x++) {
-      updateTopicOrder($responses[($x+1)]['id'], $x);
-    }
-  }
-
-  //return $responses;
-  
-}
-
-function changeOrderNumber2($table, $id, $topic, $newPlace) {
-  global $conn;
-
-//Step 1: Update the topic_order for the specified id and topic
-
-$sql = "UPDATE saq_question_bank_3
-        SET topic_order = ?
-        WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("ii", $newPlace, $id);
-$stmt->execute();
-
-//Step 2: Update topic_order for other rows with the same topic
-
-$sql = "SELECT COUNT(*) as count FROM saq_question_bank_3
-        WHERE topic = ? AND id <> ? AND topic_order < ? ";
-
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("sii", $topic, $id, $newPlace);
-$stmt->execute();
-
-$responses = array();
- $result = $stmt->get_result();
+  $questions = array();
   if($result->num_rows>0) {
     while($row = $result->fetch_assoc()) {
-      array_push($responses, $row);
+      array_push($questions, $row);
     }
   }
-  $count = 0;
-  //print_r($responses);
-  $count = $responses[0]['count'];
-  //echo $count;
-  $count = $count;
 
-$sql = "UPDATE saq_question_bank_3
-        SET topic_order = ? + 1
-        WHERE topic = ? AND id <> ?";
+  $questionSelect = getSAQQuestions($id)[0];
 
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("isi", $count, $topic, $id);
-$stmt->execute();
+  $questions = array_merge(array_slice($questions, 0, $newPlace), array($questionSelect), array_slice($questions, $newPlace));
 
-//Step 3: Reorder topic_order for the rows with the same topic
-$sql = "UPDATE saq_question_bank_3
-        SET topic_order = topic_order - 1
-        WHERE topic = ? AND topic_order > ?";
+  $index = 0;
+  foreach($questions as $question) {
+    updateTopicOrder($question['id'], $index);
+    $index ++;
 
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("si", $topic, $newPlace);
-$stmt->execute();
-
+  }
 
 }
+
+
 
 function loginLogReturn($limit = null, $likeName = null) {
   global $conn;
