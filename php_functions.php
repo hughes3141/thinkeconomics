@@ -1215,7 +1215,17 @@ function getFlashcardsQuestions($topics = null, $userId) {
   
 }
 
-function getSAQQuestions($questionId = null, $topics = null, $subjectId = null) {
+function sql_conjoin($x) {
+  $y = "";
+  if($x != "") {
+    $y = " AND ";
+  } else {
+    $y = " WHERE ";
+  }
+  return $y;
+}
+
+function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, $subjectId = null, $userCreate = null) {
   /*
   Used to find information about questions in saq_question_bank_3 for a given number of parameters
 
@@ -1226,6 +1236,8 @@ function getSAQQuestions($questionId = null, $topics = null, $subjectId = null) 
   $params="";
   $bindArray = array();
   $results = array();
+
+  
 
   $sql_0 = "SELECT q.*, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt
           FROM saq_question_bank_3 q
@@ -1265,12 +1277,17 @@ function getSAQQuestions($questionId = null, $topics = null, $subjectId = null) 
     }
   }
 
+
+
   if($subjectId) {
+    $sql .= sql_conjoin($params);
+    /*
     if($params != "") {
       $sql .= " AND ";
     } else {
       $sql .= " WHERE ";
     }
+    */
 
     $sql .= " subjectId = ? ";
     $params .= "i";
@@ -1279,12 +1296,25 @@ function getSAQQuestions($questionId = null, $topics = null, $subjectId = null) 
 
   }
 
-  /*
+  if($userCreate) {
+    $sql .= sql_conjoin($params);
+    $sql .= " userCreate = ? ";
+    $params .= "i";
+    array_push($bindArray, $userCreate);
+
+  }
+
+  if($flashCard) {
+    $sql .= sql_conjoin($params);
+    $sql .= " flashCard = 1 OR type LIKE '%flashCard%' ";
+  }
+
+  
   echo $sql;
   echo "<br>";
   print_r($bindArray);
   echo "<br>".$params;
-  */
+  
 
   $stmt=$conn->prepare($sql);
   if(count($bindArray)>0) {

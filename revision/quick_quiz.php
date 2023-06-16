@@ -42,7 +42,9 @@ include ($path."/header_tailwind.php");
 
 
 
-              $questions = getSAQQuestions(null, $_GET['topics'], 1);
+              $questions = getSAQQuestions(null, $_GET['topics'], 1,2);
+              
+              print_r($questions);
 
               
 
@@ -91,7 +93,7 @@ GET Variables:
   <?php
 
 
-      print_r($questions);
+      //print_r($questions);
 
   ?>
 
