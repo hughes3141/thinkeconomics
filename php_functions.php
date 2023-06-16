@@ -1229,6 +1229,8 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   /*
   Used to find information about questions in saq_question_bank_3 for a given number of parameters
 
+  $topics = string of commma-separated topics to be queried
+
   Used in:
   -quick_quiz.php
   */
@@ -1236,8 +1238,6 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   $params="";
   $bindArray = array();
   $results = array();
-
-  
 
   $sql_0 = "SELECT q.*, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt
           FROM saq_question_bank_3 q
@@ -1249,7 +1249,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   $sql = $sql_0;
   
   if($questionId) {
-    $sql .= " WHERE id = ? ";
+    $sql .= " WHERE q.id = ? ";
     $params .= "i";
     array_push($bindArray, $questionId);
   }
@@ -1266,39 +1266,33 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
     $sql .= " WHERE ";
 
     foreach($topics as $key=>$topic) {
-      $sql .= "topic LIKE ? ";
+      if($key == 0) {
+        $sql .= " ( ";
+      }
+      $sql .= "q.topic LIKE ? ";
       if($key < ($numTopics-1)) {
-        $sql .= " AND ";
+        $sql .= " OR ";
       }
       $topic = $topic."%";
       
       $params .= "s";
       array_push($bindArray, $topic);
     }
+
+    $sql .= " ) ";
   }
-
-
 
   if($subjectId) {
     $sql .= sql_conjoin($params);
-    /*
-    if($params != "") {
-      $sql .= " AND ";
-    } else {
-      $sql .= " WHERE ";
-    }
-    */
 
-    $sql .= " subjectId = ? ";
+    $sql .= " q.subjectId = ? ";
     $params .= "i";
     array_push($bindArray, $subjectId);
-
-
   }
 
   if($userCreate) {
     $sql .= sql_conjoin($params);
-    $sql .= " userCreate = ? ";
+    $sql .= " q.userCreate = ? ";
     $params .= "i";
     array_push($bindArray, $userCreate);
 
@@ -1306,15 +1300,8 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
 
   if($flashCard) {
     $sql .= sql_conjoin($params);
-    $sql .= " ( flashCard = 1 OR q.type LIKE '%flashCard%' )";
+    $sql .= " ( q.flashCard = 1 OR q.type LIKE '%flashCard%' )";
   }
-
-  
-  echo $sql;
-  echo "<br>";
-  print_r($bindArray);
-  echo "<br>".$params;
-  
 
   $stmt=$conn->prepare($sql);
   if(count($bindArray)>0) {
@@ -1330,10 +1317,6 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
     }
   }
   return $results;
-  
-  
-
-  
 
 }
 

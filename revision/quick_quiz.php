@@ -23,9 +23,14 @@ include ($path."/header_tailwind.php");
               //print_r($_GET);
 
 
-              
+              $topics = null;
+
               if(isset($_GET['topic'])) {
-                $_GET['topics'] = $_GET['topic'];
+                $topics = $_GET['topic'];
+              }
+
+              if(isset($_GET['topics'])) {
+                $topics = $_GET['topics'];
               }
 
               $questionNosBool = 0;
@@ -41,10 +46,21 @@ include ($path."/header_tailwind.php");
 
 
 
-
-              $questions = getSAQQuestions(null, $_GET['topics'], 1,2);
               
+              /*
+              The following function calls rows from saq_question_bank_3 with the following parameters:
+                -questionId = null
+                -topic LIKE $_GET['topic'] or ['topics']
+                -flashCard bool true
+                -subjectId = 1 (Economics)
+                -userId = 1
+              */
+              $questions = getSAQQuestions(null,  $topics, 1, 1, 1);
+              
+              
+              echo count($questions)."<br>";
               print_r($questions);
+              
 
               
 
