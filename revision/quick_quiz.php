@@ -55,6 +55,10 @@ The following function calls rows from saq_question_bank_3 with the following pa
 */
 $questions = getSAQQuestions(null,  $topics, 1, 1, 1);
 
+if(isset($_GET['qId'])) {
+  $questions = getSAQQuestions($_GET['qId']);
+}
+
 if (isset($_GET['test'])) {
   echo count($questions)."<br>";
   print_r($questions);
@@ -130,6 +134,11 @@ GET Variables:
         ?>
         
         <div class="content-center">
+          <?php
+            if(isset($_GET['test'])) {
+              print_r($question);
+            }
+          ?>
           <div class=" question text-center m-3 py-2 px-4  text-black border-4 border-pink-400  rounded-lg shadow-md hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers(<?=$key;?>)">
           <!-- bg-pink-400 text-white font-semibold--> 
           <div class = "whitespace-pre-line"><?php
