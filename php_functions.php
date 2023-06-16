@@ -1363,7 +1363,7 @@ function updateTopicOrder($id, $newPlace) {
   /*
   A function to update the topic_order column of saq_question_bank_3
 
-  Soley used as supporting function for sortWithinTopic() below;
+  Soley used as supporting function for changeOrderNumberWithinTopic() below;
   */
 
   global $conn;
@@ -1375,7 +1375,7 @@ function updateTopicOrder($id, $newPlace) {
   $stmt->execute();
 }
 
-function sortWithinTopic($table, $id, $topic, $newPlace) {
+function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace) {
   /*
   A function to sort out topic_order column e.g. as in saq_question_bank_3 so that questions can be moved around.
 
