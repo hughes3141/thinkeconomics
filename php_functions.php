@@ -1306,7 +1306,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
 
   if($flashCard) {
     $sql .= sql_conjoin($params);
-    $sql .= " flashCard = 1 OR type LIKE '%flashCard%' ";
+    $sql .= " ( flashCard = 1 OR q.type LIKE '%flashCard%' )";
   }
 
   
