@@ -18,72 +18,77 @@ include($path."/php_functions.php");
 include ($path."/header_tailwind.php");
 
 
-              //Get topics as GET variables
+//Get topics as GET variables
+$topics = null;
 
-              //print_r($_GET);
+if(isset($_GET['topic'])) {
+  $topics = $_GET['topic'];
+}
+
+if(isset($_GET['topics'])) {
+  $topics = $_GET['topics'];
+}
+
+$questionNosBool = 0;
+if(isset($_GET['questionNos'])) {
+  $questionNosBool = 1;
+}
+
+$topicShowBool = 0;
+if(isset($_GET['topicShow'])) {
+  $topicShowBool = 1;
+}
+
+$noQImgBool = 0;
+if(isset($_GET['noQImg'])) {
+  $noQImgBool = 1;
+}
 
 
-              $topics = null;
+/*
+The following function calls rows from saq_question_bank_3 with the following parameters:
+  -questionId = null
+  -topic LIKE $_GET['topic'] or ['topics']
+  -flashCard bool true
+  -subjectId = 1 (Economics)
+  -userId = 1
+*/
+$questions = getSAQQuestions(null,  $topics, 1, 1, 1);
 
-              if(isset($_GET['topic'])) {
-                $topics = $_GET['topic'];
-              }
-
-              if(isset($_GET['topics'])) {
-                $topics = $_GET['topics'];
-              }
-
-              $questionNosBool = 0;
-              if(isset($_GET['questionNos'])) {
-                $questionNosBool = 1;
-              }
-
-              $topicShowBool = 0;
-              if(isset($_GET['topicShow'])) {
-                $topicShowBool = 1;
-              }
-              
+if (isset($_GET['test'])) {
+  echo count($questions)."<br>";
+  print_r($questions);
+}
 
 
 
-              
-              /*
-              The following function calls rows from saq_question_bank_3 with the following parameters:
-                -questionId = null
-                -topic LIKE $_GET['topic'] or ['topics']
-                -flashCard bool true
-                -subjectId = 1 (Economics)
-                -userId = 1
-              */
-              $questions = getSAQQuestions(null,  $topics, 1, 1, 1);
-              
-              
-              echo count($questions)."<br>";
-              print_r($questions);
-              
+$randomQuestions=array();
+$number = 10;
 
-              
+if(isset($_GET['number'])) {
+  $number = $_GET['number'];
+}
 
-              $randomQuestions=array();
-              $number = 10;
+//echo $number;
 
-              if(isset($_GET['number'])) {
-                $number = $_GET['number'];
-              }
+for($x=0; $x<$number; $x++) {
+  $max = count($questions) -1;
+  if($max>=0) {
+    $random = rand(0,$max);
+    if($noQImgBool == 0) {
+      array_push($randomQuestions, $questions[$random]);
+    } else {
+      if($questions[$random]['img'] == "" and $questions[$random]['q_path'] == "" ) {
+        array_push($randomQuestions, $questions[$random]);
+      }
+    }
+    
+    array_splice($questions,$random,1);
+  }
 
-              //echo $number;
+}
 
-              for($x=0; $x<$number; $x++) {
-                $max = count($questions) -1;
-                if($max>=0) {
-                  $random = rand(0,$max);
-                  array_push($randomQuestions, $questions[$random]);
-                  array_splice($questions,$random,1);
-                }
-
-              }
-
-              //print_r($randomQuestions);
+//print_r($randomQuestions);
 
               
 
@@ -97,6 +102,8 @@ GET Variables:
   number:number of questions =10
   questionNos if set then question numbers displayed
   topicShow if set then topics are displayed
+  noQImg: filters out questions that have image in question
+  test: shows testing data e.g. print_r;
 
 
 -->
@@ -156,6 +163,12 @@ GET Variables:
 
           if($question['answer_img'] != "") {
             ?><img class = "object-center " src= "<?=htmlspecialchars($question['answer_img'])?>" alt = "<?=htmlspecialchars($question['answer_img_alt'])?>">
+            <?php
+          }
+
+          if($question['a_path'] != "") {
+            ?>
+              <img class = "object-center " src= "<?=htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
             <?php
           }
           
