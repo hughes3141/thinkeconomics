@@ -80,6 +80,8 @@ for($x=0; $x<$number; $x++) {
     } else {
       if($questions[$random]['img'] == "" and $questions[$random]['q_path'] == "" ) {
         array_push($randomQuestions, $questions[$random]);
+      } else {
+        $x --;
       }
     }
     
