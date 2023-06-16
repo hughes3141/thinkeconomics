@@ -99,12 +99,12 @@ print_r($_POST);
 echo date("Y-m-d H:i:s");
 
 $sql = "INSERT INTO saq_question_bank_3 
-        (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, topic_order, time_added, questionAssetId, answerAssetId) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, topic_order, time_added, questionAssetId, answerAssetId, flashCard) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 $stmt = $conn->prepare($sql);
 
-$stmt->bind_param("ssisssisssssii", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $topic_order, $timeAdded, $questionAsset, $answerAsset);
+$stmt->bind_param("ssisssisssssiii", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $topic_order, $timeAdded, $questionAsset, $answerAsset, $flashCard);
 
 
 
@@ -132,6 +132,10 @@ if (isset($_POST['submit'])) {
     if($_POST['answerAsset_'.$x] == "") {
       $answerAsset = null;
     }
+    $flashCard = 0;
+    if(isset($_POST['flashCard_'.$x])) {
+      $flashCard = $_POST['flashCard_'.$x];
+    }
   
     $stmt->execute();
     
@@ -143,9 +147,9 @@ if (isset($_POST['submit'])) {
 
 if(isset($_POST['updateValue'])) {
 
-  sortWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
+  changeOrderNumberWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
 
-  $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?,  questionAssetId =?, answerAssetId = ? WHERE id = ?";
+  $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?,  questionAssetId =?, answerAssetId = ?, flashCard = ? WHERE id = ?";
   
   $stmt = $conn->prepare($sql);
   //print_r($_POST);
@@ -158,8 +162,15 @@ if(isset($_POST['updateValue'])) {
   if($_POST['answerAsset'] == "") {
     $answerAsset = null;
   }
+
+  $flashCard = 0;
+  if(isset($_POST['flashCard'])) {
+    $flashCard = $_POST['flashCard'];
+  }
+
   
-  $stmt->bind_param("ssssssssiii", $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $questionAsset, $answerAsset, $_POST['id']);
+  
+  $stmt->bind_param("ssssssssiiii", $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $questionAsset, $answerAsset, $flashCard, $_POST['id']);
 
   $questionData = getQuestionData($_POST['id']);
   $questionDataUser = $questionData['userCreate'];
@@ -323,6 +334,18 @@ if(isset($_GET['test'])) {
 
   }
 
+  if(isset($_GET['flashCard'])) {
+    $sql = "SELECT * 
+          FROM saq_question_bank_3 
+          WHERE Topic= ? 
+          AND flashCard = 1
+          ORDER BY topic_order";
+
+      $stmt = $conn->prepare($sql);
+      $stmt->bind_param("s", $topicGet);
+
+  }
+
   $stmt -> execute();
   $result = $stmt->get_result();
 
@@ -363,6 +386,7 @@ if(isset($_GET['test'])) {
           <div class= "hide hide_<?=$row['id'];?>">
             <textarea class="hide hide_<?=$row['id'];?>" name ="question"><?=htmlspecialchars($row['question'])?></textarea>
             <br>
+            <label>Question Asset Id:</label>
             <input type="number" name="questionAsset" value="<?=$row['questionAssetId']?>">
         </div>
         </td>
@@ -380,18 +404,33 @@ if(isset($_GET['test'])) {
         </td>
         <td class="col6">
           <div class="show_<?=$row['id'];?>">
+            <?php
+            if($row['flashCard']==1) {
+              echo "<p>flashCard<p>";
+            }
+            ?>
             <?=htmlspecialchars($row['type']);?>
           </div>
-            <textarea class="hide hide_<?=$row['id'];?>" name ="type"><?=htmlspecialchars($row['type'])?></textarea>
+          <div  class="hide hide_<?=$row['id'];?>">
+            <label>Type:</label>
+            <textarea name ="type"><?=htmlspecialchars($row['type'])?></textarea>
+            <br>
+            <input id="flashCard_Update_<?=$row['id'];?>" type="checkbox" name ="flashCard" value="1" <?=($row['flashCard']==1) ? "checked" : ""?>>
+            <label for="flashCard_Update_<?=$row['id'];?>">flashCard</label>
+          </div>
         </td>
         <td class="col7">
           <div class="show_<?=$row['id'];?>" style="white-space: pre-line;"><?=htmlspecialchars($row['model_answer']);?>
           </div>
           <div class="hide hide_<?=$row['id'];?>">
+            <label>Model Answer:</label>
             <textarea name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
+            <label>answer_img path:</label>
             <input type ="text" name ="answer_img" value = "<?=htmlspecialchars($row['answer_img'])?>"></input>  
+            <label>answer_img_alt:</label>
             <input type ="text" name ="answer_img_alt" value = "<?=htmlspecialchars($row['answer_img_alt'])?>"></input>
             <br>
+            <label>Asset ID:</label>
             <input type="number" name="answerAsset" value="<?=$row['answerAssetId']?>">
           </div>
             
@@ -587,7 +626,7 @@ function addRow() {
   cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" required></textarea><br><label for="image_'+inst+'">Question img src:</label><br><input type="text" id ="image_'+inst+'" name="image_'+inst+'"></input><br><label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input type="text" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'">';
   //cell2.innerHTML = '';
   cell2.innerHTML = '<label for="points_'+inst+'">Points:</label><input type="number" id ="points_'+inst+'" name="points_'+inst+'"></input>';
-  cell3.innerHTML = '<label for="type_'+inst+'">Source:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input>';
+  cell3.innerHTML = '<label for="type_'+inst+'">Type:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input><br><input type= "checkbox" id="flashCardInput_'+inst+'" value="1" name = "flashCard_'+inst+'"><label for="flashCardInput_'+inst+'">flashCard</label>';
   cell4.innerHTML = '<p>→</p><label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><label for="image_ans_'+inst+'">Answer img src:</label><br><input type="text" id ="image_ans_'+inst+'" name="image_ans_'+inst+'"></input><br><label for="image_ans_alt'+inst+'">Answer img_alt:</label><br><input type="text" id ="image_ans_alt'+inst+'" name="image_ans_alt_'+inst+'"></input><br><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="text" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'">';
   
   topicListAmend(inst);
