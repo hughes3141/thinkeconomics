@@ -96,7 +96,7 @@ function getQuestionData($questionId) {
 //print_r($_SESSION);
 //print_r($_POST);
 //print_r($_GET);
-echo date("Y-m-d H:i:s");
+//echo date("Y-m-d H:i:s");
 
 $sql = "INSERT INTO saq_question_bank_3 
         (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, time_added, questionAssetId, answerAssetId, flashCard, topic_order) 
@@ -144,7 +144,7 @@ if (isset($_POST['submit'])) {
     //Update topic_order for new Entry:
     changeOrderNumberWithinTopic("saq_question_bank_3", null, $topic, $topic_order);
 
-    var_dump($_POST);
+    //var_dump($_POST);
 
 
     
@@ -207,7 +207,7 @@ if(isset($_POST['updateValue'])) {
 
 <?php
 if($_SERVER['REQUEST_METHOD']==='POST') {
-  print_r($_POST);
+  //print_r($_POST);
 }
 
 if(isset($_GET['test'])) {

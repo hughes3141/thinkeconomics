@@ -1381,7 +1381,9 @@ function updateTopicOrder($id, $newPlace, $table) {
 function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace) {
 
   /*
-  This function is used to take all questions from table $table with $topic, give entry with $id a $newPlace in the order, then update all other values with the same topic category
+  This function is used to take all questions from table $table with $topic, give entry with $id a $newPlace in the order, then update all other values with the same topic category.
+
+  When inputting new records set $id to null. Then the $newPlace of the new row becomes the new topic_order for that row and other rows behind it are updated accordingly.
 
   Used in :
   -saq_list1.1.php
@@ -1411,19 +1413,20 @@ function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace) {
       array_push($questions, $row);
     }
   }
-  
-  echo "<pre>";
-  print_r($questions);
-  echo "</pre>";
-  
+
+  //When updating a current record $id will not be null so:
+
   if(!is_null($id)) {
-    //This will need to be fixed in order to update table:
+
+    //(This will need to be fixed in order to update table):
     $questionSelect = getSAQQuestions($id)[0];
 
     $questions = array_merge(array_slice($questions, 0, $newPlace), array($questionSelect), array_slice($questions, $newPlace));
     $index = 0;
   } else {
- 
+    
+  //When inserting a new record $id will be null so:
+
     $questionCount = count($questions);
     if ($newPlace > $questionCount) {
       $newPlace = $questionCount;
@@ -1434,11 +1437,8 @@ function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace) {
   
 
   for($x=$index; $x<count($questions); $x++) {
-  //foreach($questions as $question) {
-    //updateTopicOrder($question['id'], $index, $table);
-     updateTopicOrder($questions[$x]['id'], $index, $table);   
+    updateTopicOrder($questions[$x]['id'], $index, $table);   
     $index ++;
-
   }
 
 }
