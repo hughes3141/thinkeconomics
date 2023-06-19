@@ -1143,7 +1143,7 @@ function getFlashcardsQuestions($topics = null, $userId) {
     $numTopics = count($topics);
     $placeholder = str_repeat("?, ", $numTopics -1)." ?";
   }
-  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, r.userId, r.gotRight, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory, q.questionAssetId, aq.path qPath, aq.altText qAlt, aa.path aPath, aa.altText aAlt
+  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, q.flashCard, r.userId, r.gotRight, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory, q.questionAssetId, aq.path qPath, aq.altText qAlt, aa.path aPath, aa.altText aAlt
           FROM saq_question_bank_3 q
           LEFT JOIN (
             SELECT rr.id, rr.questionId, rr.userId, rr.timeSubmit, rr.gotRight, rr.cardCategory, t.most_recent, rr.timeStart
@@ -1168,7 +1168,7 @@ function getFlashcardsQuestions($topics = null, $userId) {
     $sql .= "q.topic IN ($placeholder) AND ";
   }
   
-  $sql .= "q.type LIKE '%flashCard%'
+  $sql .= "(q.type LIKE '%flashCard%' OR q.flashCard = 1)
           
           ORDER BY q.topic, r.questionId, r.timeSubmit
           
