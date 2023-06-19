@@ -1378,6 +1378,13 @@ function updateTopicOrder($id, $newPlace, $table="saq_question_bank_3") {
 
 
 function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace) {
+
+  /*
+  This function is used to take all questions from table $table with $topic, give entry with $id a $newPlace in the order, then update all other values with the same topic category
+
+  Used in :
+  -saq_list1.1.php
+  */
   global $conn;
   
   $sql = "SELECT id, topic_order
