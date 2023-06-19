@@ -1359,7 +1359,7 @@ function insertFlashcardResponse($questionId, $userId, $gotRight, $timeStart, $t
   
 }
 
-function updateTopicOrder($id, $newPlace, $table="saq_question_bank_3") {
+function updateTopicOrder($id, $newPlace, $table) {
   /*
   A function to update the topic_order column of saq_question_bank_3
 
@@ -1367,7 +1367,8 @@ function updateTopicOrder($id, $newPlace, $table="saq_question_bank_3") {
   */
 
   global $conn;
-  $sql = "UPDATE saq_question_bank_3 SET topic_order = ?
+  $sql = "UPDATE ".$table;
+  $sql .= " SET topic_order = ?
           WHERE id = ?";
 
   //echo $sql; 
@@ -1388,8 +1389,8 @@ function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace) {
   global $conn;
   
   $sql = "SELECT id, topic_order
-          FROM saq_question_bank_3
-          WHERE topic = ? AND id <> ?
+          FROM ".$table;
+  $sql .= " WHERE topic = ? AND id <> ?
           ORDER BY topic_order";
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("si", $topic, $id);
@@ -1409,7 +1410,7 @@ function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace) {
 
   $index = 0;
   foreach($questions as $question) {
-    updateTopicOrder($question['id'], $index);
+    updateTopicOrder($question['id'], $index, $table);
     $index ++;
 
   }

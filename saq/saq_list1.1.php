@@ -147,7 +147,7 @@ if (isset($_POST['submit'])) {
 
 if(isset($_POST['updateValue'])) {
 
-  changeOrderNumberWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
+  
 
   $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?,  questionAssetId =?, answerAssetId = ?, flashCard = ? WHERE id = ?";
   
@@ -177,6 +177,10 @@ if(isset($_POST['updateValue'])) {
 
   if($questionDataUser == $_SESSION['userid']) {
     $stmt->execute();
+
+    //Change order value:
+    changeOrderNumberWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
+    
     //header("Refresh:0");
     echo "Record ".$_POST['id']." updated successfully.";
   }
