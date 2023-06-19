@@ -1387,13 +1387,21 @@ function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace) {
   -saq_list1.1.php
   */
   global $conn;
-  
-  $sql = "SELECT id, topic_order
+  $bindArray = array($topic);
+  $params = "s";
+
+  $sql = "SELECT id, topic_order, question
           FROM ".$table;
-  $sql .= " WHERE topic = ? AND id <> ?
-          ORDER BY topic_order";
+  $sql .= " WHERE topic = ? ";
+  if(!is_null($id)) {
+    $sql .= " AND id <> ? ";
+    array_push($bindArray, $id);
+    $params .= "i";
+  }
+  $sql .= "ORDER BY topic_order, id DESC";
+
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("si", $topic, $id);
+  $stmt->bind_param($params, ...$bindArray);
   $stmt->execute();
   $result = $stmt->get_result();
 
@@ -1403,14 +1411,32 @@ function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace) {
       array_push($questions, $row);
     }
   }
+  
+  echo "<pre>";
+  print_r($questions);
+  echo "</pre>";
+  
+  if(!is_null($id)) {
+    //This will need to be fixed in order to update table:
+    $questionSelect = getSAQQuestions($id)[0];
 
-  $questionSelect = getSAQQuestions($id)[0];
+    $questions = array_merge(array_slice($questions, 0, $newPlace), array($questionSelect), array_slice($questions, $newPlace));
+    $index = 0;
+  } else {
+ 
+    $questionCount = count($questions);
+    if ($newPlace > $questionCount) {
+      $newPlace = $questionCount;
+    }
+    $index = $newPlace -1;
+  }
+  
+  
 
-  $questions = array_merge(array_slice($questions, 0, $newPlace), array($questionSelect), array_slice($questions, $newPlace));
-
-  $index = 0;
-  foreach($questions as $question) {
-    updateTopicOrder($question['id'], $index, $table);
+  for($x=$index; $x<count($questions); $x++) {
+  //foreach($questions as $question) {
+    //updateTopicOrder($question['id'], $index, $table);
+     updateTopicOrder($questions[$x]['id'], $index, $table);   
     $index ++;
 
   }
