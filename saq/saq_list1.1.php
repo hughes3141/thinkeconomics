@@ -94,17 +94,17 @@ function getQuestionData($questionId) {
 
 
 //print_r($_SESSION);
-print_r($_POST);
+//print_r($_POST);
 //print_r($_GET);
-echo date("Y-m-d H:i:s");
+//echo date("Y-m-d H:i:s");
 
 $sql = "INSERT INTO saq_question_bank_3 
-        (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, topic_order, time_added, questionAssetId, answerAssetId, flashCard) 
+        (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, time_added, questionAssetId, answerAssetId, flashCard, topic_order) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 $stmt = $conn->prepare($sql);
 
-$stmt->bind_param("ssisssisssssiii", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $topic_order, $timeAdded, $questionAsset, $answerAsset, $flashCard);
+$stmt->bind_param("ssisssissssiiii", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order);
 
 
 
@@ -125,6 +125,7 @@ if (isset($_POST['submit'])) {
     $topic_order = $_POST['topic_order_'.$x];
     $timeAdded = date("Y-m-d H:i:s");
     $questionAsset = $_POST['questionAsset_'.$x];
+
     if($_POST['questionAsset_'.$x] == "") {
       $questionAsset = null;
     }
@@ -136,8 +137,16 @@ if (isset($_POST['submit'])) {
     if(isset($_POST['flashCard_'.$x])) {
       $flashCard = $_POST['flashCard_'.$x];
     }
+
   
     $stmt->execute();
+    
+    //Update topic_order for new Entry:
+    changeOrderNumberWithinTopic("saq_question_bank_3", null, $topic, $topic_order);
+
+    //var_dump($_POST);
+
+
     
     echo "New records created successfully";
 
@@ -147,7 +156,7 @@ if (isset($_POST['submit'])) {
 
 if(isset($_POST['updateValue'])) {
 
-  changeOrderNumberWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
+  
 
   $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?,  questionAssetId =?, answerAssetId = ?, flashCard = ? WHERE id = ?";
   
@@ -177,6 +186,10 @@ if(isset($_POST['updateValue'])) {
 
   if($questionDataUser == $_SESSION['userid']) {
     $stmt->execute();
+
+    //Change order value:
+    changeOrderNumberWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
+
     //header("Refresh:0");
     echo "Record ".$_POST['id']." updated successfully.";
   }
@@ -194,7 +207,7 @@ if(isset($_POST['updateValue'])) {
 
 <?php
 if($_SERVER['REQUEST_METHOD']==='POST') {
-  print_r($_POST);
+  //print_r($_POST);
 }
 
 if(isset($_GET['test'])) {
@@ -206,7 +219,20 @@ if(isset($_GET['test'])) {
   */
   
 }
+$questionTopicCount = "";
+$sql = "SELECT COUNT(*) count
+        FROM saq_question_bank_3 
+        WHERE Topic= ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $_GET['topic']);
+$stmt->execute();
+$result = $stmt->get_result();
+if($result->num_rows>0) {
+  $row = $result->fetch_assoc();
+  $questionTopicCount = $row['count'];
+  }
 
+//echo $questionTopicCount;
 ?>
 
 
@@ -482,7 +508,9 @@ include "../footer.php";
 
 <script>
 
-var topics = ["1.1.1","1.1.2","1.1.3","1.2.1","1.2.2","1.2.3","1.2.4","1.3.1","1.3.2","1.4.1","1.5.1","1.5.2","1.5.3","1.6.1","1.6.2","1.6.3","1.6.4","1.6.5","1.6.6","1.6.7","1.6.8","1.7.1","1.7.2","1.7.3","2.1.1","2.1.2","2.1.3","2.1.4","2.1.5","2.1.6","2.1.7","2.1.8","2.1.9","2.2.1","2.2.2","2.2.3","2.2.4","2.2.5","2.2.6","2.3.1","2.3.2","2.3.3","2.3.4","2.3.5","3.1.1","3.2.1","3.3.1","3.3.2","3.3.3"]
+var topics = ["1.1.1","1.1.2","1.1.3","1.2.1","1.2.2","1.2.3","1.2.4","1.3.1","1.3.2","1.4.1","1.5.1","1.5.2","1.5.3","1.6.1","1.6.2","1.6.3","1.6.4","1.6.5","1.6.6","1.6.7","1.6.8","1.7.1","1.7.2","1.7.3","2.1.1","2.1.2","2.1.3","2.1.4","2.1.5","2.1.6","2.1.7","2.1.8","2.1.9","2.2.1","2.2.2","2.2.3","2.2.4","2.2.5","2.2.6","2.3.1","2.3.2","2.3.3","2.3.4","2.3.5","3.1.1","3.2.1","3.3.1","3.3.2","3.3.3"];
+
+var questionCount = <?=$questionTopicCount?>;
 
 addRow();
 topicList();
@@ -621,7 +649,7 @@ function addRow() {
   
   var inst = tableLength -1;
 
-  cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><select id ="topic_'+inst+'" name="topic_'+inst+'" class="topicSelector"></select><br><label for="topic_order_'+inst+'">Topic Order:</label><input style="width:50px" type="number" step="0.1" name="topic_order_'+inst+'" id="topic_order_'+inst+'"></input>';
+  cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><select id ="topic_'+inst+'" name="topic_'+inst+'" class="topicSelector"></select><br><label for="topic_order_'+inst+'">Topic Order:</label><input style="width:50px" type="number" step="1" name="topic_order_'+inst+'" id="topic_order_'+inst+'" value = "'+questionCount+'"></input>';
   
   cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" required></textarea><br><label for="image_'+inst+'">Question img src:</label><br><input type="text" id ="image_'+inst+'" name="image_'+inst+'"></input><br><label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input type="text" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'">';
   //cell2.innerHTML = '';
@@ -634,7 +662,7 @@ function addRow() {
   
   document.getElementById("questionsCount").value = tableLength;
 
-  
+  questionCount ++;
 }
 
 </script>
