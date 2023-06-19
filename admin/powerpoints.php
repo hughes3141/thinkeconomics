@@ -156,6 +156,7 @@ index = [
         ["2.1.4 Keynesian Aggregate Supply","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/Eb0QfYoiWX1Ij1p3ESjEmYQBlbxG_IKuGQoqBE4giv91IQ?e=hs5ftL"],
         ["2.1.5 AS/AD Revision","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/ETQbDOqaPORGnxSMn0N3aeQBNHg4eXg8NfqEjjHOmrY0DA?e=U7vNuK"],
        ["2.1.5 Neoclassical AS/AD","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/EUrws2xO0WxNt0gYbOhyE8EBDxxvGazQt6hYYa2rzxL-UQ?e=ydjYAL"],
+	["2.1.7 Keynes vs Hayek","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/EcyJYPdTSGpDhra6yyMWTUgBO-KTHCnOtGCzWWGJG2FdaQ?e=tDfZVa"],
       
       
 			["2.1.8 Phillips Curve",
