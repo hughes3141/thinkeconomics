@@ -649,7 +649,7 @@ function addRow() {
   
   var inst = tableLength -1;
 
-  cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><select id ="topic_'+inst+'" name="topic_'+inst+'" class="topicSelector"></select><br><label for="topic_order_'+inst+'">Topic Order:</label><input style="width:50px" type="number" step="1" name="topic_order_'+inst+'" id="topic_order_'+inst+'" value = "'+questionCount+'"></input>';
+  cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><select id ="topic_'+inst+'" name="topic_'+inst+'" class="topicSelector"></select><br><label for="topic_order_'+inst+'">Topic Order:</label><input style="width:50px" type="number" step="1" name="topic_order_'+inst+'" id="topic_order_'+inst+'" value = "'+questionCount+'" onchange="changeOrder(this)"></input>';
   
   cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" required></textarea><br><label for="image_'+inst+'">Question img src:</label><br><input type="text" id ="image_'+inst+'" name="image_'+inst+'"></input><br><label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input type="text" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'">';
   //cell2.innerHTML = '';
@@ -663,6 +663,13 @@ function addRow() {
   document.getElementById("questionsCount").value = tableLength;
 
   questionCount ++;
+  
+
+
+}
+
+function changeOrder(x) {
+  questionCount = parseInt((x.value))+1;
 }
 
 </script>
