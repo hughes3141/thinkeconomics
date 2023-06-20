@@ -1402,7 +1402,7 @@ function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace) {
   }
   $sql .= "ORDER BY topic_order";
 
-  if(!is_null($id)) {
+  if(is_null($id)) {
     $sql .= " , id DESC"; 
   }
 
