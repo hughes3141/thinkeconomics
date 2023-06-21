@@ -1233,6 +1233,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
 
   Used in:
   -quick_quiz.php
+  -knowledge_organiser.php
   */
   global $conn;
   $params="";
@@ -1302,6 +1303,10 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
     $sql .= sql_conjoin($params);
     $sql .= " ( q.flashCard = 1 OR q.type LIKE '%flashCard%' )";
   }
+
+  $sql .= " ORDER BY topic, topic_order";
+
+
 
   $stmt=$conn->prepare($sql);
   if(count($bindArray)>0) {
