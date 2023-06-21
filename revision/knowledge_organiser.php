@@ -45,7 +45,7 @@ $questions = getSAQQuestions(null, $topic, true, 1);
 
 ?>
 
-<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">Knowledge Organiser</h1>
   <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
   
@@ -60,14 +60,14 @@ $questions = getSAQQuestions(null, $topic, true, 1);
     */
 
 
-    echo "<ol class='list-decimal list-inside'>";
+    echo "<ol class='list-decimal'>";
 
 
     foreach($questions as $question) {
       ?>
       
       <div class="">
-        <li class="whitespace-pre-line mt-5 mb-1 text-lg -indent-5 ml-5"><?=$question['question']?></li>
+        <li class="whitespace-pre-line mt-5 mb-1 text-lg  ml-5"><?=$question['question']?></li>
             <?php
               $img = null;
               $alt = null;
@@ -84,7 +84,7 @@ $questions = getSAQQuestions(null, $topic, true, 1);
                 <?php
               }
             ?>
-          <div class="ml-4 bg-pink-100 p-2">
+          <div class="ml-5 bg-pink-100 p-2">
             <p class="whitespace-pre-line"><?=$question['model_answer']?></p>
             <?php
               $img = null;
@@ -98,7 +98,7 @@ $questions = getSAQQuestions(null, $topic, true, 1);
                 $alt = htmlspecialchars($question['a_alt']);
               }
               if(!is_null($img)) {
-                ?><img class = "mx-auto my-1" src= "<?=$img?>" alt = "<?=$alt?>">
+                ?><img class = "mx-auto my-1 max-h-80" src= "<?=$img?>" alt = "<?=$alt?>">
                 <?php
               }
             ?>
