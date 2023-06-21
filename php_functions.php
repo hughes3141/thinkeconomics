@@ -1507,12 +1507,6 @@ function getTopicList($tableName, $topicColumn, $topics = null, $flashCard = nul
 
   $sql .= " ORDER BY q.".$topicColumn;
 
-
-
-  echo $sql;
-  //echo $params;
-  //print_r($bindArray);
-
   $stmt=$conn->prepare($sql);
   if(count($bindArray)>0) {
     $stmt->bind_param($params, ...$bindArray);
@@ -1523,7 +1517,7 @@ function getTopicList($tableName, $topicColumn, $topics = null, $flashCard = nul
 
   if($result->num_rows>0) {
     while($row = $result->fetch_assoc()) {
-      array_push($results, $row);
+      array_push($results, $row['topic']);
     }
   }
   return $results;
