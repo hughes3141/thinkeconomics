@@ -840,6 +840,11 @@ input[type="range"]::-ms-fill-lower {
   margin-bottom: 0.25rem;
 }
 
+.-mx-4 {
+  margin-left: -1rem;
+  margin-right: -1rem;
+}
+
 .mb-8 {
   margin-bottom: 2rem;
 }
@@ -956,6 +961,18 @@ input[type="range"]::-ms-fill-lower {
   margin-top: 1.25rem;
 }
 
+.-ml-5 {
+  margin-left: -1.25rem;
+}
+
+.-ml-4 {
+  margin-left: -1rem;
+}
+
+.-mr-4 {
+  margin-right: -1rem;
+}
+
 .block {
   display: block;
 }
@@ -1014,6 +1031,14 @@ input[type="range"]::-ms-fill-lower {
 
 .h-60 {
   height: 15rem;
+}
+
+.max-h-40 {
+  max-height: 10rem;
+}
+
+.max-h-80 {
+  max-height: 20rem;
 }
 
 .w-full {
@@ -1537,6 +1562,10 @@ input[type="range"]::-ms-fill-lower {
 
 .pr-3 {
   padding-right: 0.75rem;
+}
+
+.pt-0 {
+  padding-top: 0px;
 }
 
 .text-center {

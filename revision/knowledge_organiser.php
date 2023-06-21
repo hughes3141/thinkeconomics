@@ -36,18 +36,31 @@ $style_input = "
 
 include($path."/header_tailwind.php");
 
-$topic = "";
+$topic = null;
+$subjectId = null;
+$subjectId = 1;
+$userCreate = null;
+$userCreate = 1;
+
 if(isset($_GET['topic'])) {
   $topic = $_GET['topic'];
 }
+if(isset($_GET['subjectId'])) {
+  $subjectId = $_GET['subjectId'];
+}
+if(isset($_GET['userCreate'])) {
+  $userCreate = $_GET['userCreate'];
+}
 
-$questions = getSAQQuestions(null, $topic, true, 1);
+$questions = getSAQQuestions(null, $topic, true, $subjectId, $userCreate);
+$topicList = getTopicList("saq_question_bank_3", "topic", $topic, true, $subjectId, $userCreate);
+
 
 ?>
 
-<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">Knowledge Organiser</h1>
-  <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
+  <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5 pt-0">
   
   <?php
     /*
@@ -57,57 +70,75 @@ $questions = getSAQQuestions(null, $topic, true, 1);
     echo "<pre>";
     print_r($questions);
     echo "</pre>";
+    
+    
+    print_r($topicList);
     */
 
 
-    echo "<ol class='list-decimal list-inside'>";
 
 
-    foreach($questions as $question) {
+    foreach($topicList as $topic) {
+      $questions_filter_by_topic = array();
+
+      foreach($questions as $question) {
+        if($question['topic'] == $topic) {
+          array_push($questions_filter_by_topic, $question);
+        }
+      }
       ?>
-      
-      <div class="">
-        <li class="whitespace-pre-line mt-5 mb-1 text-lg -indent-5 ml-5"><?=$question['question']?></li>
-            <?php
-              $img = null;
-              $alt = null;
-              if($question['img'] != "") {
-                $img = htmlspecialchars($question['img']);
-                $alt = htmlspecialchars($question['img']);
-              }
-              if($question['a_path'] != "") {
-                $img = htmlspecialchars($question['q_path']);
-                $alt = htmlspecialchars($question['q_alt']);
-              }
-              if(!is_null($img)) {
-                ?><img class = "mx-auto my-1" src= "<?=$img?>" alt = "<?=$alt?>">
-                <?php
-              }
-            ?>
-          <div class="ml-4 bg-pink-100 p-2">
-            <p class="whitespace-pre-line"><?=$question['model_answer']?></p>
-            <?php
-              $img = null;
-              $alt = null;
-              if($question['answer_img'] != "") {
-                $img = htmlspecialchars($question['answer_img']);
-                $alt = htmlspecialchars($question['answer_img_alt']);
-              }
-              if($question['a_path'] != "") {
-                $img = htmlspecialchars($question['a_path']);
-                $alt = htmlspecialchars($question['a_alt']);
-              }
-              if(!is_null($img)) {
-                ?><img class = "mx-auto my-1" src= "<?=$img?>" alt = "<?=$alt?>">
-                <?php
-              }
-            ?>
-          </div>
-      </div>
+      <h2 class = "bg-pink-300 -ml-4 -mr-4 mb-5 text-xl font-mono pl-1 text-gray-800"><?=$topic?></h2>
       <?php
+      echo "<ol class='list-decimal'>";
+
+      foreach($questions_filter_by_topic as $question) {
+        ?>
+        
+        <div class="">
+          <li class="whitespace-pre-line  mb-1 text-lg  ml-5"><?=$question['question']?></li>
+              <?php
+                $img = null;
+                $alt = null;
+                if($question['img'] != "") {
+                  $img = htmlspecialchars($question['img']);
+                  $alt = htmlspecialchars($question['img']);
+                }
+                if($question['a_path'] != "") {
+                  $img = htmlspecialchars($question['q_path']);
+                  $alt = htmlspecialchars($question['q_alt']);
+                }
+                if(!is_null($img)) {
+                  ?><img class = "mx-auto my-1 max-h-80" src= "<?=$img?>" alt = "<?=$alt?>">
+                  <?php
+                }
+              ?>
+            <div class="ml-5 mb-5 bg-pink-100 p-2">
+              <p class="whitespace-pre-line"><?=$question['model_answer']?></p>
+              <?php
+                $img = null;
+                $alt = null;
+                if($question['answer_img'] != "") {
+                  $img = htmlspecialchars($question['answer_img']);
+                  $alt = htmlspecialchars($question['answer_img_alt']);
+                }
+                if($question['a_path'] != "") {
+                  $img = htmlspecialchars($question['a_path']);
+                  $alt = htmlspecialchars($question['a_alt']);
+                }
+                if(!is_null($img)) {
+                  ?><img class = "mx-auto my-1 max-h-80" src= "<?=$img?>" alt = "<?=$alt?>">
+                  <?php
+                }
+              ?>
+            </div>
+        </div>
+        
+        <?php
+      }
+      echo "</li>";
     }
 
-    echo "</ol>";
+    
   ?>
 
 
