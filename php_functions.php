@@ -1448,6 +1448,88 @@ function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace) {
 
 }
 
+function getTopicList($tableName, $topicColumn, $topics = null, $flashCard = null, $subjectId = null, $userCreate = null) {
+
+  /*
+  This function will return a unique list of topics from $topicColumn and table $tableName, subjec to criteria of having LIKE $topic%, created by $userCreate, or having $subjectId
+
+  */
+  global $conn;
+  $params="";
+  $bindArray = array();
+  $results = array();
+
+  $sql =  "SELECT DISTINCT q.".$topicColumn." ";
+  $sql .= "FROM ".$tableName." q ";
+
+  if($topics) {
+    $topics = explode(",", $topics);
+    $numTopics = count($topics);
+
+    $sql .= " WHERE ";
+
+    foreach($topics as $key=>$topic) {
+      if($key == 0) {
+        $sql .= " ( ";
+      }
+      $sql .= "q.topic LIKE ? ";
+      if($key < ($numTopics-1)) {
+        $sql .= " OR ";
+      }
+      $topic = $topic."%";
+      
+      $params .= "s";
+      array_push($bindArray, $topic);
+    }
+    $sql .= " ) ";
+  }
+
+  if($userCreate) {
+    $sql .= sql_conjoin($params);
+    $sql .= " q.userCreate = ? ";
+    $params .= "i";
+    array_push($bindArray, $userCreate);
+
+  }
+
+  if($subjectId) {
+    $sql .= sql_conjoin($params);
+
+    $sql .= " q.subjectId = ? ";
+    $params .= "i";
+    array_push($bindArray, $subjectId);
+  }
+
+  if($flashCard) {
+    $sql .= sql_conjoin($params);
+    $sql .= " ( q.flashCard = 1 OR q.type LIKE '%flashCard%' )";
+  }
+
+  $sql .= " ORDER BY q.".$topicColumn;
+
+
+
+  echo $sql;
+  //echo $params;
+  //print_r($bindArray);
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
+}
+
 
 
 function loginLogReturn($limit = null, $likeName = null) {

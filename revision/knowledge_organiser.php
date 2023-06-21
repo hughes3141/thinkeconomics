@@ -36,12 +36,22 @@ $style_input = "
 
 include($path."/header_tailwind.php");
 
-$topic = "";
+$topic = null;
+$subjectId = null;
+$userCreate = null;
+
 if(isset($_GET['topic'])) {
   $topic = $_GET['topic'];
 }
+if(isset($_GET['subjectId'])) {
+  $subjectId = $_GET['subjectId'];
+}
+if(isset($_GET['userCreate'])) {
+  $userCreate = $_GET['userCreate'];
+}
 
-$questions = getSAQQuestions(null, $topic, true, 1);
+$questions = getSAQQuestions(null, $topic, true, $subjectId, $userCreate);
+$topicList = getTopicList("saq_question_bank_3", "topic", $topic, true, $subjectId, $userCreate);
 
 ?>
 
@@ -58,11 +68,13 @@ $questions = getSAQQuestions(null, $topic, true, 1);
     print_r($questions);
     echo "</pre>";
     */
+    
+    print_r($topicList);
 
 
     echo "<ol class='list-decimal'>";
 
-
+    
     foreach($questions as $question) {
       ?>
       
