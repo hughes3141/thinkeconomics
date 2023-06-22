@@ -5,6 +5,10 @@ session_start();
 
 $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
+include ($path."/header_tailwind.php");
 
 if (!isset($_SESSION['userid'])) {
   
@@ -12,15 +16,44 @@ if (!isset($_SESSION['userid'])) {
   
 }
 
-$path = $_SERVER['DOCUMENT_ROOT'];
-include($path."/php_header.php");
-include($path."/php_functions.php");
-include ($path."/header_tailwind.php");
+else {
+  $userInfo = getUserInfo($_SESSION['userid']);
+  $userId = $_SESSION['userid'];
+  $permissions = $userInfo['permissions'];
+  /*
+  if (!(str_contains($permissions, 'teacher'))) {
+    header("location: /index.php");
+  }
+  */
+
+}
 
 
 
-$results = getFlashcardSummaryByQuestion($_GET['groupId'], $_GET['startDate'], $_GET['endDate'], $_GET['orderBy']);
+$groupId = null;
+$startDate = null;
+$endDate = null;
+$orderBy = null;
 
+if(isset($_GET['groupId'])) {
+  $groupId = $_GET['groupId'];
+}
+
+if(isset($_GET['startDate'])) {
+  $startDate = $_GET['startDate'];
+}
+
+if(isset($_GET['endDate'])) {
+  $endDate = $_GET['endDate'];
+}
+
+if(isset($_GET['orderBy'])) {
+  $orderBy = $_GET['orderBy'];
+}
+
+$results = getFlashcardSummaryByQuestion($groupId, $startDate, $endDate, $orderBy);
+
+$groups = getGroupsList($userId);
 
 
 foreach($results as $array) {
@@ -33,11 +66,32 @@ foreach($results as $array) {
 
 <!-- GET variables: groupId, startDate, endDate, orderBy
     
--->"
+-->
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">Flash Card Review</h1>
   <div class="container mx-auto px-0 mt-2 bg-white text-black">
+  <?php
+  
+  echo "<pre>";
+  //print_r($groups);
+  //print_r($_GET);
+  echo "</pre>";
+  
+  ?>
+    <form method = "get" action="">
+      <select name="groupId">
+        <?php
+        foreach($groups as $group) {
+          ?>
+          <option value="<?=$group['id']?>" <?=($_GET['groupId']==$group['id']) ? "selected" : "" ?>><?=$group['name']?></option>
+          <?php
+        }
+        ?>
+
+      </select>
+      <input type="submit" value="Select Group">
+    </form>
     <table class="table-fixed">
       <tr>
         <th>Topic</th>
