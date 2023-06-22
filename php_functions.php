@@ -1318,6 +1318,16 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
 
   if($result->num_rows>0) {
     while($row = $result->fetch_assoc()) {
+      //Change those entries that use 'img' for 'q_path' to new standard of 'q_path' and 'q_alt'
+      if($row['img'] != '' && $row['q_path'] == '') {
+        $row['q_path'] = $row['img'];
+        $row['q_alt'] = $row['img'];
+      }
+      //Change those entries that use 'answer_img' and 'answer_img_alt' for 'a_path' and 'a_alt' to new standard of 'a_path' and 'a_alt'
+      if($row['answer_img'] != '' && $row['a_path'] == '') {
+        $row['a_path'] = $row['answer_img'];
+        $row['a_alt'] = $row['answer_img_alt'];
+      }
       array_push($results, $row);
     }
   }

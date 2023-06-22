@@ -70,10 +70,10 @@ $topicList = getTopicList("saq_question_bank_3", "topic", $topic, true, $subject
     echo "<pre>";
     print_r($questions);
     echo "</pre>";
-    
-    
-    print_r($topicList);
     */
+    
+    //print_r($topicList);
+    
 
 
 
@@ -97,21 +97,13 @@ $topicList = getTopicList("saq_question_bank_3", "topic", $topic, true, $subject
         <div class="">
           <li class="whitespace-pre-line  mb-1 text-lg  ml-5"><?=$question['question']?></li>
               <?php
-                $img = null;
-                $alt = null;
-                if($question['img'] != "") {
-                  $img = htmlspecialchars($question['img']);
-                  $alt = htmlspecialchars($question['img']);
-                }
-                if($question['a_path'] != "") {
-                  $img = htmlspecialchars($question['q_path']);
-                  $alt = htmlspecialchars($question['q_alt']);
-                }
-                if(!is_null($img)) {
-                  ?><img class = "mx-auto my-1 max-h-80" src= "<?=$img?>" alt = "<?=$alt?>">
+                if(!is_null($question['q_path'])) {
+                  ?>
+                  <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
                   <?php
                 }
-              ?>
+                ?>
+
             <div class="ml-5 mb-5 bg-pink-100 p-2">
               <p class="whitespace-pre-line"><?=$question['model_answer']?></p>
               <?php
