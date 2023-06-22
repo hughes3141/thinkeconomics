@@ -20,11 +20,11 @@ else {
   $userInfo = getUserInfo($_SESSION['userid']);
   $userId = $_SESSION['userid'];
   $permissions = $userInfo['permissions'];
-  /*
+  
   if (!(str_contains($permissions, 'teacher'))) {
     header("location: /index.php");
   }
-  */
+  
 
 }
 
@@ -78,6 +78,7 @@ foreach($results as $array) {
   <div class="container mx-auto px-0 mt-2 bg-white text-black">
   <?php
   
+  /*
   echo "<pre>";
   //print_r($groups);
   //print_r($_GET);
@@ -85,6 +86,7 @@ foreach($results as $array) {
   echo $date;
   echo "<br>";
   echo $dateLastMonth;
+  */
   
   ?>
     <form method = "get" action="">
