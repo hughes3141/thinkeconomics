@@ -35,6 +35,7 @@ $groupId = null;
 $startDate = null;
 $endDate = null;
 $orderBy = null;
+$students = array();
 
 if(isset($_GET['groupId'])) {
   $groupId = $_GET['groupId'];
