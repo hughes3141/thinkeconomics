@@ -24,6 +24,14 @@ include "header_tailwind.php";
     <div class="container mx-auto px-0 mt-2 bg-white text-black">
       <ul class="list-none">
         <h2 class="font-mono text-xl bg-pink-300 pl-1"></h2>
+          <h3 class="font-mono text-lg bg-pink-200 pl-1">Knowledge Organisers</h3>
+            <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/knowledge_organiser.php?topic=1.1">Knowledge Organiser (1.1 Topics)</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/knowledge_organiser.php?topic=1.2">Knowledge Organiser (1.2 Topics)</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/knowledge_organiser.php?topic=1.3">Knowledge Organiser (1.3 Topics)</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/knowledge_organiser.php?topic=1.4">Knowledge Organiser (1.4 Topics)</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/knowledge_organiser.php?topic=2.1">Knowledge Organiser (2.1 Topics)</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/knowledge_organiser.php?topic=2.2">Knowledge Organiser (2.2 Topics)</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/knowledge_organiser.php?topic=2.3">Knowledge Organiser (2.3 Topics)</a></li>
           <h3 class="font-mono text-lg bg-pink-200 pl-1">FlashCards Collections</h3>
             <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/flashcards.php">FlashCards (All Topics)</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/flashcards.php?topics=1.1.1,1.1.2,1.1.3">FlashCards (1.1 Topics)</a></li>

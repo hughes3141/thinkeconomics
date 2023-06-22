@@ -8,7 +8,7 @@ $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 include($path."/php_functions.php");
-include ($path."/header_tailwind.php");
+
 
 if (!isset($_SESSION['userid'])) {
   
@@ -27,16 +27,19 @@ else {
   
 
 }
+$style_input = "";
 
-
+include ($path."/header_tailwind.php");
 
 $groupId = null;
 $startDate = null;
 $endDate = null;
 $orderBy = null;
+$students = array();
 
 if(isset($_GET['groupId'])) {
   $groupId = $_GET['groupId'];
+  $students = getGroupUsers($groupId);
 }
 
 if(isset($_GET['startDate'])) {
@@ -58,7 +61,7 @@ $results = getFlashcardSummaryByQuestion($groupId, $startDate, $endDate, $orderB
 $groups = getGroupsList($userId);
 
 $date = date('Y-m-d');
-$dateLastMonth = date('Y-m-d', strtotime('-30 days'));
+
 
 
 foreach($results as $array) {
@@ -78,15 +81,14 @@ foreach($results as $array) {
   <div class="container mx-auto px-0 mt-2 bg-white text-black">
   <?php
   
-  /*
+  
   echo "<pre>";
   //print_r($groups);
   //print_r($_GET);
+  //print_r($students);
   echo "</pre>";
-  echo $date;
-  echo "<br>";
-  echo $dateLastMonth;
-  */
+
+  
   
   ?>
     <form method = "get" action="">
@@ -109,34 +111,50 @@ foreach($results as $array) {
       <br>
       <input type="submit" value="Select Group">
     </form>
-    <table class="table-fixed">
+    <table class="table-fixed border border-black">
       <tr>
-        <th>Topic</th>
-        <th>Question</th>
-        <th>Responses</th>
+        <th class="border border-black">Name</th>
+        <th class="border border-black">Count</th>
+        <th class="border border-black">Dates</th>
+        <th class="border border-black">Average Time</th>
+        <th class="border border-black">Date Summary</th>
       </tr>
       <?php
-      foreach($results as $array) {
-        ?>
-        <tr>
-          <td><?=$array['topic']?></td>
-          <td><?=$array['question']?>
-            <?php
-              if($array['img'] != ""){
-                ?>
-                <img src = "<?=$array['img']?>" class="w-auto">
-                <?php
+        foreach($students as $student) {
+          $id = $student['id'];
+          //print_r(flashCardSummary($id, "count_category"));
+          ?>
+          <tr>
+            <td class="border border-black"><?=$student['name_first']." ".$student['name_last']?></td>
+            <td class="border border-black"><?=flashCardSummary($id, "count")[0]['count']?></td>
+            <td class="border border-black"> <?php
+              $flashcards = flashCardSummary($id, "count_category");
+                foreach($flashcards as $array) {
+                  if ($array['gotRight']==0) {
+                    echo "Didn't Know: ";
+                  } elseif ($array['gotRight']==1) {
+                    echo "Incorrect : ";
+                  } elseif ($array['gotRight']==2) {
+                    echo "Correct: ";
+                  }
+                echo $array['count']."<br>";
               }
+            ?></td>
+            <td class="border border-black"><?=round(flashCardSummary($id, "average")[0]['avg'])?></td>
+            <td class="border border-black">
+              <div class="grid grid-cols-4">
+              <?php
+               $flashcards = flashCardSummary($id, "count_by_date");
+               //print_r($flashcards);
+               foreach($flashcards as $array) {
+                 echo "<div class='text-sm border border-slate-400'>".date('d/m/y D',strtotime($array['date'])).": ".$array['count']."</div>";
+               }
               ?>
-          </td>
-          <td>
-            Correct: <?=$array['correct']?> ||
-            Incorrect: <?=$array['wrong']?> ||
-            Don't Know: <?=$array['dontknow']?>
-          </td>
-        </tr>
-        <?php
-      }
+              
+            </td>
+          </tr>
+          <?php
+        }
       ?>
   </table>
   </div>
