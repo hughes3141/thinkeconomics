@@ -51,9 +51,14 @@ if(isset($_GET['orderBy'])) {
   $orderBy = $_GET['orderBy'];
 }
 
+
+
 $results = getFlashcardSummaryByQuestion($groupId, $startDate, $endDate, $orderBy);
 
 $groups = getGroupsList($userId);
+
+$date = date('Y-m-d');
+$dateLastMonth = date('Y-m-d', strtotime('-30 days'));
 
 
 foreach($results as $array) {
@@ -77,19 +82,29 @@ foreach($results as $array) {
   //print_r($groups);
   //print_r($_GET);
   echo "</pre>";
+  echo $date;
+  echo "<br>";
+  echo $dateLastMonth;
   
   ?>
     <form method = "get" action="">
       <select name="groupId">
+        <option value=""></option>
         <?php
         foreach($groups as $group) {
           ?>
-          <option value="<?=$group['id']?>" <?=($_GET['groupId']==$group['id']) ? "selected" : "" ?>><?=$group['name']?></option>
+          <option value="<?=$group['id']?>" <?=(isset($_GET['groupId']) && $_GET['groupId']==$group['id']) ? "selected" : "" ?>><?=$group['name']?></option>
           <?php
         }
         ?>
-
       </select>
+      <br>
+      <label for="">Start Date:</label>
+      <input type="date" name="startDate" value="<?=(isset($_GET['startDate'])) ? $_GET['startDate'] : "" /*$dateLastMonth*/?>">
+      <br>
+      <label for="">End Date:</label>
+      <input type="date" name="endDate" value="<?=(isset($_GET['endDate'])) ? $_GET['endDate'] : $date?>">
+      <br>
       <input type="submit" value="Select Group">
     </form>
     <table class="table-fixed">

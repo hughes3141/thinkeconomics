@@ -1053,7 +1053,7 @@ function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endD
   Outputs a list of all flashcard questions created by userid=1. 
     Filter by:
     -classid: gives results for a particular class
-    -startDate: sets boundary for earliest recored. Enter in Ymd format e.g. 20221213
+    -startDate: sets boundary for earliest recored. Enter in Y-m-d format e.g. 2022-12-13
     -endDate: sets boundary for most recent record. Default it today's date
     Order by:
     -dontknow
@@ -1064,15 +1064,27 @@ function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endD
   */
 
   global $conn;
+
+  //Set end date to today's date if not declared in function
+  if(is_null($endDate) or $endDate == "") {
+    $endDate = date('Ymd');
+  } else {
+    $endDate = date('Ymd', strtotime($endDate));
+  }
+  if($startDate == "") {
+    $startDate = null;
+  }
+  if(!is_null($startDate)) {
+    $startDate = date('Ymd', strtotime($startDate));
+  }
+
+
   $responses = array();
   $users = "";
   if($classid) {
     $users = getGroupUsers($classid);
   }
-  //Set end date to today's date if not declared in function
-  if(!$endDate) {
-    $endDate = date('Ymd');
-  }
+
   //Set orderBy; default is q.topic:
   if(!$orderByInput) {
     $orderBy = "q.topic";
@@ -1117,6 +1129,9 @@ function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endD
   if($startDate) {
     $stmt->bind_param('ss',$startDate, $endDate);
   } 
+
+  //echo $sql;
+
   $stmt->execute();
   $result = $stmt->get_result();
   if($result->num_rows>0) {
@@ -1125,6 +1140,7 @@ function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endD
     }
   }
 
+  
   return $responses;
 
 }
