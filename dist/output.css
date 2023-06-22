@@ -796,10 +796,6 @@ input[type="range"]::-ms-fill-lower {
   margin: 0.5rem;
 }
 
-.m-1 {
-  margin: 0.25rem;
-}
-
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -838,11 +834,6 @@ input[type="range"]::-ms-fill-lower {
 .my-1 {
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
-}
-
-.-mx-4 {
-  margin-left: -1rem;
-  margin-right: -1rem;
 }
 
 .mb-8 {
@@ -949,28 +940,16 @@ input[type="range"]::-ms-fill-lower {
   margin-left: 1.5rem;
 }
 
-.ml-5 {
-  margin-left: 1.25rem;
-}
-
-.ml-4 {
-  margin-left: 1rem;
-}
-
-.mt-5 {
-  margin-top: 1.25rem;
-}
-
-.-ml-5 {
-  margin-left: -1.25rem;
-}
-
 .-ml-4 {
   margin-left: -1rem;
 }
 
 .-mr-4 {
   margin-right: -1rem;
+}
+
+.ml-5 {
+  margin-left: 1.25rem;
 }
 
 .block {
@@ -1031,10 +1010,6 @@ input[type="range"]::-ms-fill-lower {
 
 .h-60 {
   height: 15rem;
-}
-
-.max-h-40 {
-  max-height: 10rem;
 }
 
 .max-h-80 {
@@ -1145,10 +1120,6 @@ input[type="range"]::-ms-fill-lower {
   resize: both;
 }
 
-.list-inside {
-  list-style-position: inside;
-}
-
 .list-none {
   list-style-type: none;
 }
@@ -1163,6 +1134,14 @@ input[type="range"]::-ms-fill-lower {
 
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.grid-rows-4 {
+  grid-template-rows: repeat(4, minmax(0, 1fr));
 }
 
 .flex-row {
@@ -1331,6 +1310,11 @@ input[type="range"]::-ms-fill-lower {
   border-color: rgb(241 126 184 / var(--tw-border-opacity));
 }
 
+.border-slate-400 {
+  --tw-border-opacity: 1;
+  border-color: rgb(148 163 184 / var(--tw-border-opacity));
+}
+
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
@@ -1388,21 +1372,6 @@ input[type="range"]::-ms-fill-lower {
 
 .fill-current {
   fill: currentColor;
-}
-
-.object-contain {
-  -o-object-fit: contain;
-     object-fit: contain;
-}
-
-.object-fill {
-  -o-object-fit: fill;
-     object-fit: fill;
-}
-
-.object-none {
-  -o-object-fit: none;
-     object-fit: none;
 }
 
 .object-center {
@@ -1570,10 +1539,6 @@ input[type="range"]::-ms-fill-lower {
 
 .text-center {
   text-align: center;
-}
-
-.-indent-5 {
-  text-indent: -1.25rem;
 }
 
 .align-top {

@@ -1145,6 +1145,13 @@ function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endD
 
 }
 
+function getFlashcardSummaryByStudent($userId, $startDate = null, $endDate = null) {
+  /*
+  Returns
+  */
+
+}
+
 function getFlashcardsQuestions($topics = null, $userId) {
   /*
   This function returns Flashcard quesiton information that will then be used in flashcards.php. This will return information on all flashcard questions in a the database given the filter, plus information on the last time a given $userId has attempted the question. Returns a ranked array of questions that can then be used to generate flashcards.php
