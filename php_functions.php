@@ -1405,7 +1405,11 @@ function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace) {
     array_push($bindArray, $id);
     $params .= "i";
   }
-  $sql .= "ORDER BY topic_order, id DESC";
+  $sql .= "ORDER BY topic_order";
+
+  if(is_null($id)) {
+    $sql .= " , id DESC"; 
+  }
 
   $stmt = $conn->prepare($sql);
   $stmt->bind_param($params, ...$bindArray);
