@@ -62,12 +62,6 @@ Notes on command GET variables:
 
         function lastResponse($questionId) {
 
-          /*
-          lastResponse(int $questionId) : array
-
-          Returns the detail about the last time question with $questionId was answered.
-          If not answered, returns array with cardCategory=0 and current timeStamps for timeSubmit and timeStart.
-          */
 
           global $conn;
           $t = time();
@@ -90,33 +84,15 @@ Notes on command GET variables:
             //echo "<br>This question has not been attempted yet";
             return $lastResponse = array("cardCategory"=>"0", "timeSubmit"=>date("Y-m-d H:i:s", $t), "timeStart"=>date("Y-m-d H:i:s", $t));
           
-          }
+          }       
 
-          //echo "<br>";
-          //print_r($lastResponse);
-          
-
-          /*
-
-          if($result->num_rows>0) {
-            while ($row = $result->fetch_assoc()) {
-              
-              echo "<br>";
-              print_r($row);
-              
-            }
-          }
-          else {
-            echo "<br>This question has not been attempted yet";
-          }
-          */
         }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $lastResponse = lastResponse($_POST['questionId']);
   //print_r($lastResponse);
   if ($lastResponse['timeStart'] === $_POST['timeStart']) {
-    //echo "This was a duplicate and will not be entered";
+    echo ($test == true ? "This was a duplicate and will not be entered" : "");
   }
   else {
     insertFlashcardResponse($_POST['questionId'], $userId, $_POST['rightWrong'], $_POST['timeStart'], date("Y-m-d H:i:s", time()), $_POST['cardCategory']);

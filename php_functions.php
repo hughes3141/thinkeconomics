@@ -1152,7 +1152,7 @@ function getFlashcardSummaryByStudent($userId, $startDate = null, $endDate = nul
 
 }
 
-function getFlashcardsQuestions($topics = null, $userId) {
+function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
   /*
   This function returns Flashcard quesiton information that will then be used in flashcards.php. This will return information on all flashcard questions in a the database given the filter, plus information on the last time a given $userId has attempted the question. Returns a ranked array of questions that can then be used to generate flashcards.php
 
@@ -1161,12 +1161,16 @@ function getFlashcardsQuestions($topics = null, $userId) {
   */
   global $conn;
   $results = array();
+  $params = "";
+  $bind_Array = array();
+  
 
   if($topics) {
     $numTopics = count($topics);
     $placeholder = str_repeat("?, ", $numTopics -1)." ?";
   }
-  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, q.flashCard, r.userId, r.gotRight, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory, q.questionAssetId, aq.path qPath, aq.altText qAlt, aa.path aPath, aa.altText aAlt
+
+  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, q.flashCard, q.subjectId, r.userId, r.gotRight, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory, q.questionAssetId, aq.path qPath, aq.altText qAlt, aa.path aPath, aa.altText aAlt
           FROM saq_question_bank_3 q
           LEFT JOIN (
             SELECT rr.id, rr.questionId, rr.userId, rr.timeSubmit, rr.gotRight, rr.cardCategory, t.most_recent, rr.timeStart
@@ -1189,6 +1193,10 @@ function getFlashcardsQuestions($topics = null, $userId) {
 
   if($topics) {
     $sql .= "q.topic IN ($placeholder) AND ";
+  }
+
+  if(!is_null($subjectId)) {
+    $sql .= " q.subjectId = ? ";
   }
   
   $sql .= "(q.type LIKE '%flashCard%' OR q.flashCard = 1)
