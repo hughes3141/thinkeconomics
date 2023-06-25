@@ -1169,7 +1169,7 @@ function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
   if($topics) {
   }
 
-  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, q.flashCard, q.subjectId, r.userId, r.gotRight, r.dontKnow, r.correct, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory, q.questionAssetId, aq.path qPath, aq.altText qAlt, aa.path aPath, aa.altText aAlt
+  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, q.flashCard, q.subjectId, r.userId, r.gotRight, r.dontKnow, r.correct, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory, q.questionAssetId, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt
           FROM saq_question_bank_3 q
           LEFT JOIN (
             SELECT rr.id, rr.questionId, rr.userId, rr.timeSubmit, rr.gotRight, rr.dontKnow, rr.correct, rr.cardCategory, t.most_recent, rr.timeStart
@@ -1237,6 +1237,17 @@ function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
   $result = $stmt->get_result();
   if($result->num_rows>0) {
     while($row=$result->fetch_assoc()) {
+                    //Change those entries that use 'img' for 'q_path' to new standard of 'q_path' and 'q_alt'
+                    if($row['img'] != '' && $row['q_path'] == '') {
+                      $row['q_path'] = $row['img'];
+                      $row['q_alt'] = $row['img'];
+                    }
+                    //Change those entries that use 'answer_img' and 'answer_img_alt' for 'a_path' and 'a_alt' to new standard of 'a_path' and 'a_alt'
+                    if($row['answer_img'] != '' && $row['a_path'] == '') {
+                      $row['a_path'] = $row['answer_img'];
+                      $row['a_alt'] = $row['answer_img_alt'];
+                    }
+
       if($row['timeSubmit']=="") {
         $row['rank'] =1;
       }

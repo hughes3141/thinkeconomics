@@ -21,8 +21,6 @@ if (!isset($_SESSION['userid'])) {
   
 }
 
-
-
 else {
   $userInfo = getUserInfo($_SESSION['userid']);
   $userId = $_SESSION['userid'];
@@ -54,6 +52,8 @@ table {
 Notes on command GET variables:
   -$_GET['topics'] or $_GET['topic'] : Enter comma-separated string of topic strings, to limit questions to particular topics;
   -'subjectId' : Filters by subjectId.
+  
+  **NOTE: RESTRICT NO LONER FUNCTIONS BUT MAY BE USEFUL IN FUTURE
   -$_GET['restrict'] : to change the time until a card is recycled. With following parameters:
     - !isset($_GET['restrict']) : default, 3 days and 5 days
     - $_GET['restrict'] = 'none' : No wait, cards immediately recycled
@@ -61,44 +61,16 @@ Notes on command GET variables:
     - $_GET['restrict'] = 'minutes' : 3 mins and 5 mins
 */
 
-        function lastResponse($questionId) {
-
-
-          global $conn;
-          $t = time();
-          global $userId;
-          
-
-          $sql = "SELECT * FROM flashcard_responses WHERE userId = ? AND questionId = ? ORDER BY timeSubmit DESC";
-          $stmt = $conn->prepare($sql);
-          $stmt->bind_param("ii", $userId, $questionId);
-          $stmt->execute();
-          $result = $stmt->get_result();
-
-          $row =$result->fetch_assoc();
-          if($row) {
-            //print_r($row);
-            return $lastResponse = $row;
-
-          }
-          else {
-            //echo "<br>This question has not been attempted yet";
-            return $lastResponse = array("cardCategory"=>"0", "timeSubmit"=>date("Y-m-d H:i:s", $t), "timeStart"=>date("Y-m-d H:i:s", $t));
-          
-          }       
-
-        }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $insert = insertFlashcardResponse($_POST['questionId'], $userId, $_POST['rightWrong'], $_POST['timeStart'], date("Y-m-d H:i:s", time()), $_POST['cardCategory']);
+
     if($test == true ) {
+      echo"<br>POST:<br>";
       print_r($_POST);
       echo "<br>";
       echo $insert;
     }
-
-
-  //}
 }
 
 include($path."/header_tailwind.php");
@@ -110,9 +82,8 @@ include($path."/header_tailwind.php");
   <h1 class="font-mono text-2xl bg-pink-400 pl-1 ">Revision Flashcards</h1>
   <div class="container mx-auto px-0 mt-2 bg-white text-black ">
 
-
-
   <?php
+
   $topics = null;
   $subjectId = null;
 
@@ -128,335 +99,95 @@ include($path."/header_tailwind.php");
   if(isset($_GET['subjectId'])) {
     $subjectId = $_GET['subjectId'];
   }
-  
 
   $questions = getFlashcardsQuestions($topics, $userId, $subjectId);
 
   if($test == true) {
     echo count($questions);
     echo "<br>";
-    //print_r(lastFlashcardResponse($_POST['questionId'], $userId, $_POST['timeStart']));
   }
 
-
-
-
-
-
-        function timeBetween($dateTime) {
-
-          global $t;
-          $now = new DateTime(date("Y-m-d H:i:s", $t));
-          $last = new DateTime($dateTime);
-          $interval = $now->diff($last);
-          //return $daysSince = $interval->days;
-          return $minutesSince = $interval->i;
-
-          //echo "daysSince:".$daysSince." minutesSince:".$minutesSince;
-          
-          //echo "<br>".$interval->days;
-          //echo "<br>difference " . $interval->y . " years, " . $interval->m." months, ".$interval->d." days ".$interval->h." hours ".$interval->i." minutes ".$interval->s." seconds";
-
+  if(count($questions) == 0) {
+    ?>
+      <div  class="font-sans  p-3 m-2">
+        <p class="mb-3">Well done! There are no more cards for you to revise.</p>
+      </div>
+    <?php
+    
+  } else {
+    
+      $question = $questions[0];
+      if(isset($_GET['topics'])) {
+          echo "<p class='ml-1'>Topic: ".htmlspecialchars($question['topic'])."</p>";
         }
+      ?>
 
-        function secondsBetween($dateTime, $dateTime2) {
+      <div id="flashcard" class="font-sans  p-3 m-2">
+        <form method="post">
+          <h2 class ="text-lg">Question:</h2>
+          <?=$test == true ? print_r($question) : "" ?>
 
-          global $t;
-          $now = new DateTime($dateTime2);
-          $last = new DateTime($dateTime);
-          $interval = $now->diff($last);
-
-          $seconds = $interval->days * 24 * 60 * 60;
-          $seconds += $interval->h * 60 * 60;
-          $seconds += $interval->i * 60;
-          $seconds += $interval->s;
+          <input type="hidden" name="questionId" value = "<?=htmlspecialchars($question['qId'])?>">
+          <input type="hidden" name="timeStart" value = "<?=date("Y-m-d H:i:s",time())?>">
+          <input type="hidden" name="cardCategory" value = "<?=$question['cardCategory']?>">
           
-          return $seconds;
+          <p class="mb-3" style="white-space: pre-line;"><?php echo htmlspecialchars($question['question']);?></p>
 
-        }
-
-
-
-        //echo "<br>Post:";
-        //print_r($_POST);
-
-
-        //Insert response into database
-        $stmt = $conn->prepare("INSERT INTO flashcard_responses (questionId,  userId, gotRight, timeStart, timeSubmit, cardCategory, timeDuration, dateSubmit) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("iiissiis", $questionId, $userId, $gotRight, $timeStart, $timeSubmit, $cardCategory, $seconds, $date);
-
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') 
-
-        {
-          $questionId = $_POST['questionId'];
-          $gotRight = $_POST['rightWrong'];
-          $timeStart = $_POST['timeStart'];
-          
-
-          $timeSubmit = date("Y-m-d H:i:s",time());
-          //echo "<br>".$timeSubmit."<br>";
-
-          $seconds = secondsBetween($timeStart, $timeSubmit);
-
-          $date = date("Y-m-d", strtotime($timeSubmit));
-          //echo $date;
-
-          
-
-          if($gotRight === "0" || $gotRight === "1") {
-            $cardCategory = 0;
-          }
-          else if ($gotRight = 2) {
-            if ($_POST['cardCategory'] === "0") {
-              $cardCategory = 1;
-            } else if ($_POST['cardCategory'] === "1") {
-              $cardCategory = 2;
-            } else if ($_POST['cardCategory'] === "2") {
-              $cardCategory = 2;
+          <?php
+            if(!is_null($question['q_path'])) {
+              ?>
+              <img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
+              <?php
             }
-          }
-
-          $lastResponse = (lastResponse($_POST['questionId']));
-
-          if ($lastResponse['timeStart'] === $timeStart) {
-            //echo "This was a duplicate and will not be entered";
-          }
-          else {
-            
-            //$stmt->execute();
-              
-            //echo "New records created successfully";
-
-            
-
-
-          }
+          ?>
           
+          <div id="buttonsDiv" class="flex justify-center">
 
-          //print_r($lastResponse);
+            <button type = "button" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers();hideButtons();swapButtons()">I don't know</button>
+
+            <button value ="0" name="rightWrong" class="grow m-3 hidden ">I don't know</button>
+
+            <button type = "button" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers();hideButtons()">Show answers</button>
+          </div>
           
-
-          
-
-
-
-          
-        }
-
-        // Retreive question record.
-
-        $sql = "SELECT * FROM flashcard_responses WHERE userId = ? ORDER BY id ASC";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $userId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if($result->num_rows>0) {
-          while ($row = $result->fetch_assoc()) {
-            /*
-            echo "<br>";
-            print_r($row);
-            */
-            
-          }
-        }
-
-
-
-              $bin1Duration = 3 * 24*60;
-              $bin2Duration = 5 *24*60;
-
-              if(isset($_GET['restrict'])) {
-                if($_GET['restrict'] == 'none' || $_GET['restrict'] == "0" ) 
-                {
-                  $bin1Duration = $bin2Duration = 0;
-                }
-                else if($_GET['restrict'] == 'minutes') {
-                  $bin1Duration = $bin1Duration /(24*60);
-                  $bin2Duration = $bin2Duration /(24*60);
-                }
-              }
-
-              $questionSkip = 0;
-              /*
-              while (count($questions)>0) {
-
-                  $qCount = count($questions);
-
-                  $randomQuestion = rand(0, $qCount-1);
-                  //echo $qCount."<br>".$randomQuestion;
-
-                  if($randomQuestion<0) {
-                    $randomQuestion = 0;
-                  }
-
-                  //Find the response for the last time this question was answered:
-
-                    $randomQuestionId = $questions[$randomQuestion]['id'];
-
-                    //echo "<br>".$randomQuestionId;
-
-                    $lastResponse = lastResponse($randomQuestionId);
-
-                    //Logic to see if question should appear, based on the bin it is in.
-
-                    
-                    //echo $t;
-                    //echo date("Y-m-d H:i:s", $t);       
-                    //echo $lastResponse['timeSubmit'];
-
-                    $timeSince = timeBetween($lastResponse['timeSubmit']);
-                    //echo $timeSince;
-
-                    if (
-                      $lastResponse['cardCategory'] == 0 ||
-                      (($lastResponse['cardCategory'] == 1 )&&($timeSince>=$bin1Duration) ) ||
-                      (($lastResponse['cardCategory'] == 2 )&&($timeSince>=$bin2Duration) )
-                    )
-
-                    {
-                      //echo "<br>Valid questions: ".$qCount;
-                      break;
-                    }
-
-                    else {
-                      $summary = array();
-                      $summary['questionId'] = $questions[$randomQuestion]['id'];
-                      $lastResponse = lastResponse($questions[$randomQuestion]['id']);
-                      $summary['cardCategory'] = $lastResponse['cardCategory'];
-                      $summary['timeSubmit'] = $lastResponse['timeSubmit'];
-                      $summary = json_encode($summary);                  
-                      echo "<script>console.log(".$summary.")</script>";
-                      //$questionSkip ++;
-                      
-                      array_splice($questions, $randomQuestion, 1);
-
-                      
-
-
-                    }          
-              }
-              */
-              //echo "<script>console.log(".$questionSkip.")</script>";
-
-              if(count($questions) == 0) {
-              
-                ?>
-
-                <div  class="font-sans  p-3 m-2">
-
-                <p class="mb-3">Well done! There are no more cards for you to revise.</p>
-
-                </div>
-
-
-                <?php
-                
-              } else {
-                
-                
-                
-            $question = $questions[0];
-            ?>
-
-            <?php if(isset($_GET['topics'])) {echo "<p class='ml-1'>Topic: ".htmlspecialchars($question['topic'])."</p>";}?>
-
-            <div id="flashcard" class="font-sans  p-3 m-2">
-            
-              <form method="post">
-              
-                <h2 class ="text-lg">Question:</h2>
-                <?=$test == true ? print_r($question) : "" ?>
-              
-                <input type="hidden" name="questionId" value = "<?=htmlspecialchars($question['qId'])?>">
-                <input type="hidden" name="timeStart" value = "<?=date("Y-m-d H:i:s",time())?>">
-                <input type="hidden" name="cardCategory" value = "<?=$question['cardCategory']?>">
-                
-                <p class="mb-3" style="white-space: pre-line;"><?php echo htmlspecialchars($question['question']);?></p>
-
-                <p><?php //print_r(lastResponse($questions[$randomQuestion]['id']));?>
-
-                <?php
-                  $questionImg = null;
-                  $questionAlt = null;
-
-                  if($question['img'] != "") {
-                    $questionImg = htmlspecialchars($question['img']);
-                    $questionAlt = htmlspecialchars($question['img']);
-                  }
-
-                  if($question['qPath'] != "") {
-                    $questionImg = htmlspecialchars($question['qPath']);
-                    $questionAlt = htmlspecialchars($question['qAlt']);
-                  }
-
-                  if($questionImg) {
-                    ?>
-                    <img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($questionImg)?>" alt = "<?=htmlspecialchars($questionAlt)?>">
-                    <?php
-                  }
-                ?>
-                
-                <div id="buttonsDiv" class="flex justify-center">
-                  <button type = "button" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers();hideButtons();swapButtons()">I don't know</button>
-                  <button value ="0" name="rightWrong" class="grow m-3 hidden ">I don't know</button>
-                  <button type = "button" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers();hideButtons()">Show answers</button>
-                </div>
-                
-                <div id ="answerDiv" class="hidden">
-                  <h2 class ="text-lg">Answer:</h2>
-                  <p class="mb-3" style="white-space: pre-line;"><?=htmlspecialchars($question['model_answer']);?></p>
-
-                  <?php
-
-                  $answerImg = null;
-                  $answerAlt = null;
-
-
-
-                  if($question['answer_img'] != "") {
-                    $answerImg = htmlspecialchars($question['answer_img']);
-                    $answerAlt = htmlspecialchars($question['answer_img_alt']);
-                  }
-
-                  if($question['aPath'] != "") {
-                    $answerImg = htmlspecialchars($question['aPath']);
-                    $answerAlt = htmlspecialchars($question['aAlt']);
-                  }
-
-                  if($answerImg) {
-                    ?><img class = "mx-auto content-center object-center" src= "<?=$answerImg?>" alt = "<?=$answerAlt?>">
-                    <?php
-                  }
-                  ?>
-
-
-                  <div id ="buttonsDiv2" class="flex justify-center">
-                    <button id = "1Button" value ="1" name="rightWrong" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Wrong Answer</button>
-                    <button id = "2Button" value ="2" name="rightWrong" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Correct Answer</button>
-                    <button id = "0Button" value ="0" name="rightWrong" class="grow m-3 hidden py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Next Question</button>
-                  </div>
-                </div>
-
-              </form>
-
-            </div>
-
-            <?php } ?>
+          <div id ="answerDiv" class="hidden">
+            <h2 class ="text-lg">Answer:</h2>
+            <p class="mb-3" style="white-space: pre-line;"><?=htmlspecialchars($question['model_answer']);?></p>
 
             <?php
+              if(!is_null($question['a_path'])) {
+                ?>
+                <img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
+                <?php
+              }
+            ?>
+          
+            <div id ="buttonsDiv2" class="flex justify-center">
+              <button id = "1Button" value ="1" name="rightWrong" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Wrong Answer</button>
+              
+              <button id = "2Button" value ="2" name="rightWrong" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Correct Answer</button>
+              
+              <button id = "0Button" value ="0" name="rightWrong" class="grow m-3 hidden py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Next Question</button>
+            </div>
+          </div>
 
-              echo "<pre>";
-              //print_r($questions);
+        </form>
 
-              echo "</pre>";
+      </div>
 
-              ?>
+    <?php 
+    } 
+    ?>
 
+    <?php
+
+      if($test == true) {
+        echo "<pre>";
+        //print_r($questions);
+        echo "</pre>";
+      }
+      ?>
   </div>
-
-
-
 
 </div>
 
