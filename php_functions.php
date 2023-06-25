@@ -1163,6 +1163,7 @@ function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
   $results = array();
   $params = "ii";
   $bindArray = array($userId, $userId);
+  $conjoiner = 0;
   
 
   if($topics) {
@@ -1190,43 +1191,48 @@ function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
           WHERE ";
 
   if($topics) {
+    $conjoiner = 1;
     $numTopics = count($topics);
     $placeholder = str_repeat("?, ", $numTopics -1)." ?";
-    $topicParams = "";
+    $sql .= " ( ";
     foreach ($topics as $key=>$topic) {
-      $topicParams .= "s";
+      $params .= "s";
+      $topic = $topic."%";
       array_push($bindArray, $topic);
+      $sql .= "q.topic LIKE ? ";
+      if($key < ($numTopics -1)) {
+        $sql .= " OR ";
+      }
+      
     }
+    $sql .= " ) ";
     //echo $topicParams;
-    $sql .= "q.topic IN ($placeholder) AND ";
-    $params .= $topicParams;
 
   }
 
   if(!is_null($subjectId)) {
+    if($conjoiner == 1) {
+      $sql .= " AND ";
+    }
+    $conjoiner = 1;
     $sql .= " q.subjectId = ? ";
+    $params .= "i";
+    array_push($bindArray, $subjectId);
   }
   
+  if($conjoiner == 1) {
+    $sql .= " AND ";
+  }
   $sql .= "(q.type LIKE '%flashCard%' OR q.flashCard = 1)
           
           ORDER BY q.topic, r.questionId, r.timeSubmit
           
   ";
 
-
-  $bindArray = $topics;
-
+  //echo $sql;
   $stmt = $conn->prepare($sql);
+  $stmt->bind_param($params, ...$bindArray);
 
-  if($topics) {
-    $paramTypes = "ii".str_repeat("s", $numTopics);
-    //array_push($bindArray, $userId);
-    array_unshift($bindArray, $userId);
-    array_unshift($bindArray, $userId);
-    $stmt->bind_param($paramTypes, ...$bindArray);
-  } else {
-    $stmt->bind_param('ii', $userId, $userId);
-  }
   $stmt->execute();
   $result = $stmt->get_result();
   if($result->num_rows>0) {

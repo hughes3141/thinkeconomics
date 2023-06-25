@@ -53,6 +53,7 @@ table {
 /*
 Notes on command GET variables:
   -$_GET['topics'] or $_GET['topic'] : Enter comma-separated string of topic strings, to limit questions to particular topics;
+  -'subjectId' : Filters by subjectId.
   -$_GET['restrict'] : to change the time until a card is recycled. With following parameters:
     - !isset($_GET['restrict']) : default, 3 days and 5 days
     - $_GET['restrict'] = 'none' : No wait, cards immediately recycled
@@ -113,22 +114,25 @@ include($path."/header_tailwind.php");
 
 
   <?php
+  $topics = null;
+  $subjectId = null;
+
   if(isset($_GET['topic'])) {
     $_GET['topics'] = $_GET['topic'];
-
   }
 
   if(isset($_GET['topics'])) {
     $topics = $_GET['topics'];
     $topics = explode(",", $topics);
   }
+
+  if(isset($_GET['subjectId'])) {
+    $subjectId = $_GET['subjectId'];
+  }
   
-  if(isset($_GET['topics']) || isset($_GET['topic'])) {
-    $questions = getFlashcardsQuestions($topics, $userId);
-  }
-  else {
-    $questions = getFlashcardsQuestions(null, $userId);
-  }
+
+  $questions = getFlashcardsQuestions($topics, $userId, $subjectId);
+
   echo ($test == true ? count($questions) :"");
 
 
