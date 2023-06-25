@@ -1161,13 +1161,11 @@ function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
   */
   global $conn;
   $results = array();
-  $params = "";
-  $bind_Array = array();
+  $params = "ii";
+  $bindArray = array($userId, $userId);
   
 
   if($topics) {
-    $numTopics = count($topics);
-    $placeholder = str_repeat("?, ", $numTopics -1)." ?";
   }
 
   $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, q.flashCard, q.subjectId, r.userId, r.gotRight, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory, q.questionAssetId, aq.path qPath, aq.altText qAlt, aa.path aPath, aa.altText aAlt
@@ -1192,7 +1190,17 @@ function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
           WHERE ";
 
   if($topics) {
+    $numTopics = count($topics);
+    $placeholder = str_repeat("?, ", $numTopics -1)." ?";
+    $topicParams = "";
+    foreach ($topics as $key=>$topic) {
+      $topicParams .= "s";
+      array_push($bindArray, $topic);
+    }
+    //echo $topicParams;
     $sql .= "q.topic IN ($placeholder) AND ";
+    $params .= $topicParams;
+
   }
 
   if(!is_null($subjectId)) {
@@ -1205,7 +1213,7 @@ function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
           
   ";
 
-  $bindArray = array();
+
   $bindArray = $topics;
 
   $stmt = $conn->prepare($sql);
