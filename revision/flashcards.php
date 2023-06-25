@@ -9,6 +9,10 @@ $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 include($path."/php_functions.php");  
 
+$test = false;
+if(isset($_GET['test'])) {
+  $test = true;
+}
 
 if (!isset($_SESSION['userid'])) {
   
@@ -24,7 +28,7 @@ else {
   $userId = $_SESSION['userid'];
   $schoolId = $userInfo['schoolid'];
   $permissions = $userInfo['permissions'];
-  //print_r($userInfo);
+  echo ($test == true ? print_r($userInfo) : "");
   $userGroups = json_decode($userInfo['groupid_array']);
   //print_r($userGroups);
   
@@ -116,9 +120,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
   else {
     insertFlashcardResponse($_POST['questionId'], $userId, $_POST['rightWrong'], $_POST['timeStart'], date("Y-m-d H:i:s", time()), $_POST['cardCategory']);
-    if(isset($_GET['test'])){
-      print_r($_POST);
-    }
+    echo ($test == true ? print_r($_POST) : "");
+
   }
 }
 
@@ -150,9 +153,8 @@ include($path."/header_tailwind.php");
   else {
     $questions = getFlashcardsQuestions(null, $userId);
   }
-  if(isset($_GET['test'])) {
-    echo count($questions);
-  }
+  echo ($test == true ? count($questions) :"");
+
 
 
 
@@ -379,11 +381,7 @@ include($path."/header_tailwind.php");
               <form method="post">
               
                 <h2 class ="text-lg">Question:</h2>
-                <?php
-                if(isset($_GET['test'])){
-                  print_r($question);
-                }
-                ?>
+                <?=$test == true ? print_r($question) : "" ?>
               
                 <input type="hidden" name="questionId" value = "<?=htmlspecialchars($question['qId'])?>">
                 <input type="hidden" name="timeStart" value = "<?=date("Y-m-d H:i:s",time())?>">
