@@ -1368,11 +1368,22 @@ function insertFlashcardResponse($questionId, $userId, $gotRight, $timeStart, $t
 
   global $conn;
 
-  $stmt = $conn->prepare("INSERT INTO flashcard_responses (questionId,  userId, gotRight, timeStart, timeSubmit, cardCategory, timeDuration, dateSubmit) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+  $stmt = $conn->prepare("INSERT INTO flashcard_responses (questionId,  userId, gotRight, timeStart, timeSubmit, cardCategory, timeDuration, dateSubmit, dontKnow, correct) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)");
 
 
   $seconds = strtotime($timeSubmit) - strtotime($timeStart);
   $date = date("Y-m-d", strtotime($timeSubmit));
+
+  $dontKnow = 0;
+  $correct = 0;
+
+  if($gotRight == 1) {
+    $dontKnow = 1;
+  }
+
+  else if ($gotRight == 2) {
+    $correct = 1;
+  }
 
   if($gotRight === "0" || $gotRight === "1") {
     $cardCategory = 0;
@@ -1387,7 +1398,7 @@ function insertFlashcardResponse($questionId, $userId, $gotRight, $timeStart, $t
     }
   }
 
-  $stmt->bind_param("iiissiis", $questionId, $userId, $gotRight, $timeStart, $timeSubmit, $cardCategory, $seconds, $date);
+  $stmt->bind_param("iiissiisii", $questionId, $userId, $gotRight, $timeStart, $timeSubmit, $cardCategory, $seconds, $date, $dontKnow, $correct);
   $stmt->execute();
 
 
