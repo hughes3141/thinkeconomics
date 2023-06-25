@@ -90,16 +90,15 @@ Notes on command GET variables:
         }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $lastResponse = lastResponse($_POST['questionId']);
-  //print_r($lastResponse);
-  if ($lastResponse['timeStart'] === $_POST['timeStart']) {
-    echo ($test == true ? "This was a duplicate and will not be entered" : "");
-  }
-  else {
-    insertFlashcardResponse($_POST['questionId'], $userId, $_POST['rightWrong'], $_POST['timeStart'], date("Y-m-d H:i:s", time()), $_POST['cardCategory']);
-    echo ($test == true ? print_r($_POST) : "");
+    $insert = insertFlashcardResponse($_POST['questionId'], $userId, $_POST['rightWrong'], $_POST['timeStart'], date("Y-m-d H:i:s", time()), $_POST['cardCategory']);
+    if($test == true ) {
+      print_r($_POST);
+      echo "<br>";
+      echo $insert;
+    }
 
-  }
+
+  //}
 }
 
 include($path."/header_tailwind.php");
@@ -133,7 +132,13 @@ include($path."/header_tailwind.php");
 
   $questions = getFlashcardsQuestions($topics, $userId, $subjectId);
 
-  echo ($test == true ? count($questions) :"");
+  if($test == true) {
+    echo count($questions);
+    echo "<br>";
+    //print_r(lastFlashcardResponse($_POST['questionId'], $userId, $_POST['timeStart']));
+  }
+
+
 
 
 

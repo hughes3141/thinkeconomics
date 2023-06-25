@@ -1169,10 +1169,10 @@ function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
   if($topics) {
   }
 
-  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, q.flashCard, q.subjectId, r.userId, r.gotRight, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory, q.questionAssetId, aq.path qPath, aq.altText qAlt, aa.path aPath, aa.altText aAlt
+  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, q.flashCard, q.subjectId, r.userId, r.gotRight, r.dontKnow, r.correct, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory, q.questionAssetId, aq.path qPath, aq.altText qAlt, aa.path aPath, aa.altText aAlt
           FROM saq_question_bank_3 q
           LEFT JOIN (
-            SELECT rr.id, rr.questionId, rr.userId, rr.timeSubmit, rr.gotRight, rr.cardCategory, t.most_recent, rr.timeStart
+            SELECT rr.id, rr.questionId, rr.userId, rr.timeSubmit, rr.gotRight, rr.dontKnow, rr.correct, rr.cardCategory, t.most_recent, rr.timeStart
             FROM flashcard_responses rr
             INNER JOIN (
               SELECT questionId, MAX(timeSubmit) as most_recent
@@ -1380,6 +1380,26 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
 
 }
 
+function lastFlashcardResponse($questionId, $userId, $timeStart) {
+  /*
+  Function designed to get a record from flashcard_responses with a gven $questionId, $userId, and $timeStart. Used specifically to check that information given from $_POST is not alreayd contained as a record with these data values (i.e. a browser refresh)
+
+  Used soley in insertFlashcardResponse() below:
+  */
+  global $conn;
+  $sql = "SELECT *
+          FROM flashcard_responses 
+          WHERE userId = ? AND questionId = ? AND timeStart = ? ";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("iis", $userId, $questionId, $timeStart);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  $row =$result->fetch_assoc();
+  return $row;
+
+}
+
 function insertFlashcardResponse($questionId, $userId, $gotRight, $timeStart, $timeSubmit, $cardCategory) {
   /*
   This function inserts a new record when a flashcard question has been completed by a student.
@@ -1389,6 +1409,8 @@ function insertFlashcardResponse($questionId, $userId, $gotRight, $timeStart, $t
   */
 
   global $conn;
+
+  
 
   $stmt = $conn->prepare("INSERT INTO flashcard_responses (questionId,  userId, gotRight, timeStart, timeSubmit, cardCategory, timeDuration, dateSubmit, dontKnow, correct) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)");
 
@@ -1421,8 +1443,15 @@ function insertFlashcardResponse($questionId, $userId, $gotRight, $timeStart, $t
   }
 
   $stmt->bind_param("iiissiisii", $questionId, $userId, $gotRight, $timeStart, $timeSubmit, $cardCategory, $seconds, $date, $dontKnow, $correct);
-  $stmt->execute();
 
+  $lastResponse = lastFlashcardResponse($questionId, $userId, $timeStart);
+  //var_dump($lastResponse);
+  if (is_null($lastResponse)) {
+    $stmt->execute();
+    return "Response successfully saved";
+  } else {
+    return "This is a duplicate and will not be entered";
+  }
 
 
 
