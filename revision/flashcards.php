@@ -124,12 +124,13 @@ include($path."/header_tailwind.php");
   <div class="container mx-auto px-0 mt-2 bg-white text-black ">
 
   <form method="get" action = "">
+    
     <div class="grid grid-cols-4">
       <?php
         foreach($topicsArray as $topic) {
           ?>
           <div>
-            <input type="checkbox" id="topic_<?=htmlspecialchars($topic)?>" class= "topicSelector" value="<?=htmlspecialchars($topic)?>" onchange="topicAggregate();">
+            <input type="checkbox" id="topic_<?=htmlspecialchars($topic)?>" class= "topicSelector" value="<?=htmlspecialchars($topic)?>" onchange="topicAggregate();" <?=(in_array($topic, $topics)) ? "checked" : ""?>>
             <label for = "topic_<?=htmlspecialchars($topic)?>" ><?=htmlspecialchars($topic)?></label>
           </div>
           <?php
@@ -137,8 +138,8 @@ include($path."/header_tailwind.php");
 
       ?>
     </div>
-    <input type="text" name="topics" id="topicSelect">
-    <input type="submit" value="Choose Topics">
+    <input type="hidden" name="topics" id="topicSelect">
+    <input type="submit" value="Choose Topics" class="rounded border border-sky-300 w-full">
   </form>
 
   <?php
@@ -146,8 +147,9 @@ include($path."/header_tailwind.php");
   if($test == true) {
     echo count($questions);
     echo "<br>";
+    print_r($topicsArray);
   }
-  print_r($topicsArray);
+  
 
   if(count($questions) == 0) {
     ?>
