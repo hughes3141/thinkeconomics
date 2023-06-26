@@ -1324,8 +1324,8 @@ function getColumnListFromTable($tableName, $column, $topic = null, $subjectId =
 
   $sql .= " ORDER BY ".$column." ";
 
-  echo $sql;
-  echo $flashCard;
+  //echo $sql;
+
 
   
 
@@ -1345,6 +1345,38 @@ function getColumnListFromTable($tableName, $column, $topic = null, $subjectId =
   }
   return $results;
   
+
+
+}
+
+function getOutputFromTable($table, $orderByColumn) {
+  /*
+  This function will output information from $table
+
+  Used in -
+  flashcards.php
+  */
+
+  global $conn;
+
+  $sql = "SELECT * FROM ".$table." ";
+  if(!is_null($orderByColumn)) {
+    $sql .= " ORDER BY ".$orderByColumn." ";
+  }
+  $results = array();
+
+  $stmt=$conn->prepare($sql);
+  //$stmt->bind_param($params, ...$bindArray);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
 
 
 }
