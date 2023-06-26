@@ -116,7 +116,12 @@ Notes on command GET variables:
 
   $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", $topicSet, $subjectIdSet, $userCreateSet, $levelIdSet, 1);
 
-  $questions = getFlashcardsQuestions($topics, $userId, $subjectId);
+  $questions = array();
+  var_dump($topics);
+  if(empty($topics)) {
+    $questions = getFlashcardsQuestions($topics, $userId, $subjectId);
+  }
+  var_dump($questions);
 
   
 
@@ -242,95 +247,96 @@ include($path."/header_tailwind.php");
     ?>
   </div>
 
-
-    
   </form>
 
-  <?php
 
-
-  
-
-  if(count($questions) == 0) {
-    ?>
-      <div  class="font-sans  p-3 m-2">
-        <p class="mb-3">Well done! There are no more cards for you to revise.</p>
-      </div>
-    <?php
-    
-  } else {
-    
-      $question = $questions[0];
-      if(isset($_GET['topics'])) {
-          echo "<p class='ml-1'>Topic: ".htmlspecialchars($question['topic'])."</p>";
-        }
-      ?>
-
-      <div id="flashcard" class="font-sans  p-3 m-2">
-        <form method="post">
-          <h2 class ="text-lg">Question:</h2>
-          <?=$test == true ? print_r($question) : "" ?>
-
-          <input type="hidden" name="questionId" value = "<?=htmlspecialchars($question['qId'])?>">
-          <input type="hidden" name="timeStart" value = "<?=date("Y-m-d H:i:s",time())?>">
-          <input type="hidden" name="cardCategory" value = "<?=$question['cardCategory']?>">
-          
-          <p class="mb-3" style="white-space: pre-line;"><?php echo htmlspecialchars($question['question']);?></p>
-
+    <div>
+      <?php
+        if(count($questions) == 0) {
+          ?>
+            <div  class="font-sans  p-3 m-2">
+              <p class="mb-3">Well done! There are no more cards for you to revise.</p>
+            </div>
           <?php
-            if(!is_null($question['q_path'])) {
-              ?>
-              <img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
-              <?php
+          
+        } else {
+        
+          $question = $questions[0];
+          if(isset($_GET['topics'])) {
+              echo "<p class='ml-1'>Topic: ".htmlspecialchars($question['topic'])."</p>";
             }
           ?>
-          
-          <div id="buttonsDiv" class="flex justify-center">
 
-            <button type = "button" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers();hideButtons();swapButtons()">I don't know</button>
+          <div id="flashcard" class="font-sans  p-3 m-2">
+            <form method="post">
+              <h2 class ="text-lg">Question:</h2>
+              <?=$test == true ? print_r($question) : "" ?>
 
-            <button value ="0" name="rightWrong" class="grow m-3 hidden ">I don't know</button>
+              <input type="hidden" name="questionId" value = "<?=htmlspecialchars($question['qId'])?>">
+              <input type="hidden" name="timeStart" value = "<?=date("Y-m-d H:i:s",time())?>">
+              <input type="hidden" name="cardCategory" value = "<?=$question['cardCategory']?>">
+              
+              <p class="mb-3" style="white-space: pre-line;"><?php echo htmlspecialchars($question['question']);?></p>
 
-            <button type = "button" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers();hideButtons()">Show answers</button>
-          </div>
-          
-          <div id ="answerDiv" class="hidden">
-            <h2 class ="text-lg">Answer:</h2>
-            <p class="mb-3" style="white-space: pre-line;"><?=htmlspecialchars($question['model_answer']);?></p>
+              <?php
+                if(!is_null($question['q_path'])) {
+                  ?>
+                  <img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
+                  <?php
+                }
+              ?>
+              
+              <div id="buttonsDiv" class="flex justify-center">
 
-            <?php
-              if(!is_null($question['a_path'])) {
-                ?>
-                <img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
+                <button type = "button" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers();hideButtons();swapButtons()">I don't know</button>
+
+                <button value ="0" name="rightWrong" class="grow m-3 hidden ">I don't know</button>
+
+                <button type = "button" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers();hideButtons()">Show answers</button>
+              </div>
+              
+              <div id ="answerDiv" class="hidden">
+                <h2 class ="text-lg">Answer:</h2>
+                <p class="mb-3" style="white-space: pre-line;"><?=htmlspecialchars($question['model_answer']);?></p>
+
                 <?php
-              }
-            ?>
-          
-            <div id ="buttonsDiv2" class="flex justify-center">
-              <button id = "1Button" value ="1" name="rightWrong" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Wrong Answer</button>
+                  if(!is_null($question['a_path'])) {
+                    ?>
+                    <img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
+                    <?php
+                  }
+                ?>
               
-              <button id = "2Button" value ="2" name="rightWrong" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Correct Answer</button>
-              
-              <button id = "0Button" value ="0" name="rightWrong" class="grow m-3 hidden py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Next Question</button>
-            </div>
+                <div id ="buttonsDiv2" class="flex justify-center">
+                  <button id = "1Button" value ="1" name="rightWrong" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Wrong Answer</button>
+                  
+                  <button id = "2Button" value ="2" name="rightWrong" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Correct Answer</button>
+                  
+                  <button id = "0Button" value ="0" name="rightWrong" class="grow m-3 hidden py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Next Question</button>
+                </div>
+              </div>
+
+            </form>
+
           </div>
 
-        </form>
+        <?php 
+        } 
+        ?>
 
-      </div>
+        <?php
 
-    <?php 
-    } 
-    ?>
+        if($test == true) {
+          echo "<pre>";
+          //print_r($questions);
+          echo "</pre>";
+        }
+        ?>
+    </div>
 
-    <?php
 
-      if($test == true) {
-        echo "<pre>";
-        //print_r($questions);
-        echo "</pre>";
-      }
-      ?>
+
+
   </div>
 
 </div>
