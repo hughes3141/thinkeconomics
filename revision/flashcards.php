@@ -106,8 +106,11 @@ Notes on command GET variables:
   if(isset($_GET['subjectLevel'])) {
     $subjectLevel = $_GET['subjectLevel'];
     $subjectLevelArray = explode("_", $subjectLevel);
-    $subjectLevel_levelId = $subjectLevelArray[0];
-    $subjectLevel_subjectId = $subjectLevelArray[1];
+    if(count($subjectLevelArray)>1) {
+      $subjectLevel_levelId = $subjectLevelArray[0];
+      $subjectLevel_subjectId = $subjectLevelArray[1];
+    }
+    //Sets subjectId from here
     $subjectIdSet = $subjectLevel_subjectId;
   }
   /*
@@ -118,9 +121,10 @@ Notes on command GET variables:
 
   //print_r($subjects);
 
-  
-
-  $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", $topicSet, $subjectIdSet, $userCreateSet, $levelIdSet, 1);
+  $topicsArray = array();
+  if(!is_null($subjectLevel)) {
+    $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", $topicSet, $subjectIdSet, $userCreateSet, $levelIdSet, 1);
+  }
 
   $questions = array();
 
@@ -156,10 +160,10 @@ include($path."/header_tailwind.php");
     echo "<br>";
     print_r($topicsArray);
     print_r($levels);
-  }
-    echo "<br>";
-    print_r($subjects);
   
+    echo "<br>Subjects:<br>";
+    print_r($subjects);
+  }
 
 
   ?>
@@ -178,7 +182,7 @@ include($path."/header_tailwind.php");
         <div>
           <label for="subjectLevel">Subject:</label>
           <select id="subjectLevel" name="subjectLevel" onchange="this.form.submit()">
-            <option value=""></option>
+            <option value="_"></option>
             <?php
               foreach ($subjects as $subject) {
                 $subjectLevelId = $subject['lId']."_".$subject['sId'];
@@ -205,12 +209,13 @@ include($path."/header_tailwind.php");
         <div class="grid grid-cols-4">
           <?php
             $topics = explode(",", $topics);
+            //print_r($topics);
             
             foreach($topicsArray as $topic) {
               ?>
               <div>
                 <input type="checkbox" id="topic_<?=htmlspecialchars($topic)?>" class= "topicSelector" value="<?=htmlspecialchars($topic)?>" onchange="topicAggregate();" <?php
-                  if(!is_null($topics)) {
+                  if(count($topics)>0 && $topics[0] != "") {
                     //if(in_array($topic, $topics)) {
                     if(startsWithAny($topic, $topics)) {
                       echo "checked";
@@ -225,8 +230,14 @@ include($path."/header_tailwind.php");
           ?>
 
         </div>
-        <input type="hidden" name="topics" id="topicSelect">
+        <?php
+        if(count($topicsArray)>0) {
+        ?>
+          <input type="hidden" name="topics" id="topicSelect">
           <input type="submit" value="Choose Topics" class="rounded border border-sky-300 w-full">
+        <?php
+        }
+        ?>
 
       </div>
     </div>
