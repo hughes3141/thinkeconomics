@@ -1166,8 +1166,6 @@ function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
   $conjoiner = 0;
   
 
-  if($topics) {
-  }
 
   $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, q.flashCard, q.subjectId, r.userId, r.gotRight, r.dontKnow, r.correct, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory, q.questionAssetId, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt
           FROM saq_question_bank_3 q
@@ -1191,6 +1189,7 @@ function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
           WHERE ";
 
   if($topics) {
+    $topics = explode(",", $topics);
     $conjoiner = 1;
     $numTopics = count($topics);
     $placeholder = str_repeat("?, ", $numTopics -1)." ?";
