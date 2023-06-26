@@ -1315,6 +1315,11 @@ function getColumnListFromTable($tableName, $column, $topic = null, $subjectId =
     array_push($bindArray, $levelId);
   }
 
+  $sql .= sql_conjoin($params);
+  $sql .= " ".$column." <> '' ";
+
+  $sql .= " ORDER BY ".$column." ";
+
   echo $sql;
 
   

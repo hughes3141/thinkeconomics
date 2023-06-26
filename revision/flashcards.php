@@ -123,6 +123,24 @@ include($path."/header_tailwind.php");
   <h1 class="font-mono text-2xl bg-pink-400 pl-1 ">Revision Flashcards</h1>
   <div class="container mx-auto px-0 mt-2 bg-white text-black ">
 
+  <form method="get" action = "">
+    <div class="grid grid-cols-4">
+      <?php
+        foreach($topicsArray as $topic) {
+          ?>
+          <div>
+            <input type="checkbox" id="topic_<?=htmlspecialchars($topic)?>" class= "topicSelector" value="<?=htmlspecialchars($topic)?>" onchange="topicAggregate();">
+            <label for = "topic_<?=htmlspecialchars($topic)?>" ><?=htmlspecialchars($topic)?></label>
+          </div>
+          <?php
+        }
+
+      ?>
+    </div>
+    <input type="text" name="topicSelect" id="topicSelect">
+    <input type="submit" value="Choose Topics">
+  </form>
+
   <?php
 
   if($test == true) {
@@ -241,7 +259,47 @@ include($path."/header_tailwind.php");
 
       }
 
+      function topicAggregate() {
 
+        var topicsInput = document.getElementsByClassName("topicSelector");
+        var topicsInputChecked = [];
+        var topicString = "";
+        var checkedCount = 0;
+        const topicSelect = document.getElementById("topicSelect");
+
+        for (var i=0; i<topicsInput.length; i++) {
+          var topic = topicsInput[i];
+          if(topic.checked == true) {
+            topicsInputChecked.push(topicsInput[i]);
+          }
+        }
+
+        for(var i=0; i<topicsInputChecked.length; i++) {
+          topic = topicsInputChecked[i];
+          topicString += topic.value;
+          if(i < (topicsInputChecked.length - 1)) {
+            topicString += ",";
+          }
+
+        }
+
+        topicSelect.value = topicString;
+
+
+          
+
+
+
+
+      
+      console.log(topicString);
+      //console.log(topicSelect);
+
+      topicSelect.value = topicString;
+      }
+
+      
+      
 
     </script>
 
