@@ -116,18 +116,17 @@ Notes on command GET variables:
   */
   $subjects = getDistinctFlashcardSubjectLevels();
 
-  print_r($subjects);
+  //print_r($subjects);
 
   
 
   $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", $topicSet, $subjectIdSet, $userCreateSet, $levelIdSet, 1);
 
   $questions = array();
-  var_dump($topics);
+
   if(!empty($topics)) {
     $questions = getFlashcardsQuestions($topics, $userId, $subjectId);
   }
-  echo count($questions);
   //$topics = $topics = explode(",", $topics);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -157,9 +156,10 @@ include($path."/header_tailwind.php");
     echo "<br>";
     print_r($topicsArray);
     print_r($levels);
+  }
     echo "<br>";
     print_r($subjects);
-  }
+  
 
 
   ?>
@@ -178,9 +178,10 @@ include($path."/header_tailwind.php");
         <div>
           <label for="subjectLevel">Subject:</label>
           <select id="subjectLevel" name="subjectLevel" onchange="this.form.submit()">
+            <option value=""></option>
             <?php
               foreach ($subjects as $subject) {
-                $subjectLevelId = $subject['level']."_".$subject['subject'];
+                $subjectLevelId = $subject['lId']."_".$subject['sId'];
                 ?>
                 <option value="<?=$subjectLevelId?>" <?=($subjectLevelId == $subjectLevel) ? "selected" : ""?>><?=$subject['subject']?> (<?=$subject['level']?>)</option>
                 <?php
@@ -204,12 +205,14 @@ include($path."/header_tailwind.php");
         <div class="grid grid-cols-4">
           <?php
             $topics = explode(",", $topics);
+            
             foreach($topicsArray as $topic) {
               ?>
               <div>
                 <input type="checkbox" id="topic_<?=htmlspecialchars($topic)?>" class= "topicSelector" value="<?=htmlspecialchars($topic)?>" onchange="topicAggregate();" <?php
                   if(!is_null($topics)) {
-                    if(in_array($topic, $topics)) {
+                    //if(in_array($topic, $topics)) {
+                    if(startsWithAny($topic, $topics)) {
                       echo "checked";
                     }
                   } 

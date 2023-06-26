@@ -1380,6 +1380,18 @@ function getOutputFromTable($table, $id = null, $orderByColumn = null) {
 
 }
 
+function startsWithAny($topic, $topics) {
+  /*
+  Used in flashcards.php
+  */
+  foreach ($topics as $item) {
+      if (strpos($topic, $item) === 0) {
+          return true;
+      }
+  }
+  return false;
+}
+
 function getDistinctFlashcardSubjectLevels() {
   /*
   Used to get distinct information on subjectId and levelId from table saq_question_bank_3
@@ -1393,7 +1405,7 @@ function getDistinctFlashcardSubjectLevels() {
   $bindArray = array();
   $results = array();
 
-  $sql = "SELECT DISTINCT CONCAT(qb.subjectId, '_', qb.levelId) AS combination, s.name subject, l.name level
+  $sql = "SELECT DISTINCT CONCAT(qb.subjectId, '_', qb.levelId) AS combination, s.id sId, s.name subject, l.id lId, l.name level
           FROM saq_question_bank_3 qb
           LEFT JOIN subjects s ON s.id = SUBSTRING_INDEX(CONCAT(qb.subjectId, '_', qb.levelId), '_', 1)
           LEFT JOIN subjects_level l ON l.id = SUBSTRING_INDEX(CONCAT(qb.subjectId, '_', qb.levelId), '_', -1)
