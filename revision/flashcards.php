@@ -64,6 +64,12 @@ Notes on command GET variables:
   $topics = null;
   $subjectId = null;
 
+  $topicSet = null;
+  $subjectIdSet = null;
+  $userCreateSet = null;
+  $levelIdSet = null;
+
+
   if(isset($_GET['topic'])) {
     $_GET['topics'] = $_GET['topic'];
   }
@@ -77,7 +83,23 @@ Notes on command GET variables:
     $subjectId = $_GET['subjectId'];
   }
 
-  $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", null, null, 87);
+  if(isset($_GET['topicSet'])) {
+    $topicSet = $_GET['topicSet'];
+  }
+
+  if(isset($_GET['subjectIdSet'])) {
+    $subjectIdSet = $_GET['subjectIdSet'];
+  }
+
+  if(isset($_GET['userCreateSet'])) {
+    $userCreateSet = $_GET['userCreateSet'];
+  }
+
+  if(isset($_GET['levelIdSet'])) {
+    $levelIdSet = $_GET['levelIdSet'];
+  }
+
+  $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", $topicSet, $subjectIdSet, $userCreateSet, $levelIdSet);
   $questions = getFlashcardsQuestions($topics, $userId, $subjectId);
 
 

@@ -1271,7 +1271,7 @@ function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
   
 }
 
-function getColumnListFromTable($tableName, $column, $topic = null, $subjectId = null, $userCreate = null) {
+function getColumnListFromTable($tableName, $column, $topic = null, $subjectId = null, $userCreate = null, $levelId = null) {
   /*
   Used to generate list of distinct $collumn information from $tableName.
   e.g. to generate a table of topics that a user can select
@@ -1308,6 +1308,13 @@ function getColumnListFromTable($tableName, $column, $topic = null, $subjectId =
     array_push($bindArray, $userCreate);
   }
 
+  if(!is_null($levelId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " levelId = ? ";
+    $params .= "i";
+    array_push($bindArray, $levelId);
+  }
+
   echo $sql;
 
   
@@ -1334,7 +1341,11 @@ function getColumnListFromTable($tableName, $column, $topic = null, $subjectId =
 
 function sql_conjoin($x) {
   /*
-   Used in getSAQQuestions() to join up different optional elemlents in sql query.
+   Used  to join up different optional elemlents in sql query.
+   Used in: 
+   - getSAQQuestions()
+   - getColumnListFromTable()
+
    */
   $y = "";
   if($x != "") {
