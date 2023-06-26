@@ -136,7 +136,7 @@ Notes on command GET variables:
   if(!is_null($subjectLevel)) {
     $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", $topicSet, $subjectIdSet, $userCreateSet, $levelIdSet, 1);
   }
-  if(!is_null($topics)) {
+  if(!is_null($topics) && $topics !="") {
     $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", $topics, null, null, null, 1);
   }
 
