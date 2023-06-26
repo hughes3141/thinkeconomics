@@ -61,6 +61,25 @@ Notes on command GET variables:
     - $_GET['restrict'] = 'minutes' : 3 mins and 5 mins
 */
 
+  $topics = null;
+  $subjectId = null;
+
+  if(isset($_GET['topic'])) {
+    $_GET['topics'] = $_GET['topic'];
+  }
+
+  if(isset($_GET['topics'])) {
+    $topics = $_GET['topics'];
+    $topics = explode(",", $topics);
+  }
+
+  if(isset($_GET['subjectId'])) {
+    $subjectId = $_GET['subjectId'];
+  }
+
+  $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", null, null, 87);
+  $questions = getFlashcardsQuestions($topics, $userId, $subjectId);
+
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $insert = insertFlashcardResponse($_POST['questionId'], $userId, $_POST['rightWrong'], $_POST['timeStart'], date("Y-m-d H:i:s", time()), $_POST['cardCategory']);
@@ -84,28 +103,11 @@ include($path."/header_tailwind.php");
 
   <?php
 
-  $topics = null;
-  $subjectId = null;
-
-  if(isset($_GET['topic'])) {
-    $_GET['topics'] = $_GET['topic'];
-  }
-
-  if(isset($_GET['topics'])) {
-    $topics = $_GET['topics'];
-    $topics = explode(",", $topics);
-  }
-
-  if(isset($_GET['subjectId'])) {
-    $subjectId = $_GET['subjectId'];
-  }
-
-  $questions = getFlashcardsQuestions($topics, $userId, $subjectId);
-
   if($test == true) {
     echo count($questions);
     echo "<br>";
   }
+  print_r($topicsArray);
 
   if(count($questions) == 0) {
     ?>

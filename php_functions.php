@@ -1271,7 +1271,71 @@ function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
   
 }
 
+function getColumnListFromTable($tableName, $column, $topic = null, $subjectId = null, $userCreate = null) {
+  /*
+  Used to generate list of distinct $collumn information from $tableName.
+  e.g. to generate a table of topics that a user can select
+
+  Used in:
+  -flashcards.php
+  */
+  global $conn;
+  $params = "";
+  $bindArray = array();
+  $results = array();
+
+  $sql =  "SELECT DISTINCT ".$column." ";
+  $sql .= "FROM ".$tableName." ";
+
+  if(!is_null($topic)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " topic LIKE ? ";
+    $params .= "s";
+    array_push($bindArray, $topic."%");
+  }
+
+  if(!is_null($subjectId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " subjectId = ? ";
+    $params .= "i";
+    array_push($bindArray, $subjectId);
+  }
+
+  if(!is_null($userCreate)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " userCreate = ? ";
+    $params .= "i";
+    array_push($bindArray, $userCreate);
+  }
+
+  echo $sql;
+
+  
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      $rowTopic = $row[$column];
+      array_push($results, $rowTopic);
+    }
+  }
+  return $results;
+  
+
+
+}
+
 function sql_conjoin($x) {
+  /*
+   Used in getSAQQuestions() to join up different optional elemlents in sql query.
+   */
   $y = "";
   if($x != "") {
     $y = " AND ";
