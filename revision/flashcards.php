@@ -61,6 +61,17 @@ Notes on command GET variables:
     - $_GET['restrict'] = 'minutes' : 3 mins and 5 mins
 */
 
+  if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $insert = insertFlashcardResponse($_POST['questionId'], $userId, $_POST['rightWrong'], $_POST['timeStart'], date("Y-m-d H:i:s", time()), $_POST['cardCategory']);
+
+    if($test == true ) {
+      echo"<br>POST:<br>";
+      print_r($_POST);
+      echo "<br>";
+      echo $insert;
+    }
+  }
+
   $topics = null;
   $subjectId = null;
 
@@ -125,6 +136,9 @@ Notes on command GET variables:
   if(!is_null($subjectLevel)) {
     $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", $topicSet, $subjectIdSet, $userCreateSet, $levelIdSet, 1);
   }
+  if(!is_null($topics)) {
+    $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", $topics, null, null, null, 1);
+  }
 
   $questions = array();
 
@@ -133,16 +147,7 @@ Notes on command GET variables:
   }
   //$topics = $topics = explode(",", $topics);
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $insert = insertFlashcardResponse($_POST['questionId'], $userId, $_POST['rightWrong'], $_POST['timeStart'], date("Y-m-d H:i:s", time()), $_POST['cardCategory']);
 
-    if($test == true ) {
-      echo"<br>POST:<br>";
-      print_r($_POST);
-      echo "<br>";
-      echo $insert;
-    }
-}
 
 include($path."/header_tailwind.php");
 
