@@ -1271,7 +1271,7 @@ function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
   
 }
 
-function getColumnListFromTable($tableName, $column, $topic = null, $subjectId = null, $userCreate = null, $levelId = null) {
+function getColumnListFromTable($tableName, $column, $topic = null, $subjectId = null, $userCreate = null, $levelId = null, $flashCard = null) {
   /*
   Used to generate list of distinct $collumn information from $tableName.
   e.g. to generate a table of topics that a user can select
@@ -1317,10 +1317,15 @@ function getColumnListFromTable($tableName, $column, $topic = null, $subjectId =
 
   $sql .= sql_conjoin($params);
   $sql .= " ".$column." <> '' ";
+  
+  if(!is_null($flashCard)) {
+    $sql .= " AND flashCard = 1 ";
+  }
 
   $sql .= " ORDER BY ".$column." ";
 
   echo $sql;
+  echo $flashCard;
 
   
 

@@ -99,7 +99,7 @@ Notes on command GET variables:
     $levelIdSet = $_GET['levelIdSet'];
   }
 
-  $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", $topicSet, $subjectIdSet, $userCreateSet, $levelIdSet);
+  $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", $topicSet, $subjectIdSet, $userCreateSet, $levelIdSet, 1);
   $questions = getFlashcardsQuestions($topics, $userId, $subjectId);
 
 
@@ -137,7 +137,7 @@ include($path."/header_tailwind.php");
 
       ?>
     </div>
-    <input type="text" name="topicSelect" id="topicSelect">
+    <input type="text" name="topics" id="topicSelect">
     <input type="submit" value="Choose Topics">
   </form>
 
