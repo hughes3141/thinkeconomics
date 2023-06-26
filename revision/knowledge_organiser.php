@@ -107,21 +107,12 @@ $topicList = getTopicList("saq_question_bank_3", "topic", $topic, true, $subject
             <div class="ml-5 mb-5 bg-pink-100 p-2">
               <p class="whitespace-pre-line"><?=$question['model_answer']?></p>
               <?php
-                $img = null;
-                $alt = null;
-                if($question['answer_img'] != "") {
-                  $img = htmlspecialchars($question['answer_img']);
-                  $alt = htmlspecialchars($question['answer_img_alt']);
-                }
-                if($question['a_path'] != "") {
-                  $img = htmlspecialchars($question['a_path']);
-                  $alt = htmlspecialchars($question['a_alt']);
-                }
-                if(!is_null($img)) {
-                  ?><img class = "mx-auto my-1 max-h-80" src= "<?=$img?>" alt = "<?=$alt?>">
+                if(!is_null($question['a_path'])) {
+                  ?>
+                  <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
                   <?php
                 }
-              ?>
+                ?>
             </div>
         </div>
         

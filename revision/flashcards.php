@@ -9,6 +9,10 @@ $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 include($path."/php_functions.php");  
 
+$test = false;
+if(isset($_GET['test'])) {
+  $test = true;
+}
 
 if (!isset($_SESSION['userid'])) {
   
@@ -17,14 +21,12 @@ if (!isset($_SESSION['userid'])) {
   
 }
 
-
-
 else {
   $userInfo = getUserInfo($_SESSION['userid']);
   $userId = $_SESSION['userid'];
   $schoolId = $userInfo['schoolid'];
   $permissions = $userInfo['permissions'];
-  //print_r($userInfo);
+  echo ($test == true ? print_r($userInfo) : "");
   $userGroups = json_decode($userInfo['groupid_array']);
   //print_r($userGroups);
   
@@ -49,6 +51,9 @@ table {
 /*
 Notes on command GET variables:
   -$_GET['topics'] or $_GET['topic'] : Enter comma-separated string of topic strings, to limit questions to particular topics;
+  -'subjectId' : Filters by subjectId.
+  
+  **NOTE: RESTRICT NO LONER FUNCTIONS BUT MAY BE USEFUL IN FUTURE
   -$_GET['restrict'] : to change the time until a card is recycled. With following parameters:
     - !isset($_GET['restrict']) : default, 3 days and 5 days
     - $_GET['restrict'] = 'none' : No wait, cards immediately recycled
@@ -56,70 +61,87 @@ Notes on command GET variables:
     - $_GET['restrict'] = 'minutes' : 3 mins and 5 mins
 */
 
-        function lastResponse($questionId) {
+  $topics = null;
+  $subjectId = null;
 
-          /*
-          lastResponse(int $questionId) : array
+  $topicSet = null;
+  $subjectIdSet = null;
+  $userCreateSet = null;
+  $levelIdSet = null;
 
-          Returns the detail about the last time question with $questionId was answered.
-          If not answered, returns array with cardCategory=0 and current timeStamps for timeSubmit and timeStart.
-          */
+  $subjectLevel = null;
+  $subjectLevel_levelId = null;
+  $subjectLevel_subjectId = null;
 
-          global $conn;
-          $t = time();
-          global $userId;
-          
 
-          $sql = "SELECT * FROM flashcard_responses WHERE userId = ? AND questionId = ? ORDER BY timeSubmit DESC";
-          $stmt = $conn->prepare($sql);
-          $stmt->bind_param("ii", $userId, $questionId);
-          $stmt->execute();
-          $result = $stmt->get_result();
+  if(isset($_GET['topic'])) {
+    $_GET['topics'] = $_GET['topic'];
+  }
 
-          $row =$result->fetch_assoc();
-          if($row) {
-            //print_r($row);
-            return $lastResponse = $row;
+  if(isset($_GET['topics'])) {
+    $topics = $_GET['topics'];
+    
+  }
 
-          }
-          else {
-            //echo "<br>This question has not been attempted yet";
-            return $lastResponse = array("cardCategory"=>"0", "timeSubmit"=>date("Y-m-d H:i:s", $t), "timeStart"=>date("Y-m-d H:i:s", $t));
-          
-          }
+  if(isset($_GET['subjectId'])) {
+    $subjectId = $_GET['subjectId'];
+  }
 
-          //echo "<br>";
-          //print_r($lastResponse);
-          
+  if(isset($_GET['topicSet'])) {
+    $topicSet = $_GET['topicSet'];
+  }
 
-          /*
+  if(isset($_GET['subjectIdSet'])) {
+    $subjectIdSet = $_GET['subjectIdSet'];
+  }
 
-          if($result->num_rows>0) {
-            while ($row = $result->fetch_assoc()) {
-              
-              echo "<br>";
-              print_r($row);
-              
-            }
-          }
-          else {
-            echo "<br>This question has not been attempted yet";
-          }
-          */
-        }
+  if(isset($_GET['userCreateSet'])) {
+    $userCreateSet = $_GET['userCreateSet'];
+  }
+
+  if(isset($_GET['levelIdSet'])) {
+    $levelIdSet = $_GET['levelIdSet'];
+  }
+
+  if(isset($_GET['subjectLevel'])) {
+    $subjectLevel = $_GET['subjectLevel'];
+    $subjectLevelArray = explode("_", $subjectLevel);
+    if(count($subjectLevelArray)>1) {
+      $subjectLevel_levelId = $subjectLevelArray[0];
+      $subjectLevel_subjectId = $subjectLevelArray[1];
+    }
+    //Sets subjectId from here
+    $subjectIdSet = $subjectLevel_subjectId;
+  }
+  /*
+  $levels = getOutputFromTable("subjects_level", null, "name");
+  $subjects = getOutputFromTable("subjects", null, "name");
+  */
+  $subjects = getDistinctFlashcardSubjectLevels();
+
+  //print_r($subjects);
+
+  $topicsArray = array();
+  if(!is_null($subjectLevel)) {
+    $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", $topicSet, $subjectIdSet, $userCreateSet, $levelIdSet, 1);
+  }
+
+  $questions = array();
+
+  if(!empty($topics)) {
+    $questions = getFlashcardsQuestions($topics, $userId, $subjectId);
+  }
+  //$topics = $topics = explode(",", $topics);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $lastResponse = lastResponse($_POST['questionId']);
-  //print_r($lastResponse);
-  if ($lastResponse['timeStart'] === $_POST['timeStart']) {
-    //echo "This was a duplicate and will not be entered";
-  }
-  else {
-    insertFlashcardResponse($_POST['questionId'], $userId, $_POST['rightWrong'], $_POST['timeStart'], date("Y-m-d H:i:s", time()), $_POST['cardCategory']);
-    if(isset($_GET['test'])){
+    $insert = insertFlashcardResponse($_POST['questionId'], $userId, $_POST['rightWrong'], $_POST['timeStart'], date("Y-m-d H:i:s", time()), $_POST['cardCategory']);
+
+    if($test == true ) {
+      echo"<br>POST:<br>";
       print_r($_POST);
+      echo "<br>";
+      echo $insert;
     }
-  }
 }
 
 include($path."/header_tailwind.php");
@@ -131,349 +153,208 @@ include($path."/header_tailwind.php");
   <h1 class="font-mono text-2xl bg-pink-400 pl-1 ">Revision Flashcards</h1>
   <div class="container mx-auto px-0 mt-2 bg-white text-black ">
 
-
-
   <?php
-  if(isset($_GET['topic'])) {
-    $_GET['topics'] = $_GET['topic'];
 
-  }
-
-  if(isset($_GET['topics'])) {
-    $topics = $_GET['topics'];
-    $topics = explode(",", $topics);
-  }
-  
-  if(isset($_GET['topics']) || isset($_GET['topic'])) {
-    $questions = getFlashcardsQuestions($topics, $userId);
-  }
-  else {
-    $questions = getFlashcardsQuestions(null, $userId);
-  }
-  if(isset($_GET['test'])) {
+    if($test == true) {
     echo count($questions);
+    echo "<br>";
+    print_r($topicsArray);
+    print_r($levels);
+  
+    echo "<br>Subjects:<br>";
+    print_r($subjects);
   }
 
 
-
-        function timeBetween($dateTime) {
-
-          global $t;
-          $now = new DateTime(date("Y-m-d H:i:s", $t));
-          $last = new DateTime($dateTime);
-          $interval = $now->diff($last);
-          //return $daysSince = $interval->days;
-          return $minutesSince = $interval->i;
-
-          //echo "daysSince:".$daysSince." minutesSince:".$minutesSince;
-          
-          //echo "<br>".$interval->days;
-          //echo "<br>difference " . $interval->y . " years, " . $interval->m." months, ".$interval->d." days ".$interval->h." hours ".$interval->i." minutes ".$interval->s." seconds";
-
-        }
-
-        function secondsBetween($dateTime, $dateTime2) {
-
-          global $t;
-          $now = new DateTime($dateTime2);
-          $last = new DateTime($dateTime);
-          $interval = $now->diff($last);
-
-          $seconds = $interval->days * 24 * 60 * 60;
-          $seconds += $interval->h * 60 * 60;
-          $seconds += $interval->i * 60;
-          $seconds += $interval->s;
-          
-          return $seconds;
-
-        }
-
-
-
-        //echo "<br>Post:";
-        //print_r($_POST);
-
-
-        //Insert response into database
-        $stmt = $conn->prepare("INSERT INTO flashcard_responses (questionId,  userId, gotRight, timeStart, timeSubmit, cardCategory, timeDuration, dateSubmit) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("iiissiis", $questionId, $userId, $gotRight, $timeStart, $timeSubmit, $cardCategory, $seconds, $date);
-
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') 
-
-        {
-          $questionId = $_POST['questionId'];
-          $gotRight = $_POST['rightWrong'];
-          $timeStart = $_POST['timeStart'];
-          
-
-          $timeSubmit = date("Y-m-d H:i:s",time());
-          //echo "<br>".$timeSubmit."<br>";
-
-          $seconds = secondsBetween($timeStart, $timeSubmit);
-
-          $date = date("Y-m-d", strtotime($timeSubmit));
-          //echo $date;
-
-          
-
-          if($gotRight === "0" || $gotRight === "1") {
-            $cardCategory = 0;
-          }
-          else if ($gotRight = 2) {
-            if ($_POST['cardCategory'] === "0") {
-              $cardCategory = 1;
-            } else if ($_POST['cardCategory'] === "1") {
-              $cardCategory = 2;
-            } else if ($_POST['cardCategory'] === "2") {
-              $cardCategory = 2;
-            }
-          }
-
-          $lastResponse = (lastResponse($_POST['questionId']));
-
-          if ($lastResponse['timeStart'] === $timeStart) {
-            //echo "This was a duplicate and will not be entered";
-          }
-          else {
-            
-            //$stmt->execute();
-              
-            //echo "New records created successfully";
-
-            
-
-
-          }
-          
-
-          //print_r($lastResponse);
-          
-
-          
-
-
-
-          
-        }
-
-        // Retreive question record.
-
-        $sql = "SELECT * FROM flashcard_responses WHERE userId = ? ORDER BY id ASC";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $userId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if($result->num_rows>0) {
-          while ($row = $result->fetch_assoc()) {
-            /*
-            echo "<br>";
-            print_r($row);
-            */
-            
-          }
-        }
-
-
-
-              $bin1Duration = 3 * 24*60;
-              $bin2Duration = 5 *24*60;
-
-              if(isset($_GET['restrict'])) {
-                if($_GET['restrict'] == 'none' || $_GET['restrict'] == "0" ) 
-                {
-                  $bin1Duration = $bin2Duration = 0;
-                }
-                else if($_GET['restrict'] == 'minutes') {
-                  $bin1Duration = $bin1Duration /(24*60);
-                  $bin2Duration = $bin2Duration /(24*60);
-                }
-              }
-
-              $questionSkip = 0;
-              /*
-              while (count($questions)>0) {
-
-                  $qCount = count($questions);
-
-                  $randomQuestion = rand(0, $qCount-1);
-                  //echo $qCount."<br>".$randomQuestion;
-
-                  if($randomQuestion<0) {
-                    $randomQuestion = 0;
-                  }
-
-                  //Find the response for the last time this question was answered:
-
-                    $randomQuestionId = $questions[$randomQuestion]['id'];
-
-                    //echo "<br>".$randomQuestionId;
-
-                    $lastResponse = lastResponse($randomQuestionId);
-
-                    //Logic to see if question should appear, based on the bin it is in.
-
-                    
-                    //echo $t;
-                    //echo date("Y-m-d H:i:s", $t);       
-                    //echo $lastResponse['timeSubmit'];
-
-                    $timeSince = timeBetween($lastResponse['timeSubmit']);
-                    //echo $timeSince;
-
-                    if (
-                      $lastResponse['cardCategory'] == 0 ||
-                      (($lastResponse['cardCategory'] == 1 )&&($timeSince>=$bin1Duration) ) ||
-                      (($lastResponse['cardCategory'] == 2 )&&($timeSince>=$bin2Duration) )
-                    )
-
-                    {
-                      //echo "<br>Valid questions: ".$qCount;
-                      break;
-                    }
-
-                    else {
-                      $summary = array();
-                      $summary['questionId'] = $questions[$randomQuestion]['id'];
-                      $lastResponse = lastResponse($questions[$randomQuestion]['id']);
-                      $summary['cardCategory'] = $lastResponse['cardCategory'];
-                      $summary['timeSubmit'] = $lastResponse['timeSubmit'];
-                      $summary = json_encode($summary);                  
-                      echo "<script>console.log(".$summary.")</script>";
-                      //$questionSkip ++;
-                      
-                      array_splice($questions, $randomQuestion, 1);
-
-                      
-
-
-                    }          
-              }
-              */
-              //echo "<script>console.log(".$questionSkip.")</script>";
-
-              if(count($questions) == 0) {
-              
-                ?>
-
-                <div  class="font-sans  p-3 m-2">
-
-                <p class="mb-3">Well done! There are no more cards for you to revise.</p>
-
-                </div>
-
-
-                <?php
-                
-              } else {
-                
-                
-                
-            $question = $questions[0];
-            ?>
-
-            <?php if(isset($_GET['topics'])) {echo "<p class='ml-1'>Topic: ".htmlspecialchars($question['topic'])."</p>";}?>
-
-            <div id="flashcard" class="font-sans  p-3 m-2">
-            
-              <form method="post">
-              
-                <h2 class ="text-lg">Question:</h2>
-                <?php
-                if(isset($_GET['test'])){
-                  print_r($question);
-                }
-                ?>
-              
-                <input type="hidden" name="questionId" value = "<?=htmlspecialchars($question['qId'])?>">
-                <input type="hidden" name="timeStart" value = "<?=date("Y-m-d H:i:s",time())?>">
-                <input type="hidden" name="cardCategory" value = "<?=$question['cardCategory']?>">
-                
-                <p class="mb-3" style="white-space: pre-line;"><?php echo htmlspecialchars($question['question']);?></p>
-
-                <p><?php //print_r(lastResponse($questions[$randomQuestion]['id']));?>
-
-                <?php
-                  $questionImg = null;
-                  $questionAlt = null;
-
-                  if($question['img'] != "") {
-                    $questionImg = htmlspecialchars($question['img']);
-                    $questionAlt = htmlspecialchars($question['img']);
-                  }
-
-                  if($question['qPath'] != "") {
-                    $questionImg = htmlspecialchars($question['qPath']);
-                    $questionAlt = htmlspecialchars($question['qAlt']);
-                  }
-
-                  if($questionImg) {
-                    ?>
-                    <img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($questionImg)?>" alt = "<?=htmlspecialchars($questionAlt)?>">
-                    <?php
-                  }
-                ?>
-                
-                <div id="buttonsDiv" class="flex justify-center">
-                  <button type = "button" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers();hideButtons();swapButtons()">I don't know</button>
-                  <button value ="0" name="rightWrong" class="grow m-3 hidden ">I don't know</button>
-                  <button type = "button" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers();hideButtons()">Show answers</button>
-                </div>
-                
-                <div id ="answerDiv" class="hidden">
-                  <h2 class ="text-lg">Answer:</h2>
-                  <p class="mb-3" style="white-space: pre-line;"><?=htmlspecialchars($question['model_answer']);?></p>
-
-                  <?php
-
-                  $answerImg = null;
-                  $answerAlt = null;
-
-
-
-                  if($question['answer_img'] != "") {
-                    $answerImg = htmlspecialchars($question['answer_img']);
-                    $answerAlt = htmlspecialchars($question['answer_img_alt']);
-                  }
-
-                  if($question['aPath'] != "") {
-                    $answerImg = htmlspecialchars($question['aPath']);
-                    $answerAlt = htmlspecialchars($question['aAlt']);
-                  }
-
-                  if($answerImg) {
-                    ?><img class = "mx-auto content-center object-center" src= "<?=$answerImg?>" alt = "<?=$answerAlt?>">
-                    <?php
-                  }
-                  ?>
-
-
-                  <div id ="buttonsDiv2" class="flex justify-center">
-                    <button id = "1Button" value ="1" name="rightWrong" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Wrong Answer</button>
-                    <button id = "2Button" value ="2" name="rightWrong" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Correct Answer</button>
-                    <button id = "0Button" value ="0" name="rightWrong" class="grow m-3 hidden py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Next Question</button>
-                  </div>
-                </div>
-
-              </form>
-
-            </div>
-
-            <?php } ?>
-
+  ?>
+
+  <form method="get" action = "">
+
+  <div id="accordion-collapse" data-accordion="collapse">
+    <h2 id="accordion-collapse-heading-1">
+      <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-left rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" data-accordion-target="#accordion-collapse-body-1" aria-expanded="<?=(is_null($subjectLevel)) ? "true" : "false"?>" aria-controls="accordion-collapse-body-1">
+        <span>Select Subject and Level</span>
+        <svg data-accordion-icon class="w-6 h-6  shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+      </button>
+    </h2>
+    <div id="accordion-collapse-body-1" class="hidden" aria-labelledby="accordion-collapse-heading-1">
+      <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+        <div>
+          <label for="subjectLevel">Subject:</label>
+          <select id="subjectLevel" name="subjectLevel" onchange="this.form.submit()">
+            <option value="_"></option>
             <?php
-
-              echo "<pre>";
-              //print_r($questions);
-
-              echo "</pre>";
-
+              foreach ($subjects as $subject) {
+                $subjectLevelId = $subject['lId']."_".$subject['sId'];
+                ?>
+                <option value="<?=$subjectLevelId?>" <?=($subjectLevelId == $subjectLevel) ? "selected" : ""?>><?=$subject['subject']?> (<?=$subject['level']?>)</option>
+                <?php
+              }
               ?>
 
+          </select>
+          
+
+        </div>
+      </div>
+    </div>
+    <h2 id="accordion-collapse-heading-2">
+      <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-b-0 border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" data-accordion-target="#accordion-collapse-body-2" aria-expanded="<?=(is_null($topics) or $topics == "") ? "true" : "false" ?>" aria-controls="accordion-collapse-body-2">
+        <span>Select Topics</span>
+        <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+      </button>
+    </h2>
+    <div id="accordion-collapse-body-2" class="hidden" aria-labelledby="accordion-collapse-heading-2">
+      <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700">
+        <div class="grid grid-cols-4">
+          <?php
+            $topics = explode(",", $topics);
+            //print_r($topics);
+            
+            foreach($topicsArray as $topic) {
+              ?>
+              <div>
+                <input type="checkbox" id="topic_<?=htmlspecialchars($topic)?>" class= "topicSelector" value="<?=htmlspecialchars($topic)?>" onchange="topicAggregate();" <?php
+                  if(count($topics)>0 && $topics[0] != "") {
+                    //if(in_array($topic, $topics)) {
+                    if(startsWithAny($topic, $topics)) {
+                      echo "checked";
+                    }
+                  } 
+                ?>>
+                <label for = "topic_<?=htmlspecialchars($topic)?>" ><?=htmlspecialchars($topic)?></label>
+              </div>
+              <?php
+            }
+
+          ?>
+
+        </div>
+        <?php
+        if(count($topicsArray)>0) {
+        ?>
+          <input type="hidden" name="topics" id="topicSelect">
+          <input type="submit" value="Choose Topics" class="rounded border border-sky-300 w-full">
+        <?php
+        }
+        ?>
+
+      </div>
+    </div>
+    <?php 
+    /*
+    <h2 id="accordion-collapse-heading-3">
+      <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" data-accordion-target="#accordion-collapse-body-3" aria-expanded="false" aria-controls="accordion-collapse-body-3">
+        <span>What are the differences between Flowbite and Tailwind UI?</span>
+        <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+      </button>
+    </h2>
+    <div id="accordion-collapse-body-3" class="hidden" aria-labelledby="accordion-collapse-heading-3">
+      <div class="p-5 border border-t-0 border-gray-200 dark:border-gray-700">
+        <p class="mb-2 text-gray-500 dark:text-gray-400">The main difference is that the core components from Flowbite are open source under the MIT license, whereas Tailwind UI is a paid product. Another difference is that Flowbite relies on smaller and standalone components, whereas Tailwind UI offers sections of pages.</p>
+        <p class="mb-2 text-gray-500 dark:text-gray-400">However, we actually recommend using both Flowbite, Flowbite Pro, and even Tailwind UI as there is no technical reason stopping you from using the best of two worlds.</p>
+        <p class="mb-2 text-gray-500 dark:text-gray-400">Learn more about these technologies:</p>
+        <ul class="pl-5 text-gray-500 list-disc dark:text-gray-400">
+          <li><a href="https://flowbite.com/pro/" class="text-blue-600 dark:text-blue-500 hover:underline">Flowbite Pro</a></li>
+          <li><a href="https://tailwindui.com/" rel="nofollow" class="text-blue-600 dark:text-blue-500 hover:underline">Tailwind UI</a></li>
+        </ul>
+      </div>
+    </div>
+    */
+    ?>
   </div>
 
+  </form>
 
 
+    <div>
+      <?php
+        if(count($questions) == 0) {
+          ?>
+            <div  class="font-sans  p-3 m-2 hidden">
+              <p class="mb-3">Well done! There are no more cards for you to revise.</p>
+            </div>
+          <?php
+          
+        } else {
+        
+          $question = $questions[0];
+          if(isset($_GET['topics'])) {
+              echo "<p class='ml-1'>Topic: ".htmlspecialchars($question['topic'])."</p>";
+            }
+          ?>
+
+          <div id="flashcard" class="font-sans  p-3 m-2">
+            <form method="post">
+              <h2 class ="text-lg">Question:</h2>
+              <?=$test == true ? print_r($question) : "" ?>
+
+              <input type="hidden" name="questionId" value = "<?=htmlspecialchars($question['qId'])?>">
+              <input type="hidden" name="timeStart" value = "<?=date("Y-m-d H:i:s",time())?>">
+              <input type="hidden" name="cardCategory" value = "<?=$question['cardCategory']?>">
+              
+              <p class="mb-3" style="white-space: pre-line;"><?php echo htmlspecialchars($question['question']);?></p>
+
+              <?php
+                if(!is_null($question['q_path'])) {
+                  ?>
+                  <img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
+                  <?php
+                }
+              ?>
+              
+              <div id="buttonsDiv" class="flex justify-center">
+
+                <button type = "button" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers();hideButtons();swapButtons()">I don't know</button>
+
+                <button value ="0" name="rightWrong" class="grow m-3 hidden ">I don't know</button>
+
+                <button type = "button" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers();hideButtons()">Show answers</button>
+              </div>
+              
+              <div id ="answerDiv" class="hidden">
+                <h2 class ="text-lg">Answer:</h2>
+                <p class="mb-3" style="white-space: pre-line;"><?=htmlspecialchars($question['model_answer']);?></p>
+
+                <?php
+                  if(!is_null($question['a_path'])) {
+                    ?>
+                    <img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
+                    <?php
+                  }
+                ?>
+              
+                <div id ="buttonsDiv2" class="flex justify-center">
+                  <button id = "1Button" value ="1" name="rightWrong" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Wrong Answer</button>
+                  
+                  <button id = "2Button" value ="2" name="rightWrong" class="grow m-3 py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Correct Answer</button>
+                  
+                  <button id = "0Button" value ="0" name="rightWrong" class="grow m-3 hidden py-2 px-4 bg-pink-400 text-white font-semibold rounded-lg shadow-md hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">Next Question</button>
+                </div>
+              </div>
+
+            </form>
+
+          </div>
+
+        <?php 
+        } 
+        ?>
+
+        <?php
+
+        if($test == true) {
+          echo "<pre>";
+          //print_r($questions);
+          echo "</pre>";
+        }
+        ?>
+    </div>
+
+
+
+
+  </div>
 
 </div>
 
@@ -503,7 +384,47 @@ include($path."/header_tailwind.php");
 
       }
 
+      function topicAggregate() {
 
+        var topicsInput = document.getElementsByClassName("topicSelector");
+        var topicsInputChecked = [];
+        var topicString = "";
+        var checkedCount = 0;
+        const topicSelect = document.getElementById("topicSelect");
+
+        for (var i=0; i<topicsInput.length; i++) {
+          var topic = topicsInput[i];
+          if(topic.checked == true) {
+            topicsInputChecked.push(topicsInput[i]);
+          }
+        }
+
+        for(var i=0; i<topicsInputChecked.length; i++) {
+          topic = topicsInputChecked[i];
+          topicString += topic.value;
+          if(i < (topicsInputChecked.length - 1)) {
+            topicString += ",";
+          }
+
+        }
+
+        topicSelect.value = topicString;
+
+
+          
+
+
+
+
+      
+      console.log(topicString);
+      //console.log(topicSelect);
+
+      topicSelect.value = topicString;
+      }
+
+      
+      
 
     </script>
 

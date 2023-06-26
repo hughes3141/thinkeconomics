@@ -1152,7 +1152,7 @@ function getFlashcardSummaryByStudent($userId, $startDate = null, $endDate = nul
 
 }
 
-function getFlashcardsQuestions($topics = null, $userId) {
+function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
   /*
   This function returns Flashcard quesiton information that will then be used in flashcards.php. This will return information on all flashcard questions in a the database given the filter, plus information on the last time a given $userId has attempted the question. Returns a ranked array of questions that can then be used to generate flashcards.php
 
@@ -1161,15 +1161,16 @@ function getFlashcardsQuestions($topics = null, $userId) {
   */
   global $conn;
   $results = array();
+  $params = "ii";
+  $bindArray = array($userId, $userId);
+  $conjoiner = 0;
+  
 
-  if($topics) {
-    $numTopics = count($topics);
-    $placeholder = str_repeat("?, ", $numTopics -1)." ?";
-  }
-  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, q.flashCard, r.userId, r.gotRight, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory, q.questionAssetId, aq.path qPath, aq.altText qAlt, aa.path aPath, aa.altText aAlt
+
+  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, q.flashCard, q.subjectId, r.userId, r.gotRight, r.dontKnow, r.correct, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory, q.questionAssetId, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt
           FROM saq_question_bank_3 q
           LEFT JOIN (
-            SELECT rr.id, rr.questionId, rr.userId, rr.timeSubmit, rr.gotRight, rr.cardCategory, t.most_recent, rr.timeStart
+            SELECT rr.id, rr.questionId, rr.userId, rr.timeSubmit, rr.gotRight, rr.dontKnow, rr.correct, rr.cardCategory, t.most_recent, rr.timeStart
             FROM flashcard_responses rr
             INNER JOIN (
               SELECT questionId, MAX(timeSubmit) as most_recent
@@ -1188,33 +1189,64 @@ function getFlashcardsQuestions($topics = null, $userId) {
           WHERE ";
 
   if($topics) {
-    $sql .= "q.topic IN ($placeholder) AND ";
+    $topics = explode(",", $topics);
+    $conjoiner = 1;
+    $numTopics = count($topics);
+    $placeholder = str_repeat("?, ", $numTopics -1)." ?";
+    $sql .= " ( ";
+    foreach ($topics as $key=>$topic) {
+      $params .= "s";
+      $topic = $topic."%";
+      array_push($bindArray, $topic);
+      $sql .= "q.topic LIKE ? ";
+      if($key < ($numTopics -1)) {
+        $sql .= " OR ";
+      }
+      
+    }
+    $sql .= " ) ";
+    //echo $topicParams;
+
+  }
+
+  if(!is_null($subjectId)) {
+    if($conjoiner == 1) {
+      $sql .= " AND ";
+    }
+    $conjoiner = 1;
+    $sql .= " q.subjectId = ? ";
+    $params .= "i";
+    array_push($bindArray, $subjectId);
   }
   
+  if($conjoiner == 1) {
+    $sql .= " AND ";
+  }
   $sql .= "(q.type LIKE '%flashCard%' OR q.flashCard = 1)
           
           ORDER BY q.topic, r.questionId, r.timeSubmit
           
   ";
 
-  $bindArray = array();
-  $bindArray = $topics;
-
+  //echo $sql;
   $stmt = $conn->prepare($sql);
+  $stmt->bind_param($params, ...$bindArray);
 
-  if($topics) {
-    $paramTypes = "ii".str_repeat("s", $numTopics);
-    //array_push($bindArray, $userId);
-    array_unshift($bindArray, $userId);
-    array_unshift($bindArray, $userId);
-    $stmt->bind_param($paramTypes, ...$bindArray);
-  } else {
-    $stmt->bind_param('ii', $userId, $userId);
-  }
   $stmt->execute();
   $result = $stmt->get_result();
   if($result->num_rows>0) {
     while($row=$result->fetch_assoc()) {
+                    //Change those entries that use 'img' for 'q_path' to new standard of 'q_path' and 'q_alt'
+                    if($row['img'] != '' && $row['q_path'] == '') {
+                      $row['q_path'] = $row['img'];
+                      $row['q_alt'] = $row['img'];
+                    }
+                    //Change those entries that use 'answer_img' and 'answer_img_alt' for 'a_path' and 'a_alt' to new standard of 'a_path' and 'a_alt'
+                    if($row['answer_img'] != '' && $row['a_path'] == '') {
+                      $row['a_path'] = $row['answer_img'];
+                      $row['a_alt'] = $row['answer_img_alt'];
+                    }
+
       if($row['timeSubmit']=="") {
         $row['rank'] =1;
       }
@@ -1238,7 +1270,174 @@ function getFlashcardsQuestions($topics = null, $userId) {
   
 }
 
+function getColumnListFromTable($tableName, $column, $topic = null, $subjectId = null, $userCreate = null, $levelId = null, $flashCard = null) {
+  /*
+  Used to generate list of distinct $collumn information from $tableName.
+  e.g. to generate a table of topics that a user can select
+
+  Used in:
+  -flashcards.php
+  */
+  global $conn;
+  $params = "";
+  $bindArray = array();
+  $results = array();
+
+  $sql =  "SELECT DISTINCT ".$column." ";
+  $sql .= "FROM ".$tableName." ";
+
+  if(!is_null($topic)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " topic LIKE ? ";
+    $params .= "s";
+    array_push($bindArray, $topic."%");
+  }
+
+  if(!is_null($subjectId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " subjectId = ? ";
+    $params .= "i";
+    array_push($bindArray, $subjectId);
+  }
+
+  if(!is_null($userCreate)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " userCreate = ? ";
+    $params .= "i";
+    array_push($bindArray, $userCreate);
+  }
+
+  if(!is_null($levelId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " levelId = ? ";
+    $params .= "i";
+    array_push($bindArray, $levelId);
+  }
+
+  $sql .= sql_conjoin($params);
+  $sql .= " ".$column." <> '' ";
+  
+  if(!is_null($flashCard)) {
+    $sql .= " AND flashCard = 1 ";
+  }
+
+  $sql .= " ORDER BY ".$column." ";
+
+  //echo $sql;
+
+
+  
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      $rowTopic = $row[$column];
+      array_push($results, $rowTopic);
+    }
+  }
+  return $results;
+  
+
+
+}
+
+function getOutputFromTable($table, $id = null, $orderByColumn = null) {
+  /*
+  This function will output information from $table
+
+  Used in -
+  flashcards.php
+  */
+
+  global $conn;
+
+  $sql = "SELECT * FROM ".$table." ";
+  if(!is_null($orderByColumn)) {
+    $sql .= " ORDER BY ".$orderByColumn." ";
+  }
+  $results = array();
+
+  $stmt=$conn->prepare($sql);
+  //$stmt->bind_param($params, ...$bindArray);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
+
+
+}
+
+function startsWithAny($topic, $topics) {
+  /*
+  Used in flashcards.php
+  */
+  foreach ($topics as $item) {
+      if (strpos($topic, $item) === 0) {
+          return true;
+      }
+  }
+  return false;
+}
+
+function getDistinctFlashcardSubjectLevels() {
+  /*
+  Used to get distinct information on subjectId and levelId from table saq_question_bank_3
+
+  Used in: flashcards.php
+
+  */
+
+  global $conn;
+  $params = "";
+  $bindArray = array();
+  $results = array();
+
+  $sql = "SELECT DISTINCT CONCAT(qb.subjectId, '_', qb.levelId) AS combination, s.id sId, s.name subject, l.id lId, l.name level
+          FROM saq_question_bank_3 qb
+          LEFT JOIN subjects s ON s.id = SUBSTRING_INDEX(CONCAT(qb.subjectId, '_', qb.levelId), '_', 1)
+          LEFT JOIN subjects_level l ON l.id = SUBSTRING_INDEX(CONCAT(qb.subjectId, '_', qb.levelId), '_', -1)
+          
+          ORDER BY level, subject";
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
+
+}
+
 function sql_conjoin($x) {
+  /*
+   Used  to join up different optional elemlents in sql query.
+   Used in: 
+   - getSAQQuestions()
+   - getColumnListFromTable()
+
+   */
   $y = "";
   if($x != "") {
     $y = " AND ";
@@ -1358,6 +1557,26 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
 
 }
 
+function lastFlashcardResponse($questionId, $userId, $timeStart) {
+  /*
+  Function designed to get a record from flashcard_responses with a gven $questionId, $userId, and $timeStart. Used specifically to check that information given from $_POST is not alreayd contained as a record with these data values (i.e. a browser refresh)
+
+  Used soley in insertFlashcardResponse() below:
+  */
+  global $conn;
+  $sql = "SELECT *
+          FROM flashcard_responses 
+          WHERE userId = ? AND questionId = ? AND timeStart = ? ";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("iis", $userId, $questionId, $timeStart);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  $row =$result->fetch_assoc();
+  return $row;
+
+}
+
 function insertFlashcardResponse($questionId, $userId, $gotRight, $timeStart, $timeSubmit, $cardCategory) {
   /*
   This function inserts a new record when a flashcard question has been completed by a student.
@@ -1368,11 +1587,24 @@ function insertFlashcardResponse($questionId, $userId, $gotRight, $timeStart, $t
 
   global $conn;
 
-  $stmt = $conn->prepare("INSERT INTO flashcard_responses (questionId,  userId, gotRight, timeStart, timeSubmit, cardCategory, timeDuration, dateSubmit) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+  
+
+  $stmt = $conn->prepare("INSERT INTO flashcard_responses (questionId,  userId, gotRight, timeStart, timeSubmit, cardCategory, timeDuration, dateSubmit, dontKnow, correct) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)");
 
 
   $seconds = strtotime($timeSubmit) - strtotime($timeStart);
   $date = date("Y-m-d", strtotime($timeSubmit));
+
+  $dontKnow = 0;
+  $correct = 0;
+
+  if($gotRight == 1) {
+    $dontKnow = 1;
+  }
+
+  else if ($gotRight == 2) {
+    $correct = 1;
+  }
 
   if($gotRight === "0" || $gotRight === "1") {
     $cardCategory = 0;
@@ -1387,9 +1619,16 @@ function insertFlashcardResponse($questionId, $userId, $gotRight, $timeStart, $t
     }
   }
 
-  $stmt->bind_param("iiissiis", $questionId, $userId, $gotRight, $timeStart, $timeSubmit, $cardCategory, $seconds, $date);
-  $stmt->execute();
+  $stmt->bind_param("iiissiisii", $questionId, $userId, $gotRight, $timeStart, $timeSubmit, $cardCategory, $seconds, $date, $dontKnow, $correct);
 
+  $lastResponse = lastFlashcardResponse($questionId, $userId, $timeStart);
+  //var_dump($lastResponse);
+  if (is_null($lastResponse)) {
+    $stmt->execute();
+    return "Response successfully saved";
+  } else {
+    return "This is a duplicate and will not be entered";
+  }
 
 
 
