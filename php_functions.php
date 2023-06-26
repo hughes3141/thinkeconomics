@@ -1348,7 +1348,7 @@ function getColumnListFromTable($tableName, $column, $topic = null, $subjectId =
 
 }
 
-function getOutputFromTable($table, $orderByColumn) {
+function getOutputFromTable($table, $id = null, $orderByColumn = null) {
   /*
   This function will output information from $table
 
@@ -1376,6 +1376,44 @@ function getOutputFromTable($table, $orderByColumn) {
   }
   return $results;
 
+
+
+}
+
+function getDistinctFlashcardSubjectLevels() {
+  /*
+  Used to get distinct information on subjectId and levelId from table saq_question_bank_3
+
+  Used in: flashcards.php
+
+  */
+
+  global $conn;
+  $params = "";
+  $bindArray = array();
+  $results = array();
+
+  $sql = "SELECT DISTINCT CONCAT(qb.subjectId, '_', qb.levelId) AS combination, s.name subject, l.name level
+          FROM saq_question_bank_3 qb
+          LEFT JOIN subjects s ON s.id = SUBSTRING_INDEX(CONCAT(qb.subjectId, '_', qb.levelId), '_', 1)
+          LEFT JOIN subjects_level l ON l.id = SUBSTRING_INDEX(CONCAT(qb.subjectId, '_', qb.levelId), '_', -1)
+          
+          ORDER BY level, subject";
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
 
 
 }

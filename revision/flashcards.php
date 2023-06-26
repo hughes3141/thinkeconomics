@@ -110,9 +110,15 @@ Notes on command GET variables:
     $subjectLevel_subjectId = $subjectLevelArray[1];
     $subjectIdSet = $subjectLevel_subjectId;
   }
+  /*
+  $levels = getOutputFromTable("subjects_level", null, "name");
+  $subjects = getOutputFromTable("subjects", null, "name");
+  */
+  $subjects = getDistinctFlashcardSubjectLevels();
 
-  $levels = getOutputFromTable("subjects_level", "name");
-  $subjects = getOutputFromTable("subjects", "name");
+  print_r($subjects);
+
+  
 
   $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", $topicSet, $subjectIdSet, $userCreateSet, $levelIdSet, 1);
 
@@ -173,13 +179,11 @@ include($path."/header_tailwind.php");
           <label for="subjectLevel">Subject:</label>
           <select id="subjectLevel" name="subjectLevel" onchange="this.form.submit()">
             <?php
-              foreach ($levels as $level) {
-                foreach ($subjects as $subject) {
-                  $subjectLevelId = $level['id']."_".$subject['id'];
-                  ?>
-                  <option value="<?=$subjectLevelId?>" <?=($subjectLevelId == $subjectLevel) ? "selected" : ""?>><?=$subject['name']?> (<?=$level['name']?>)</option>
-                  <?php
-                }
+              foreach ($subjects as $subject) {
+                $subjectLevelId = $subject['level']."_".$subject['subject'];
+                ?>
+                <option value="<?=$subjectLevelId?>" <?=($subjectLevelId == $subjectLevel) ? "selected" : ""?>><?=$subject['subject']?> (<?=$subject['level']?>)</option>
+                <?php
               }
               ?>
 
