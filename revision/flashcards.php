@@ -118,13 +118,12 @@ Notes on command GET variables:
 
   $questions = array();
   var_dump($topics);
-  if(empty($topics)) {
-    $questions = getFlashcardsQuestions($topics, $userId, $subjectId);
+  if(!is_null($topics)) {
+    if(count($topics)>0 && $topics[0] != "") {
+      $questions = getFlashcardsQuestions($topics, $userId, $subjectId);
+    }
   }
-  var_dump($questions);
-
-  
-
+  echo count($questions);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $insert = insertFlashcardResponse($_POST['questionId'], $userId, $_POST['rightWrong'], $_POST['timeStart'], date("Y-m-d H:i:s", time()), $_POST['cardCategory']);
