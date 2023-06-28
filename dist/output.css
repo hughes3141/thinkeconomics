@@ -787,6 +787,14 @@ textarea, input, select {
   height: 15rem;
 }
 
+.h-44 {
+  height: 11rem;
+}
+
+.h-36 {
+  height: 9rem;
+}
+
 .max-h-80 {
   max-height: 20rem;
 }
