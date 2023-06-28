@@ -1625,10 +1625,25 @@ function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $ty
   }
   
 
-  
-  
+}
 
+function SAQQuestionTopicCount($topic) {
+  /**
+   * Returns the count of questions in saq_question_bank_3 that have $topic as topic
+   */
 
+  global $conn;
+  $sql = "SELECT COUNT(*) count
+          FROM saq_question_bank_3 
+          WHERE Topic= ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("s", $topic);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    $row = $result->fetch_assoc();
+    return $row['count'];
+    }
 
 }
 

@@ -13,8 +13,6 @@ if (!isset($_SESSION['userid'])) {
   
   header("location: /login.php");
 
-  
-  
 }
 
 else {
@@ -25,24 +23,6 @@ else {
     header("location: /index.php");
   }
 }
-
-
-
-function getQuestionData($questionId) {
-  global $conn;
-  $stmt = $conn->prepare("SELECT * FROM saq_question_bank_3 WHERE id = ?");
-  $stmt->bind_param("i", $questionId);
-  $stmt->execute();
-  $result=$stmt->get_result();
-  if($result->num_rows>0) {
-    $row = $result->fetch_assoc();
-    return $row;
-  }
-  
-
-}
-
-
 
 ?>
 
@@ -91,14 +71,6 @@ function getQuestionData($questionId) {
 
 
 <?php 
-
-
-
-//print_r($_SESSION);
-//print_r($_POST);
-//print_r($_GET);
-//echo date("Y-m-d H:i:s");
-
 
 
 
@@ -178,55 +150,37 @@ if(isset($_POST['updateValue'])) {
 
 
 <?php
-//print_r($questionData);
-if($_SERVER['REQUEST_METHOD']==='POST') {
-  //print_r($_POST);
-}
 
-if(isset($_GET['test'])) {
-  /*
-  $resultsbyTopic = sortWithinTopic("saq_question_bank_3", 77, $_GET['topic'], null);
-  echo "<pre>";
-  print_r($resultsbyTopic);
-  echo "</pre>";
-  */
-  
-}
-$questionTopicCount = "";
-$sql = "SELECT COUNT(*) count
-        FROM saq_question_bank_3 
-        WHERE Topic= ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $_GET['topic']);
-$stmt->execute();
-$result = $stmt->get_result();
-if($result->num_rows>0) {
-  $row = $result->fetch_assoc();
-  $questionTopicCount = $row['count'];
+  if(isset($_GET['test'])) {
+    /*
+    $resultsbyTopic = sortWithinTopic("saq_question_bank_3", 77, $_GET['topic'], null);
+    echo "<pre>";
+    print_r($resultsbyTopic);
+    echo "</pre>";
+    */
+
+    if($_SERVER['REQUEST_METHOD']==='POST') {
+      print_r($_POST);
+    }
+    
   }
+  $questionTopicCount = 0;
+  if(isset($_GET['topic'])) {
+    $questionTopicCount = SAQQuestionTopicCount($_GET['topic']);
+  }
+  
 
-//echo $questionTopicCount;
 ?>
 
-
-
-
-
-  
   <h2>Question Entry</h2>
   <p>Use the form below to enter questions.</p>
   <form method="post">
     <table id="question_input_table">
-    <tr>
-      <th>Topic</th>
-
-      <th>img src</th>
-      <th>Points</th>
-      <th>Type</th>
-      <th>Model Answer/Mark Scheme</th>
-    
-    </tr>
-
+      <tr>
+        <th>Topic</th>
+        <th>Question</th>
+        <th>Model Answer/Mark Scheme</th> 
+      </tr>
     </table>
 
     <p>
@@ -238,8 +192,6 @@ if($result->num_rows>0) {
       <select id="subjectSelect" name = "subjectId">
         <?php
           foreach ($subjects as $subject) {
-
-          
               ?>
               <option value="<?=$subject['id'];?>" <?php
                 if(isset($_POST['subjectId'])) {
@@ -248,6 +200,7 @@ if($result->num_rows>0) {
                   }
                   
                 }
+                //Until userpreferences are updated, us  Economics as default:
                 else if ($subject['id'] == 1) {
                   echo "selected";
                 }              
@@ -257,9 +210,8 @@ if($result->num_rows>0) {
           ?>
       </select>
     </p>
-
     <p>
-    <button type="button" onclick="addRow()">Add Row</button>
+      <button type="button" onclick="addRow()">Add Row</button>
     </p>
     <p>
       <input type="submit" name="submit" value="Create Question"></input>
@@ -272,17 +224,12 @@ if($result->num_rows>0) {
   
   <h2>Database</h2>
   <p>Search for questions by topic:</p>
-  
   <form method="get">
-  <p>
-    <select id="select" name="topic" >
-    </select>
-    
-    <input type="submit" value="Choose Topic">
-  </p>
+    <p>
+      <select id="select" name="topic" ></select>
+      <input type="submit" value="Choose Topic">
+    </p>
   </form>
-  
-  
   <p>
   <?php 
   if(isset($_GET['topic'])) {
@@ -622,19 +569,15 @@ function addRow() {
   var cell0 = row.insertCell(0);
   var cell1 = row.insertCell(1);
   var cell2 = row.insertCell(2);
-  var cell3 = row.insertCell(3);
-  var cell4 = row.insertCell(4);
-  //var cell5 = row.insertCell(5);
+
   
   var inst = tableLength -1;
 
   cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><select id ="topic_'+inst+'" name="topic_'+inst+'" class="topicSelector"></select><br><label for="topic_order_'+inst+'">Topic Order:</label><input style="width:50px" type="number" step="1" name="topic_order_'+inst+'" id="topic_order_'+inst+'" value = "'+questionCount+'" onchange="changeOrder(this)"></input>';
   
-  cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" required></textarea><br><label for="image_'+inst+'">Question img src:</label><br><input type="text" id ="image_'+inst+'" name="image_'+inst+'"></input><br><label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input type="text" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'">';
-  //cell2.innerHTML = '';
-  cell2.innerHTML = '<label for="points_'+inst+'">Points:</label><input type="number" id ="points_'+inst+'" name="points_'+inst+'"></input>';
-  cell3.innerHTML = '<label for="type_'+inst+'">Type:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input><br><input type= "checkbox" id="flashCardInput_'+inst+'" value="1" name = "flashCard_'+inst+'"><label for="flashCardInput_'+inst+'">flashCard</label>';
-  cell4.innerHTML = '<p>→</p><label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><label for="image_ans_'+inst+'">Answer img src:</label><br><input type="text" id ="image_ans_'+inst+'" name="image_ans_'+inst+'"></input><br><label for="image_ans_alt'+inst+'">Answer img_alt:</label><br><input type="text" id ="image_ans_alt'+inst+'" name="image_ans_alt_'+inst+'"></input><br><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="text" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'">';
+  cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" ></textarea><br><label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input type="number" step="1" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'"><br><label for="points_'+inst+'">Points:</label><input type="number" id ="points_'+inst+'" name="points_'+inst+'"></input><br><label for="type_'+inst+'">Keywords/Type:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input><br><input type= "checkbox" id="flashCardInput_'+inst+'" value="1" name = "flashCard_'+inst+'"><label for="flashCardInput_'+inst+'">flashCard</label>';
+  
+  cell2.innerHTML = '<p>→</p><label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="text" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'">';
   
   topicListAmend(inst);
   sourceAmend(inst)
