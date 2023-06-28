@@ -251,12 +251,12 @@ include($path."/header_tailwind.php");
   if(isset($_GET['topic'])) {
     ?>
     
-    <table class="input_table">
+    <table class="input_table table-fixed w-full">
         <tr>
-          <th>Topic</th>	
-          <th>Question</th>
-          <th>Model Answer/Mark Scheme</th>
-          <th>Edit</th>
+          <th class="w-1/6">Topic</th>	
+          <th class="w">Question</th>
+          <th class="w">Model Answer/Mark Scheme</th>
+          <th class="w-1/6">Edit</th>
 
         </tr>
       
@@ -314,7 +314,7 @@ include($path."/header_tailwind.php");
                 ?>
             </div>
             <div class= "hide hide_<?=$row['id'];?>">
-              <textarea name ="question"><?=htmlspecialchars($row['question'])?></textarea>
+              <textarea class="h-44" name ="question"><?=htmlspecialchars($row['question'])?></textarea>
               <br>
               <label for="qA_<?=$row['id'];?>">Question Asset Id:</label><br>
               <input id="qA_<?=$row['id'];?>" type="number" name="questionAsset" value="<?=$row['questionAssetId']?>">
@@ -342,8 +342,8 @@ include($path."/header_tailwind.php");
                     ?>
             </div>
             <div class="hide hide_<?=$row['id'];?>">
-              <label for = "model_answer<?=$row['id'];?>">Model Answer:</label>
-              <textarea id = "model_answer<?=$row['id'];?>" name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
+              <label class="hide" for = "model_answer<?=$row['id'];?>">Model Answer:</label>
+              <textarea class="h-44" id = "model_answer<?=$row['id'];?>" name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
               <br>
               <label for ="asset_id<?=$row['id'];?>">Asset ID:</label><br>
               <input id="asset_id<?=$row['id'];?>" type="number" name="answerAsset" value="<?=$row['answerAssetId']?>">
@@ -547,9 +547,9 @@ function addRow() {
 
   cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><br><select id ="topic_'+inst+'" name="topic_'+inst+'" class="w-full topicSelector"></select><br><label for="topic_order_'+inst+'">Topic Order:</label><br><input class=" " type="number" step="1" name="topic_order_'+inst+'" id="topic_order_'+inst+'" value = "'+questionCount+'" onchange="changeOrder(this)"></input>';
   
-  cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" class="w-full" required></textarea><br><label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input class= "w-1/2"type="number" step="1" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'"><br><label for="points_'+inst+'">Points:<br></label><input  type="number" id ="points_'+inst+'" name="points_'+inst+'"></input><br><label for="type_'+inst+'">Keywords/Type:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input><br><input class = "w-4" type= "checkbox" id="flashCardInput_'+inst+'" value="1" name = "flashCard_'+inst+'"><label for="flashCardInput_'+inst+'">flashCard</label>';
+  cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" class="w-full h-44" required></textarea><br><label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input class= "w-1/2"type="number" step="1" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'"><br><label for="points_'+inst+'">Points:<br></label><input  type="number" id ="points_'+inst+'" name="points_'+inst+'"></input><br><label for="type_'+inst+'">Keywords/Type:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input><br><input class = "w-4" type= "checkbox" id="flashCardInput_'+inst+'" value="1" name = "flashCard_'+inst+'"><label for="flashCardInput_'+inst+'">flashCard</label>';
   
-  cell2.innerHTML = '<p>→</p><label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea class="" type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="number" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'">';
+  cell2.innerHTML = '<label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea class="h-36" type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="number" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'"><p>→</p>';
 
   
 
