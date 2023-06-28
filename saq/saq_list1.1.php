@@ -236,48 +236,38 @@ if(isset($_POST['updateValue'])) {
     
     ?>
     
-    <table>
+  <table>
     <tr>
-    <th>ID</th>
-    <th>Topic<br>Topic Order</th>	
-
-    <th>Question</th>
-    <th>img src</th>
-    <th>Points</th>
-    <th>Type</th>
-    <th>Model Answer/Mark Scheme</th>
-
+      <th>ID</th>
+      <th>Topic</th>	
+      <th>Question</th>
+      <th>img src</th>
+      <th>Points</th>
+      <th>Type</th>
+      <th>Model Answer/Mark Scheme</th>
     </tr>
-
-    <?php
     
-  
-
+      <?php
 
   $topicGet = $_GET['topic'];
-  $sql = "SELECT * FROM saq_question_bank_3 WHERE Topic= ? ORDER BY case when topic_order = 0 then 1 else 0 end, topic_order ASC";
-
-  $sql = "SELECT * 
-          FROM saq_question_bank_3 
-          WHERE Topic= ? 
-          ORDER BY topic_order";
-
-
-  $stmt = $conn->prepare($sql);
-
-  $stmt->bind_param("s", $topicGet);
+  $flashCard = null;
+  $subjectId = null;
+  $userCreate = null;
+  $type = null;
 
   if(isset($_GET['type'])) {
-    $sql = "SELECT * FROM saq_question_bank_3 WHERE Topic= ? AND type LIKE ? ORDER BY case when topic_order is null then 1 else 0 end, topic_order ASC";
-    $sql = "SELECT * FROM saq_question_bank_3
-            WHERE Topic= ? 
-            AND type LIKE ? 
-            ORDER BY topic_order";
-    $stmt = $conn->prepare($sql);
-    $typeSql = "%".$_GET['type']."%";
-    $stmt->bind_param("ss", $topicGet, $typeSql);
-
+    $type = $_GET['type'];
   }
+  if(isset($_GET['flashCard'])) {
+    $flashCard = 1;
+  }
+
+  $questions = getSAQQuestions(null, $topicGet, $flashCard, $subjectId, $userCreate, $type);
+
+
+
+
+
 
   if(isset($_GET['flashCard'])) {
     $sql = "SELECT * 
@@ -291,131 +281,123 @@ if(isset($_POST['updateValue'])) {
 
   }
 
-  $stmt -> execute();
-  $result = $stmt->get_result();
 
   //$_SESSION['userid'] = 2;
 
-  if ($result) {
+
     
-    while ($row = $result->fetch_assoc()) {
-
-      //print_r($row);
-
-      ?>
-      
-      <tr id = 'row_<?=$row['id'];?>'>
+  foreach ($questions as $row) {
+    ?>
+    
+    <tr id = 'row_<?=$row['id'];?>'>
       <?php
       $userEdit = false;
       if ($_SESSION['userid'] == $row['userCreate']) {
         $userEdit = true;
       }
       //$userEdit = true;
-      ?>
-    <?php if($userEdit) {?>
-      <form method="post" action="">
-    <?php }?>
-      
-        <td class="col1">
-          <div>
-            <?=htmlspecialchars($row['id']);?>
-          </div>
-          
-        </td>
-        <td class="col2">
-          <div class="show_<?=$row['id'];?>">
-            <?=htmlspecialchars($row['topic']);?><br>
-            <?= (/*$row['topic_order']  != "0" ? */htmlspecialchars($row['topic_order']) /*: ""*/)?>
-            <?//=htmlspecialchars($row['topic_order'])?>
-          </div>
-            <input type="text" class="hide hide_<?=$row['id'];?>" name ="topic" value ="<?=htmlspecialchars($row['topic'])?>" style="width:100px;"></input>
-            <input type="text" class="hide hide_<?=$row['id'];?>" name ="topic_order" value ="<?=htmlspecialchars($row['topic_order'])?>" style="width:100px;"></input>
-        </td>
-        <td class="col3">
-          <div class="show_<?=$row['id'];?>">
-            <?=htmlspecialchars($row['question']);?>
-          </div>
-          <div class= "hide hide_<?=$row['id'];?>">
-            <textarea class="hide hide_<?=$row['id'];?>" name ="question"><?=htmlspecialchars($row['question'])?></textarea>
-            <br>
-            <label>Question Asset Id:</label>
-            <input type="number" name="questionAsset" value="<?=$row['questionAssetId']?>">
+      if($userEdit) {?>
+        <form method="post" action="">
+      <?php }?>
+    
+      <td class="col1">
+        <div>
+          <?=htmlspecialchars($row['id']);?>
         </div>
-        </td>
-        <td class="col4">
-          <div class="show_<?=$row['id'];?>">
-            <?=htmlspecialchars($row['img']);?>
-          </div>
-            <textarea class="hide hide_<?=$row['id'];?>" name ="img"><?=htmlspecialchars($row['img'])?></textarea>
-        </td>
-        <td class="col5">
-          <div class="show_<?=$row['id'];?>">
-            <?=htmlspecialchars($row['points']);?>
-          </div>
-            <textarea class="hide hide_<?=$row['id'];?>" name ="points"><?=htmlspecialchars($row['points'])?></textarea>
-        </td>
-        <td class="col6">
-          <div class="show_<?=$row['id'];?>">
-            <?php
-            if($row['flashCard']==1) {
-              echo "<p>flashCard<p>";
-            }
-            ?>
-            <?=htmlspecialchars($row['type']);?>
-          </div>
-          <div  class="hide hide_<?=$row['id'];?>">
-            <label>Type:</label>
-            <textarea name ="type"><?=htmlspecialchars($row['type'])?></textarea>
-            <br>
-            <input id="flashCard_Update_<?=$row['id'];?>" type="checkbox" name ="flashCard" value="1" <?=($row['flashCard']==1) ? "checked" : ""?>>
-            <label for="flashCard_Update_<?=$row['id'];?>">flashCard</label>
-          </div>
-        </td>
-        <td class="col7">
-          <div class="show_<?=$row['id'];?>" style="white-space: pre-line;"><?=htmlspecialchars($row['model_answer']);?>
-          </div>
-          <div class="hide hide_<?=$row['id'];?>">
-            <label>Model Answer:</label>
-            <textarea name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
-            <label>answer_img path:</label>
-            <input type ="text" name ="answer_img" value = "<?=htmlspecialchars($row['answer_img'])?>"></input>  
-            <label>answer_img_alt:</label>
-            <input type ="text" name ="answer_img_alt" value = "<?=htmlspecialchars($row['answer_img_alt'])?>"></input>
-            <br>
-            <label>Asset ID:</label>
-            <input type="number" name="answerAsset" value="<?=$row['answerAssetId']?>">
-          </div>
-            
-        </td>
 
-        <td>
-          <?php if($userEdit) {?>
-            <div>
-              <button type ="button" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>)"">Edit</button>
-            </div>
-            <div class ="hide hide_<?=$row['id'];?>">
-              <input type="hidden" name = "id" value = "<?=$row['id'];?>">
-
-              <input type="submit" name="updateValue" value = "Update"></input>
-            </div>
-          <?php }?>
+        
+      </td>
+      <td class="col2">
+        <div class="show_<?=$row['id'];?>">
+          <?=htmlspecialchars($row['topic']);?><br>
+          <?= (/*$row['topic_order']  != "0" ? */htmlspecialchars($row['topic_order']) /*: ""*/)?>
+          <?//=htmlspecialchars($row['topic_order'])?>
+        </div>
+          <input type="text" class="hide hide_<?=$row['id'];?>" name ="topic" value ="<?=htmlspecialchars($row['topic'])?>" style="width:100px;"></input>
+          <input type="text" class="hide hide_<?=$row['id'];?>" name ="topic_order" value ="<?=htmlspecialchars($row['topic_order'])?>" style="width:100px;"></input>
+      </td>
+      <td class="col3">
+        <div class="show_<?=$row['id'];?>">
+          <?=htmlspecialchars($row['question']);?>
+        </div>
+        <div class= "hide hide_<?=$row['id'];?>">
+          <textarea class="hide hide_<?=$row['id'];?>" name ="question"><?=htmlspecialchars($row['question'])?></textarea>
+          <br>
+          <label>Question Asset Id:</label>
+          <input type="number" name="questionAsset" value="<?=$row['questionAssetId']?>">
+      </div>
+      </td>
+      <td class="col4">
+        <div class="show_<?=$row['id'];?>">
+          <?=htmlspecialchars($row['img']);?>
+        </div>
+          <textarea class="hide hide_<?=$row['id'];?>" name ="img"><?=htmlspecialchars($row['img'])?></textarea>
+      </td>
+      <td class="col5">
+        <div class="show_<?=$row['id'];?>">
+          <?=htmlspecialchars($row['points']);?>
+        </div>
+          <textarea class="hide hide_<?=$row['id'];?>" name ="points"><?=htmlspecialchars($row['points'])?></textarea>
+      </td>
+      <td class="col6">
+        <div class="show_<?=$row['id'];?>">
+          <?php
+          if($row['flashCard']==1) {
+            echo "<p>flashCard<p>";
+          }
+          ?>
+          <?=htmlspecialchars($row['type']);?>
+        </div>
+        <div  class="hide hide_<?=$row['id'];?>">
+          <label>Type:</label>
+          <textarea name ="type"><?=htmlspecialchars($row['type'])?></textarea>
+          <br>
+          <input id="flashCard_Update_<?=$row['id'];?>" type="checkbox" name ="flashCard" value="1" <?=($row['flashCard']==1) ? "checked" : ""?>>
+          <label for="flashCard_Update_<?=$row['id'];?>">flashCard</label>
+        </div>
+      </td>
+      <td class="col7">
+        <div class="show_<?=$row['id'];?>" style="white-space: pre-line;"><?=htmlspecialchars($row['model_answer']);?>
+        </div>
+        <div class="hide hide_<?=$row['id'];?>">
+          <label>Model Answer:</label>
+          <textarea name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
+          <label>answer_img path:</label>
+          <input type ="text" name ="answer_img" value = "<?=htmlspecialchars($row['answer_img'])?>"></input>  
+          <label>answer_img_alt:</label>
+          <input type ="text" name ="answer_img_alt" value = "<?=htmlspecialchars($row['answer_img_alt'])?>"></input>
+          <br>
+          <label>Asset ID:</label>
+          <input type="number" name="answerAsset" value="<?=$row['answerAssetId']?>">
+        </div>
           
-        </td>
-        <tr>
+      </td>
+
+      <td>
+        <?php if($userEdit) {?>
+          <div>
+            <button type ="button" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>)"">Edit</button>
+          </div>
+          <div class ="hide hide_<?=$row['id'];?>">
+            <input type="hidden" name = "id" value = "<?=$row['id'];?>">
+
+            <input type="submit" name="updateValue" value = "Update"></input>
+          </div>
+        <?php }?>
+        
+      </td>
+      
     <?php if($userEdit) {?>
       </form>
     <?php }?>
+      <tr>
 
 
-      <?php
-    
-    
-      }
+  <?php
 
-          
     }
-
-  ?>
+    
+    ?>
 
   </table>
   </p>

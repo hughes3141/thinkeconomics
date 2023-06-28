@@ -1457,7 +1457,7 @@ function sql_conjoin($x) {
   return $y;
 }
 
-function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, $subjectId = null, $userCreate = null) {
+function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, $subjectId = null, $userCreate = null, $type = null) {
   /*
   Used to find information about questions in saq_question_bank_3 for a given number of parameters
 
@@ -1466,6 +1466,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   Used in:
   -quick_quiz.php
   -knowledge_organiser.php
+  -saq_list1.1.php
   */
   global $conn;
   $params="";
@@ -1534,6 +1535,14 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   if($flashCard) {
     $sql .= sql_conjoin($params);
     $sql .= " ( q.flashCard = 1 OR q.type LIKE '%flashCard%' )";
+  }
+
+  if($type) {
+    $sql .= sql_conjoin($params);
+    $sql .= " q.type LIKE ? ";
+    $params .= "s";
+    $type = "%".$type."%";
+    array_push($bindArray, $type);
   }
 
   $sql .= " ORDER BY topic, topic_order";
