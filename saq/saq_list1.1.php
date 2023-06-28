@@ -24,20 +24,7 @@ else {
   }
 }
 
-?>
-
-<!DOCTYPE html>
-
-<html>
-
-<head>
-
-<?php include "../header.php";
-
-
-?>
-
-<style>
+$style_input = "
 
   .hide {
       display: none;
@@ -57,20 +44,7 @@ else {
     width: 100%;
     
   }
-
-
-
-</style>
-
-</head>
-
-
-<body>
-
-<?php include "../navbar.php"; ?>
-
-
-<?php 
+";
 
 
 
@@ -163,17 +137,17 @@ if(isset($_GET['topic'])) {
 }
 
 $subjects = getOutputFromTable("subjects", null, "name");
-
-
 $levels =  getOutputFromTable("subjects_level", null, "name");
 
 
+include($path."/header_tailwind.php");
 ?>
 
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+<h1 class="font-mono text-2xl bg-pink-400 pl-1">Short Answer Questions List</h1>
+<div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
 
 
-
-<h1>Short Answer Question List</h1>
 
 <?php
 
@@ -198,19 +172,19 @@ $levels =  getOutputFromTable("subjects_level", null, "name");
 
 ?>
 
-  <h2>Question Entry</h2>
+  <h2 class="bg-pink-300 -ml-4 -mr-4 mb-5 text-xl font-mono pl-1 text-gray-800">Question Entry</h2>
   <p>Use the form below to enter questions.</p>
   <form method="post">
-    <table id="question_input_table">
+    <table id="question_input_table" class="input_table w-full table-fixed">
       <tr>
-        <th>Topic</th>
-        <th>Question</th>
-        <th>Model Answer/Mark Scheme</th>
-        <th>Remove</th>
+        <th class = "">Topic</th>
+        <th class = "w-1/3">Question</th>
+        <th class = "w-1/3">Model Answer/Mark Scheme</th>
+        <th class = "">Remove</th>
       </tr>
     </table>
 
-    <p>
+    <p class="mt-2">
       <label for ="subjectSelect">Subject Select:</label>
 
       <select id="subjectSelect" name = "subjectId">
@@ -255,16 +229,16 @@ $levels =  getOutputFromTable("subjects_level", null, "name");
       </select>
     </p>
     <p>
-      <button type="button" onclick="addRow()">Add Row</button>
+      <button type="button" class= "w-full rounded bg-sky-300 hover:bg-sky-200 border border-black mb-2 mt-2" onclick="addRow()">Add Row</button>
     </p>
     <p>
-      <input type="submit" name="submit" value="Create Question"></input>
+      <input class="w-full bg-pink-300 rounded border border-black mb-1" type="submit" name="submit" value="Create Question"></input>
     </p>
     <input type="hidden" name="questionsCount" id="questionsCount">
   </form>
   
   
-  <h2>Database</h2>
+  <h2 class="bg-pink-300 -ml-4 -mr-4 my-5 text-xl font-mono pl-1 text-gray-800">Database</h2>
   <p>Search for questions by topic:</p>
   <form method="get">
     <p>
@@ -277,12 +251,13 @@ $levels =  getOutputFromTable("subjects_level", null, "name");
   if(isset($_GET['topic'])) {
     ?>
     
-    <table>
+    <table class="input_table">
         <tr>
           <th>Topic</th>	
           <th>Question</th>
           <th>Model Answer/Mark Scheme</th>
           <th>Edit</th>
+
         </tr>
       
         <?php
@@ -301,7 +276,7 @@ $levels =  getOutputFromTable("subjects_level", null, "name");
             <form method="post" action="">
           <?php }?>
         
-          <td class="col2">
+          <td class="align-top">
             <div class="show_<?=$row['id'];?>">
               <?=htmlspecialchars($row['topic']);?><br>
               <?= (/*$row['topic_order']  != "0" ? */htmlspecialchars($row['topic_order']) /*: ""*/)?>
@@ -315,7 +290,7 @@ $levels =  getOutputFromTable("subjects_level", null, "name");
               <i>id: <?=$row['id'];?></i>
             </p>
           </td>
-          <td class="col3">
+          <td class="align-top">
             <div class="show_<?=$row['id'];?>">
               <?=htmlspecialchars($row['question']);?>
               <?php
@@ -344,20 +319,19 @@ $levels =  getOutputFromTable("subjects_level", null, "name");
               <label for="qA_<?=$row['id'];?>">Question Asset Id:</label><br>
               <input id="qA_<?=$row['id'];?>" type="number" name="questionAsset" value="<?=$row['questionAssetId']?>">
               <br>
-              <label for = "points_<?=$row['id'];?>" >Points:</label>
+              <label for = "points_<?=$row['id'];?>" >Points:</label><br>
               <input id="points_<?=$row['id'];?>" name ="points" type="number" value="<?=$row['points']?>"</input>
               <br>
-              <label for = "keyword<?=$row['id'];?>" >Keywords:</label>
+              <label for = "keyword<?=$row['id'];?>" >Keywords:</label><br>
               <textarea id="keyword<?=$row['id'];?>" name ="type" type="text" ><?=$row['type']?></textarea>
             </div>
-            <input id="flashCard_Update_<?=$row['id'];?>" type="checkbox" name ="flashCard" value="1" <?=($row['flashCard']==1) ? "checked" : ""?> disabled>
+            <input class="w-4" id="flashCard_Update_<?=$row['id'];?>" type="checkbox" name ="flashCard" value="1" <?=($row['flashCard']==1) ? "checked" : ""?> disabled>
               <label for="flashCard_Update_<?=$row['id'];?>">flashCard</label>
           </td>
 
-          <td class="col7">
+          <td class="align-top">
             <div class="show_<?=$row['id'];?>" >
-              <div style="white-space: pre-line;">
-                <?=htmlspecialchars($row['model_answer']);?>
+              <div style="white-space: pre-line;"><?=htmlspecialchars($row['model_answer']);?>
               </div>
               <?php
                     if(!is_null($row['a_path'])) {
@@ -371,21 +345,21 @@ $levels =  getOutputFromTable("subjects_level", null, "name");
               <label for = "model_answer<?=$row['id'];?>">Model Answer:</label>
               <textarea id = "model_answer<?=$row['id'];?>" name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
               <br>
-              <label for ="asset_id<?=$row['id'];?>">Asset ID:</label>
+              <label for ="asset_id<?=$row['id'];?>">Asset ID:</label><br>
               <input id="asset_id<?=$row['id'];?>" type="number" name="answerAsset" value="<?=$row['answerAssetId']?>">
             </div>
               
           </td>
 
-          <td>
+          <td class="align-top">
             <?php if($userEdit) {?>
               <div>
-                <button type ="button" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>); flashcardButtonToggle(this)">Edit</button>
+                <button type ="button" class= "w-full bg-pink-300 rounded border border-black mb-1" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>); flashcardButtonToggle(this)">Edit</button>
               </div>
               <div class ="hide hide_<?=$row['id'];?>">
                 <input type="hidden" name = "id" value = "<?=$row['id'];?>">
 
-                <input type="submit" name="updateValue" value = "Update"></input>
+                <input class="w-full bg-sky-200 rounded border border-black mb-1 toggleClass_35" type="submit" name="updateValue" value = "Update"></input>
               </div>
             <?php }?>
             
@@ -409,9 +383,9 @@ $levels =  getOutputFromTable("subjects_level", null, "name");
 
   }
 
-
-include "../footer.php";
 ?>
+</div>
+</div>
 
 <script>
 
@@ -563,14 +537,19 @@ function addRow() {
   var cell2 = row.insertCell(2);
   var cell3 = row.insertCell(3);
 
+  cell0.classList.add("align-top");
+  cell1.classList.add("align-top");
+  cell2.classList.add("align-top");
+  //cell3.classList.add("align-top");
+
   
   var inst = tableLength -1;
 
-  cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><select id ="topic_'+inst+'" name="topic_'+inst+'" class="topicSelector"></select><br><label for="topic_order_'+inst+'">Topic Order:</label><input style="width:50px" type="number" step="1" name="topic_order_'+inst+'" id="topic_order_'+inst+'" value = "'+questionCount+'" onchange="changeOrder(this)"></input>';
+  cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><br><select id ="topic_'+inst+'" name="topic_'+inst+'" class="w-full topicSelector"></select><br><label for="topic_order_'+inst+'">Topic Order:</label><br><input class=" " type="number" step="1" name="topic_order_'+inst+'" id="topic_order_'+inst+'" value = "'+questionCount+'" onchange="changeOrder(this)"></input>';
   
-  cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" ></textarea><br><label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input type="number" step="1" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'"><br><label for="points_'+inst+'">Points:</label><input type="number" id ="points_'+inst+'" name="points_'+inst+'"></input><br><label for="type_'+inst+'">Keywords/Type:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input><br><input type= "checkbox" id="flashCardInput_'+inst+'" value="1" name = "flashCard_'+inst+'"><label for="flashCardInput_'+inst+'">flashCard</label>';
+  cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" class="w-full" required></textarea><br><label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input class= "w-1/2"type="number" step="1" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'"><br><label for="points_'+inst+'">Points:<br></label><input  type="number" id ="points_'+inst+'" name="points_'+inst+'"></input><br><label for="type_'+inst+'">Keywords/Type:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input><br><input class = "w-4" type= "checkbox" id="flashCardInput_'+inst+'" value="1" name = "flashCard_'+inst+'"><label for="flashCardInput_'+inst+'">flashCard</label>';
   
-  cell2.innerHTML = '<p>→</p><label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="number" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'">';
+  cell2.innerHTML = '<p>→</p><label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea class="" type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="number" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'">';
 
   
 
@@ -604,9 +583,4 @@ function hideRow(button) {
 
 </script>
 
-</body>
-
-
-
-
-</html>
+<?php   include($path."/footer_tailwind.php");?>
