@@ -98,13 +98,6 @@ function getQuestionData($questionId) {
 //print_r($_GET);
 //echo date("Y-m-d H:i:s");
 
-$sql = "INSERT INTO saq_question_bank_3 
-        (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, time_added, questionAssetId, answerAssetId, flashCard, topic_order) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-$stmt = $conn->prepare($sql);
-
-$stmt->bind_param("ssisssissssiiii", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order);
 
 
 
@@ -112,6 +105,7 @@ if (isset($_POST['submit'])) {
   
   $count = $_POST['questionsCount'];
   for($x=0; $x<$count; $x++) {
+
     $topic = $_POST['topic_'.$x];
     $question = $_POST['question_'.$x];
     $points = $_POST['points_'.$x];
@@ -120,6 +114,7 @@ if (isset($_POST['submit'])) {
     $model_answer = $_POST['model_answer_'.$x];
     $userCreate = $_SESSION['userid'];
     $subjectId = $_POST['subjectId'];
+    $levelId = 1;
     $answer_img = $_POST['image_ans_'.$x];
     $answer_img_alt = $_POST['image_ans_alt_'.$x];
     $topic_order = $_POST['topic_order_'.$x];
@@ -138,8 +133,9 @@ if (isset($_POST['submit'])) {
       $flashCard = $_POST['flashCard_'.$x];
     }
 
-  
-    $stmt->execute();
+    insertSAQQuestion($topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
+
+
     
     //Update topic_order for new Entry:
     changeOrderNumberWithinTopic("saq_question_bank_3", null, $topic, $topic_order);
@@ -182,6 +178,7 @@ if(isset($_POST['updateValue'])) {
   $stmt->bind_param("ssssssssiiii", $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $questionAsset, $answerAsset, $flashCard, $_POST['id']);
 
   $questionData = getQuestionData($_POST['id']);
+  
   $questionDataUser = $questionData['userCreate'];
 
   if($questionDataUser == $_SESSION['userid']) {
@@ -205,7 +202,9 @@ if(isset($_POST['updateValue'])) {
 
 <h1>Short Answer Question List</h1>
 
+
 <?php
+//print_r($questionData);
 if($_SERVER['REQUEST_METHOD']==='POST') {
   //print_r($_POST);
 }
@@ -258,31 +257,30 @@ if($result->num_rows>0) {
 
     <p>
       <label for ="subjectSelect">Subject Select:</label>
+      <?php
+        $subjects = getOutputFromTable("subjects", null, "name");
+        //print_r($subjects);
+      ?>
       <select id="subjectSelect" name = "subjectId">
         <?php
-        
-          $sql = "SELECT * FROM subjects";
-          $stmt=$conn->prepare($sql);
-          //$stmt->bind_param();
-          $stmt->execute();
-          $result = $stmt->get_result();
+          foreach ($subjects as $subject) {
 
-          if($result->num_rows>0) {
-            while($row = $result->fetch_assoc()) {
+          
               ?>
-              <option value="<?=$row['id'];?>" <?php
+              <option value="<?=$subject['id'];?>" <?php
                 if(isset($_POST['subjectId'])) {
-                  if($row['id'] == $_POST['subjectId']) {
+                  if($subject['id'] == $_POST['subjectId']) {
                     echo "selected";
                   }
+                  
+                }
+                else if ($subject['id'] == 1) {
+                  echo "selected";
                 }              
-              ?> ><?=htmlspecialchars($row['level']);?> <?=htmlspecialchars($row['name']);?></option>
-              <?php
-            }
+              ?> > <?=htmlspecialchars($subject['name']);?></option>
+          <?php
           }
-        
-        
-        ?>
+          ?>
       </select>
     </p>
 

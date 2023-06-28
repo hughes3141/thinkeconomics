@@ -806,9 +806,13 @@ function getGroupInfoById($groupId) {
 function getQuestionById($questionId) {
   //Returns detail of SAQ_question_bank_3 from input id
 
+  
+
   /*
   Used in: 
   -saq/saq2.0.php
+
+  Depricated as now there is getSAQQsuestions()
   */
 
 
@@ -836,6 +840,9 @@ function getQuestionInfo($questionId = null) {
   Used to find details of SAQ questions by given parameters
   Used in:
   -
+
+
+  Depricated as now there is getSAQQsuestions()
   */
 
   global $conn;
@@ -1351,6 +1358,9 @@ function getColumnListFromTable($tableName, $column, $topic = null, $subjectId =
 function getOutputFromTable($table, $id = null, $orderByColumn = null) {
   /*
   This function will output information from $table
+  e.g. to get:
+    -All levels from subjects_level table
+    -All subjects from subjects table
 
   Used in -
   flashcards.php
@@ -1554,6 +1564,28 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
     }
   }
   return $results;
+
+}
+
+function insertSAQQuestion($topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId) {
+  /**
+   * This function inserts a new question into saq_question_bank_3
+   * 
+   * 
+   * Used in:
+   * -saq_list1.1.php
+   */
+  global $conn;
+
+  $sql = "INSERT INTO saq_question_bank_3 
+        (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, time_added, questionAssetId, answerAssetId, flashCard, topic_order, levelId) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+  $stmt = $conn->prepare($sql);
+
+  $stmt->bind_param("ssisssissssiiiii", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
+
+  $stmt->execute();
 
 }
 
