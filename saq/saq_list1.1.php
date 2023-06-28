@@ -133,7 +133,7 @@ if(isset($_POST['updateValue'])) {
   }
 
   //Update Record:
-  updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $_POST['questionAsset'], $_POST['answerAsset'], $flashCard);
+  updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], null, $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $_POST['questionAsset'], $_POST['answerAsset'], $flashCard);
 
   //Change order value:
   changeOrderNumberWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
@@ -238,13 +238,10 @@ if(isset($_POST['updateValue'])) {
     
   <table>
     <tr>
-      <th>ID</th>
       <th>Topic</th>	
       <th>Question</th>
-      <th>img src</th>
-      <th>Points</th>
-      <th>Type</th>
       <th>Model Answer/Mark Scheme</th>
+      <th>Edit</th>
     </tr>
     
       <?php
@@ -267,24 +264,6 @@ if(isset($_POST['updateValue'])) {
 
 
 
-
-
-  if(isset($_GET['flashCard'])) {
-    $sql = "SELECT * 
-          FROM saq_question_bank_3 
-          WHERE Topic= ? 
-          AND flashCard = 1
-          ORDER BY topic_order";
-
-      $stmt = $conn->prepare($sql);
-      $stmt->bind_param("s", $topicGet);
-
-  }
-
-
-  //$_SESSION['userid'] = 2;
-
-
     
   foreach ($questions as $row) {
     ?>
@@ -300,64 +279,71 @@ if(isset($_POST['updateValue'])) {
         <form method="post" action="">
       <?php }?>
     
-      <td class="col1">
-        <div>
-          <?=htmlspecialchars($row['id']);?>
-        </div>
-
-        
-      </td>
       <td class="col2">
         <div class="show_<?=$row['id'];?>">
           <?=htmlspecialchars($row['topic']);?><br>
           <?= (/*$row['topic_order']  != "0" ? */htmlspecialchars($row['topic_order']) /*: ""*/)?>
           <?//=htmlspecialchars($row['topic_order'])?>
         </div>
-          <input type="text" class="hide hide_<?=$row['id'];?>" name ="topic" value ="<?=htmlspecialchars($row['topic'])?>" style="width:100px;"></input>
-          <input type="text" class="hide hide_<?=$row['id'];?>" name ="topic_order" value ="<?=htmlspecialchars($row['topic_order'])?>" style="width:100px;"></input>
+        <div class="hide hide_<?=$row['id'];?>">
+          <input type="text" name ="topic" value ="<?=htmlspecialchars($row['topic'])?>" style="width:100px;"></input>
+          <input type="text" name ="topic_order" value ="<?=htmlspecialchars($row['topic_order'])?>" style="width:100px;"></input>
+        </div>
+        <p>
+          <i>id: <?=$row['id'];?></i>
+        </p>
       </td>
       <td class="col3">
         <div class="show_<?=$row['id'];?>">
           <?=htmlspecialchars($row['question']);?>
+          <?php
+                if(!is_null($row['q_path'])) {
+                  ?>
+                  <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($row['q_path'])?>" alt = "<?=htmlspecialchars($row['q_alt'])?>">
+                  <?php
+                }
+                ?>
+          <p>
+            Points: <?=$row['points']?>
+          </p>
+          <?php
+          if($row['type'] != "") {
+            ?>
+          <p>
+            Keywords: <?=htmlspecialchars($row['type'])?>
+          </p>
+          <?php
+          }
+            ?>
         </div>
         <div class= "hide hide_<?=$row['id'];?>">
-          <textarea class="hide hide_<?=$row['id'];?>" name ="question"><?=htmlspecialchars($row['question'])?></textarea>
+          <textarea name ="question"><?=htmlspecialchars($row['question'])?></textarea>
           <br>
-          <label>Question Asset Id:</label>
-          <input type="number" name="questionAsset" value="<?=$row['questionAssetId']?>">
-      </div>
-      </td>
-      <td class="col4">
-        <div class="show_<?=$row['id'];?>">
-          <?=htmlspecialchars($row['img']);?>
-        </div>
-          <textarea class="hide hide_<?=$row['id'];?>" name ="img"><?=htmlspecialchars($row['img'])?></textarea>
-      </td>
-      <td class="col5">
-        <div class="show_<?=$row['id'];?>">
-          <?=htmlspecialchars($row['points']);?>
-        </div>
-          <textarea class="hide hide_<?=$row['id'];?>" name ="points"><?=htmlspecialchars($row['points'])?></textarea>
-      </td>
-      <td class="col6">
-        <div class="show_<?=$row['id'];?>">
-          <?php
-          if($row['flashCard']==1) {
-            echo "<p>flashCard<p>";
-          }
-          ?>
-          <?=htmlspecialchars($row['type']);?>
-        </div>
-        <div  class="hide hide_<?=$row['id'];?>">
-          <label>Type:</label>
-          <textarea name ="type"><?=htmlspecialchars($row['type'])?></textarea>
+          <label for="qA_<?=$row['id'];?>">Question Asset Id:</label><br>
+          <input id="qA_<?=$row['id'];?>" type="number" name="questionAsset" value="<?=$row['questionAssetId']?>">
           <br>
-          <input id="flashCard_Update_<?=$row['id'];?>" type="checkbox" name ="flashCard" value="1" <?=($row['flashCard']==1) ? "checked" : ""?>>
+          <label for = "points_<?=$row['id'];?>" >Points:</label>
+          <input id="points_<?=$row['id'];?>" name ="points" type="number" value="<?=$row['points']?>"</input>
+          <br>
+          <label for = "keyword<?=$row['id'];?>" >Keywords:</label>
+          <textarea id="keyword<?=$row['id'];?>" name ="type" type="text" ><?=$row['type']?></textarea>
+        </div>
+        <input id="flashCard_Update_<?=$row['id'];?>" type="checkbox" name ="flashCard" value="1" <?=($row['flashCard']==1) ? "checked" : ""?> disabled>
           <label for="flashCard_Update_<?=$row['id'];?>">flashCard</label>
-        </div>
       </td>
+
       <td class="col7">
-        <div class="show_<?=$row['id'];?>" style="white-space: pre-line;"><?=htmlspecialchars($row['model_answer']);?>
+        <div class="show_<?=$row['id'];?>" style="white-space: pre-line;">
+
+            <?=htmlspecialchars($row['model_answer']);?>
+
+          <?php
+                if(!is_null($row['a_path'])) {
+                  ?>
+                  <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($row['a_path'])?>" alt = "<?=htmlspecialchars($row['a_alt'])?>">
+                  <?php
+                }
+                ?>
         </div>
         <div class="hide hide_<?=$row['id'];?>">
           <label>Model Answer:</label>
@@ -376,7 +362,7 @@ if(isset($_POST['updateValue'])) {
       <td>
         <?php if($userEdit) {?>
           <div>
-            <button type ="button" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>)"">Edit</button>
+            <button type ="button" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>); flashcardButtonToggle(this)">Edit</button>
           </div>
           <div class ="hide hide_<?=$row['id'];?>">
             <input type="hidden" name = "id" value = "<?=$row['id'];?>">
@@ -455,6 +441,17 @@ function changeVisibility(button, id) {
   }
 
 
+}
+
+function flashcardButtonToggle(input) {
+  row = input.parentNode.parentNode.parentNode;
+  checkbox = row.querySelectorAll('input[type=checkbox]')[0];
+  if (checkbox.disabled == true) {
+    checkbox.disabled = false;
+  } else {
+    checkbox.disabled = true;
+  }
+  console.log(checkbox);
 }
 
 function topicList() {
