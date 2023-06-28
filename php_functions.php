@@ -1596,6 +1596,8 @@ function insertSAQQuestion($topic, $question, $points, $type, $image, $model_ans
 
   $stmt->execute();
 
+  echo "hello world";
+
 }
 
 function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $type, $img, $model_answer, $answer_img, $answer_img_alt, $questionAsset, $answerAsset, $flashCard=0) {
