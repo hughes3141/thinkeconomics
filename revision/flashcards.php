@@ -152,6 +152,9 @@ Notes on command GET variables:
   $questions = array();
 
   if(!empty($topics)) {
+    if($topics == "all") {
+      $topics = null;
+    }
     $questions = getFlashcardsQuestions($topics, $userId, $subjectId);
   }
   //$topics = $topics = explode(",", $topics);
