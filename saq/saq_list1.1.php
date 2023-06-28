@@ -145,7 +145,7 @@ include($path."/header_tailwind.php");
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
 <h1 class="font-mono text-2xl bg-pink-400 pl-1">Short Answer Questions List</h1>
-<div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
+<div class=" container mx-auto px-4 pb-4 mt-2 bg-white text-black mb-5">
 
 
 
@@ -172,7 +172,7 @@ include($path."/header_tailwind.php");
 
 ?>
 
-  <h2 class="bg-pink-300 -ml-4 -mr-4 mb-5 text-xl font-mono pl-1 text-gray-800">Question Entry</h2>
+  <h2 class="bg-pink-300 -ml-4 -mr-4 mb-5 text-xl font-mono pl-4 text-gray-800">Question Entry</h2>
   <p>Use the form below to enter questions.</p>
   <form method="post">
     <table id="question_input_table" class="input_table w-full table-fixed">
@@ -185,7 +185,7 @@ include($path."/header_tailwind.php");
     </table>
 
     <p class="mt-2">
-      <label for ="subjectSelect">Subject Select:</label>
+      <label for ="subjectSelect">Subject:</label>
 
       <select id="subjectSelect" name = "subjectId">
         <?php
@@ -238,7 +238,7 @@ include($path."/header_tailwind.php");
   </form>
   
   
-  <h2 class="bg-pink-300 -ml-4 -mr-4 my-5 text-xl font-mono pl-1 text-gray-800">Database</h2>
+  <h2 class="bg-pink-300 -ml-4 -mr-4 my-5 text-xl font-mono pl-4 text-gray-800">Database</h2>
   <p>Search for questions by topic:</p>
   <form method="get">
     <p>

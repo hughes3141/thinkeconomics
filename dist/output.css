@@ -723,6 +723,10 @@ textarea, input, select {
   margin-left: 1.25rem;
 }
 
+.-ml-8 {
+  margin-left: -2rem;
+}
+
 .block {
   display: block;
 }
@@ -1332,6 +1336,10 @@ textarea, input, select {
 
 .pt-0 {
   padding-top: 0px;
+}
+
+.pb-4 {
+  padding-bottom: 1rem;
 }
 
 .text-left {
