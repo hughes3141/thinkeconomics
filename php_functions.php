@@ -1589,6 +1589,49 @@ function insertSAQQuestion($topic, $question, $points, $type, $image, $model_ans
 
 }
 
+function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $type, $img, $model_answer, $answer_img, $answer_img_alt, $questionAsset, $answerAsset, $flashCard=0) {
+  /**
+   * This function updates entries in saq_question_bank_3
+   * 
+   * Used in :
+   * -saq_list1.1.php
+   */
+
+   global $conn;
+
+   $sql = " UPDATE saq_question_bank_3 
+            SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?,  questionAssetId =?, answerAssetId = ?, flashCard = ? 
+            WHERE id = ?";
+
+  //Set values to null if left blank:
+  if($questionAsset == "") {
+    $questionAsset = null;
+  }
+  if($answerAsset == "") {
+    $answerAsset = null;
+  }
+
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("ssssssssiiii", $question, $topic, $points, $type, $img, $model_answer, $answer_img, $answer_img_alt, $questionAsset, $answerAsset, $flashCard, $questionId);
+
+  $questionUserCreator = getSAQQuestions($questionId)[0]['userCreate'];
+  
+
+  if($questionUserCreator == $userId) {
+    $stmt->execute();
+    echo "Record $questionId updated successfully.";
+  } else {
+    echo "Error: User is not question owner.";
+  }
+  
+
+  
+  
+
+
+
+}
+
 function lastFlashcardResponse($questionId, $userId, $timeStart) {
   /*
   Function designed to get a record from flashcard_responses with a gven $questionId, $userId, and $timeStart. Used specifically to check that information given from $_POST is not alreayd contained as a record with these data values (i.e. a browser refresh)

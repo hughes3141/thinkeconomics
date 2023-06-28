@@ -18,6 +18,7 @@ if (!isset($_SESSION['userid'])) {
 }
 
 else {
+  $userId = $_SESSION['userid'];
   $userInfo = getUserInfo($_SESSION['userid']);
   $userType = $userInfo['usertype'];
   if (!($userType == "teacher" || $userType =="admin")) {
@@ -102,6 +103,8 @@ function getQuestionData($questionId) {
 
 
 if (isset($_POST['submit'])) {
+
+  //Create new question in saq_question_bank_3:
   
   $count = $_POST['questionsCount'];
   for($x=0; $x<$count; $x++) {
@@ -152,48 +155,19 @@ if (isset($_POST['submit'])) {
 
 if(isset($_POST['updateValue'])) {
 
-  
-
-  $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?,  questionAssetId =?, answerAssetId = ?, flashCard = ? WHERE id = ?";
-  
-  $stmt = $conn->prepare($sql);
-  //print_r($_POST);
-
-  $questionAsset = $_POST['questionAsset'];
-  if($_POST['questionAsset'] == "") {
-    $questionAsset = null;
-  }
-  $answerAsset = $_POST['answerAsset'];
-  if($_POST['answerAsset'] == "") {
-    $answerAsset = null;
-  }
-
   $flashCard = 0;
   if(isset($_POST['flashCard'])) {
     $flashCard = $_POST['flashCard'];
   }
 
-  
-  
-  $stmt->bind_param("ssssssssiiii", $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $questionAsset, $answerAsset, $flashCard, $_POST['id']);
+  //Update Record:
+  updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $_POST['questionAsset'], $_POST['answerAsset'], $flashCard);
 
-  $questionData = getQuestionData($_POST['id']);
-  
-  $questionDataUser = $questionData['userCreate'];
+  //Change order value:
+  changeOrderNumberWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
 
-  if($questionDataUser == $_SESSION['userid']) {
-    $stmt->execute();
-
-    //Change order value:
-    changeOrderNumberWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
-
-    //header("Refresh:0");
-    echo "Record ".$_POST['id']." updated successfully.";
-  }
-  else {
-    echo "Value not updated: userid does not match userCreate";
-  }
 }
+
 
 ?>
 
@@ -384,7 +358,14 @@ if($result->num_rows>0) {
       ?>
       
       <tr id = 'row_<?=$row['id'];?>'>
-    <?php if($_SESSION['userid'] == $row['userCreate']) {?>
+      <?php
+      $userEdit = false;
+      if ($_SESSION['userid'] == $row['userCreate']) {
+        $userEdit = true;
+      }
+      //$userEdit = true;
+      ?>
+    <?php if($userEdit) {?>
       <form method="post" action="">
     <?php }?>
       
@@ -461,7 +442,7 @@ if($result->num_rows>0) {
         </td>
 
         <td>
-          <?php if($_SESSION['userid'] == $row['userCreate']) {?>
+          <?php if($userEdit) {?>
             <div>
               <button type ="button" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>)"">Edit</button>
             </div>
@@ -474,7 +455,7 @@ if($result->num_rows>0) {
           
         </td>
         <tr>
-    <?php if($_SESSION['userid'] == $row['userCreate']) {?>
+    <?php if($userEdit) {?>
       </form>
     <?php }?>
 
