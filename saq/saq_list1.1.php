@@ -13,11 +13,10 @@ if (!isset($_SESSION['userid'])) {
   
   header("location: /login.php");
 
-  
-  
 }
 
 else {
+  $userId = $_SESSION['userid'];
   $userInfo = getUserInfo($_SESSION['userid']);
   $userType = $userInfo['usertype'];
   if (!($userType == "teacher" || $userType =="admin")) {
@@ -25,38 +24,7 @@ else {
   }
 }
 
-
-
-function getQuestionData($questionId) {
-  global $conn;
-  $stmt = $conn->prepare("SELECT * FROM saq_question_bank_3 WHERE id = ?");
-  $stmt->bind_param("i", $questionId);
-  $stmt->execute();
-  $result=$stmt->get_result();
-  if($result->num_rows>0) {
-    $row = $result->fetch_assoc();
-    return $row;
-  }
-  
-
-}
-
-
-
-?>
-
-<!DOCTYPE html>
-
-<html>
-
-<head>
-
-<?php include "../header.php";
-
-
-?>
-
-<style>
+$style_input = "
 
   .hide {
       display: none;
@@ -76,52 +44,28 @@ function getQuestionData($questionId) {
     width: 100%;
     
   }
-
-
-
-</style>
-
-</head>
-
-
-<body>
-
-<?php include "../navbar.php"; ?>
-
-
-<?php 
-
-
-
-//print_r($_SESSION);
-//print_r($_POST);
-//print_r($_GET);
-//echo date("Y-m-d H:i:s");
-
-$sql = "INSERT INTO saq_question_bank_3 
-        (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, time_added, questionAssetId, answerAssetId, flashCard, topic_order) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-$stmt = $conn->prepare($sql);
-
-$stmt->bind_param("ssisssissssiiii", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order);
+";
 
 
 
 if (isset($_POST['submit'])) {
+
+  //Create new question in saq_question_bank_3:
   
   $count = $_POST['questionsCount'];
   for($x=0; $x<$count; $x++) {
+
     $topic = $_POST['topic_'.$x];
     $question = $_POST['question_'.$x];
     $points = $_POST['points_'.$x];
     $type = $_POST['type_'.$x];
-    $image = $_POST['image_'.$x];
+    //$image = $_POST['image_'.$x];
     $model_answer = $_POST['model_answer_'.$x];
     $userCreate = $_SESSION['userid'];
     $subjectId = $_POST['subjectId'];
-    $answer_img = $_POST['image_ans_'.$x];
-    $answer_img_alt = $_POST['image_ans_alt_'.$x];
+    $levelId = 1;
+    //$answer_img = $_POST['image_ans_'.$x];
+    //$answer_img_alt = $_POST['image_ans_alt_'.$x];
     $topic_order = $_POST['topic_order_'.$x];
     $timeAdded = date("Y-m-d H:i:s");
     $questionAsset = $_POST['questionAsset_'.$x];
@@ -138,373 +82,310 @@ if (isset($_POST['submit'])) {
       $flashCard = $_POST['flashCard_'.$x];
     }
 
-  
-    $stmt->execute();
-    
-    //Update topic_order for new Entry:
-    changeOrderNumberWithinTopic("saq_question_bank_3", null, $topic, $topic_order);
+    if($_POST['active_entry_'.$x] == "1") {
 
-    //var_dump($_POST);
+      insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
+      
+      //Update topic_order for new Entry:
+      changeOrderNumberWithinTopic("saq_question_bank_3", null, $topic, $topic_order);
 
+      echo "Record $question inserted<br>";
+    }
 
-    
-    echo "New records created successfully";
+    //echo "New records created successfully";
 
   }
+
+  
  
 }
 
 if(isset($_POST['updateValue'])) {
-
-  
-
-  $sql = "UPDATE saq_question_bank_3 SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?,  questionAssetId =?, answerAssetId = ?, flashCard = ? WHERE id = ?";
-  
-  $stmt = $conn->prepare($sql);
-  //print_r($_POST);
-
-  $questionAsset = $_POST['questionAsset'];
-  if($_POST['questionAsset'] == "") {
-    $questionAsset = null;
-  }
-  $answerAsset = $_POST['answerAsset'];
-  if($_POST['answerAsset'] == "") {
-    $answerAsset = null;
-  }
 
   $flashCard = 0;
   if(isset($_POST['flashCard'])) {
     $flashCard = $_POST['flashCard'];
   }
 
-  
-  
-  $stmt->bind_param("ssssssssiiii", $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], $_POST['img'], $_POST['model_answer'], $_POST['answer_img'], $_POST['answer_img_alt'], $questionAsset, $answerAsset, $flashCard, $_POST['id']);
+  //Update Record:
+  updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], "", $_POST['model_answer'], "", "", $_POST['questionAsset'], $_POST['answerAsset'], $flashCard);
 
-  $questionData = getQuestionData($_POST['id']);
-  $questionDataUser = $questionData['userCreate'];
+  //Change order value:
+  changeOrderNumberWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
 
-  if($questionDataUser == $_SESSION['userid']) {
-    $stmt->execute();
-
-    //Change order value:
-    changeOrderNumberWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
-
-    //header("Refresh:0");
-    echo "Record ".$_POST['id']." updated successfully.";
-  }
-  else {
-    echo "Value not updated: userid does not match userCreate";
-  }
 }
 
+
+$topicGet = $_GET['topic'];
+$flashCard = null;
+$subjectId = null;
+$userCreate = null;
+$type = null;
+
+if(isset($_GET['type'])) {
+  $type = $_GET['type'];
+}
+if(isset($_GET['flashCard'])) {
+  $flashCard = 1;
+}
+
+$questions = getSAQQuestions(null, $topicGet, $flashCard, $subjectId, $userCreate, $type);
+
+$questionTopicCount = 0;
+if(isset($_GET['topic'])) {
+  $questionTopicCount = SAQQuestionTopicCount($_GET['topic']);
+}
+
+$subjects = getOutputFromTable("subjects", null, "name");
+$levels =  getOutputFromTable("subjects_level", null, "name");
+
+
+include($path."/header_tailwind.php");
 ?>
 
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+<h1 class="font-mono text-2xl bg-pink-400 pl-1">Short Answer Questions List</h1>
+<div class=" container mx-auto px-4 pb-4 mt-2 bg-white text-black mb-5">
 
 
-
-<h1>Short Answer Question List</h1>
 
 <?php
-if($_SERVER['REQUEST_METHOD']==='POST') {
-  //print_r($_POST);
-}
 
-if(isset($_GET['test'])) {
-  /*
-  $resultsbyTopic = sortWithinTopic("saq_question_bank_3", 77, $_GET['topic'], null);
-  echo "<pre>";
-  print_r($resultsbyTopic);
-  echo "</pre>";
-  */
-  
-}
-$questionTopicCount = "";
-$sql = "SELECT COUNT(*) count
-        FROM saq_question_bank_3 
-        WHERE Topic= ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $_GET['topic']);
-$stmt->execute();
-$result = $stmt->get_result();
-if($result->num_rows>0) {
-  $row = $result->fetch_assoc();
-  $questionTopicCount = $row['count'];
+  if(isset($_GET['test'])) {
+    /*
+    $resultsbyTopic = sortWithinTopic("saq_question_bank_3", 77, $_GET['topic'], null);
+    echo "<pre>";
+    print_r($resultsbyTopic);
+    echo "</pre>";
+    */
+
+    if($_SERVER['REQUEST_METHOD']==='POST') {
+      var_dump($_POST);
+    }
+
+    echo "<br>Subjects: ";
+    print_r($subjects);
+    echo "<br>Levels: ";
+    print_r($levels);
+    
   }
 
-//echo $questionTopicCount;
 ?>
 
-
-
-
-
-  
-  <h2>Question Entry</h2>
+  <h2 class="bg-pink-300 -ml-4 -mr-4 mb-5 text-xl font-mono pl-4 text-gray-800">Question Entry</h2>
   <p>Use the form below to enter questions.</p>
   <form method="post">
-    <table id="question_input_table">
-    <tr>
-      <th>Topic</th>
-
-      <th>img src</th>
-      <th>Points</th>
-      <th>Type</th>
-      <th>Model Answer/Mark Scheme</th>
-    
-    </tr>
-
+    <table id="question_input_table" class="input_table w-full table-fixed">
+      <tr>
+        <th class = "">Topic</th>
+        <th class = "w-1/3">Question</th>
+        <th class = "w-1/3">Model Answer/Mark Scheme</th>
+        <th class = "">Remove</th>
+      </tr>
     </table>
 
-    <p>
-      <label for ="subjectSelect">Subject Select:</label>
+    <p class="mt-2">
+      <label for ="subjectSelect">Subject:</label>
+
       <select id="subjectSelect" name = "subjectId">
         <?php
-        
-          $sql = "SELECT * FROM subjects";
-          $stmt=$conn->prepare($sql);
-          //$stmt->bind_param();
-          $stmt->execute();
-          $result = $stmt->get_result();
-
-          if($result->num_rows>0) {
-            while($row = $result->fetch_assoc()) {
+          foreach ($subjects as $subject) {
               ?>
-              <option value="<?=$row['id'];?>" <?php
+              <option value="<?=$subject['id'];?>" <?php
                 if(isset($_POST['subjectId'])) {
-                  if($row['id'] == $_POST['subjectId']) {
+                  if($subject['id'] == $_POST['subjectId']) {
                     echo "selected";
                   }
+                  
+                }
+                //Until userpreferences are updated, use  Economics as default:
+                else if ($subject['id'] == 1) {
+                  echo "selected";
                 }              
-              ?> ><?=htmlspecialchars($row['level']);?> <?=htmlspecialchars($row['name']);?></option>
-              <?php
-            }
+              ?> > <?=htmlspecialchars($subject['name']);?></option>
+          <?php
           }
-        
-        
-        ?>
+          ?>
+      </select>
+      <select id="levelSelect" name = "levelId">
+        <?php
+          foreach ($levels as $subject) {
+              ?>
+              <option value="<?=$subject['id'];?>" <?php
+                if(isset($_POST['levelId'])) {
+                  if($subject['id'] == $_POST['levelId']) {
+                    echo "selected";
+                  }
+                  
+                }
+                //Until userpreferences are updated, use  AL as default:
+                else if ($subject['id'] == 1) {
+                  echo "selected";
+                }              
+              ?> > <?=htmlspecialchars($subject['name']);?></option>
+          <?php
+          }
+          ?>
       </select>
     </p>
-
     <p>
-    <button type="button" onclick="addRow()">Add Row</button>
+      <button type="button" class= "w-full rounded bg-sky-300 hover:bg-sky-200 border border-black mb-2 mt-2" onclick="addRow()">Add Row</button>
     </p>
     <p>
-      <input type="submit" name="submit" value="Create Question"></input>
+      <input class="w-full bg-pink-300 rounded border border-black mb-1" type="submit" name="submit" value="Create Question"></input>
     </p>
-    
     <input type="hidden" name="questionsCount" id="questionsCount">
-    
   </form>
   
   
-  <h2>Database</h2>
+  <h2 class="bg-pink-300 -ml-4 -mr-4 my-5 text-xl font-mono pl-4 text-gray-800">Database</h2>
   <p>Search for questions by topic:</p>
-  
   <form method="get">
-  <p>
-    <select id="select" name="topic" >
-    </select>
-    
-    <input type="submit" value="Choose Topic">
-  </p>
+    <p>
+      <select id="select" name="topic" ></select>
+      <input type="submit" value="Choose Topic">
+    </p>
   </form>
-  
-  
   <p>
   <?php 
   if(isset($_GET['topic'])) {
-    
     ?>
     
-    <table>
-    <tr>
-    <th>ID</th>
-    <th>Topic<br>Topic Order</th>	
+    <table class="input_table">
+        <tr>
+          <th>Topic</th>	
+          <th>Question</th>
+          <th>Model Answer/Mark Scheme</th>
+          <th>Edit</th>
 
-    <th>Question</th>
-    <th>img src</th>
-    <th>Points</th>
-    <th>Type</th>
-    <th>Model Answer/Mark Scheme</th>
+        </tr>
+      
+        <?php
+        
+      foreach ($questions as $row) {
+          ?>
+      
+        <tr id = 'row_<?=$row['id'];?>'>
+          <?php
+          $userEdit = false;
+          if ($_SESSION['userid'] == $row['userCreate']) {
+            $userEdit = true;
+          }
+          //$userEdit = true;
+          if($userEdit) {?>
+            <form method="post" action="">
+          <?php }?>
+        
+          <td class="align-top">
+            <div class="show_<?=$row['id'];?>">
+              <?=htmlspecialchars($row['topic']);?><br>
+              <?= (/*$row['topic_order']  != "0" ? */htmlspecialchars($row['topic_order']) /*: ""*/)?>
+              <?//=htmlspecialchars($row['topic_order'])?>
+            </div>
+            <div class="hide hide_<?=$row['id'];?>">
+              <input type="text" name ="topic" value ="<?=htmlspecialchars($row['topic'])?>" style="width:100px;"></input>
+              <input type="text" name ="topic_order" value ="<?=htmlspecialchars($row['topic_order'])?>" style="width:100px;"></input>
+            </div>
+            <p>
+              <i>id: <?=$row['id'];?></i>
+            </p>
+          </td>
+          <td class="align-top">
+            <div class="show_<?=$row['id'];?>">
+              <?=htmlspecialchars($row['question']);?>
+              <?php
+                    if(!is_null($row['q_path'])) {
+                      ?>
+                      <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($row['q_path'])?>" alt = "<?=htmlspecialchars($row['q_alt'])?>">
+                      <?php
+                    }
+                    ?>
+              <p>
+                Points: <?=$row['points']?>
+              </p>
+              <?php
+              if($row['type'] != "") {
+                ?>
+              <p>
+                Keywords: <?=htmlspecialchars($row['type'])?>
+              </p>
+              <?php
+              }
+                ?>
+            </div>
+            <div class= "hide hide_<?=$row['id'];?>">
+              <textarea name ="question"><?=htmlspecialchars($row['question'])?></textarea>
+              <br>
+              <label for="qA_<?=$row['id'];?>">Question Asset Id:</label><br>
+              <input id="qA_<?=$row['id'];?>" type="number" name="questionAsset" value="<?=$row['questionAssetId']?>">
+              <br>
+              <label for = "points_<?=$row['id'];?>" >Points:</label><br>
+              <input id="points_<?=$row['id'];?>" name ="points" type="number" value="<?=$row['points']?>"</input>
+              <br>
+              <label for = "keyword<?=$row['id'];?>" >Keywords:</label><br>
+              <textarea id="keyword<?=$row['id'];?>" name ="type" type="text" ><?=$row['type']?></textarea>
+            </div>
+            <input class="w-4" id="flashCard_Update_<?=$row['id'];?>" type="checkbox" name ="flashCard" value="1" <?=($row['flashCard']==1) ? "checked" : ""?> disabled>
+              <label for="flashCard_Update_<?=$row['id'];?>">flashCard</label>
+          </td>
 
-    </tr>
+          <td class="align-top">
+            <div class="show_<?=$row['id'];?>" >
+              <div style="white-space: pre-line;"><?=htmlspecialchars($row['model_answer']);?>
+              </div>
+              <?php
+                    if(!is_null($row['a_path'])) {
+                      ?>
+                      <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($row['a_path'])?>" alt = "<?=htmlspecialchars($row['a_alt'])?>">
+                      <?php
+                    }
+                    ?>
+            </div>
+            <div class="hide hide_<?=$row['id'];?>">
+              <label for = "model_answer<?=$row['id'];?>">Model Answer:</label>
+              <textarea id = "model_answer<?=$row['id'];?>" name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
+              <br>
+              <label for ="asset_id<?=$row['id'];?>">Asset ID:</label><br>
+              <input id="asset_id<?=$row['id'];?>" type="number" name="answerAsset" value="<?=$row['answerAssetId']?>">
+            </div>
+              
+          </td>
+
+          <td class="align-top">
+            <?php if($userEdit) {?>
+              <div>
+                <button type ="button" class= "w-full bg-pink-300 rounded border border-black mb-1" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>); flashcardButtonToggle(this)">Edit</button>
+              </div>
+              <div class ="hide hide_<?=$row['id'];?>">
+                <input type="hidden" name = "id" value = "<?=$row['id'];?>">
+
+                <input class="w-full bg-sky-200 rounded border border-black mb-1 toggleClass_35" type="submit" name="updateValue" value = "Update"></input>
+              </div>
+            <?php }?>
+            
+          </td>
+          
+          <?php if($userEdit) {?>
+            </form>
+          <?php }?>
+        <tr>
+
+
+        <?php
+      
+      }
+      
+      ?>
+
+    </table>
 
     <?php
-    
-  
-
-
-  $topicGet = $_GET['topic'];
-  $sql = "SELECT * FROM saq_question_bank_3 WHERE Topic= ? ORDER BY case when topic_order = 0 then 1 else 0 end, topic_order ASC";
-
-  $sql = "SELECT * 
-          FROM saq_question_bank_3 
-          WHERE Topic= ? 
-          ORDER BY topic_order";
-
-
-  $stmt = $conn->prepare($sql);
-
-  $stmt->bind_param("s", $topicGet);
-
-  if(isset($_GET['type'])) {
-    $sql = "SELECT * FROM saq_question_bank_3 WHERE Topic= ? AND type LIKE ? ORDER BY case when topic_order is null then 1 else 0 end, topic_order ASC";
-    $sql = "SELECT * FROM saq_question_bank_3
-            WHERE Topic= ? 
-            AND type LIKE ? 
-            ORDER BY topic_order";
-    $stmt = $conn->prepare($sql);
-    $typeSql = "%".$_GET['type']."%";
-    $stmt->bind_param("ss", $topicGet, $typeSql);
 
   }
 
-  if(isset($_GET['flashCard'])) {
-    $sql = "SELECT * 
-          FROM saq_question_bank_3 
-          WHERE Topic= ? 
-          AND flashCard = 1
-          ORDER BY topic_order";
-
-      $stmt = $conn->prepare($sql);
-      $stmt->bind_param("s", $topicGet);
-
-  }
-
-  $stmt -> execute();
-  $result = $stmt->get_result();
-
-  //$_SESSION['userid'] = 2;
-
-  if ($result) {
-    
-    while ($row = $result->fetch_assoc()) {
-
-      //print_r($row);
-
-      ?>
-      
-      <tr id = 'row_<?=$row['id'];?>'>
-    <?php if($_SESSION['userid'] == $row['userCreate']) {?>
-      <form method="post" action="">
-    <?php }?>
-      
-        <td class="col1">
-          <div>
-            <?=htmlspecialchars($row['id']);?>
-          </div>
-          
-        </td>
-        <td class="col2">
-          <div class="show_<?=$row['id'];?>">
-            <?=htmlspecialchars($row['topic']);?><br>
-            <?= (/*$row['topic_order']  != "0" ? */htmlspecialchars($row['topic_order']) /*: ""*/)?>
-            <?//=htmlspecialchars($row['topic_order'])?>
-          </div>
-            <input type="text" class="hide hide_<?=$row['id'];?>" name ="topic" value ="<?=htmlspecialchars($row['topic'])?>" style="width:100px;"></input>
-            <input type="text" class="hide hide_<?=$row['id'];?>" name ="topic_order" value ="<?=htmlspecialchars($row['topic_order'])?>" style="width:100px;"></input>
-        </td>
-        <td class="col3">
-          <div class="show_<?=$row['id'];?>">
-            <?=htmlspecialchars($row['question']);?>
-          </div>
-          <div class= "hide hide_<?=$row['id'];?>">
-            <textarea class="hide hide_<?=$row['id'];?>" name ="question"><?=htmlspecialchars($row['question'])?></textarea>
-            <br>
-            <label>Question Asset Id:</label>
-            <input type="number" name="questionAsset" value="<?=$row['questionAssetId']?>">
-        </div>
-        </td>
-        <td class="col4">
-          <div class="show_<?=$row['id'];?>">
-            <?=htmlspecialchars($row['img']);?>
-          </div>
-            <textarea class="hide hide_<?=$row['id'];?>" name ="img"><?=htmlspecialchars($row['img'])?></textarea>
-        </td>
-        <td class="col5">
-          <div class="show_<?=$row['id'];?>">
-            <?=htmlspecialchars($row['points']);?>
-          </div>
-            <textarea class="hide hide_<?=$row['id'];?>" name ="points"><?=htmlspecialchars($row['points'])?></textarea>
-        </td>
-        <td class="col6">
-          <div class="show_<?=$row['id'];?>">
-            <?php
-            if($row['flashCard']==1) {
-              echo "<p>flashCard<p>";
-            }
-            ?>
-            <?=htmlspecialchars($row['type']);?>
-          </div>
-          <div  class="hide hide_<?=$row['id'];?>">
-            <label>Type:</label>
-            <textarea name ="type"><?=htmlspecialchars($row['type'])?></textarea>
-            <br>
-            <input id="flashCard_Update_<?=$row['id'];?>" type="checkbox" name ="flashCard" value="1" <?=($row['flashCard']==1) ? "checked" : ""?>>
-            <label for="flashCard_Update_<?=$row['id'];?>">flashCard</label>
-          </div>
-        </td>
-        <td class="col7">
-          <div class="show_<?=$row['id'];?>" style="white-space: pre-line;"><?=htmlspecialchars($row['model_answer']);?>
-          </div>
-          <div class="hide hide_<?=$row['id'];?>">
-            <label>Model Answer:</label>
-            <textarea name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
-            <label>answer_img path:</label>
-            <input type ="text" name ="answer_img" value = "<?=htmlspecialchars($row['answer_img'])?>"></input>  
-            <label>answer_img_alt:</label>
-            <input type ="text" name ="answer_img_alt" value = "<?=htmlspecialchars($row['answer_img_alt'])?>"></input>
-            <br>
-            <label>Asset ID:</label>
-            <input type="number" name="answerAsset" value="<?=$row['answerAssetId']?>">
-          </div>
-            
-        </td>
-
-        <td>
-          <?php if($_SESSION['userid'] == $row['userCreate']) {?>
-            <div>
-              <button type ="button" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>)"">Edit</button>
-            </div>
-            <div class ="hide hide_<?=$row['id'];?>">
-              <input type="hidden" name = "id" value = "<?=$row['id'];?>">
-
-              <input type="submit" name="updateValue" value = "Update"></input>
-            </div>
-          <?php }?>
-          
-        </td>
-        <tr>
-    <?php if($_SESSION['userid'] == $row['userCreate']) {?>
-      </form>
-    <?php }?>
-
-
-      <?php
-    
-    
-      }
-
-          
-    }
-
-  ?>
-
-  </table>
-  </p>
-
-
-
-  <?php
-
-  }
-
-
-
-
-include "../footer.php";
 ?>
+</div>
+</div>
 
 <script>
 
@@ -547,6 +428,17 @@ function changeVisibility(button, id) {
   }
 
 
+}
+
+function flashcardButtonToggle(input) {
+  row = input.parentNode.parentNode.parentNode;
+  checkbox = row.querySelectorAll('input[type=checkbox]')[0];
+  if (checkbox.disabled == true) {
+    checkbox.disabled = false;
+  } else {
+    checkbox.disabled = true;
+  }
+  console.log(checkbox);
 }
 
 function topicList() {
@@ -644,18 +536,26 @@ function addRow() {
   var cell1 = row.insertCell(1);
   var cell2 = row.insertCell(2);
   var cell3 = row.insertCell(3);
-  var cell4 = row.insertCell(4);
-  //var cell5 = row.insertCell(5);
+
+  cell0.classList.add("align-top");
+  cell1.classList.add("align-top");
+  cell2.classList.add("align-top");
+  //cell3.classList.add("align-top");
+
   
   var inst = tableLength -1;
 
-  cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><select id ="topic_'+inst+'" name="topic_'+inst+'" class="topicSelector"></select><br><label for="topic_order_'+inst+'">Topic Order:</label><input style="width:50px" type="number" step="1" name="topic_order_'+inst+'" id="topic_order_'+inst+'" value = "'+questionCount+'" onchange="changeOrder(this)"></input>';
+  cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><br><select id ="topic_'+inst+'" name="topic_'+inst+'" class="w-full topicSelector"></select><br><label for="topic_order_'+inst+'">Topic Order:</label><br><input class=" " type="number" step="1" name="topic_order_'+inst+'" id="topic_order_'+inst+'" value = "'+questionCount+'" onchange="changeOrder(this)"></input>';
   
-  cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" required></textarea><br><label for="image_'+inst+'">Question img src:</label><br><input type="text" id ="image_'+inst+'" name="image_'+inst+'"></input><br><label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input type="text" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'">';
-  //cell2.innerHTML = '';
-  cell2.innerHTML = '<label for="points_'+inst+'">Points:</label><input type="number" id ="points_'+inst+'" name="points_'+inst+'"></input>';
-  cell3.innerHTML = '<label for="type_'+inst+'">Type:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input><br><input type= "checkbox" id="flashCardInput_'+inst+'" value="1" name = "flashCard_'+inst+'"><label for="flashCardInput_'+inst+'">flashCard</label>';
-  cell4.innerHTML = '<p>→</p><label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><label for="image_ans_'+inst+'">Answer img src:</label><br><input type="text" id ="image_ans_'+inst+'" name="image_ans_'+inst+'"></input><br><label for="image_ans_alt'+inst+'">Answer img_alt:</label><br><input type="text" id ="image_ans_alt'+inst+'" name="image_ans_alt_'+inst+'"></input><br><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="text" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'">';
+  cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" class="w-full" required></textarea><br><label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input class= "w-1/2"type="number" step="1" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'"><br><label for="points_'+inst+'">Points:<br></label><input  type="number" id ="points_'+inst+'" name="points_'+inst+'"></input><br><label for="type_'+inst+'">Keywords/Type:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input><br><input class = "w-4" type= "checkbox" id="flashCardInput_'+inst+'" value="1" name = "flashCard_'+inst+'"><label for="flashCardInput_'+inst+'">flashCard</label>';
+  
+  cell2.innerHTML = '<p>→</p><label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea class="" type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="number" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'">';
+
+  
+
+  cell3.innerHTML = "<button class='w-full bg-pink-300 rounded border border-black mb-1' type ='button' onclick='hideRow(this);'>Remove</button>"
+  cell3.innerHTML += "<input name='active_entry_"+inst+"' class='w-full' type='hidden' value='1'>";
+
   
   topicListAmend(inst);
   sourceAmend(inst)
@@ -672,11 +572,15 @@ function changeOrder(x) {
   questionCount = parseInt((x.value))+1;
 }
 
+function hideRow(button) {
+  var row = button.parentElement.parentElement;
+  var input = button.parentElement.childNodes[1];
+  console.log(row);
+  console.log(input);
+  row.style.display = "none";
+  input.value='0';
+}
+
 </script>
 
-</body>
-
-
-
-
-</html>
+<?php   include($path."/footer_tailwind.php");?>

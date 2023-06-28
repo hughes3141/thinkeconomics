@@ -18,6 +18,7 @@ module.exports = {
     "../revision/**/*.{html,js,php}",
 
     "../mcq/**/*.{html,js,php}",
+    "../saq/**/*.{html,js,php}",
 
 
     "../node_modules/flowbite/**/*.js"
@@ -27,6 +28,6 @@ module.exports = {
     extend: {},
   },
   plugins: [
-    require('flowbite/plugin')
+    //require('flowbite/plugin')
 ],
 }

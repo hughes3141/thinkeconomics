@@ -1,3 +1,34 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+/*
+  h1 {
+    @apply text-2xl;
+  }
+  h2 {
+   @apply text-xl;
+  }
+*/
+  textarea, input, select {
+    @apply rounded border border-black;
+  }
+  
+
+  
+
+}
+
+@layer component {
+  .input_table textarea, .input_table input, .input_table button {
+    @apply w-full;
+    
+  }
+
+  .input_table input[type=number] {
+    @apply w-1/2;
+  }
+
+
+}

@@ -806,9 +806,13 @@ function getGroupInfoById($groupId) {
 function getQuestionById($questionId) {
   //Returns detail of SAQ_question_bank_3 from input id
 
+  
+
   /*
   Used in: 
   -saq/saq2.0.php
+
+  Depricated as now there is getSAQQsuestions()
   */
 
 
@@ -836,6 +840,9 @@ function getQuestionInfo($questionId = null) {
   Used to find details of SAQ questions by given parameters
   Used in:
   -
+
+
+  Depricated as now there is getSAQQsuestions()
   */
 
   global $conn;
@@ -1351,6 +1358,9 @@ function getColumnListFromTable($tableName, $column, $topic = null, $subjectId =
 function getOutputFromTable($table, $id = null, $orderByColumn = null) {
   /*
   This function will output information from $table
+  e.g. to get:
+    -All levels from subjects_level table
+    -All subjects from subjects table
 
   Used in -
   flashcards.php
@@ -1447,7 +1457,7 @@ function sql_conjoin($x) {
   return $y;
 }
 
-function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, $subjectId = null, $userCreate = null) {
+function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, $subjectId = null, $userCreate = null, $type = null) {
   /*
   Used to find information about questions in saq_question_bank_3 for a given number of parameters
 
@@ -1456,6 +1466,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   Used in:
   -quick_quiz.php
   -knowledge_organiser.php
+  -saq_list1.1.php
   */
   global $conn;
   $params="";
@@ -1526,6 +1537,14 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
     $sql .= " ( q.flashCard = 1 OR q.type LIKE '%flashCard%' )";
   }
 
+  if($type) {
+    $sql .= sql_conjoin($params);
+    $sql .= " q.type LIKE ? ";
+    $params .= "s";
+    $type = "%".$type."%";
+    array_push($bindArray, $type);
+  }
+
   $sql .= " ORDER BY topic, topic_order";
 
 
@@ -1554,6 +1573,88 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
     }
   }
   return $results;
+
+}
+
+function insertSAQQuestion($topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId) {
+  /**
+   * This function inserts a new question into saq_question_bank_3
+   * 
+   * 
+   * Used in:
+   * -saq_list1.1.php
+   */
+  global $conn;
+
+  $sql = "INSERT INTO saq_question_bank_3 
+        (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, time_added, questionAssetId, answerAssetId, flashCard, topic_order, levelId) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+  $stmt = $conn->prepare($sql);
+
+  $stmt->bind_param("ssisssissssiiiii", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
+
+  $stmt->execute();
+
+  echo "hello world";
+
+}
+
+function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $type, $img, $model_answer, $answer_img, $answer_img_alt, $questionAsset, $answerAsset, $flashCard=0) {
+  /**
+   * This function updates entries in saq_question_bank_3
+   * 
+   * Used in :
+   * -saq_list1.1.php
+   */
+
+   global $conn;
+
+   $sql = " UPDATE saq_question_bank_3 
+            SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?,  questionAssetId =?, answerAssetId = ?, flashCard = ? 
+            WHERE id = ?";
+
+  //Set values to null if left blank:
+  if($questionAsset == "") {
+    $questionAsset = null;
+  }
+  if($answerAsset == "") {
+    $answerAsset = null;
+  }
+
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("ssssssssiiii", $question, $topic, $points, $type, $img, $model_answer, $answer_img, $answer_img_alt, $questionAsset, $answerAsset, $flashCard, $questionId);
+
+  $questionUserCreator = getSAQQuestions($questionId)[0]['userCreate'];
+  
+
+  if($questionUserCreator == $userId) {
+    $stmt->execute();
+    echo "Record $questionId updated successfully.";
+  } else {
+    echo "Error: User is not question owner.";
+  }
+  
+
+}
+
+function SAQQuestionTopicCount($topic) {
+  /**
+   * Returns the count of questions in saq_question_bank_3 that have $topic as topic
+   */
+
+  global $conn;
+  $sql = "SELECT COUNT(*) count
+          FROM saq_question_bank_3 
+          WHERE Topic= ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("s", $topic);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    $row = $result->fetch_assoc();
+    return $row['count'];
+    }
 
 }
 
