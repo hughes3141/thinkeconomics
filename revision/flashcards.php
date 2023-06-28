@@ -132,17 +132,29 @@ Notes on command GET variables:
 
   //print_r($subjects);
 
+ 
+
   $topicsArray = array();
+
+  if(!is_null($subjectIdSet)) {
+    $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectIdSet, null, null, 1);
+
+  }
+
+
+  /*
   if(!is_null($subjectLevel)) {
     $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", $topicSet, $subjectIdSet, $userCreateSet, $levelIdSet, 1);
   }
-  if(!is_null($topics)) {
-    $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", $topics, null, null, null, 1);
-  }
+
+  */
 
   $questions = array();
 
   if(!empty($topics)) {
+    if($topics == "all") {
+      $topics = null;
+    }
     $questions = getFlashcardsQuestions($topics, $userId, $subjectId);
   }
   //$topics = $topics = explode(",", $topics);
@@ -198,6 +210,8 @@ include($path."/header_tailwind.php");
               ?>
 
           </select>
+
+          <input type="submit" value="Choose Subject" class="rounded border border-sky-300 w-full">
           
 
         </div>
@@ -365,6 +379,8 @@ include($path."/header_tailwind.php");
 
 <script >
 
+      topicAggregate();
+
       function showAnswers() {
         var answerDiv = document.getElementById("answerDiv");
         answerDiv.classList.remove("hidden");
@@ -415,18 +431,12 @@ include($path."/header_tailwind.php");
 
         topicSelect.value = topicString;
 
-
-          
-
-
-
-
-      
-      console.log(topicString);
+      //console.log(topicString);
       //console.log(topicSelect);
-
       topicSelect.value = topicString;
       }
+
+
 
       
       
