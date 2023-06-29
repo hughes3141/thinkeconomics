@@ -2091,7 +2091,7 @@ function listSubjects() {
   $responses = array();
   $sql = "SELECT *
           FROM subjects
-          ORDER BY level, name";
+          ORDER BY name";
   $stmt=$conn->prepare($sql);
   $stmt->execute();
   $result = $stmt->get_result();
