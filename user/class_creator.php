@@ -151,7 +151,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
                       $results = listSubjects();
                       foreach($results as $result) {
                         ?>
-                        <option value="<?=$result['id']?>" <?= $result['id']==$subjectId ? "selected" : ""?>><?=$result['level']?> <?=$result['name']?></option>
+                        <option value="<?=$result['id']?>" <?= $result['id']==$subjectId ? "selected" : ""?>><?=$result['name']?></option>
                         <?php
                         }
                         ?>
@@ -164,7 +164,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
               <div class="w-full mb-1.5">
                 <label>Option Group:<label>
                   <div class="mt-1.5">
-                    <input type="text" name="optionGroup" class="rounded border border-black w-full text-sm" placeholder="e.g. A, B, C, etc" value = "<?=$optionGroup?>">
+                    <input type="text" name="optionGroup" class="rounded border border-black w-full text-sm h-9" placeholder="e.g. A, B, C, etc" value = "<?=$optionGroup?>">
                   </div>
                   <div class=" mt-1 pl-2 text-red-600 bg-lime-300 rounded">
                   <?= $optionGroup_err?>

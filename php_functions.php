@@ -1754,7 +1754,7 @@ function updateTopicOrder($id, $newPlace, $table) {
 }
 
 
-function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace) {
+function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace, $subjectId, $levelId) {
 
   /*
   This function is used to take all questions from table $table with $topic, give entry with $id a $newPlace in the order, then update all other values with the same topic category.
@@ -1765,12 +1765,14 @@ function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace) {
   -saq_list1.1.php
   */
   global $conn;
-  $bindArray = array($topic);
-  $params = "s";
+  $bindArray = array($topic, $subjectId, $levelId );
+  $params = "sii";
 
   $sql = "SELECT id, topic_order, question
           FROM ".$table;
-  $sql .= " WHERE topic = ? ";
+  $sql .= " WHERE topic = ?
+            AND subjectId = ?
+            AND levelId = ? ";
   if(!is_null($id)) {
     $sql .= " AND id <> ? ";
     array_push($bindArray, $id);
@@ -2089,7 +2091,7 @@ function listSubjects() {
   $responses = array();
   $sql = "SELECT *
           FROM subjects
-          ORDER BY level, name";
+          ORDER BY name";
   $stmt=$conn->prepare($sql);
   $stmt->execute();
   $result = $stmt->get_result();

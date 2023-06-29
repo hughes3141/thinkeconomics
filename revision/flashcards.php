@@ -201,7 +201,7 @@ include($path."/header_tailwind.php");
       <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
         <div>
           <label for="subjectLevel">Subject:</label>
-          <select id="subjectLevel" name="subjectLevel" onchange="this.form.submit()">
+          <select class="mb-3" id="subjectLevel" name="subjectLevel" onchange="this.form.submit()">
             <option value="_"></option>
             <?php
               foreach ($subjects as $subject) {
@@ -214,7 +214,7 @@ include($path."/header_tailwind.php");
 
           </select>
 
-          <input type="submit" value="Choose Subject" class="rounded border border-sky-300 w-full">
+          <input type="submit" value="Choose Subject" class="rounded border border-sky-300 bg-sky-300 w-full">
           
 
         </div>

@@ -127,7 +127,7 @@ if (isset($_POST['submit'])) {
       insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
       
       //Update topic_order for new Entry:
-      //changeOrderNumberWithinTopic("saq_question_bank_3", null, $topic, $topic_order);
+      changeOrderNumberWithinTopic("saq_question_bank_3", null, $topic, $topic_order, $subjectId, $levelId);
 
       //echo "Record $question inserted<br>";
     }
@@ -157,7 +157,7 @@ if(isset($_POST['updateValue'])) {
   $updateMessage = updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], "", $_POST['model_answer'], "", "", $_POST['questionAsset'], $_POST['answerAsset'], $flashCard);
 
   //Change order value:
-  changeOrderNumberWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
+  changeOrderNumberWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order'], $_POST['subjectId'], $_POST['levelId']);
 
 }
 
@@ -303,7 +303,7 @@ include($path."/header_tailwind.php");
           if(count($topics)>0) {
             ?>
             <label for="topic">Topic:</label>
-            <select class="inputProperties" id ="topic" name="topic" class="topicSelector">
+            <select class="inputProperties" id ="topic" name="topic" class="topicSelector" onchange="changeTopic(this);">
               <?php
                 $topicPostSelect = null;
                 if(isset($_POST['topic'])) {
@@ -547,6 +547,8 @@ include($path."/header_tailwind.php");
               </div>
               <div class ="hide hide_<?=$row['id'];?>">
                 <input type="hidden" name = "id" value = "<?=$row['id'];?>">
+                <input type="hidden" name = "subjectId" value = "<?=$row['subjectId'];?>">
+                <input type="hidden" name = "levelId" value = "<?=$row['levelId'];?>">
 
                 <input class="w-full bg-sky-200 rounded border border-black mb-1 toggleClass_35" type="submit" name="updateValue" value = "Update"></input>
               </div>
@@ -738,6 +740,16 @@ function changeSubject(input) {
   var topicChangeForm = document.getElementById("database_get_form");
   var changeTo = input.value;
   var topicChangeSelect = document.getElementById("subjectSelectGet");
+  //console.log(topicChangeSelect);
+  //console.log(changeTo);
+  topicChangeSelect.value=changeTo;
+  topicChangeForm.submit();
+}
+
+function changeTopic(input) {
+  var topicChangeForm = document.getElementById("database_get_form");
+  var changeTo = input.value;
+  var topicChangeSelect = document.getElementById("topicGet");
   //console.log(topicChangeSelect);
   //console.log(changeTo);
   topicChangeSelect.value=changeTo;
