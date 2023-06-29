@@ -127,7 +127,7 @@ if (isset($_POST['submit'])) {
       insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
       
       //Update topic_order for new Entry:
-      changeOrderNumberWithinTopic("saq_question_bank_3", null, $topic, $topic_order);
+      //changeOrderNumberWithinTopic("saq_question_bank_3", null, $topic, $topic_order);
 
       //echo "Record $question inserted<br>";
     }
@@ -402,6 +402,18 @@ include($path."/header_tailwind.php");
       ?>
 
       <input class="bg-pink-200 px-2" type="submit" value="Choose Topic">
+    </div>
+    <div class="hidden">
+      <input type="checkbox" value="1" name="noFlashCard" <?php
+        if(is_null($showFlashCards)) {
+          echo "checked";
+        }
+      ?>>
+      <input type="checkbox" value="1" name="noAssetInput" <?php
+        if(is_null($showAssetId)) {
+          echo "checked";
+        }
+      ?>>
     </div>
   </form>
 

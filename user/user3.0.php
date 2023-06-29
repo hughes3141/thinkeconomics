@@ -127,6 +127,11 @@ include "../header_tailwind.php";
                 <a class ="block" href="/user/user_manager.php">Manage Users</a>
               </p>
 
+            <h2 class="font-mono text-lg bg-pink-200 pl-1">Question Management</h2> 
+            <p class="ml-2 hover:bg-sky-100">
+                <a class ="block" href="/saq/saq_list1.1.php?noFlashCard&noAssetInput">Upload/Update Questions</a>
+              </p>
+
       <?php 
         }
         ?>
