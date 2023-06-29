@@ -53,21 +53,32 @@ if (isset($_POST['submit'])) {
   //Create new question in saq_question_bank_3:
   
   $count = $_POST['questionsCount'];
+
+  $topic = null;
+  if($_POST['topic_new'] != "") {
+    $topic = $_POST['topic'];
+  } else {
+    $topic = trim($_POST['topic_new']);
+  }
+
+  $subjectId = $_POST['subjectId'];
+  $levelId = $_POST['levelId'];
+
+  $userCreate = $_SESSION['userid'];
+  $timeAdded = date("Y-m-d H:i:s");
+
   for($x=0; $x<$count; $x++) {
 
-    $topic = $_POST['topic_'.$x];
+    //$topic = $_POST['topic_'.$x];
     $question = $_POST['question_'.$x];
     $points = $_POST['points_'.$x];
     $type = $_POST['type_'.$x];
     //$image = $_POST['image_'.$x];
     $model_answer = $_POST['model_answer_'.$x];
-    $userCreate = $_SESSION['userid'];
-    $subjectId = $_POST['subjectId'];
-    $levelId = 1;
     //$answer_img = $_POST['image_ans_'.$x];
     //$answer_img_alt = $_POST['image_ans_alt_'.$x];
     $topic_order = $_POST['topic_order_'.$x];
-    $timeAdded = date("Y-m-d H:i:s");
+
     $questionAsset = $_POST['questionAsset_'.$x];
 
     if($_POST['questionAsset_'.$x] == "") {
@@ -84,10 +95,10 @@ if (isset($_POST['submit'])) {
 
     if($_POST['active_entry_'.$x] == "1") {
 
-      insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
+      //insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
       
       //Update topic_order for new Entry:
-      changeOrderNumberWithinTopic("saq_question_bank_3", null, $topic, $topic_order);
+      //changeOrderNumberWithinTopic("saq_question_bank_3", null, $topic, $topic_order);
 
       echo "Record $question inserted<br>";
     }
@@ -116,11 +127,24 @@ if(isset($_POST['updateValue'])) {
 }
 
 
-$topicGet = $_GET['topic'];
+
+
+$topicGet = null;
+if(isset($_GET['topic'])) {
+  $topicGet = $_GET['topic'];
+}
+
 $flashCard = null;
 $subjectId = null;
 $userCreate = null;
 $type = null;
+
+//$userPreferredSubject comes from a user's information.
+if(isset($userInfo['userPreferredSubjectId'])) {
+  $userPreferredSubject = $userInfo['userPreferredSubjectId'];
+} else {
+  $userPreferredSubject = 1;
+}
 
 if(isset($_GET['type'])) {
   $type = $_GET['type'];
@@ -138,6 +162,12 @@ if(isset($_GET['topic'])) {
 
 $subjects = getOutputFromTable("subjects", null, "name");
 $levels =  getOutputFromTable("subjects_level", null, "name");
+
+//$topics = getTopicList("saq_question_bank_3", "topic", null, $flashCard, $userPreferredSubject);
+
+//Use getColumnListFromTable becuase it returns only non-blank values:
+
+$topics = getColumnListFromTable("saq_question_bank_3", "topic", null, $userPreferredSubject, null, null, $flashCard);
 
 
 include($path."/header_tailwind.php");
@@ -160,13 +190,17 @@ include($path."/header_tailwind.php");
     */
 
     if($_SERVER['REQUEST_METHOD']==='POST') {
+      echo "POST:<br>";
       var_dump($_POST);
     }
-
-    echo "<br>Subjects: ";
+    echo "<br>User Info:<br>";
+    print_r($userInfo);
+    echo "<br>Subjects:<br>";
     print_r($subjects);
-    echo "<br>Levels: ";
+    echo "<br>Levels:<br>";
     print_r($levels);
+    echo "<br>Topics:<br>";
+    print_r($topics);
     
   }
 
@@ -175,59 +209,76 @@ include($path."/header_tailwind.php");
   <h2 class="bg-pink-300 -ml-4 -mr-4 mb-5 text-xl font-mono pl-4 text-gray-800">Question Entry</h2>
   <p>Use the form below to enter questions.</p>
   <form method="post">
+    <div class="my-2">
+        <label for ="subjectSelect">Subject:</label>
+        <select id="subjectSelect" name = "subjectId">
+          <?php
+            foreach ($subjects as $subject) {
+                ?>
+                <option value="<?=$subject['id'];?>" <?php
+                  if(isset($_POST['subjectId'])) {
+                    if($subject['id'] == $_POST['subjectId']) {
+                      echo "selected";
+                    }
+                    
+                  }
+
+                  else if ($subject['id'] == $userPreferredSubject) {
+                    echo "selected";
+                  }              
+                ?> > <?=htmlspecialchars($subject['name']);?></option>
+            <?php
+            }
+            ?>
+        </select>
+        <select id="levelSelect" name = "levelId">
+          <?php
+            foreach ($levels as $subject) {
+                ?>
+                <option value="<?=$subject['id'];?>" <?php
+                  if(isset($_POST['levelId'])) {
+                    if($subject['id'] == $_POST['levelId']) {
+                      echo "selected";
+                    }
+                    
+                  }
+                  //Until userpreferences are updated, use  AL as default:
+                  else if ($subject['id'] == 1) {
+                    echo "selected";
+                  }              
+                ?> > <?=htmlspecialchars($subject['name']);?></option>
+            <?php
+            }
+            ?>
+        </select>
+        
+        <label for="topic">Topic:</label>
+        <select id ="topic" name="topic" class="topicSelector">
+          <?php
+            $topicPostSelect = null;
+            if(isset($_POST['topic'])) {
+              $topicPostSelect = $_POST['topic'];
+            }
+            foreach ($topics as $topic) {
+              ?>
+              <option value="<?=$topic?>" <?=($topicPostSelect == $topic) ? "selected":""?> <?=($topicGet == $topic) ? "selected":""?> ><?=$topic?></option>
+              <?php
+            }
+          ?>
+        </select>
+        <button type="button" class="border border-black rounded new_topic_span" onclick='toggleHide(this, "new_topic_span", "Add Topic", "Hide", "inline")'>Add New Topic</button>
+        <span class="new_topic_span hidden">
+          <label for="topic_new">New Topic:</label>
+          <input id="topic_new" name="topic_new" type="text">
+        </span>
+    </div>
     <table id="question_input_table" class="input_table w-full table-fixed">
       <tr>
-        <th class = "">Topic</th>
-        <th class = "w-1/3">Question</th>
-        <th class = "w-1/3">Model Answer/Mark Scheme</th>
+        <th class = "w-2/5">Question</th>
+        <th class = "w-2/5">Model Answer/Mark Scheme</th>
         <th class = "">Remove</th>
       </tr>
     </table>
-
-    <p class="mt-2">
-      <label for ="subjectSelect">Subject:</label>
-
-      <select id="subjectSelect" name = "subjectId">
-        <?php
-          foreach ($subjects as $subject) {
-              ?>
-              <option value="<?=$subject['id'];?>" <?php
-                if(isset($_POST['subjectId'])) {
-                  if($subject['id'] == $_POST['subjectId']) {
-                    echo "selected";
-                  }
-                  
-                }
-                //Until userpreferences are updated, use  Economics as default:
-                else if ($subject['id'] == 1) {
-                  echo "selected";
-                }              
-              ?> > <?=htmlspecialchars($subject['name']);?></option>
-          <?php
-          }
-          ?>
-      </select>
-      <select id="levelSelect" name = "levelId">
-        <?php
-          foreach ($levels as $subject) {
-              ?>
-              <option value="<?=$subject['id'];?>" <?php
-                if(isset($_POST['levelId'])) {
-                  if($subject['id'] == $_POST['levelId']) {
-                    echo "selected";
-                  }
-                  
-                }
-                //Until userpreferences are updated, use  AL as default:
-                else if ($subject['id'] == 1) {
-                  echo "selected";
-                }              
-              ?> > <?=htmlspecialchars($subject['name']);?></option>
-          <?php
-          }
-          ?>
-      </select>
-    </p>
     <p>
       <button type="button" class= "w-full rounded bg-sky-300 hover:bg-sky-200 border border-black mb-2 mt-2" onclick="addRow()">Add Row</button>
     </p>
@@ -249,6 +300,7 @@ include($path."/header_tailwind.php");
     <label for="flashcard_select">FlashCards Only</label>
   </form>
   <p>
+
   <?php 
   if(isset($_GET['topic'])) {
     ?>
@@ -534,12 +586,12 @@ function addRow() {
   var tableLength = table.rows.length;
   var row = table.insertRow(tableLength);
 
+
   var cell0 = row.insertCell(0);
   var cell1 = row.insertCell(1);
   var cell2 = row.insertCell(2);
-  var cell3 = row.insertCell(3);
 
-  cell0.classList.add("align-top");
+
   cell1.classList.add("align-top");
   cell2.classList.add("align-top");
   //cell3.classList.add("align-top");
@@ -547,16 +599,20 @@ function addRow() {
   
   var inst = tableLength -1;
 
-  cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><br><select id ="topic_'+inst+'" name="topic_'+inst+'" class="w-full topicSelector"></select><br><label for="topic_order_'+inst+'">Topic Order:</label><br><input class=" p-1" type="number" step="1" name="topic_order_'+inst+'" id="topic_order_'+inst+'" value = "'+questionCount+'" onchange="changeOrder(this)"></input>';
+
   
-  cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" class="w-full h-44" required></textarea><br><label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input class= "w-1/2"type="number" step="1" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'"><br><label for="points_'+inst+'">Points:<br></label><input  type="number" id ="points_'+inst+'" name="points_'+inst+'"></input><br><label for="type_'+inst+'">Keywords/Type:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input><br><input class = "w-4" type= "checkbox" id="flashCardInput_'+inst+'" value="1" name = "flashCard_'+inst+'"><label for="flashCardInput_'+inst+'">flashCard</label>';
   
-  cell2.innerHTML = '<label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea class="h-36" type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><button class="w-1/4 block rounded border border-black bg-pink-200 mt-2 p-0" type="button" onclick="arrowAdd('+inst+');">→</button><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="number" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'">';
+  
+  cell0.innerHTML += '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" class="w-full h-44" required></textarea><br><label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input class= "w-1/2"type="number" step="1" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'"><br><label for="points_'+inst+'">Points:<br></label><input  type="number" id ="points_'+inst+'" name="points_'+inst+'"></input><br><label for="type_'+inst+'">Keywords/Type:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input><br><input class = "w-4" type= "checkbox" id="flashCardInput_'+inst+'" value="1" name = "flashCard_'+inst+'"><label for="flashCardInput_'+inst+'">flashCard</label><br>';
+
+  cell0.innerHTML += '<label for="topic_order_'+inst+'">Topic Order:</label><br><input class=" p-1" type="number" step="1" name="topic_order_'+inst+'" id="topic_order_'+inst+'" value = "'+questionCount+'" onchange="changeOrder(this)"></input>';
+  
+  cell1.innerHTML = '<label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea class="h-36" type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><button class="w-1/4 block rounded border border-black bg-pink-200 mt-2 p-0" type="button" onclick="arrowAdd('+inst+');">→</button><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="number" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'">';
 
   
 
-  cell3.innerHTML = "<button class='w-full bg-pink-300 rounded border border-black mb-1' type ='button' onclick='hideRow(this);'>Remove</button>"
-  cell3.innerHTML += "<input name='active_entry_"+inst+"' class='w-full' type='hidden' value='1'>";
+  cell2.innerHTML = "<button class='w-full bg-pink-300 rounded border border-black mb-1' type ='button' onclick='hideRow(this);'>Remove</button>"
+  cell2.innerHTML += "<input name='active_entry_"+inst+"' class='w-full' type='hidden' value='1'>";
 
   
   topicListAmend(inst);
