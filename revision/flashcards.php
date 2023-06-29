@@ -124,10 +124,10 @@ Notes on command GET variables:
     //Sets subjectId from here
     $subjectIdSet = $subjectLevel_subjectId;
   }
-  /*
+  
   $levels = getOutputFromTable("subjects_level", null, "name");
-  $subjects = getOutputFromTable("subjects", null, "name");
-  */
+  //$subjects = getOutputFromTable("subjects", null, "name");
+  
   $subjects = getDistinctFlashcardSubjectLevels();
 
   //print_r($subjects);
@@ -155,7 +155,7 @@ Notes on command GET variables:
     if($topics == "all") {
       $topics = null;
     }
-    $questions = getFlashcardsQuestions($topics, $userId, $subjectId);
+    $questions = getFlashcardsQuestions($topics, $userId, $subjectIdSet);
   }
   //$topics = $topics = explode(",", $topics);
 
@@ -175,6 +175,9 @@ include($path."/header_tailwind.php");
     if($test == true) {
     echo count($questions);
     echo "<br>";
+    foreach ($questions as $question) {
+      echo $question['question'];
+    }
     print_r($topicsArray);
     print_r($levels);
   

@@ -127,7 +127,7 @@ if (isset($_POST['submit'])) {
       insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
       
       //Update topic_order for new Entry:
-      changeOrderNumberWithinTopic("saq_question_bank_3", null, $topic, $topic_order);
+      //changeOrderNumberWithinTopic("saq_question_bank_3", null, $topic, $topic_order);
 
       //echo "Record $question inserted<br>";
     }
@@ -141,6 +141,7 @@ if (isset($_POST['submit'])) {
 }
 
 
+$updateMessage = "";
 
 if(isset($_POST['updateValue'])) {
 
@@ -153,7 +154,7 @@ if(isset($_POST['updateValue'])) {
   }
 
   //Update Record:
-  updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], "", $_POST['model_answer'], "", "", $_POST['questionAsset'], $_POST['answerAsset'], $flashCard);
+  $updateMessage = updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], "", $_POST['model_answer'], "", "", $_POST['questionAsset'], $_POST['answerAsset'], $flashCard);
 
   //Change order value:
   changeOrderNumberWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
@@ -230,6 +231,9 @@ include($path."/header_tailwind.php");
 ?>
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+  <?php
+  echo $updateMessage;
+  ?>
 <h1 class="font-mono text-2xl bg-pink-400 pl-1">Short Answer Questions List</h1>
 <div class=" container mx-auto px-4 pb-4 mt-2 bg-white text-black mb-5">
 
@@ -398,6 +402,18 @@ include($path."/header_tailwind.php");
       ?>
 
       <input class="bg-pink-200 px-2" type="submit" value="Choose Topic">
+    </div>
+    <div class="hidden">
+      <input type="checkbox" value="1" name="noFlashCard" <?php
+        if(is_null($showFlashCards)) {
+          echo "checked";
+        }
+      ?>>
+      <input type="checkbox" value="1" name="noAssetInput" <?php
+        if(is_null($showAssetId)) {
+          echo "checked";
+        }
+      ?>>
     </div>
   </form>
 
