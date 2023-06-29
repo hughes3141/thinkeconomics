@@ -52,7 +52,7 @@ if(isset($_GET['userCreate'])) {
   $userCreate = $_GET['userCreate'];
 }
 
-$questions = getSAQQuestions(null, $topic, true, $subjectId, $userCreate, 1);
+$questions = getSAQQuestions(null, $topic, true, $subjectId, $userCreate, null, 1);
 $topicList = getTopicList("saq_question_bank_3", "topic", $topic, true, $subjectId, $userCreate);
 
 

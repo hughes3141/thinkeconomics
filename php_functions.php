@@ -1473,7 +1473,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   $bindArray = array();
   $results = array();
 
-  $sql = "SELECT q.*, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt
+  $sql = "SELECT q.*, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt, ld.topicOrder userTopicOrder, ld.isActive, ld.comments userComments, ld.extraTopics, ld.studentHide
           FROM saq_question_bank_3 q
           LEFT JOIN upload_record aq
           ON aq.id = q.questionAssetId
@@ -1485,16 +1485,16 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
     array_push($bindArray, $userIdOrder);
 
     $sql .= " LEFT JOIN (
-                SELECT topicOrder
+                SELECT *
                 FROM user_list_data
-                WHERE userCreate = ?
+                WHERE userCreate = ? 
+                AND dataSource = 'saq_question_bank_3'
                 ) ld
               ON ld.dataId = q.id ";
 
   }
 
 
-  
   if($questionId) {
     $sql .= sql_conjoin($params, "i");
     $sql .= "  q.id = ? ";
@@ -1558,7 +1558,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
 
   $sql .= " ORDER BY topic, topic_order";
 
-
+  //echo $sql;
 
   $stmt=$conn->prepare($sql);
   if(count($bindArray)>0) {
