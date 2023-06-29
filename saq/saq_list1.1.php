@@ -152,6 +152,15 @@ if(isset($_GET['type'])) {
 if(isset($_GET['flashCard'])) {
   $flashCard = 1;
 }
+if(isset($_GET['subjectId'])) {
+  $subjectId = $_GET['subjectId'];
+}
+if(isset($_POST['subjectId'])) {
+  $subjectId = $_POST['subjectId'];
+}
+if(isset($_GET['userCreate'])) {
+  $userCreate = $_GET['userCreate'];
+}
 
 $questions = getSAQQuestions(null, $topicGet, $flashCard, $subjectId, $userCreate, $type);
 
@@ -167,7 +176,13 @@ $levels =  getOutputFromTable("subjects_level", null, "name");
 
 //Use getColumnListFromTable becuase it returns only non-blank values:
 
-$topics = getColumnListFromTable("saq_question_bank_3", "topic", null, $userPreferredSubject, null, null, $flashCard);
+//$subjectSelector is the subjectId that is either determined by (1) user preference or (2) $subjectId;
+$subjectSelector = $userPreferredSubject;
+if(!is_null($subjectId)) {
+  $subjectSelector = $subjectId;
+}
+
+$topics = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectSelector, null, null, $flashCard);
 
 
 include($path."/header_tailwind.php");
@@ -208,30 +223,19 @@ include($path."/header_tailwind.php");
 
   <h2 class="bg-pink-300 -ml-4 -mr-4 mb-5 text-xl font-mono pl-4 text-gray-800">Question Entry</h2>
   <p>Use the form below to enter questions.</p>
-  <form method="post">
+  <form method="post" id="new_question_post_form">
     <div class="my-2">
         <label for ="subjectSelect">Subject:</label>
-        <select id="subjectSelect" name = "subjectId">
+        <select class="inputProperties" id="subjectSelect" name = "subjectId" onchange="changeSubject(this);">
           <?php
             foreach ($subjects as $subject) {
                 ?>
-                <option value="<?=$subject['id'];?>" <?php
-                  if(isset($_POST['subjectId'])) {
-                    if($subject['id'] == $_POST['subjectId']) {
-                      echo "selected";
-                    }
-                    
-                  }
-
-                  else if ($subject['id'] == $userPreferredSubject) {
-                    echo "selected";
-                  }              
-                ?> > <?=htmlspecialchars($subject['name']);?></option>
+                <option value="<?=$subject['id'];?>" <?=($subject['id'] == $subjectSelector) ? "selected" : ""?>> <?=htmlspecialchars($subject['name']);?></option>
             <?php
             }
             ?>
         </select>
-        <select id="levelSelect" name = "levelId">
+        <select class="inputProperties" id="levelSelect" name = "levelId">
           <?php
             foreach ($levels as $subject) {
                 ?>
@@ -242,8 +246,7 @@ include($path."/header_tailwind.php");
                     }
                     
                   }
-                  //Until userpreferences are updated, use  AL as default:
-                  else if ($subject['id'] == 1) {
+                  else if ($subject['id'] == $userPreferredSubject) {
                     echo "selected";
                   }              
                 ?> > <?=htmlspecialchars($subject['name']);?></option>
@@ -253,7 +256,7 @@ include($path."/header_tailwind.php");
         </select>
         
         <label for="topic">Topic:</label>
-        <select id ="topic" name="topic" class="topicSelector">
+        <select class="inputProperties" id ="topic" name="topic" class="topicSelector">
           <?php
             $topicPostSelect = null;
             if(isset($_POST['topic'])) {
@@ -269,7 +272,7 @@ include($path."/header_tailwind.php");
         <button type="button" class="border border-black rounded new_topic_span" onclick='toggleHide(this, "new_topic_span", "Add Topic", "Hide", "inline")'>Add New Topic</button>
         <span class="new_topic_span hidden">
           <label for="topic_new">New Topic:</label>
-          <input id="topic_new" name="topic_new" type="text">
+          <input class="inputProperties" id="topic_new" name="topic_new" type="text">
         </span>
     </div>
     <table id="question_input_table" class="input_table w-full table-fixed">
@@ -291,15 +294,71 @@ include($path."/header_tailwind.php");
   
   <h2 class="bg-pink-300 -ml-4 -mr-4 my-5 text-xl font-mono pl-4 text-gray-800">Database</h2>
   <p>Search for questions by topic:</p>
-  <form method="get">
-    <p>
-      <select id="select" name="topic" ></select>
+  <form method="get" id="database_get_form">
+    <div>
+
+      <label for ="subjectSelectGet">Subject:</label>
+        <select id="subjectSelectGet" name = "subjectId" onchange="this.form.submit();">
+          <?php
+            foreach ($subjects as $subject) {
+                ?>
+                <option value="<?=$subject['id'];?>" <?php
+                  if(isset($_POST['subjectId'])) {
+                    if($subject['id'] == $_POST['subjectId']) {
+                      echo "selected";
+                    }
+                    
+                  }
+
+                  else if ($subject['id'] == $subjectSelector) {
+                    echo "selected";
+                  }              
+                ?> > <?=htmlspecialchars($subject['name']);?></option>
+            <?php
+            }
+            ?>
+        </select>
+        <select id="levelSelectGet" name = "levelId">
+          <?php
+            foreach ($levels as $subject) {
+                ?>
+                <option value="<?=$subject['id'];?>" <?php
+                  if(isset($_POST['levelId'])) {
+                    if($subject['id'] == $_POST['levelId']) {
+                      echo "selected";
+                    }
+                    
+                  }
+                  else if ($subject['id'] == $userPreferredSubject) {
+                    echo "selected";
+                  }              
+                ?> > <?=htmlspecialchars($subject['name']);?></option>
+            <?php
+            }
+            ?>
+        </select>
+
+
+      <label for="topicGet">Topic:</label>
+      <select id="topicGet" name="topic">
+      <?php
+            $topicPostSelect = null;
+            if(isset($_POST['topic'])) {
+              $topicPostSelect = $_POST['topic'];
+            }
+            foreach ($topics as $topic) {
+              ?>
+              <option value="<?=$topic?>" <?=($topicPostSelect == $topic) ? "selected":""?> <?=($topicGet == $topic) ? "selected":""?> ><?=$topic?></option>
+              <?php
+            }
+          ?>
+      </select>
       <input type="submit" value="Choose Topic">
-    </p>
-    <input id="flashcard_select" type="checkbox" name="flashCard" value="1" <?=(isset($_GET['flashCard'])) ? "checked":""?>>
-    <label for="flashcard_select">FlashCards Only</label>
+      <input id="flashcard_select" type="checkbox" name="flashCard" value="1" <?=(isset($_GET['flashCard'])) ? "checked":""?>>
+      <label for="flashcard_select">FlashCards Only</label>
+    </div>
   </form>
-  <p>
+
 
   <?php 
   if(isset($_GET['topic'])) {
@@ -443,13 +502,11 @@ include($path."/header_tailwind.php");
 
 <script>
 
-var topics = ["1.1.1","1.1.2","1.1.3","1.2.1","1.2.2","1.2.3","1.2.4","1.3.1","1.3.2","1.4.1","1.5.1","1.5.2","1.5.3","1.6.1","1.6.2","1.6.3","1.6.4","1.6.5","1.6.6","1.6.7","1.6.8","1.7.1","1.7.2","1.7.3","2.1.1","2.1.2","2.1.3","2.1.4","2.1.5","2.1.6","2.1.7","2.1.8","2.1.9","2.2.1","2.2.2","2.2.3","2.2.4","2.2.5","2.2.6","2.3.1","2.3.2","2.3.3","2.3.4","2.3.5","3.1.1","3.2.1","3.3.1","3.3.2","3.3.3"];
 
 var questionCount = <?=$questionTopicCount?>;
 
 addRow();
-topicList();
-//topicList2();
+
 
 function changeVisibility(button, id) {
   
@@ -492,81 +549,10 @@ function flashcardButtonToggle(input) {
   } else {
     checkbox.disabled = true;
   }
-  console.log(checkbox);
-}
-
-function topicList() {
-	var select = document.getElementById("select");
-	
-	for(var i=0; i<topics.length; i++) {
-		
-		var option = document.createElement("option");
-		option.setAttribute("value", topics[i]);
-		option.innerHTML = topics[i];
-		
-		if (option.innerHTML == "<?php if(isset($_GET['topic'])) { echo $_GET['topic']; }?>") {
-			option.selected = true;
-			
-		} 
-		select.appendChild(option);
-		
-		
-	}
-	
-}
-
-function topicList2() {
-	var select = document.getElementById("topic");
-	
-	for(var i=0; i<topics.length; i++) {
-		
-		var option = document.createElement("option");
-		option.setAttribute("value", topics[i]);
-		option.innerHTML = topics[i];
-		
-		if (option.innerHTML == "<?php if(isset($_GET['topic'])) { echo $_GET['topic']; }?>") {
-			option.selected = true;
-			
-		} 
-		select.appendChild(option);
-		
-		
-	}
-	
+  //console.log(checkbox);
 }
 
 
-function topicListAmend(i) {
-  
-  var select = document.getElementById("topic_"+i);
-  
-
-  for(var j=0; j<topics.length; j++) {
-		
-		var option = document.createElement("option");
-		option.setAttribute("value", topics[j]);
-		option.innerHTML = topics[j];
-		
-    if(i==0) {
-      if (option.innerHTML == "<?php if(isset($_GET['topic'])) { echo $_GET['topic']; }?>") {
-        option.selected = true;
-      }
-    } else {
-      var prevSelect = document.getElementById("topic_"+(i-1)).value;
-      console.log(prevSelect);
-      if (option.innerHTML == prevSelect) {
-        option.selected = true;
-      }
-    }
-    
-
-		select.appendChild(option);
-		
-		
-	}
-  
-  
-}
 
 function sourceAmend(i) {
   
@@ -615,7 +601,7 @@ function addRow() {
   cell2.innerHTML += "<input name='active_entry_"+inst+"' class='w-full' type='hidden' value='1'>";
 
   
-  topicListAmend(inst);
+
   sourceAmend(inst)
   
   document.getElementById("questionsCount").value = tableLength;
@@ -643,6 +629,46 @@ function arrowAdd(inst) {
   var answerBox = document.getElementById("model_answer_"+inst);
   answerBox.value += "→ ";
 }
+
+function changeSubject(input) {
+  var topicChangeForm = document.getElementById("database_get_form");
+  var changeTo = input.value;
+  var topicChangeSelect = document.getElementById("subjectSelectGet");
+  //console.log(topicChangeSelect);
+  //console.log(changeTo);
+  topicChangeSelect.value=changeTo;
+  topicChangeForm.submit();
+}
+
+function disableInputProperties() {
+  var inputProperties = document.getElementsByClassName("inputProperties");
+  console.log(inputProperties)
+
+  Array.from(inputProperties).forEach((input) => 
+  { input.setAttribute('disabled', 'true')
+  })
+
+}
+
+function selectInputs(formId) {
+  var form = document.getElementById(formId);
+  var allFormControls = form.elements;
+  //console.log(allFormControls);
+  Array.from(allFormControls).forEach((input) => 
+  { if (input.classList.contains('inputProperties') == false) {
+    input.setAttribute('onchange', 'disableInputProperties()')
+    }
+  })
+
+
+  //allFormControls.setAttribute('onclick', 'disableInputProperties()');
+
+
+ 
+
+}
+
+selectInputs("new_question_post_form");
 
 </script>
 
