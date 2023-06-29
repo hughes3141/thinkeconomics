@@ -245,6 +245,8 @@ include($path."/header_tailwind.php");
       <select id="select" name="topic" ></select>
       <input type="submit" value="Choose Topic">
     </p>
+    <input id="flashcard_select" type="checkbox" name="flashCard" value="1" <?=(isset($_GET['flashCard'])) ? "checked":""?>>
+    <label for="flashcard_select">FlashCards Only</label>
   </form>
   <p>
   <?php 
@@ -545,11 +547,11 @@ function addRow() {
   
   var inst = tableLength -1;
 
-  cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><br><select id ="topic_'+inst+'" name="topic_'+inst+'" class="w-full topicSelector"></select><br><label for="topic_order_'+inst+'">Topic Order:</label><br><input class=" " type="number" step="1" name="topic_order_'+inst+'" id="topic_order_'+inst+'" value = "'+questionCount+'" onchange="changeOrder(this)"></input>';
+  cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><br><select id ="topic_'+inst+'" name="topic_'+inst+'" class="w-full topicSelector"></select><br><label for="topic_order_'+inst+'">Topic Order:</label><br><input class=" p-1" type="number" step="1" name="topic_order_'+inst+'" id="topic_order_'+inst+'" value = "'+questionCount+'" onchange="changeOrder(this)"></input>';
   
   cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" class="w-full h-44" required></textarea><br><label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input class= "w-1/2"type="number" step="1" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'"><br><label for="points_'+inst+'">Points:<br></label><input  type="number" id ="points_'+inst+'" name="points_'+inst+'"></input><br><label for="type_'+inst+'">Keywords/Type:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input><br><input class = "w-4" type= "checkbox" id="flashCardInput_'+inst+'" value="1" name = "flashCard_'+inst+'"><label for="flashCardInput_'+inst+'">flashCard</label>';
   
-  cell2.innerHTML = '<label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea class="h-36" type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="number" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'"><p>→</p>';
+  cell2.innerHTML = '<label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea class="h-36" type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><button class="w-1/4 block rounded border border-black bg-pink-200 mt-2 p-0" type="button" onclick="arrowAdd('+inst+');">→</button><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="number" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'">';
 
   
 
@@ -579,6 +581,11 @@ function hideRow(button) {
   console.log(input);
   row.style.display = "none";
   input.value='0';
+}
+
+function arrowAdd(inst) {
+  var answerBox = document.getElementById("model_answer_"+inst);
+  answerBox.value += "→ ";
 }
 
 </script>
