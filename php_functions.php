@@ -1764,6 +1764,33 @@ function updateTopicOrder($id, $newPlace, $table) {
   $stmt->execute();
 }
 
+function getInfoFromUserListData($datId, $userCreate, $dataSource) {
+  /**
+   * This funciton extracts information from user_list_data for the purposes of finding:
+   *  -Which record is in the table and needs updating
+   *  -When there is no record in the table and needs creating
+   */
+}
+
+function updateTopicOrder2($id, $newPlace) {
+  /*
+  A function to update the topicOrder column of user_list_data
+
+  Soley used as supporting function for changeOrderNumberWithinTopic() below;
+  */
+
+  global $conn;
+  $sql =    " UPDATE user_list_data
+              SET topic_order = ?
+              WHERE id = ?";
+
+  //echo $sql; 
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("ii", $newPlace, $id);
+  $stmt->execute();
+
+}
+
 
 function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace, $subjectId, $levelId) {
 
