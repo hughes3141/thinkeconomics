@@ -1764,12 +1764,45 @@ function updateTopicOrder($id, $newPlace, $table) {
   $stmt->execute();
 }
 
-function getInfoFromUserListData($datId, $userCreate, $dataSource) {
+function getInfoFromUserListData($dataId, $userCreate, $dataSource) {
   /**
    * This funciton extracts information from user_list_data for the purposes of finding:
    *  -Which record is in the table and needs updating
    *  -When there is no record in the table and needs creating
+   * 
+   * Used as support to functions below
    */
+
+   global $conn;
+   $results = array();
+   $sql = " SELECT *
+            FROM user_list_data
+            WHERE dataId = ? 
+            AND userCreate = ?
+            AND dataSource = ? ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("iis", $dataId, $userCreate, $dataSource);
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    if($result->num_rows>0) {
+      while($row = $result->fetch_assoc()) {
+        array_push($results, $row);
+      }
+    }
+
+    if(count($results) ==0 ) {
+      return null;
+    } else if(count($results)> 1) {
+      return "error";
+    } else {
+      return $results[0]['id'];
+    }
+
+    
+
 }
 
 function updateTopicOrder2($id, $newPlace) {
@@ -1781,13 +1814,34 @@ function updateTopicOrder2($id, $newPlace) {
 
   global $conn;
   $sql =    " UPDATE user_list_data
-              SET topic_order = ?
+              SET topicOrder = ?
               WHERE id = ?";
 
   //echo $sql; 
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("ii", $newPlace, $id);
   $stmt->execute();
+
+}
+
+function createInfoToUserListData($newPlace) {
+  /**
+   * A function to insert topoicOrder information into user_list_data
+   * 
+   * Soley used as supporting function for changeOrderNumberWithinTopic() below;
+   */
+
+   global $conn;
+
+   $sql =    "  INSERT INTO user_list_data 
+                (topicOrder)
+                VALUES (?)";
+ 
+   //echo $sql; 
+   $stmt = $conn->prepare($sql);
+   $stmt->bind_param("i", $newPlace);
+   $stmt->execute();
+
 
 }
 
