@@ -254,22 +254,27 @@ include($path."/header_tailwind.php");
             }
             ?>
         </select>
-        
-        <label for="topic">Topic:</label>
-        <select class="inputProperties" id ="topic" name="topic" class="topicSelector">
           <?php
-            $topicPostSelect = null;
-            if(isset($_POST['topic'])) {
-              $topicPostSelect = $_POST['topic'];
-            }
-            foreach ($topics as $topic) {
-              ?>
-              <option value="<?=$topic?>" <?=($topicPostSelect == $topic) ? "selected":""?> <?=($topicGet == $topic) ? "selected":""?> ><?=$topic?></option>
+          if(count($topics)>0) {
+            ?>
+            <label for="topic">Topic:</label>
+            <select class="inputProperties" id ="topic" name="topic" class="topicSelector">
               <?php
-            }
+                $topicPostSelect = null;
+                if(isset($_POST['topic'])) {
+                  $topicPostSelect = $_POST['topic'];
+                }
+                foreach ($topics as $topic) {
+                  ?>
+                  <option value="<?=$topic?>" <?=($topicPostSelect == $topic) ? "selected":""?> <?=($topicGet == $topic) ? "selected":""?> ><?=$topic?></option>
+                  <?php
+                }
+              ?>
+            </select>
+          <?php
+          }
           ?>
-        </select>
-        <button type="button" class="border border-black rounded new_topic_span" onclick='toggleHide(this, "new_topic_span", "Add Topic", "Hide", "inline")'>Add New Topic</button>
+        <button type="button" class="border border-black rounded new_topic_span" onclick='toggleHide(this, "new_topic_span", "Add New Topic", "Hide", "inline")'>Add New Topic</button>
         <span class="new_topic_span hidden">
           <label for="topic_new">New Topic:</label>
           <input class="inputProperties" id="topic_new" name="topic_new" type="text">
@@ -302,18 +307,7 @@ include($path."/header_tailwind.php");
           <?php
             foreach ($subjects as $subject) {
                 ?>
-                <option value="<?=$subject['id'];?>" <?php
-                  if(isset($_POST['subjectId'])) {
-                    if($subject['id'] == $_POST['subjectId']) {
-                      echo "selected";
-                    }
-                    
-                  }
-
-                  else if ($subject['id'] == $subjectSelector) {
-                    echo "selected";
-                  }              
-                ?> > <?=htmlspecialchars($subject['name']);?></option>
+                <option value="<?=$subject['id'];?>" <?=($subject['id'] == $subjectSelector) ? "selected" : ""?> > <?=htmlspecialchars($subject['name']);?></option>
             <?php
             }
             ?>
@@ -338,7 +332,7 @@ include($path."/header_tailwind.php");
             ?>
         </select>
 
-
+      
       <label for="topicGet">Topic:</label>
       <select id="topicGet" name="topic">
       <?php
@@ -353,15 +347,17 @@ include($path."/header_tailwind.php");
             }
           ?>
       </select>
-      <input type="submit" value="Choose Topic">
+
       <input id="flashcard_select" type="checkbox" name="flashCard" value="1" <?=(isset($_GET['flashCard'])) ? "checked":""?>>
       <label for="flashcard_select">FlashCards Only</label>
+
+      <input class="bg-pink-200 px-2" type="submit" value="Choose Topic">
     </div>
   </form>
 
 
   <?php 
-  if(isset($_GET['topic'])) {
+  if(count($questions)>0) {
     ?>
     
     <table class="input_table table-fixed w-full">
