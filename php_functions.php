@@ -1628,9 +1628,9 @@ function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $ty
 
   if($questionUserCreator == $userId) {
     $stmt->execute();
-    echo "Record $questionId updated successfully.";
+    return "Record $questionId updated successfully.";
   } else {
-    echo "Error: User is not question owner.";
+    return "Error: User is not question owner.";
   }
   
 
