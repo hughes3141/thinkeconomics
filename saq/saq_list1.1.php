@@ -127,7 +127,7 @@ if (isset($_POST['submit'])) {
       insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
       
       //Update topic_order for new Entry:
-      changeOrderNumberWithinTopic("saq_question_bank_3", null, $topic, $topic_order, $subjectId, $levelId);
+      changeOrderNumberWithinTopic(null, $topic, $topic_order, $subjectId, $levelId);
 
       //echo "Record $question inserted<br>";
     }
@@ -154,10 +154,10 @@ if(isset($_POST['updateValue'])) {
   }
 
   //Update Record:
-  $updateMessage = updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], "", $_POST['model_answer'], "", "", $_POST['questionAsset'], $_POST['answerAsset'], $flashCard);
+  //$updateMessage = updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], "", $_POST['model_answer'], "", "", $_POST['questionAsset'], $_POST['answerAsset'], $flashCard);
 
   //Change order value:
-  changeOrderNumberWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order'], $_POST['subjectId'], $_POST['levelId']);
+  changeOrderNumberWithinTopic($_POST['id'], $_POST['topic'], $_POST['topic_order'], $_POST['subjectId'], $_POST['levelId']);
 
 }
 

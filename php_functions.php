@@ -1470,11 +1470,17 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   */
   global $conn;
   $params="";
+  $paramsExpected = "";
   $bindArray = array();
   $results = array();
 
-  $sql = "SELECT q.*, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt, ld.topicOrder userTopicOrder, ld.isActive, ld.comments userComments, ld.extraTopics, ld.studentHide
-          FROM saq_question_bank_3 q
+  $sql = "SELECT q.*, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt ";
+  
+  if(!is_null($userIdOrder)) {
+    $sql .= ", ld.topicOrder userTopicOrder, ld.isActive, ld.comments userComments, ld.extraTopics, ld.studentHide ";
+    }
+
+    $sql .= "FROM saq_question_bank_3 q
           LEFT JOIN upload_record aq
           ON aq.id = q.questionAssetId
           LEFT JOIN upload_record aa
@@ -1482,6 +1488,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
 
   if(!is_null($userIdOrder)) {
     $params .= "i";
+    $paramsExpected = "i";
     array_push($bindArray, $userIdOrder);
 
     $sql .= " LEFT JOIN (
@@ -1496,7 +1503,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
 
 
   if($questionId) {
-    $sql .= sql_conjoin($params, "i");
+    $sql .= sql_conjoin($params, $paramsExpected);
     $sql .= "  q.id = ? ";
     $params .= "i";
     array_push($bindArray, $questionId);
@@ -1508,7 +1515,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
     //$placeholder = str_repeat("?, ", $numTopics -1)." ?";
 
 
-    $sql .= sql_conjoin($params, "i");
+    $sql .= sql_conjoin($params, $paramsExpected);
 
     foreach($topics as $key=>$topic) {
       if($key == 0) {
@@ -1528,7 +1535,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   }
 
   if($subjectId) {
-    $sql .= sql_conjoin($params, "i");
+    $sql .= sql_conjoin($params, $paramsExpected);
 
     $sql .= " q.subjectId = ? ";
     $params .= "i";
@@ -1536,7 +1543,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   }
 
   if($userCreate) {
-    $sql .= sql_conjoin($params, "i");
+    $sql .= sql_conjoin($params, $paramsExpected);
     $sql .= " q.userCreate = ? ";
     $params .= "i";
     array_push($bindArray, $userCreate);
@@ -1544,12 +1551,12 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   }
 
   if($flashCard) {
-    $sql .= sql_conjoin($params, "i");
+    $sql .= sql_conjoin($params, $paramsExpected);
     $sql .= " ( q.flashCard = 1 OR q.type LIKE '%flashCard%' )";
   }
 
   if($type) {
-    $sql .= sql_conjoin($params, "i");
+    $sql .= sql_conjoin($params, $paramsExpected);
     $sql .= " q.type LIKE ? ";
     $params .= "s";
     $type = "%".$type."%";
@@ -1558,7 +1565,6 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
 
   $sql .= " ORDER BY topic, topic_order";
 
-  //echo $sql;
 
   $stmt=$conn->prepare($sql);
   if(count($bindArray)>0) {
@@ -1846,7 +1852,7 @@ function createInfoToUserListData($newPlace) {
 }
 
 
-function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace, $subjectId, $levelId) {
+function changeOrderNumberWithinTopic($id, $topic, $newPlace, $subjectId, $levelId) {
 
   /*
   This function is used to take all questions from table $table with $topic, give entry with $id a $newPlace in the order, then update all other values with the same topic category.
@@ -1860,9 +1866,11 @@ function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace, $subjectId
   $bindArray = array($topic, $subjectId, $levelId );
   $params = "sii";
 
-  $sql = "SELECT id, topic_order, question
-          FROM ".$table;
-  $sql .= " WHERE topic = ?
+  $sql = "SELECT q.id, q.topic_order, q.question ld.*
+          FROM saq_question_bank q ";
+  $sql .= " LEFT JOIN user_list_data ld
+            ON ld.dataId = q.id
+            WHERE topic = ?
             AND subjectId = ?
             AND levelId = ? ";
   if(!is_null($id)) {
@@ -1888,6 +1896,8 @@ function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace, $subjectId
     }
   }
 
+  print_r($questions);
+
   //When updating a current record $id will not be null so:
 
   if(!is_null($id)) {
@@ -1908,10 +1918,10 @@ function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace, $subjectId
     $index = $newPlace -1;
   }
   
-  
+  print_r($questions);
 
   for($x=$index; $x<count($questions); $x++) {
-    updateTopicOrder($questions[$x]['id'], $index, $table);   
+    //updateTopicOrder($questions[$x]['id'], $index, $table);   
     $index ++;
   }
 
