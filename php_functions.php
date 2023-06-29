@@ -383,7 +383,7 @@ Returns an array of all information about a user.
 
 function getUserInfo($userId) {
   global $conn;
-  $sql = " SELECT u.id, u.name, u.name_first, u.name_last, u.username, u.usertype, u.permissions, u.userInput_userType, u.email, u.schoolid, u.groupid, u.groupid_array, u.active, s.SCHNAME, s.userAdmin, s.permissions school_permissions
+  $sql = " SELECT u.id, u.name, u.name_first, u.name_last, u.username, u.usertype, u.permissions, u.userInput_userType, u.email, u.schoolid, u.groupid, u.groupid_array, u.active, s.SCHNAME, s.userAdmin, s.permissions school_permissions, u.userPreferredSubjectId
           FROM users u
           LEFT JOIN schools_dfe s
           ON u.schoolid = s.id
@@ -1596,8 +1596,6 @@ function insertSAQQuestion($topic, $question, $points, $type, $image, $model_ans
 
   $stmt->execute();
 
-  echo "hello world";
-
 }
 
 function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $type, $img, $model_answer, $answer_img, $answer_img_alt, $questionAsset, $answerAsset, $flashCard=0) {
@@ -1825,7 +1823,7 @@ function changeOrderNumberWithinTopic($table, $id, $topic, $newPlace) {
 
 }
 
-function getTopicList($tableName, $topicColumn, $topics = null, $flashCard = null, $subjectId = null, $userCreate = null) {
+function getTopicList($tableName, $topicColumn, $topics = null, $flashCard = null, $subjectId = null, $userCreate = null, $blanks = null) {
 
   /*
   This function will return a unique list of topics from $topicColumn and table $tableName, subjec to criteria of having LIKE $topic%, created by $userCreate, or having $subjectId

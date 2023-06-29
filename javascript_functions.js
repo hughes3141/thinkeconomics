@@ -59,7 +59,7 @@ function changeVisibility(button, id) {
 
 function toggleHide(button, toggle_class, original_message, toggle_message, display_type="block") {
   let toggleClass = document.getElementsByClassName(toggle_class);
-  //console.log(toggleClass);
+  console.log(toggleClass);
   function f() {
     for (var i=0; i<toggleClass.length; i++) {
       
