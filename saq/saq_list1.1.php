@@ -46,7 +46,30 @@ $style_input = "
   }
 ";
 
+//Controls to remove elements e.g. flashCard controls:
+/*
+ *Set $showFlashCards to null to treat page as though flashcards to not exist, and all questions are input as a flashcard
+ Set $showAssetId to null and user will not have the option of inserting asset Ids (to be used until it is sorted so that users can upload assets easily) 
+ */
 
+$showFlashCards = 1;
+$showAssetId = 1;
+
+if(isset($_GET['noFlashCard'])) {
+  $showFlashCards = null; 
+}
+if(isset($_GET['noAssetInput'])) {
+  $showAssetId = null;
+}
+$flashCardSubmit = null;
+if($showFlashCards == null) {
+  $flashCardSubmit =1;
+}
+/*
+if($showAssetId == null) {
+  $assetSubmit = "";
+}
+*/
 
 if (isset($_POST['submit'])) {
 
@@ -54,10 +77,8 @@ if (isset($_POST['submit'])) {
   
   $count = $_POST['questionsCount'];
 
-  $topic = null;
+  $topic = $_POST['topic'];
   if($_POST['topic_new'] != "") {
-    $topic = $_POST['topic'];
-  } else {
     $topic = trim($_POST['topic_new']);
   }
 
@@ -79,28 +100,36 @@ if (isset($_POST['submit'])) {
     //$answer_img_alt = $_POST['image_ans_alt_'.$x];
     $topic_order = $_POST['topic_order_'.$x];
 
-    $questionAsset = $_POST['questionAsset_'.$x];
+    $questionAsset = null;
+    $answerAsset = null;
+    
+    if(isset($_POST['questionAsset_'.$x])) {
+      if($_POST['questionAsset_'.$x] == "") {
+        $questionAsset = null;
+      }      
+      if($_POST['answerAsset_'.$x] == "") {
+        $answerAsset = null;
+      }
+      $questionAsset = $_POST['questionAsset_'.$x];
+      $answerAsset = $_POST['answerAsset_'.$x];
 
-    if($_POST['questionAsset_'.$x] == "") {
-      $questionAsset = null;
-    }
-    $answerAsset = $_POST['answerAsset_'.$x];
-    if($_POST['answerAsset_'.$x] == "") {
-      $answerAsset = null;
     }
     $flashCard = 0;
     if(isset($_POST['flashCard_'.$x])) {
       $flashCard = $_POST['flashCard_'.$x];
     }
+    if(isset($flashCardSubmit)) {
+      $flashCard = $flashCardSubmit;
+    }
 
     if($_POST['active_entry_'.$x] == "1") {
 
-      //insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
+      insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
       
       //Update topic_order for new Entry:
-      //changeOrderNumberWithinTopic("saq_question_bank_3", null, $topic, $topic_order);
+      changeOrderNumberWithinTopic("saq_question_bank_3", null, $topic, $topic_order);
 
-      echo "Record $question inserted<br>";
+      //echo "Record $question inserted<br>";
     }
 
     //echo "New records created successfully";
@@ -111,11 +140,16 @@ if (isset($_POST['submit'])) {
  
 }
 
+
+
 if(isset($_POST['updateValue'])) {
 
   $flashCard = 0;
   if(isset($_POST['flashCard'])) {
     $flashCard = $_POST['flashCard'];
+  }
+  if(isset($flashCardSubmit)) {
+    $flashCard = $flashCardSubmit;
   }
 
   //Update Record:
@@ -125,6 +159,8 @@ if(isset($_POST['updateValue'])) {
   changeOrderNumberWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order']);
 
 }
+
+
 
 
 
@@ -152,6 +188,11 @@ if(isset($_GET['type'])) {
 if(isset($_GET['flashCard'])) {
   $flashCard = 1;
 }
+
+if(isset($flashCardSubmit)) {
+  $flashCard = $flashCardSubmit;
+}
+
 if(isset($_GET['subjectId'])) {
   $subjectId = $_GET['subjectId'];
 }
@@ -300,7 +341,7 @@ include($path."/header_tailwind.php");
   <h2 class="bg-pink-300 -ml-4 -mr-4 my-5 text-xl font-mono pl-4 text-gray-800">Database</h2>
   <p>Search for questions by topic:</p>
   <form method="get" id="database_get_form">
-    <div>
+    <div class="mb-2">
 
       <label for ="subjectSelectGet">Subject:</label>
         <select id="subjectSelectGet" name = "subjectId" onchange="this.form.submit();">
@@ -347,9 +388,14 @@ include($path."/header_tailwind.php");
             }
           ?>
       </select>
-
-      <input id="flashcard_select" type="checkbox" name="flashCard" value="1" <?=(isset($_GET['flashCard'])) ? "checked":""?>>
-      <label for="flashcard_select">FlashCards Only</label>
+      <?php
+      if(!is_null($showFlashCards)) {
+      ?>
+        <input id="flashcard_select" type="checkbox" name="flashCard" value="1" <?=(isset($_GET['flashCard'])) ? "checked":""?>>
+        <label for="flashcard_select">FlashCards Only</label>
+      <?php
+      }
+      ?>
 
       <input class="bg-pink-200 px-2" type="submit" value="Choose Topic">
     </div>
@@ -357,7 +403,7 @@ include($path."/header_tailwind.php");
 
 
   <?php 
-  if(count($questions)>0) {
+  if($topicGet) {
     ?>
     
     <table class="input_table table-fixed w-full">
@@ -425,17 +471,29 @@ include($path."/header_tailwind.php");
             <div class= "hide hide_<?=$row['id'];?>">
               <textarea class="h-44" name ="question"><?=htmlspecialchars($row['question'])?></textarea>
               <br>
-              <label for="qA_<?=$row['id'];?>">Question Asset Id:</label><br>
-              <input id="qA_<?=$row['id'];?>" type="number" name="questionAsset" value="<?=$row['questionAssetId']?>">
-              <br>
+              <?php
+              if(!is_null($showAssetId)) {
+                ?>
+                <label for="qA_<?=$row['id'];?>">Question Asset Id:</label><br>
+                <input id="qA_<?=$row['id'];?>" type="number" name="questionAsset" value="<?=$row['questionAssetId']?>">
+                <br>
+              <?php
+              }
+              ?>
               <label for = "points_<?=$row['id'];?>" >Points:</label><br>
               <input id="points_<?=$row['id'];?>" name ="points" type="number" value="<?=$row['points']?>"</input>
               <br>
               <label for = "keyword<?=$row['id'];?>" >Keywords:</label><br>
               <textarea id="keyword<?=$row['id'];?>" name ="type" type="text" ><?=$row['type']?></textarea>
             </div>
-            <input class="w-4" id="flashCard_Update_<?=$row['id'];?>" type="checkbox" name ="flashCard" value="1" <?=($row['flashCard']==1) ? "checked" : ""?> disabled>
+            <?php
+            if(!is_null($showFlashCards)) {
+              ?>
+              <input class="w-4" id="flashCard_Update_<?=$row['id'];?>" type="checkbox" name ="flashCard" value="1" <?=($row['flashCard']==1) ? "checked" : ""?> disabled>
               <label for="flashCard_Update_<?=$row['id'];?>">flashCard</label>
+            <?php
+            }
+            ?>
           </td>
 
           <td class="align-top">
@@ -454,8 +512,14 @@ include($path."/header_tailwind.php");
               <label class="hide" for = "model_answer<?=$row['id'];?>">Model Answer:</label>
               <textarea class="h-44" id = "model_answer<?=$row['id'];?>" name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
               <br>
+              <?php
+              if(!is_null($showAssetId)) {
+                ?>
               <label for ="asset_id<?=$row['id'];?>">Asset ID:</label><br>
               <input id="asset_id<?=$row['id'];?>" type="number" name="answerAsset" value="<?=$row['answerAssetId']?>">
+              <?php
+              }
+              ?>
             </div>
               
           </td>
@@ -585,11 +649,39 @@ function addRow() {
   
   
   
-  cell0.innerHTML += '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" class="w-full h-44" required></textarea><br><label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input class= "w-1/2"type="number" step="1" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'"><br><label for="points_'+inst+'">Points:<br></label><input  type="number" id ="points_'+inst+'" name="points_'+inst+'"></input><br><label for="type_'+inst+'">Keywords/Type:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input><br><input class = "w-4" type= "checkbox" id="flashCardInput_'+inst+'" value="1" name = "flashCard_'+inst+'"><label for="flashCardInput_'+inst+'">flashCard</label><br>';
+  cell0.innerHTML += '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" class="w-full h-44" required></textarea><br>';
+  
+  <?php
+  if(!is_null($showAssetId)) {
+    ?>
+    cell0.innerHTML += '<label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input class= "w-1/2"type="number" step="1" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'"><br>';
+  <?php
+  }
+  ?>
+  
+  cell0.innerHTML += '<label for="points_'+inst+'">Points:<br></label><input  type="number" id ="points_'+inst+'" name="points_'+inst+'"></input><br><label for="type_'+inst+'">Keywords/Type:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input><br>';
+  
+  <?php
+  if(!is_null($showFlashCards)) {
+    ?>
+    cell0.innerHTML += '<input class = "w-4" type= "checkbox" id="flashCardInput_'+inst+'" value="1" name = "flashCard_'+inst+'"><label for="flashCardInput_'+inst+'">flashCard</label><br>';
+  <?php
+  }
+  ?>
 
   cell0.innerHTML += '<label for="topic_order_'+inst+'">Topic Order:</label><br><input class=" p-1" type="number" step="1" name="topic_order_'+inst+'" id="topic_order_'+inst+'" value = "'+questionCount+'" onchange="changeOrder(this)"></input>';
   
-  cell1.innerHTML = '<label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea class="h-36" type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><button class="w-1/4 block rounded border border-black bg-pink-200 mt-2 p-0" type="button" onclick="arrowAdd('+inst+');">→</button><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="number" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'">';
+  cell1.innerHTML = '<label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea class="h-36" type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><button class="w-1/4 block rounded border border-black bg-pink-200 mt-2 p-0" type="button" onclick="arrowAdd('+inst+');">→</button>';
+
+  <?php
+  if(!is_null($showAssetId)) {
+    ?>
+  
+  cell1.innerHTML += '<label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="number" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'">';
+
+  <?php
+  }
+  ?>
 
   
 
