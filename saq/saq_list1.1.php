@@ -303,7 +303,7 @@ include($path."/header_tailwind.php");
           if(count($topics)>0) {
             ?>
             <label for="topic">Topic:</label>
-            <select class="inputProperties" id ="topic" name="topic" class="topicSelector">
+            <select class="inputProperties" id ="topic" name="topic" class="topicSelector" onchange="changeTopic(this);">
               <?php
                 $topicPostSelect = null;
                 if(isset($_POST['topic'])) {
@@ -740,6 +740,16 @@ function changeSubject(input) {
   var topicChangeForm = document.getElementById("database_get_form");
   var changeTo = input.value;
   var topicChangeSelect = document.getElementById("subjectSelectGet");
+  //console.log(topicChangeSelect);
+  //console.log(changeTo);
+  topicChangeSelect.value=changeTo;
+  topicChangeForm.submit();
+}
+
+function changeTopic(input) {
+  var topicChangeForm = document.getElementById("database_get_form");
+  var changeTo = input.value;
+  var topicChangeSelect = document.getElementById("topicGet");
   //console.log(topicChangeSelect);
   //console.log(changeTo);
   topicChangeSelect.value=changeTo;
