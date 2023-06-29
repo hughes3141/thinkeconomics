@@ -274,7 +274,7 @@ include($path."/header_tailwind.php");
           <?php
           }
           ?>
-        <button type="button" class="border border-black rounded new_topic_span" onclick='toggleHide(this, "new_topic_span", "Add New Topic", "Hide", "inline")'>Add New Topic</button>
+        <button type="button" class="border border-black rounded new_topic_span px-2 bg-sky-200" onclick='toggleHide(this, "new_topic_span", "Add New Topic", "Hide", "inline")'>Add New Topic</button>
         <span class="new_topic_span hidden">
           <label for="topic_new">New Topic:</label>
           <input class="inputProperties" id="topic_new" name="topic_new" type="text">
@@ -641,7 +641,9 @@ function disableInputProperties() {
   console.log(inputProperties)
 
   Array.from(inputProperties).forEach((input) => 
-  { input.setAttribute('disabled', 'true')
+  { //input.setAttribute('disabled', 'true')
+    input.style.pointerEvents = "none";
+    input.style.background = "#F5F5F5";
   })
 
 }
