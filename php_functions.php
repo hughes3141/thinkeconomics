@@ -1440,7 +1440,7 @@ function getDistinctFlashcardSubjectLevels() {
 
 }
 
-function sql_conjoin($x) {
+function sql_conjoin($x, $startParams ="") {
   /*
    Used  to join up different optional elemlents in sql query.
    Used in: 
@@ -1449,7 +1449,7 @@ function sql_conjoin($x) {
 
    */
   $y = "";
-  if($x != "") {
+  if($x != $startParams) {
     $y = " AND ";
   } else {
     $y = " WHERE ";
@@ -1457,7 +1457,7 @@ function sql_conjoin($x) {
   return $y;
 }
 
-function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, $subjectId = null, $userCreate = null, $type = null) {
+function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, $subjectId = null, $userCreate = null, $type = null, $userIdOrder = null) {
   /*
   Used to find information about questions in saq_question_bank_3 for a given number of parameters
 
@@ -1473,17 +1473,31 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   $bindArray = array();
   $results = array();
 
-  $sql_0 = "SELECT q.*, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt
+  $sql = "SELECT q.*, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt
           FROM saq_question_bank_3 q
           LEFT JOIN upload_record aq
           ON aq.id = q.questionAssetId
           LEFT JOIN upload_record aa
           ON aa.id = q.answerAssetId";
 
-  $sql = $sql_0;
+  if(!is_null($userIdOrder)) {
+    $params .= "i";
+    array_push($bindArray, $userIdOrder);
+
+    $sql .= " LEFT JOIN (
+                SELECT topicOrder
+                FROM user_list_data
+                WHERE userCreate = ?
+                ) ld
+              ON ld.dataId = q.id ";
+
+  }
+
+
   
   if($questionId) {
-    $sql .= " WHERE q.id = ? ";
+    $sql .= sql_conjoin($params, "i");
+    $sql .= "  q.id = ? ";
     $params .= "i";
     array_push($bindArray, $questionId);
   }
@@ -1493,11 +1507,8 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
     $numTopics = count($topics);
     //$placeholder = str_repeat("?, ", $numTopics -1)." ?";
 
-    $sql = $sql_0;
-    $params = "";
-    $bindArray = array();
 
-    $sql .= " WHERE ";
+    $sql .= sql_conjoin($params, "i");
 
     foreach($topics as $key=>$topic) {
       if($key == 0) {
@@ -1517,7 +1528,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   }
 
   if($subjectId) {
-    $sql .= sql_conjoin($params);
+    $sql .= sql_conjoin($params, "i");
 
     $sql .= " q.subjectId = ? ";
     $params .= "i";
@@ -1525,7 +1536,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   }
 
   if($userCreate) {
-    $sql .= sql_conjoin($params);
+    $sql .= sql_conjoin($params, "i");
     $sql .= " q.userCreate = ? ";
     $params .= "i";
     array_push($bindArray, $userCreate);
@@ -1533,12 +1544,12 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   }
 
   if($flashCard) {
-    $sql .= sql_conjoin($params);
+    $sql .= sql_conjoin($params, "i");
     $sql .= " ( q.flashCard = 1 OR q.type LIKE '%flashCard%' )";
   }
 
   if($type) {
-    $sql .= sql_conjoin($params);
+    $sql .= sql_conjoin($params, "i");
     $sql .= " q.type LIKE ? ";
     $params .= "s";
     $type = "%".$type."%";

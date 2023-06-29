@@ -52,7 +52,7 @@ if(isset($_GET['userCreate'])) {
   $userCreate = $_GET['userCreate'];
 }
 
-$questions = getSAQQuestions(null, $topic, true, $subjectId, $userCreate);
+$questions = getSAQQuestions(null, $topic, true, $subjectId, $userCreate, 1);
 $topicList = getTopicList("saq_question_bank_3", "topic", $topic, true, $subjectId, $userCreate);
 
 
@@ -67,10 +67,11 @@ $topicList = getTopicList("saq_question_bank_3", "topic", $topic, true, $subject
     echo $topic;
     echo "<br>";
     echo count($questions)."<br>";
+    */
     echo "<pre>";
     print_r($questions);
     echo "</pre>";
-    */
+    
     
     //print_r($topicList);
     
