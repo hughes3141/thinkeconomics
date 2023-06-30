@@ -1036,6 +1036,10 @@ textarea, input, select {
   border-radius: 0.25rem;
 }
 
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+
 .rounded-t {
   border-top-left-radius: 0.25rem;
   border-top-right-radius: 0.25rem;
@@ -1378,6 +1382,10 @@ textarea, input, select {
 
 .pb-4 {
   padding-bottom: 1rem;
+}
+
+.pt-2 {
+  padding-top: 0.5rem;
 }
 
 .text-left {
