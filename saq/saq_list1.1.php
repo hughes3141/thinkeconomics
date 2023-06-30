@@ -65,11 +65,10 @@ $flashCardSubmit = null;
 if($showFlashCards == null) {
   $flashCardSubmit =1;
 }
-/*
-if($showAssetId == null) {
-  $assetSubmit = "";
-}
-*/
+
+//assetSubmit = "";
+
+
 
 if (isset($_POST['submit'])) {
 
@@ -127,7 +126,7 @@ if (isset($_POST['submit'])) {
       insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
       
       //Update topic_order for new Entry:
-      changeOrderNumberWithinTopic(null, $topic, $topic_order, $subjectId, $levelId);
+      //changeOrderNumberWithinTopic(null, $topic, $topic_order, $subjectId, $levelId);
 
       //echo "Record $question inserted<br>";
     }
@@ -153,11 +152,26 @@ if(isset($_POST['updateValue'])) {
     $flashCard = $flashCardSubmit;
   }
 
+  $questionAsset = null;
+  $answerAsset = null;
+  
+  if(isset($_POST['questionAsset'])) {
+    if($_POST['questionAsset'] == "") {
+      $questionAsset = null;
+    }      
+    if($_POST['answerAsset'] == "") {
+      $answerAsset = null;
+    }
+    $questionAsset = $_POST['questionAsset'];
+    $answerAsset = $_POST['answerAsset'];
+
+  }
+
   //Update Record:
-  //$updateMessage = updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], "", $_POST['model_answer'], "", "", $_POST['questionAsset'], $_POST['answerAsset'], $flashCard);
+  $updateMessage = updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], "", $_POST['model_answer'], "", "", $questionAsset, $answerAsset, $flashCard);
 
   //Change order value:
-  changeOrderNumberWithinTopic($_POST['id'], $_POST['topic'], $_POST['topic_order'], $_POST['subjectId'], $_POST['levelId'], $userId);
+  //changeOrderNumberWithinTopic($_POST['id'], $_POST['topic'], $_POST['topic_order'], $_POST['subjectId'], $_POST['levelId'], $userId);
 
 }
 
