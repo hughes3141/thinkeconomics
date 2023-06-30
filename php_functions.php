@@ -1563,7 +1563,11 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
     array_push($bindArray, $type);
   }
 
-  $sql .= " ORDER BY topic, topic_order";
+  $sql .= " ORDER BY topic";
+
+  if(!is_null($userIdOrder)) {
+    $sql .= ", userTopicOrder, topic_order";
+  }
 
 
   $stmt=$conn->prepare($sql);
@@ -1811,7 +1815,7 @@ function getInfoFromUserListData($dataId, $userCreate, $dataSource) {
 
 }
 
-function updateTopicOrder2($id, $newPlace) {
+function updateTopicOrder2($id, $newPlace, $userCreate) {
   /*
   A function to update the topicOrder column of user_list_data
 
@@ -1821,16 +1825,17 @@ function updateTopicOrder2($id, $newPlace) {
   global $conn;
   $sql =    " UPDATE user_list_data
               SET topicOrder = ?
-              WHERE id = ?";
+              WHERE dataId = ?
+              AND userCreate = ?";
 
   //echo $sql; 
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("ii", $newPlace, $id);
+  $stmt->bind_param("iii", $newPlace, $id, $userCreate);
   $stmt->execute();
 
 }
 
-function createInfoToUserListData($newPlace) {
+function createInfoToUserListData($dataId, $newPlace, $userCreate) {
   /**
    * A function to insert topoicOrder information into user_list_data
    * 
@@ -1838,21 +1843,23 @@ function createInfoToUserListData($newPlace) {
    */
 
    global $conn;
+   $source = "saq_question_bank_3";
+   $active = 1;
 
    $sql =    "  INSERT INTO user_list_data 
-                (topicOrder)
-                VALUES (?)";
+                (dataId, topicOrder, userCreate, dataSource, isActive)
+                VALUES (?,?,?,?,?)";
  
    //echo $sql; 
    $stmt = $conn->prepare($sql);
-   $stmt->bind_param("i", $newPlace);
+   $stmt->bind_param("iiisi", $dataId, $newPlace, $userCreate, $source, $active);
    $stmt->execute();
 
 
 }
 
 
-function changeOrderNumberWithinTopic($id, $topic, $newPlace, $subjectId, $levelId) {
+function changeOrderNumberWithinTopic($id, $topic, $newPlace, $subjectId, $levelId, $userId) {
 
   /*
   This function is used to take all questions from table $table with $topic, give entry with $id a $newPlace in the order, then update all other values with the same topic category.
@@ -1863,26 +1870,31 @@ function changeOrderNumberWithinTopic($id, $topic, $newPlace, $subjectId, $level
   -saq_list1.1.php
   */
   global $conn;
-  $bindArray = array($topic, $subjectId, $levelId );
-  $params = "sii";
+  $bindArray = array($userId, $topic, $subjectId, $levelId );
+  $params = "isii";
 
-  $sql = "SELECT q.id, q.topic_order, q.question ld.*
-          FROM saq_question_bank q ";
-  $sql .= " LEFT JOIN user_list_data ld
-            ON ld.dataId = q.id
-            WHERE topic = ?
-            AND subjectId = ?
-            AND levelId = ? ";
+  $sql = "SELECT q.id, q.topic_order, q.question, ld.topicOrder userTopicOrder
+          FROM saq_question_bank_3 q ";
+
+  $sql .= " LEFT JOIN 
+            (SELECT * FROM user_list_data 
+            WHERE userCreate = ? 
+            AND dataSource = 'saq_question_bank_3') ld
+            ON ld.dataId = q.id ";
+  $sql .= " WHERE q.topic = ?
+            AND q.subjectId = ?
+            AND q.levelId = ? ";
   if(!is_null($id)) {
-    $sql .= " AND id <> ? ";
+    $sql .= " AND q.id <> ? ";
     array_push($bindArray, $id);
     $params .= "i";
   }
-  $sql .= "ORDER BY topic_order";
+  $sql .= "ORDER BY topicOrder";
 
   if(is_null($id)) {
     $sql .= " , id DESC"; 
   }
+  
 
   $stmt = $conn->prepare($sql);
   $stmt->bind_param($params, ...$bindArray);
@@ -1896,14 +1908,13 @@ function changeOrderNumberWithinTopic($id, $topic, $newPlace, $subjectId, $level
     }
   }
 
-  print_r($questions);
 
   //When updating a current record $id will not be null so:
 
   if(!is_null($id)) {
 
     //(This will need to be fixed in order to update table):
-    $questionSelect = getSAQQuestions($id)[0];
+    $questionSelect = getSAQQuestions($id,null, null, null, null, null, $userId )[0];
 
     $questions = array_merge(array_slice($questions, 0, $newPlace), array($questionSelect), array_slice($questions, $newPlace));
     $index = 0;
@@ -1917,11 +1928,20 @@ function changeOrderNumberWithinTopic($id, $topic, $newPlace, $subjectId, $level
     }
     $index = $newPlace -1;
   }
-  
+  /*
+  echo "<pre>";
   print_r($questions);
+  echo "</pre>";
+  */
 
   for($x=$index; $x<count($questions); $x++) {
-    //updateTopicOrder($questions[$x]['id'], $index, $table);   
+    //updateTopicOrder($questions[$x]['id'], $index, $table);
+    if($questions[$x]['userTopicOrder'] =="") {
+      createInfoToUserListData($questions[$x]['id'], $index, $userId);
+    }
+    if($questions[$x]['userTopicOrder'] !="") {
+      updateTopicOrder2($questions[$x]['id'], $index, $userId);
+    }
     $index ++;
   }
 
