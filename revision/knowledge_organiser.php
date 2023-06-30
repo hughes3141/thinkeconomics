@@ -36,15 +36,31 @@ $style_input = "
 
 include($path."/header_tailwind.php");
 
-$topic = null;
+
+$showTopicInput = 1;
+if(isset($_GET['noShow'])) {
+  $showTopicInput = null;
+}
+
+//$topic = null;
 $subjectId = null;
-$subjectId = 1;
+$subjectId = null;
 $userCreate = null;
-$userCreate = 1;
+$userCreate = null;
+
+$topics = null;
+$subjectLevel = null;
 
 if(isset($_GET['topic'])) {
-  $topic = $_GET['topic'];
+  $_GET['topics'] = $_GET['topic'];
 }
+
+if(isset($_GET['topics'])) {
+  $topics = $_GET['topics'];
+  
+}
+
+
 if(isset($_GET['subjectId'])) {
   $subjectId = $_GET['subjectId'];
 }
@@ -52,32 +68,77 @@ if(isset($_GET['userCreate'])) {
   $userCreate = $_GET['userCreate'];
 }
 
-$questions = getSAQQuestions(null, $topic, true, $subjectId, $userCreate);
-$topicList = getTopicList("saq_question_bank_3", "topic", $topic, true, $subjectId, $userCreate);
+if(isset($_GET['subjectLevel'])) {
+  $subjectLevel = $_GET['subjectLevel'];
+  $subjectLevelArray = explode("_", $subjectLevel);
+  if(count($subjectLevelArray)>1) {
+    $subjectLevel_levelId = $subjectLevelArray[0];
+    $subjectLevel_subjectId = $subjectLevelArray[1];
+  }
+  //Sets subjectId from here
+  $subjectId = $subjectLevel_subjectId;
+}
+
+$levels = getOutputFromTable("subjects_level", null, "name");
+
+
+$subjects = getDistinctFlashcardSubjectLevels();
+
+$allSubjects = getOutputFromTable("subjects", null, "name");
+
+$topicsArray = array();
+
+if(!is_null($subjectId)) {
+  $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectId, null, null, 1);
+
+}
+
+
+
+$questions = getSAQQuestions(null, $topics, true, $subjectId, $userCreate, null, null);
+$topicList = getTopicList("saq_question_bank_3", "topic", $topics, true, $subjectId, $userCreate);
 
 
 ?>
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">Knowledge Organiser</h1>
-  <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5 pt-0">
+  <div class=" container mx-auto p-4  mt-2 bg-white text-black mb-5 pt-1 ">
   
   <?php
+
+  if(isset($_GET['test'])) {
+    
+    echo "subjectId: ".$subjectId."<br>";
+    echo "All Subjects :<br>";
+    print_r($allSubjects);
+    echo "<br>Distinct Subjects :<br>";
+    print_r($subjects);
+    echo "<br>Distinct Levels :<br>";
+    print_r($levels);
+
+  }
     /*
-    echo $topic;
+    echo $topics;
     echo "<br>";
     echo count($questions)."<br>";
+
     echo "<pre>";
     print_r($questions);
     echo "</pre>";
     */
+
+
+
     
     //print_r($topicList);
+
+    if(!is_null($showTopicInput)) {
+      //Embeds topic selector:
+      include("topic_select_embed.php");
+    }
+
     
-
-
-
-
     foreach($topicList as $topic) {
       $questions_filter_by_topic = array();
 
@@ -130,11 +191,12 @@ $topicList = getTopicList("saq_question_bank_3", "topic", $topic, true, $subject
   </div>
 </div>
 
-<script>
-</script>
+
 
 
 <?php   include($path."/footer_tailwind.php");?>
 
 
 
+<script>
+</script>

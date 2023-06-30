@@ -127,7 +127,7 @@ if (isset($_POST['submit'])) {
       insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
       
       //Update topic_order for new Entry:
-      changeOrderNumberWithinTopic("saq_question_bank_3", null, $topic, $topic_order, $subjectId, $levelId);
+      changeOrderNumberWithinTopic(null, $topic, $topic_order, $subjectId, $levelId);
 
       //echo "Record $question inserted<br>";
     }
@@ -154,10 +154,10 @@ if(isset($_POST['updateValue'])) {
   }
 
   //Update Record:
-  $updateMessage = updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], "", $_POST['model_answer'], "", "", $_POST['questionAsset'], $_POST['answerAsset'], $flashCard);
+  //$updateMessage = updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], "", $_POST['model_answer'], "", "", $_POST['questionAsset'], $_POST['answerAsset'], $flashCard);
 
   //Change order value:
-  changeOrderNumberWithinTopic("saq_question_bank_3", $_POST['id'], $_POST['topic'], $_POST['topic_order'], $_POST['subjectId'], $_POST['levelId']);
+  changeOrderNumberWithinTopic($_POST['id'], $_POST['topic'], $_POST['topic_order'], $_POST['subjectId'], $_POST['levelId'], $userId);
 
 }
 
@@ -204,7 +204,7 @@ if(isset($_GET['userCreate'])) {
   $userCreate = $_GET['userCreate'];
 }
 
-$questions = getSAQQuestions(null, $topicGet, $flashCard, $subjectId, $userCreate, $type);
+$questions = getSAQQuestions(null, $topicGet, $flashCard, $subjectId, $userCreate, $type, $userId);
 
 $questionTopicCount = 0;
 if(isset($_GET['topic'])) {
@@ -450,7 +450,7 @@ include($path."/header_tailwind.php");
           <td class="align-top">
             <div class="show_<?=$row['id'];?>">
               <?=htmlspecialchars($row['topic']);?><br>
-              <?= (/*$row['topic_order']  != "0" ? */htmlspecialchars($row['topic_order']) /*: ""*/)?>
+              <?= (/*$row['topic_order']  != "0" ? */htmlspecialchars($row['userTopicOrder']) /*: ""*/)?>
               <?//=htmlspecialchars($row['topic_order'])?>
             </div>
             <div class="hide hide_<?=$row['id'];?>">
@@ -509,6 +509,11 @@ include($path."/header_tailwind.php");
               <label for="flashCard_Update_<?=$row['id'];?>">flashCard</label>
             <?php
             }
+
+                  if(isset($_GET['test'])) {
+                    print_r($row);
+                  }
+
             ?>
           </td>
 
