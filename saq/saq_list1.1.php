@@ -484,11 +484,16 @@ include($path."/header_tailwind.php");
                       <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($row['q_path'])?>" alt = "<?=htmlspecialchars($row['q_alt'])?>">
                       <?php
                     }
-                    ?>
+
+                if($row['points'] != "") {
+                  var_dump($row['points']);
+                ?>
               <p>
                 Points: <?=$row['points']?>
               </p>
-              <?php
+                <?php
+                }
+
               if($row['type'] != "") {
                 ?>
               <p>
