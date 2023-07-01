@@ -385,6 +385,10 @@ include($path."/header_tailwind.php");
 
 
       <input class="bg-pink-200 px-2" type="submit" value="Choose Topic">
+      <div class="hidden">
+        <input type="checkbox" value="1" name="noFlashCard" <?=is_null($showFlashCards)?"checked":""?>>
+        <input type="checkbox" value="1" name="noAssetInput" <?=is_null($showAssetId)?"checked":""?>>
+      </div>
     </div>
 
   </form>
