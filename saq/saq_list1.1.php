@@ -139,11 +139,15 @@ if(isset($_POST['updateValue'])) {
   $answerAsset = $_POST['answerAsset'];
 
   $topicId = $_POST['topicId'];
+  $topic = null;
+  if(isset($_POST['topic'])) {
+    $topic = $_POST['topic'];
+  }
 
   
 
   //Update Record:
-  $updateMessage = updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], "", $_POST['model_answer'], "", "", $questionAsset, $answerAsset, $flashCard);
+  $updateMessage = updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $topic, $_POST['points'], $_POST['type'], "", $_POST['model_answer'], "", "", $questionAsset, $answerAsset, $flashCard, $topicId);
 
   //Change order value:
   //changeOrderNumberWithinTopic($_POST['id'], $_POST['topic'], $_POST['topic_order'], $_POST['subjectId'], $_POST['levelId'], $userId);
@@ -165,6 +169,8 @@ $subjectId = null;
 $userCreate = null;
 $type = null;
 
+$topicId = null;
+
 //$userPreferredSubject comes from a user's information.
 if(isset($userInfo['userPreferredSubjectId'])) {
   $userPreferredSubject = $userInfo['userPreferredSubjectId'];
@@ -179,10 +185,6 @@ if(isset($_GET['flashCard'])) {
   $flashCard = 1;
 }
 
-if(isset($flashCardSubmit)) {
-  $flashCard = $flashCardSubmit;
-}
-
 if(isset($_GET['subjectId'])) {
   $subjectId = $_GET['subjectId'];
 }
@@ -193,7 +195,13 @@ if(isset($_GET['userCreate'])) {
   $userCreate = $_GET['userCreate'];
 }
 
-$questions = getSAQQuestions(null, $topicGet, $flashCard, $subjectId, $userCreate, $type, $userId);
+if(isset($_GET['topicId'])) {
+  $topicId = $_GET['topicId'];
+}
+
+$questions = getSAQQuestions(null, $topicGet, $flashCard, $subjectId, $userCreate, $type, $userId, $topicId);
+
+//$questions = getSAQQuestions(null, null, null, null, null, null, null, null);
 
 $questionTopicCount = 0;
 if(isset($_GET['topic'])) {
@@ -429,7 +437,7 @@ include($path."/header_tailwind.php");
 
 
   <?php 
-  if($topicGet) {
+  if($topicId) {
     ?>
     
     <table class="input_table table-fixed w-full">
@@ -459,12 +467,41 @@ include($path."/header_tailwind.php");
         
           <td class="align-top">
             <div class="show_<?=$row['id'];?>">
-              <?=htmlspecialchars($row['topic']);?><br>
-              <?= (/*$row['topic_order']  != "0" ? */htmlspecialchars($row['userTopicOrder']) /*: ""*/)?>
-              <?//=htmlspecialchars($row['topic_order'])?>
+              <?=htmlspecialchars($row['topicName']);?><br>
+              <?=htmlspecialchars($row['userTopicOrder'])?> 
             </div>
             <div class="hide hide_<?=$row['id'];?>">
-              <input type="text" name ="topic" value ="<?=htmlspecialchars($row['topic'])?>" style="width:100px;"></input>
+            <select name="topicId" class='w-full'>
+              <?php
+                  $topicPostSelect = null;
+                  if(isset($_POST['topicId'])) {
+                    $topicPostSelect = $_POST['topicId'];
+                  }
+                  if(isset($_GET['topicId'])) {
+                    $topicPostSelect = $_GET['topicId'];
+                  }
+                  foreach ($topics as $topic) {
+                    $indent = "";
+                    $disabled = "";
+                      if($topic['topicLevel'] =="0") {
+                        continue;
+                        $disabled = 'disabled="disabled"';
+
+                      } else if ($topic['topicLevel'] =="1") {
+                        continue;
+                        $indent = "&nbsp&nbsp";
+                        $disabled = 'disabled="disabled"';
+                      } else if ($topic['topicLevel'] =="2") {
+                        //$indent = "&nbsp&nbsp&nbsp&nbsp";
+                      }
+                    ?>
+                    <option class="w-10" value="<?=$topic['id']?>" <?=($topicPostSelect == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$indent.$topic['name']?></option>
+                    <?php
+                  }
+                ?>
+              </select>
+              <br>
+
               <input type="text" name ="topic_order" value ="<?=htmlspecialchars($row['topic_order'])?>" style="width:100px;"></input>
             </div>
             <p>

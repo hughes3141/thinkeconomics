@@ -1457,7 +1457,7 @@ function sql_conjoin($x, $startParams ="") {
   return $y;
 }
 
-function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, $subjectId = null, $userCreate = null, $type = null, $userIdOrder = null) {
+function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, $subjectId = null, $userCreate = null, $type = null, $userIdOrder = null, $topicId = null) {
   /*
   Used to find information about questions in saq_question_bank_3 for a given number of parameters
 
@@ -1565,7 +1565,16 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
     array_push($bindArray, $type);
   }
 
+  if(!is_null($topicId)) {
+    $sql .= sql_conjoin($params, $paramsExpected);
+    $sql .= " q.topicId = ? ";
+    $params .= "i";
+    array_push($bindArray, $topicId);
+  }
+
   $sql .= " ORDER BY topic";
+
+  //echo $sql;
 
   if(!is_null($userIdOrder)) {
     $sql .= ", userTopicOrder, topic_order";
@@ -1621,7 +1630,7 @@ function insertSAQQuestion($topic, $question, $points, $type, $image, $model_ans
 
 }
 
-function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $type, $img, $model_answer, $answer_img, $answer_img_alt, $questionAsset, $answerAsset, $flashCard=0) {
+function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $type, $img, $model_answer, $answer_img, $answer_img_alt, $questionAsset, $answerAsset, $flashCard=0, $topicId) {
   /**
    * This function updates entries in saq_question_bank_3
    * 
@@ -1632,7 +1641,7 @@ function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $ty
    global $conn;
 
    $sql = " UPDATE saq_question_bank_3 
-            SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?,  questionAssetId =?, answerAssetId = ?, flashCard = ? 
+            SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?,  questionAssetId =?, answerAssetId = ?, flashCard = ?, topicId = ?
             WHERE id = ?";
 
   //Set values to null if left blank:
@@ -1644,7 +1653,7 @@ function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $ty
   }
 
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("ssssssssiiii", $question, $topic, $points, $type, $img, $model_answer, $answer_img, $answer_img_alt, $questionAsset, $answerAsset, $flashCard, $questionId);
+  $stmt->bind_param("ssssssssiiiii", $question, $topic, $points, $type, $img, $model_answer, $answer_img, $answer_img_alt, $questionAsset, $answerAsset, $flashCard, $topicId, $questionId);
 
   $questionUserCreator = getSAQQuestions($questionId)[0]['userCreate'];
   
