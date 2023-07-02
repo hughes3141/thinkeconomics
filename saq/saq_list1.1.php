@@ -246,13 +246,14 @@ include($path."/header_tailwind.php");
       echo "POST:<br>";
       var_dump($_POST);
     }
-    echo "<br>User Info:<br>";
+    echo "<br><br>User Info:<br>";
     print_r($userInfo);
-    echo "<br>Subjects:<br>";
+    echo "<br><br>Subjects:<br>";
     print_r($subjects);
-    echo "<br>Levels:<br>";
+    echo "<br><br>Levels:<br>";
     print_r($levels);
-    echo "<br>Topics:<br>";
+    echo "<br><br>Topics:<br>";
+    echo count($topics)."<br>";
     print_r($topics);
     
   }

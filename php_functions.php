@@ -1474,7 +1474,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   $bindArray = array();
   $results = array();
 
-  $sql = "SELECT q.*, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt ";
+  $sql = "SELECT q.*, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt, topic.code, topic.name topicName, topic.subjectId subjectId, topic.levelId levelId, topic.levelsArray, topic.examBoardsArray ";
   
   if(!is_null($userIdOrder)) {
     $sql .= ", ld.topicOrder userTopicOrder, ld.isActive, ld.comments userComments, ld.extraTopics, ld.studentHide ";
@@ -1484,7 +1484,9 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
           LEFT JOIN upload_record aq
           ON aq.id = q.questionAssetId
           LEFT JOIN upload_record aa
-          ON aa.id = q.answerAssetId";
+          ON aa.id = q.answerAssetId
+          LEFT JOIN topics_general topic
+          ON topic.id = q.topicId";
 
   if(!is_null($userIdOrder)) {
     $params .= "i";
