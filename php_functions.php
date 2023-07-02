@@ -2112,6 +2112,85 @@ function getTopicsGeneralList($topicId = null, $topicCode = null, $subjectId = n
 
 }
 
+function insertTopicsGeneralList($code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray) {
+  /*
+   * This funciton enters new entries into topics_general table
+   * 
+   * Used in:
+   * -revision/topic_list.php
+   */
+
+   global $conn;
+
+   $sql = "INSERT INTO topics_general
+          (code, name, subjectId, levelId, levelsArray, examBoardsArray) 
+          VALUES (?,?,?,?,?,?)";
+
+    $stmt = $conn->prepare($sql);
+
+    $params = "ssiiss";
+    $bindArray = array();
+
+    $stmt=$conn->prepare($sql);
+    $stmt->bind_param($params, $code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArra);
+
+    $stmt->execute();
+
+
+}
+
+function updateTopicsGeneralList($id, $code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray) {
+  /**
+   * Used to update topics_general
+   * 
+   * Used in:
+   * -topic_list.php
+   */
+
+    global $conn;
+    $sql = "UPDATE topics_general
+            SET code =?, name =?, subjectId =?, levelId =?, levelsArray =?, examBoardsArray =?
+            WHERE id = ? ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssiissi", $code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray, $id);
+}
+
+function getExamBoards($id = null) {
+  global $conn;
+  $results = array();
+  $params = "";
+  $bindArray = array();
+
+  $sql = "SELECT *
+          FROM exam_boards";
+
+  if(!is_null($id)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " id = ? ";
+    $params .= "i";
+    array_push($bindArray, $id);
+  }
+
+  $stmt=$conn->prepare($sql);
+  
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
+}
+
 function loginLogReturn($limit = null, $likeName = null) {
   global $conn;
   $responses = array();

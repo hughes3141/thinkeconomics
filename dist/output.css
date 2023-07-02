@@ -871,6 +871,10 @@ textarea, input, select {
   width: 2.5rem;
 }
 
+.w-1\/5 {
+  width: 20%;
+}
+
 .max-w-5xl {
   max-width: 64rem;
 }
