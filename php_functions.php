@@ -1597,7 +1597,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
 
 }
 
-function insertSAQQuestion($topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId) {
+function insertSAQQuestion($topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId, $topicId) {
   /**
    * This function inserts a new question into saq_question_bank_3
    * 
@@ -1608,12 +1608,12 @@ function insertSAQQuestion($topic, $question, $points, $type, $image, $model_ans
   global $conn;
 
   $sql = "INSERT INTO saq_question_bank_3 
-        (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, time_added, questionAssetId, answerAssetId, flashCard, topic_order, levelId) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, time_added, questionAssetId, answerAssetId, flashCard, topic_order, levelId, topicId) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   $stmt = $conn->prepare($sql);
 
-  $stmt->bind_param("ssisssissssiiiii", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
+  $stmt->bind_param("ssisssissssiiiiii", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId, $topicId);
 
   $stmt->execute();
 
@@ -2023,7 +2023,83 @@ function getTopicList($tableName, $topicColumn, $topics = null, $flashCard = nul
 
 }
 
+function getTopicsGeneralList($topicId = null, $topicCode = null, $subjectId = null, $levelId = null, $topicName = null) {
+  /**
+   * This function returns information from topics_general table given input paramters
+   * 
+   * Used in:
+   * -saq_list1.1.php
+   */
 
+  global $conn;
+
+  $params="";
+  $bindArray = array();
+  $results = array();
+
+
+  $sql = "SELECT *, 
+          LENGTH(code) - LENGTH(REPLACE(code, '.', '')) AS topicLevel
+          FROM topics_general ";
+
+  if(!is_null($topicId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " id = ? ";
+    $params .= "i";
+    array_push($bindArray, $topicId);
+  }
+
+  if(!is_null($topicCode)) {
+    $sql .= sql_conjoin($params);
+    $topicCode = $topicCode."%";
+    $sql .= " code LIKE ? ";
+    $params .= "s";
+    array_push($bindArray, $topicCode);
+  }
+
+  if(!is_null($subjectId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " subjectId = ? ";
+    $params .= "i";
+    array_push($bindArray, $subjectId);
+  }
+
+  if(!is_null($levelId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " levelId = ? ";
+    $params .= "i";
+    array_push($bindArray, $levelId);
+  }
+
+  if(!is_null($topicName)) {
+    $sql .= sql_conjoin($params);
+    $topicName = "&".$topicName."%";
+    $sql .= " name LIKE ? ";
+    $params .= "s";
+    array_push($bindArray, $topicName);
+  }
+
+  
+
+  $sql .= " ORDER BY code";
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
+
+}
 
 function loginLogReturn($limit = null, $likeName = null) {
   global $conn;

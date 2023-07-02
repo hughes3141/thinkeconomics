@@ -73,10 +73,11 @@ if (isset($_POST['submit'])) {
   
   $count = $_POST['questionsCount'];
 
-  $topic = $_POST['topic'];
-  if($_POST['topic_new'] != "") {
-    $topic = trim($_POST['topic_new']);
-  }
+  //$topic = $_POST['topic'];
+  $topicId = $_POST['topicId'];
+
+  $topic = getTopicsGeneralList($topicId)[0]['code'];
+
 
   $subjectId = $_POST['subjectId'];
   $levelId = $_POST['levelId'];
@@ -107,7 +108,7 @@ if (isset($_POST['submit'])) {
 
     if($_POST['active_entry_'.$x] == "1") {
 
-      insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
+      insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId, $topicId);
       
       //Update topic_order for new Entry:
       //changeOrderNumberWithinTopic(null, $topic, $topic_order, $subjectId, $levelId);
@@ -136,6 +137,8 @@ if(isset($_POST['updateValue'])) {
 
   $questionAsset = $_POST['questionAsset'];
   $answerAsset = $_POST['answerAsset'];
+
+  $topicId = $_POST['topicId'];
 
   
 
@@ -210,7 +213,11 @@ if(!is_null($subjectId)) {
   $subjectSelector = $subjectId;
 }
 
-$topics = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectSelector, null, null, $flashCard);
+$levelId = null;
+
+//$topics = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectSelector, null, null, $flashCard);
+
+$topics = getTopicsGeneralList(null, null, $subjectSelector, $levelId, null);
 
 
 include($path."/header_tailwind.php");
@@ -249,6 +256,8 @@ include($path."/header_tailwind.php");
     print_r($topics);
     
   }
+
+
 
 ?>
 
@@ -289,15 +298,29 @@ include($path."/header_tailwind.php");
           if(count($topics)>0) {
             ?>
             <label for="topic">Topic:</label>
-            <select class="inputProperties" id ="topic" name="topic" class="topicSelector" onchange="changeTopic(this);">
+            <select class="inputProperties w-20 " id ="topic" name="topicId" class="topicSelector" onchange="changeTopic(this);">
               <?php
                 $topicPostSelect = null;
-                if(isset($_POST['topic'])) {
-                  $topicPostSelect = $_POST['topic'];
+                if(isset($_POST['topicId'])) {
+                  $topicPostSelect = $_POST['topicId'];
+                }
+                if(isset($_GET['topicId'])) {
+                  $topicPostSelect = $_GET['topicId'];
                 }
                 foreach ($topics as $topic) {
+                  $indent = "";
+                  $disabled = "";
+                    if($topic['topicLevel'] =="0") {
+                      $disabled = 'disabled="disabled"';
+
+                    } else if ($topic['topicLevel'] =="1") {
+                      $indent = "&nbsp&nbsp";
+                      $disabled = 'disabled="disabled"';
+                    } else if ($topic['topicLevel'] =="2") {
+                      $indent = "&nbsp&nbsp&nbsp&nbsp";
+                    }
                   ?>
-                  <option value="<?=$topic?>" <?=($topicPostSelect == $topic) ? "selected":""?> <?=($topicGet == $topic) ? "selected":""?> ><?=$topic?></option>
+                  <option class="" value="<?=$topic['id']?>" <?=($topicPostSelect == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$indent.$topic['name']?></option>
                   <?php
                 }
               ?>
@@ -305,11 +328,7 @@ include($path."/header_tailwind.php");
           <?php
           }
           ?>
-        <button type="button" class="border border-black rounded new_topic_span px-2 bg-sky-200" onclick='toggleHide(this, "new_topic_span", "Add New Topic", "Hide", "inline")'>Add New Topic</button>
-        <span class="new_topic_span hidden">
-          <label for="topic_new">New Topic:</label>
-          <input class="inputProperties" id="topic_new" name="topic_new" type="text">
-        </span>
+
     </div>
     <table id="question_input_table" class="input_table w-full table-fixed">
       <tr>
@@ -365,15 +384,29 @@ include($path."/header_tailwind.php");
 
       
       <label for="topicGet">Topic:</label>
-      <select id="topicGet" name="topic">
+      <select id="topicGet" class="w-20" name="topicId">
       <?php
             $topicPostSelect = null;
-            if(isset($_POST['topic'])) {
-              $topicPostSelect = $_POST['topic'];
+            if(isset($_POST['topicId'])) {
+              $topicPostSelect = $_POST['topicId'];
+            }
+            if(isset($_GET['topicId'])) {
+              $topicPostSelect = $_GET['topicId'];
             }
             foreach ($topics as $topic) {
+              $indent = "";
+              $disabled = "";
+                if($topic['topicLevel'] =="0") {
+                  $disabled = 'disabled="disabled"';
+
+                } else if ($topic['topicLevel'] =="1") {
+                  $indent = "&nbsp&nbsp";
+                  $disabled = 'disabled="disabled"';
+                } else if ($topic['topicLevel'] =="2") {
+                  $indent = "&nbsp&nbsp&nbsp&nbsp";
+                }
               ?>
-              <option value="<?=$topic?>" <?=($topicPostSelect == $topic) ? "selected":""?> <?=($topicGet == $topic) ? "selected":""?> ><?=$topic?></option>
+              <option class="" value="<?=$topic['id']?>" <?=($topicPostSelect == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$indent.$topic['name']?></option>
               <?php
             }
           ?>
