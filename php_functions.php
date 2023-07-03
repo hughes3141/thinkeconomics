@@ -2112,7 +2112,7 @@ function getTopicsGeneralList($topicId = null, $topicCode = null, $subjectId = n
 
 }
 
-function insertTopicsGeneralList($code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray) {
+function insertTopicsGeneralList($code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray, $userCreate) {
   /*
    * This funciton enters new entries into topics_general table
    * 
@@ -2123,18 +2123,20 @@ function insertTopicsGeneralList($code, $name, $subjectId, $levelId, $levelsArra
    global $conn;
 
    $sql = "INSERT INTO topics_general
-          (code, name, subjectId, levelId, levelsArray, examBoardsArray) 
-          VALUES (?,?,?,?,?,?)";
+          (code, name, subjectId, levelId, levelsArray, examBoardsArray, userCreate) 
+          VALUES (?,?,?,?,?,?,?)";
 
     $stmt = $conn->prepare($sql);
 
-    $params = "ssiiss";
+    $params = "ssiissi";
     $bindArray = array();
 
     $stmt=$conn->prepare($sql);
-    $stmt->bind_param($params, $code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArra);
+    $stmt->bind_param($params, $code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray, $userCreate);
 
     $stmt->execute();
+
+    echo "this worked";
 
 
 }

@@ -54,20 +54,23 @@ if (isset($_POST['submit'])) {
   
   $count = $_POST['questionsCount'];
   $subjectId = $_POST['subjectId'];
+  
+  $userCreate = $userId;
 
   for($x=0; $x<$count; $x++) {
 
     $code = $_POST['topicCode_'.$x];
     $name = $_POST['topicName_'.$x];
     //$levelId = $_POST['levelId_'.$x];
+    $levelId = null;
     $levelsArray = $_POST['levelsArray_'.$x];
-    $examBoardsArray = $_POST['examBoardsArray_'.$x];
+    $examBoardsArray = $_POST['boardsArray_'.$x];
 
     if($_POST['active_entry_'.$x] == "1") {
 
-      //insertTopicsGeneralList($code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray);
+      insertTopicsGeneralList($code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray, $userCreate);
 
-      //echo "Record $question inserted<br>";
+      echo "Record $name inserted<br>";
     }
 
     //echo "New records created successfully";
@@ -124,6 +127,7 @@ $topics = getTopicsGeneralList($topicId, $topicCode, $subjectId, $levelId, $topi
 
 $subjects = getOutputFromTable("subjects", null, "name");
 $levels =  getOutputFromTable("subjects_level", null, "name");
+$examBoards = getOutputFromTable("exam_boards", null, "name");
 
 //$subjectSelector is the subjectId that is either determined by (1) user preference or (2) $subjectId;
 $subjectSelector = $userPreferredSubject;
@@ -162,6 +166,8 @@ include($path."/header_tailwind.php");
     print_r($subjects);
     echo "<br><br>Levels:<br>";
     print_r($levels);
+    echo "<br><br>Exam Boards:<br>";
+    print_r($examBoards);
     
 
     
@@ -190,9 +196,9 @@ include($path."/header_tailwind.php");
     <table id="question_input_table" class="input_table w-full table-fixed">
       <tr>
         <th class = "w-1/5">Topic</th>
-        <th class = "w-1/5">Level
-        </th>
+        <th class = "w-1/5">Level</th>
         <th class = "w-1/5">Exam Boards</th>
+        <th class = "w-1/5">Remove</th>
         
       </tr>
     </table>
@@ -242,34 +248,7 @@ include($path."/header_tailwind.php");
         </select>
 
       
-      <label for="topicGet">Topic:</label>
-      <select id="topicGet" class="w-20" name="topicId">
-      <?php
-            $topicPostSelect = null;
-            if(isset($_POST['topicId'])) {
-              $topicPostSelect = $_POST['topicId'];
-            }
-            if(isset($_GET['topicId'])) {
-              $topicPostSelect = $_GET['topicId'];
-            }
-            foreach ($topics as $topic) {
-              $indent = "";
-              $disabled = "";
-                if($topic['topicLevel'] =="0") {
-                  $disabled = 'disabled="disabled"';
-
-                } else if ($topic['topicLevel'] =="1") {
-                  $indent = "&nbsp&nbsp";
-                  $disabled = 'disabled="disabled"';
-                } else if ($topic['topicLevel'] =="2") {
-                  $indent = "&nbsp&nbsp&nbsp&nbsp";
-                }
-              ?>
-              <option class="" value="<?=$topic['id']?>" <?=($topicPostSelect == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$indent.$topic['name']?></option>
-              <?php
-            }
-          ?>
-      </select>
+      
       <span class="<?=is_null($showFlashCards)?"hidden":""?>">
         <input id="flashcard_select" type="checkbox" name="flashCard" value="1" <?=(isset($_GET['flashCard'])) ? "checked":""?>>
         <label for="flashcard_select">FlashCards Only</label>
@@ -287,7 +266,7 @@ include($path."/header_tailwind.php");
 
 
   <?php 
-  if($topicId) {
+  if(true == false) {
     ?>
     
     <table class="input_table table-fixed w-full">
@@ -301,7 +280,7 @@ include($path."/header_tailwind.php");
       
         <?php
         
-      foreach ($questions as $row) {
+      foreach ($topics as $row) {
           ?>
       
         <tr id = 'row_<?=$row['id'];?>'>
@@ -548,11 +527,12 @@ function addRow() {
   var cell0 = row.insertCell(0);
   var cell1 = row.insertCell(1);
   var cell2 = row.insertCell(2);
+  var cell3 = row.insertCell(3);
 
   cell0.classList.add("align-top");
   cell1.classList.add("align-top");
   cell2.classList.add("align-top");
-  //cell3.classList.add("align-top");
+  cell3.classList.add("align-top");
 
   
   var inst = tableLength -1;
@@ -578,10 +558,23 @@ function addRow() {
   cell1.innerHTML += '</div>';
   cell1.innerHTML += '<input type="text" name="levelsArray_'+inst+'" id="levelSelect_'+inst+'">';
   
- 
+  cell2.innerHTML += '<div>';
 
-  cell2.innerHTML = "<button class='w-full bg-pink-300 rounded border border-black mb-1' type ='button' onclick='hideRow(this);'>Remove</button>"
-  cell2.innerHTML += "<input name='active_entry_"+inst+"' class='w-full' type='hidden' value='1'>";
+  <?php
+  foreach($examBoards as $key=>$level) {
+    ?>
+      cell2.innerHTML += '<input class = "w-5 boardSelector_'+inst+'" type="checkbox" id="board_checkbox_'+inst+'_<?=$key?>" value = "<?=$level['id']?>" onchange="boardsAggregate('+inst+');">';
+      cell2.innerHTML += '<label for ="board_checkbox_'+inst+'_<?=$key?>"><?=$level['name']?></label><br>';
+    <?php
+  }
+
+  ?>
+
+  cell2.innerHTML += '</div>';
+  cell2.innerHTML += '<input type="text" name="boardsArray_'+inst+'" id="boardSelect_'+inst+'">';
+
+  cell3.innerHTML = "<button class='w-full bg-pink-300 rounded border border-black mb-1' type ='button' onclick='hideRow(this);'>Remove</button>"
+  cell3.innerHTML += "<input name='active_entry_"+inst+"' class='w-full' type='hidden' value='1'>";
 
   
 
@@ -589,15 +582,13 @@ function addRow() {
   
   document.getElementById("questionsCount").value = tableLength;
 
-  questionCount ++;
+
   
 
 
 }
 
-function changeOrder(x) {
-  questionCount = parseInt((x.value))+1;
-}
+
 
 function hideRow(button) {
   var row = button.parentElement.parentElement;
@@ -644,7 +635,7 @@ function disableInputProperties() {
   })
 
 }
-
+/*
 function selectInputs(formId) {
   var form = document.getElementById(formId);
   var allFormControls = form.elements;
@@ -662,18 +653,57 @@ function selectInputs(formId) {
  
 
 }
-
+*/
 selectInputs("new_question_post_form");
 
 
 function levelsAggregate(inst) {
 
-var topicsInput = document.getElementsByClassName("levelSelector_"+inst);
+  var topicsInput = document.getElementsByClassName("levelSelector_"+inst);
+  var topicsInputChecked = [];
+  var topicString = "";
+  var checkedCount = 0;
+  const topicSelect = document.getElementById("levelSelect_"+inst);
+
+  console.clear();
+  //console.log(topicsInput);
+
+  for (var i=0; i<topicsInput.length; i++) {
+    var topic = topicsInput[i];
+    if(topic.checked == true) {
+      topicsInputChecked.push(topicsInput[i]);
+    }
+  }
+
+  //console.log(topicsInputChecked);
+
+  for(var i=0; i<topicsInputChecked.length; i++) {
+    topic = topicsInputChecked[i];
+    topicString += topic.value;
+    if(i < (topicsInputChecked.length - 1)) {
+      topicString += ",";
+    }
+
+  }
+
+  console.log(topicString);
+
+  topicSelect.value = topicString;
+
+  console.log(topicString);
+  console.log(topicSelect);
+  topicSelect.value = topicString;
+}
+
+function boardsAggregate(inst) {
+
+var topicsInput = document.getElementsByClassName("boardSelector_"+inst);
 var topicsInputChecked = [];
 var topicString = "";
 var checkedCount = 0;
-const topicSelect = document.getElementById("levelSelect_"+inst);
+const topicSelect = document.getElementById("boardSelect_"+inst);
 
+console.clear();
 //console.log(topicsInput);
 
 for (var i=0; i<topicsInput.length; i++) {
