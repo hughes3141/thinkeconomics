@@ -57,9 +57,9 @@ if (isset($_POST['submit'])) {
 
   for($x=0; $x<$count; $x++) {
 
-    $code = $_POST['code_'.$x];
-    $name = $_POST['name_'.$x];
-    $levelId = $_POST['levelId_'.$x];
+    $code = $_POST['topicCode_'.$x];
+    $name = $_POST['topicName_'.$x];
+    //$levelId = $_POST['levelId_'.$x];
     $levelsArray = $_POST['levelsArray_'.$x];
     $examBoardsArray = $_POST['examBoardsArray_'.$x];
 
@@ -157,7 +157,13 @@ include($path."/header_tailwind.php");
       echo "POST:<br>";
       var_dump($_POST);
     }
-   
+  
+    echo "<br><br>Subjects:<br>";
+    print_r($subjects);
+    echo "<br><br>Levels:<br>";
+    print_r($levels);
+    
+
     
   }
 
@@ -179,31 +185,13 @@ include($path."/header_tailwind.php");
             }
             ?>
         </select>
-        <select class="inputProperties" id="levelSelect" name = "levelId">
-          <?php
-            foreach ($levels as $subject) {
-                ?>
-                <option value="<?=$subject['id'];?>" <?php
-                  if(isset($_POST['levelId'])) {
-                    if($subject['id'] == $_POST['levelId']) {
-                      echo "selected";
-                    }
-                    
-                  }
-                  else if ($subject['id'] == $userPreferredSubject) {
-                    echo "selected";
-                  }              
-                ?> > <?=htmlspecialchars($subject['name']);?></option>
-            <?php
-            }
-            ?>
-        </select>
 
     </div>
     <table id="question_input_table" class="input_table w-full table-fixed">
       <tr>
-        <th class = "w-1/5">Topic Code</th>
         <th class = "w-1/5">Topic</th>
+        <th class = "w-1/5">Level
+        </th>
         <th class = "w-1/5">Exam Boards</th>
         
       </tr>
@@ -561,7 +549,7 @@ function addRow() {
   var cell1 = row.insertCell(1);
   var cell2 = row.insertCell(2);
 
-
+  cell0.classList.add("align-top");
   cell1.classList.add("align-top");
   cell2.classList.add("align-top");
   //cell3.classList.add("align-top");
@@ -570,21 +558,32 @@ function addRow() {
   var inst = tableLength -1;
 
 
+  cell0.innerHTML += '<label for="topicCode_'+inst+'">Code:</label><br><input type="text" id ="topicCode_'+inst+'" name="topicCode_'+inst+'" class="w-full " required><br>';
   
-  
-  
-  cell0.innerHTML += '<label for="topicCode_'+inst+'">Code:</label><br><textarea type="text" id ="topicCode_'+inst+'" name="topicCode_'+inst+'" class="w-full h-44" required></textarea><br>';
-  
+  cell0.innerHTML += '<label for="topicName'+inst+'">Topic Name:</label><br><textarea class="" type="text" id ="topicName'+inst+'" name="topicName_'+inst+'"></textarea><br>';
 
+
+  cell1.innerHTML += '<div>';
+
+  <?php
+  foreach($levels as $key=>$level) {
+    ?>
+      cell1.innerHTML += '<input class = "w-5 levelSelector_'+inst+'" type="checkbox" id="level_checkbox_'+inst+'_<?=$key?>" value = "<?=$level['id']?>" onchange="levelsAggregate('+inst+');">';
+      cell1.innerHTML += '<label for ="level_checkbox_'+inst+'_<?=$key?>"><?=$level['name']?></label><br>';
+    <?php
+  }
+
+  ?>
+
+  cell1.innerHTML += '</div>';
+  cell1.innerHTML += '<input type="text" name="levelsArray_'+inst+'" id="levelSelect_'+inst+'">';
   
-  cell1.innerHTML = '<label for="topicName'+inst+'">Name:</label><br><textarea class="h-36" type="text" id ="topicName'+inst+'" name="topicName'+inst+'"></textarea><br>';
-  
- /*
+ 
 
   cell2.innerHTML = "<button class='w-full bg-pink-300 rounded border border-black mb-1' type ='button' onclick='hideRow(this);'>Remove</button>"
   cell2.innerHTML += "<input name='active_entry_"+inst+"' class='w-full' type='hidden' value='1'>";
 
-  */
+  
 
 
   
@@ -665,6 +664,44 @@ function selectInputs(formId) {
 }
 
 selectInputs("new_question_post_form");
+
+
+function levelsAggregate(inst) {
+
+var topicsInput = document.getElementsByClassName("levelSelector_"+inst);
+var topicsInputChecked = [];
+var topicString = "";
+var checkedCount = 0;
+const topicSelect = document.getElementById("levelSelect_"+inst);
+
+//console.log(topicsInput);
+
+for (var i=0; i<topicsInput.length; i++) {
+  var topic = topicsInput[i];
+  if(topic.checked == true) {
+    topicsInputChecked.push(topicsInput[i]);
+  }
+}
+
+//console.log(topicsInputChecked);
+
+for(var i=0; i<topicsInputChecked.length; i++) {
+  topic = topicsInputChecked[i];
+  topicString += topic.value;
+  if(i < (topicsInputChecked.length - 1)) {
+    topicString += ",";
+  }
+
+}
+
+console.log(topicString);
+
+topicSelect.value = topicString;
+
+console.log(topicString);
+console.log(topicSelect);
+topicSelect.value = topicString;
+}
 
 </script>
 
