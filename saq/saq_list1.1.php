@@ -181,6 +181,7 @@ $flashCard = null;
 $subjectId = null;
 $userCreate = null;
 $type = null;
+$examBoardId = null;
 
 $topicId = null;
 
@@ -189,6 +190,12 @@ if(isset($userInfo['userPreferredSubjectId'])) {
   $userPreferredSubject = $userInfo['userPreferredSubjectId'];
 } else {
   $userPreferredSubject = 1;
+}
+
+if(isset($userInfo['userPreferredExamBoardId'])) {
+  $userPreferredExamBoard = $userInfo['userPreferredExamBoardId'];
+} else {
+  $userPreferredExamBoard = 1;
 }
 
 if(isset($_GET['type'])) {
@@ -212,6 +219,10 @@ if(isset($_GET['topicId'])) {
   $topicId = $_GET['topicId'];
 }
 
+if(isset($_GET['examBoardId'])) {
+  $examBoardId = $_GET['examBoardId'];
+}
+
 if(is_null($showFlashCards)) {
   $flashCard = 1;
 }
@@ -228,6 +239,8 @@ if(isset($_GET['topic'])) {
 $subjects = getOutputFromTable("subjects", null, "name");
 $levels =  getOutputFromTable("subjects_level", null, "name");
 
+$examBoards = getExamBoards();
+
 //$topics = getTopicList("saq_question_bank_3", "topic", null, $flashCard, $userPreferredSubject);
 
 //Use getColumnListFromTable becuase it returns only non-blank values:
@@ -242,7 +255,7 @@ $levelId = null;
 
 //$topics = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectSelector, null, null, $flashCard);
 
-$topics = getTopicsGeneralList(null, null, $subjectSelector, $levelId, null);
+$topics = getTopicsGeneralList(null, null, null, $subjectSelector, $levelId, null);
 
 
 include($path."/header_tailwind.php");
@@ -320,6 +333,27 @@ include($path."/header_tailwind.php");
             }
             ?>
         </select>
+
+
+        <select class="inputProperties" id="boardSelect" name = "examBoardId">
+          <?php
+            foreach ($examBoards as $subject) {
+                ?>
+                <option value="<?=$subject['id'];?>" <?php
+                  if(isset($_POST['examBoardId'])) {
+                    if($subject['id'] == $_POST['examBoard']) {
+                      echo "selected";
+                    }
+                    
+                  }
+                  else if ($subject['id'] == $userPreferredExamBoard) {
+                    echo "selected";
+                  }              
+                ?> > <?=htmlspecialchars($subject['name']);?></option>
+            <?php
+            }
+            ?>
+        </select>
           <?php
           if(count($topics)>0) {
             ?>
@@ -334,10 +368,12 @@ include($path."/header_tailwind.php");
                   $topicPostSelect = $_GET['topicId'];
                 }
                 foreach ($topics as $topic) {
+                  
                   $indent = "";
                   $disabled = "";
+                  /*
                     if($topic['topicLevel'] =="0") {
-                      $disabled = 'disabled="disabled"';
+                      //$disabled = 'disabled="disabled"';
 
                     } else if ($topic['topicLevel'] =="1") {
                       $indent = "&nbsp&nbsp";
@@ -345,8 +381,9 @@ include($path."/header_tailwind.php");
                     } else if ($topic['topicLevel'] =="2") {
                       $indent = "&nbsp&nbsp&nbsp&nbsp";
                     }
+                    */
                   ?>
-                  <option class="" value="<?=$topic['id']?>" <?=($topicPostSelect == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$indent.$topic['name']?></option>
+                  <option class="" value="<?=$topic['id']?>" <?=($topicPostSelect == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$topic['code']?> <?=$indent.$topic['name']?></option>
                   <?php
                 }
               ?>
@@ -422,6 +459,7 @@ include($path."/header_tailwind.php");
             foreach ($topics as $topic) {
               $indent = "";
               $disabled = "";
+              /*
                 if($topic['topicLevel'] =="0") {
                   $disabled = 'disabled="disabled"';
 
@@ -431,8 +469,9 @@ include($path."/header_tailwind.php");
                 } else if ($topic['topicLevel'] =="2") {
                   $indent = "&nbsp&nbsp&nbsp&nbsp";
                 }
+                */
               ?>
-              <option class="" value="<?=$topic['id']?>" <?=($topicPostSelect == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$indent.$topic['name']?></option>
+              <option class="" value="<?=$topic['id']?>" <?=($topicPostSelect == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$topic['code']?> <?=$indent.$topic['name']?></option>
               <?php
             }
           ?>

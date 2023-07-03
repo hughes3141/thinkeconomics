@@ -90,17 +90,14 @@ if(isset($_POST['updateValue'])) {
   $code = $_POST['code'];
   $name = $_POST['name'];
   $subjectId = $_POST['subjectId'];
-  $levelId = $_POST['levelId'];
+  //$levelId = $_POST['levelId'];
   $levelsArray = $_POST['levelsArray'];
-  $examBoardsArray = $_POST['examBoardsArray'];
+  //$examBoardsArray = $_POST['examBoardsArray'];
 
   //Update Record:
-  $updateMessage = updateTopicsGeneralList($id, $code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray);
-
+  $updateMessage = updateTopicsGeneralList($id, $code, $name, $subjectId, $levelsArray);
 
 }
-
-
 
 //$userPreferredSubject comes from a user's information.
 if(isset($userInfo['userPreferredSubjectId'])) {
@@ -123,7 +120,7 @@ if(isset($_GET['subjectId'])) {
 }
 
 
-$topics = getTopicsGeneralList($topicId, $topicCode, $subjectId, $levelId, $topicName);
+$topics = getTopicsGeneralList($topicId, $topicCode, null, $subjectId, $levelId, $topicName);
 
 $subjects = getOutputFromTable("subjects", null, "name");
 $levels =  getOutputFromTable("subjects_level", null, "name");
@@ -170,6 +167,11 @@ include($path."/header_tailwind.php");
     if($newRecordMessage != "") {
       echo "<br><br>New Record:<br>";
       echo $newRecordMessage;
+    }
+
+    if($updateMessage != "") {
+      echo "<br><br>Update:<br>";
+      echo $updateMessage;
     }
     echo "<br><br>Subjects:<br>";
     print_r($subjects);
@@ -361,39 +363,17 @@ include($path."/header_tailwind.php");
             ?>
           </td>
 
-          <td class="align-top">
-            <div class="show_<?=$row['id'];?>" >
-              <div style="white-space: pre-line;"><?=htmlspecialchars($row['model_answer']);?>
-              </div>
-              <?php
-                    if(!is_null($row['a_path'])) {
-                      ?>
-                      <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($row['a_path'])?>" alt = "<?=htmlspecialchars($row['a_alt'])?>">
-                      <?php
-                    }
-                    ?>
-            </div>
-            <div class="hide hide_<?=$row['id'];?>">
-              <label class="hide" for = "model_answer<?=$row['id'];?>">Model Answer:</label>
-              <textarea class="h-44" id = "model_answer<?=$row['id'];?>" name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
-              <br>
-              <div class="<?=is_null($showAssetId)?"hidden":""?>">
-                <label for ="asset_id<?=$row['id'];?>">Asset ID:</label><br>
-                <input id="asset_id<?=$row['id'];?>" type="number" name="answerAsset" value="<?=$row['answerAssetId']?>">
-              </div>    
-            </div>
-              
-          </td>
 
           <td class="align-top">
             <?php if($userEdit) {?>
               <div>
                 <button type ="button" class= "w-full bg-pink-300 rounded border border-black mb-1" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>); levelsAggregate('<?=$row['id']?>')">Edit</button>
               </div>
-              <div class ="hide hide_<?=$row['id'];?>">
+              <div class ="hidden hide_<?=$row['id'];?>">
                 <input type="hidden" name = "id" value = "<?=$row['id'];?>">
-                <input type="hidden" name = "subjectId" value = "<?=$row['subjectId'];?>">
-                <input type="hidden" name = "levelId" value = "<?=$row['levelId'];?>">
+                <br><label>SubjectId:</label><br>
+                <input type="" name = "subjectId" value = "<?=$row['subjectId'];?>">
+
 
                 <input class="w-full bg-sky-200 rounded border border-black mb-1 toggleClass_35" type="submit" name="updateValue" value = "Update"></input>
               </div>

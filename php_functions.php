@@ -2034,7 +2034,7 @@ function getTopicList($tableName, $topicColumn, $topics = null, $flashCard = nul
 
 }
 
-function getTopicsGeneralList($topicId = null, $topicCode = null, $subjectId = null, $levelId = null, $topicName = null) {
+function getTopicsGeneralList($topicId = null, $code = null, $examBoardId = null, $subjectId = null, $levelId = null, $topicName = null) {
   /**
    * This function returns information from topics_general table given input paramters
    * 
@@ -2060,12 +2060,12 @@ function getTopicsGeneralList($topicId = null, $topicCode = null, $subjectId = n
     array_push($bindArray, $topicId);
   }
 
-  if(!is_null($topicCode)) {
+  if(!is_null($code)) {
     $sql .= sql_conjoin($params);
-    $topicCode = $topicCode."%";
+    $code = $code."%";
     $sql .= " code LIKE ? ";
     $params .= "s";
-    array_push($bindArray, $topicCode);
+    array_push($bindArray, $code);
   }
 
   if(!is_null($subjectId)) {
@@ -2110,6 +2110,94 @@ function getTopicsGeneralList($topicId = null, $topicCode = null, $subjectId = n
   return $results;
 
 
+
+
+}
+
+function getTopicsSpecList($id = null, $examBoardId = null, $subjectId = null,$topicId = null, $specCode = null, $topicName=null,  $levelId = null) {
+  /**
+   * This function gets topics from topics_spec table
+   * The idea is that a user can call on a topic from this list which then maps onto a topic from topic_general using $topicId varaible
+   * 
+   * Used in:
+   * -topic_spec_map.php
+   */
+
+   global $conn;
+
+   $params="";
+   $bindArray = array();
+   $results = array();
+
+   $sql = "SELECT *, 
+          LENGTH(code) - LENGTH(REPLACE(code, '.', '')) AS topicLevel
+          FROM topics_spec ";
+
+    if(!is_null($topicId)) {
+      $sql .= sql_conjoin($params);
+      $sql .= " id = ? ";
+      $params .= "i";
+      array_push($bindArray, $topicId);
+    }
+
+    if(!is_null($specCode)) {
+      $sql .= sql_conjoin($params);
+      $sql .= " code = ? ";
+      $params .= "s";
+      array_push($bindArray, $code);
+    }
+
+    if(!is_null($examBoardId)) {
+      $sql .= sql_conjoin($params);
+      $sql .= " examBoardId = ? ";
+      $params .= "i";
+      array_push($bindArray, $examBoardId);
+    }
+
+    if(!is_null($subjectId)) {
+      $sql .= sql_conjoin($params);
+      $sql .= " subjectId = ? ";
+      $params .= "i";
+      array_push($bindArray, $subjectId);
+    }
+
+    if(!is_null($levelId)) {
+      $sql .= sql_conjoin($params);
+      $sql .= " levelId = ? ";
+      $params .= "i";
+      array_push($bindArray, $levelId);
+    }
+
+    if(!is_null($topicName)) {
+      $sql .= sql_conjoin($params);
+      $topicName = '%'.$topicName.'%';
+      $sql .= " name LIKE ? ";
+      $params .= "s";
+      array_push($bindArray, $topicName);
+    }
+
+    $sql .= " ORDER BY code";
+
+
+    $stmt=$conn->prepare($sql);
+    if(count($bindArray)>0) {
+      $stmt->bind_param($params, ...$bindArray);
+    }
+
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if($result->num_rows>0) {
+      while($row = $result->fetch_assoc()) {
+        array_push($results, $row);
+      }
+    }
+
+    
+    return $results;
+
+
+
 }
 
 function insertTopicsGeneralList($code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray, $userCreate) {
@@ -2149,7 +2237,7 @@ function insertTopicsGeneralList($code, $name, $subjectId, $levelId, $levelsArra
 
 }
 
-function updateTopicsGeneralList($id, $code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray) {
+function updateTopicsGeneralList($id, $code, $name, $subjectId, $levelsArray) {
   /**
    * Used to update topics_general
    * 
@@ -2158,12 +2246,41 @@ function updateTopicsGeneralList($id, $code, $name, $subjectId, $levelId, $level
    */
 
     global $conn;
+
+    $levelsArray = explode(",", $levelsArray);
+    foreach ($levelsArray as &$item) {
+      $item = trim($item);
+    }
+    $levelsArray = json_encode($levelsArray);
     $sql = "UPDATE topics_general
-            SET code =?, name =?, subjectId =?, levelId =?, levelsArray =?, examBoardsArray =?
+            SET code =?, name =?, subjectId =?, levelsArray =?
             WHERE id = ? ";
 
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssiissi", $code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray, $id);
+    $stmt->bind_param("ssisi", $code, $name, $subjectId, $levelsArray, $id);
+    $stmt->execute();
+
+    return "Record $id updated";
+}
+
+function updateTopicsSpecList($id, $topicId) {
+  /**
+   * Used in: $topic_spec_map.php
+   */
+
+  global $conn;
+
+  $sql = "UPDATE topics_spec
+            SET topicId = ?
+            WHERE id = ? ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $topicId, $id);
+    $stmt->execute();
+
+    return "Record $id updated";
+
+
 }
 
 function getExamBoards($id = null) {
