@@ -63,6 +63,19 @@ if(isset($_GET['noAssetInput'])) {
 }
 
 
+//Set img path:
+
+/**
+ * images find the path set via $question['q_path'] etc.
+ * This is assumed to be in root foler if thinkeonomics
+ * If other site: udpate variable $imgSourcePathPrefix to 
+ */
+
+ $imgSourcePathPrefix = "";
+ //$imgSourcePathPrefix = "https://www.thinkeconomics.co.uk";
+
+
+
 //assetSubmit = "";
 
 
@@ -197,6 +210,10 @@ if(isset($_GET['userCreate'])) {
 
 if(isset($_GET['topicId'])) {
   $topicId = $_GET['topicId'];
+}
+
+if(is_null($showFlashCards)) {
+  $flashCard = 1;
 }
 
 $questions = getSAQQuestions(null, $topicGet, $flashCard, $subjectId, $userCreate, $type, $userId, $topicId);
@@ -514,7 +531,7 @@ include($path."/header_tailwind.php");
               <?php
                     if(!is_null($row['q_path'])) {
                       ?>
-                      <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($row['q_path'])?>" alt = "<?=htmlspecialchars($row['q_alt'])?>">
+                      <img class = "mx-auto my-1 max-h-80" src= "<?=$imgSourcePathPrefix.htmlspecialchars($row['q_path'])?>" alt = "<?=htmlspecialchars($row['q_alt'])?>">
                       <?php
                     }
 
@@ -567,7 +584,7 @@ include($path."/header_tailwind.php");
               <?php
                     if(!is_null($row['a_path'])) {
                       ?>
-                      <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($row['a_path'])?>" alt = "<?=htmlspecialchars($row['a_alt'])?>">
+                      <img class = "mx-auto my-1 max-h-80" src= "<?=$imgSourcePathPrefix.htmlspecialchars($row['a_path'])?>" alt = "<?=htmlspecialchars($row['a_alt'])?>">
                       <?php
                     }
                     ?>
