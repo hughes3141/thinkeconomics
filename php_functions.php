@@ -2131,12 +2131,20 @@ function insertTopicsGeneralList($code, $name, $subjectId, $levelId, $levelsArra
     $params = "ssiissi";
     $bindArray = array();
 
+    $levelsArray = explode(",",$levelsArray);
+    $levelsArray = json_encode($levelsArray);
+
+    $examBoardsArray = explode(",",$examBoardsArray);
+    $examBoardsArray = json_encode($examBoardsArray);
+
     $stmt=$conn->prepare($sql);
     $stmt->bind_param($params, $code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray, $userCreate);
 
     $stmt->execute();
 
-    echo "this worked";
+    return "Record \"$name\" inserted<br>";
+
+
 
 
 }
@@ -2166,6 +2174,41 @@ function getExamBoards($id = null) {
 
   $sql = "SELECT *
           FROM exam_boards";
+
+  if(!is_null($id)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " id = ? ";
+    $params .= "i";
+    array_push($bindArray, $id);
+  }
+
+  $stmt=$conn->prepare($sql);
+  
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
+}
+
+function getSubjects_Level($id = null) {
+  global $conn;
+  $results = array();
+  $params = "";
+  $bindArray = array();
+
+  $sql = "SELECT *
+          FROM subjects_level";
 
   if(!is_null($id)) {
     $sql .= sql_conjoin($params);

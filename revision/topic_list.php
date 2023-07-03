@@ -46,7 +46,7 @@ $style_input = "
   }
 ";
 
-
+$newRecordMessage = "";
 
 if (isset($_POST['submit'])) {
 
@@ -68,9 +68,9 @@ if (isset($_POST['submit'])) {
 
     if($_POST['active_entry_'.$x] == "1") {
 
-      insertTopicsGeneralList($code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray, $userCreate);
+      $newRecordMessage = insertTopicsGeneralList($code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray, $userCreate);
 
-      echo "Record $name inserted<br>";
+
     }
 
     //echo "New records created successfully";
@@ -129,6 +129,12 @@ $subjects = getOutputFromTable("subjects", null, "name");
 $levels =  getOutputFromTable("subjects_level", null, "name");
 $examBoards = getOutputFromTable("exam_boards", null, "name");
 
+$levelsFilter = array();
+
+foreach ($levels as $level) {
+  $levelsFilter[$level['id']] = $level['name']; 
+}
+
 //$subjectSelector is the subjectId that is either determined by (1) user preference or (2) $subjectId;
 $subjectSelector = $userPreferredSubject;
 if(!is_null($subjectId)) {
@@ -161,7 +167,10 @@ include($path."/header_tailwind.php");
       echo "POST:<br>";
       var_dump($_POST);
     }
-  
+    if($newRecordMessage != "") {
+      echo "<br><br>New Record:<br>";
+      echo $newRecordMessage;
+    }
     echo "<br><br>Subjects:<br>";
     print_r($subjects);
     echo "<br><br>Levels:<br>";
@@ -266,14 +275,13 @@ include($path."/header_tailwind.php");
 
 
   <?php 
-  if(true == false) {
+  if(isset($subjectId)) {
     ?>
     
     <table class="input_table table-fixed w-full">
         <tr>
           <th class="w-1/6">Topic</th>	
-          <th class="w">Question</th>
-          <th class="w">Model Answer/Mark Scheme</th>
+          <th class="w-1/6">Level</th>
           <th class="w-1/6">Edit</th>
 
         </tr>
@@ -284,7 +292,7 @@ include($path."/header_tailwind.php");
           ?>
       
         <tr id = 'row_<?=$row['id'];?>'>
-          <?php
+        <?php
           $userEdit = false;
           if ($_SESSION['userid'] == $row['userCreate']) {
             $userEdit = true;
@@ -293,95 +301,59 @@ include($path."/header_tailwind.php");
           if($userEdit) {?>
             <form method="post" action="">
           <?php }?>
-        
+
           <td class="align-top">
             <div class="show_<?=$row['id'];?>">
-              <?=htmlspecialchars($row['topicName']);?><br>
-              <?=htmlspecialchars($row['userTopicOrder'])?> 
+              <?=htmlspecialchars($row['code']);?><br>
+              <?=htmlspecialchars($row['name'])?> 
             </div>
             <div class="hide hide_<?=$row['id'];?>">
-            <select name="topicId" class='w-full'>
-              <?php
-                  $topicPostSelect = null;
-                  if(isset($_POST['topicId'])) {
-                    $topicPostSelect = $_POST['topicId'];
-                  }
-                  if(isset($_GET['topicId'])) {
-                    $topicPostSelect = $_GET['topicId'];
-                  }
-                  foreach ($topics as $topic) {
-                    $indent = "";
-                    $disabled = "";
-                      if($topic['topicLevel'] =="0") {
-                        continue;
-                        $disabled = 'disabled="disabled"';
 
-                      } else if ($topic['topicLevel'] =="1") {
-                        continue;
-                        $indent = "&nbsp&nbsp";
-                        $disabled = 'disabled="disabled"';
-                      } else if ($topic['topicLevel'] =="2") {
-                        //$indent = "&nbsp&nbsp&nbsp&nbsp";
-                      }
-                    ?>
-                    <option class="w-10" value="<?=$topic['id']?>" <?=($topicPostSelect == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$indent.$topic['name']?></option>
-                    <?php
-                  }
-                ?>
-              </select>
-              <br>
-
-              <input type="text" name ="topic_order" value ="<?=htmlspecialchars($row['topic_order'])?>" style="width:100px;"></input>
+              <input type="text" name ="code" value ="<?=htmlspecialchars($row['code'])?>"></input>
+              <textarea name="name"><?=$row['name']?></textarea>
             </div>
             <p>
               <i>id: <?=$row['id'];?></i>
             </p>
           </td>
+
           <td class="align-top">
             <div class="show_<?=$row['id'];?>">
-              <?=htmlspecialchars($row['question']);?>
-              <?php
-                    if(!is_null($row['q_path'])) {
-                      ?>
-                      <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($row['q_path'])?>" alt = "<?=htmlspecialchars($row['q_alt'])?>">
-                      <?php
-                    }
-
-                if($row['points'] != "") {
-                ?>
               <p>
-                Points: <?=$row['points']?>
-              </p>
                 <?php
+                $levelsData = json_decode($row['levelsArray']);
+                foreach ($levelsData as $key=>$levelId) {
+                  $level = getSubjects_Level($levelId)[0];
+                  echo $level['name'];
+                  if($key<(count($levelsData)-1)) {
+                    echo ", ";
+                  }
                 }
-
-              if($row['type'] != "") {
                 ?>
-              <p>
-                Keywords: <?=htmlspecialchars($row['type'])?>
               </p>
-              <?php
-              }
-                ?>
             </div>
             <div class= "hide hide_<?=$row['id'];?>">
-              <textarea class="h-44" name ="question"><?=htmlspecialchars($row['question'])?></textarea>
-              <br>
-              <div class="<?=is_null($showAssetId)?"hidden":""?>">
-                <label for="qA_<?=$row['id'];?>">Question Asset Id:</label><br>
-                <input id="qA_<?=$row['id'];?>" type="number" name="questionAsset" value="<?=$row['questionAssetId']?>">
-                <br>
-              </div>
-              <label for = "points_<?=$row['id'];?>" >Points:</label><br>
-              <input id="points_<?=$row['id'];?>" name ="points" type="number" value="<?=$row['points']?>"</input>
-              <br>
-              <label for = "keyword<?=$row['id'];?>" >Keywords:</label><br>
-              <textarea id="keyword<?=$row['id'];?>" name ="type" type="text" ><?=$row['type']?></textarea>
+            <?php
+              foreach($levels as $key=>$level) {
+                //print_r($levels);
+                $level = getSubjects_Level($level['id'])[0];
+                $checked = "";
+                $levelId = $level['id'];
+                if(in_array($level['id'], $levelsData)) {
+                  $checked = "checked";
+                }
+                //print_r($level);
+                ?>
+                <input class = "w-5 levelSelector_<?=$row['id']?>" type="checkbox" id="level_checkbox_<?=$row['id']?>_<?=$key?>" value = "<?=$level['id']?>" onchange="levelsAggregate('<?=$row['id']?>');" <?=$checked?>>
+                <label for ="level_checkbox_<?=$row['id']?>_<?=$key?>"><?=$level['name']?></label><br>
+                <?php
+              }
+
+              ?>
+
+              <input type="text" name="levelsArray" id="levelSelect_<?=$row['id']?>">
             </div>
-              <div class="<?=is_null($showFlashCards)?"hidden":""?>">
-                <input class="w-4" id="flashCard_Update_<?=$row['id'];?>" type="checkbox" name ="flashCard" value="1" <?=($row['flashCard']==1) ? "checked" : ""?> disabled>
-                <label for="flashCard_Update_<?=$row['id'];?>">flashCard</label>
-              </div>
+              
             <?php
             if(isset($_GET['test'])) {
               print_r($row);
@@ -416,7 +388,7 @@ include($path."/header_tailwind.php");
           <td class="align-top">
             <?php if($userEdit) {?>
               <div>
-                <button type ="button" class= "w-full bg-pink-300 rounded border border-black mb-1" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>); flashcardButtonToggle(this)">Edit</button>
+                <button type ="button" class= "w-full bg-pink-300 rounded border border-black mb-1" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>); levelsAggregate('<?=$row['id']?>')">Edit</button>
               </div>
               <div class ="hide hide_<?=$row['id'];?>">
                 <input type="hidden" name = "id" value = "<?=$row['id'];?>">
@@ -491,18 +463,6 @@ function changeVisibility(button, id) {
 
 
 }
-
-function flashcardButtonToggle(input) {
-  row = input.parentNode.parentNode.parentNode;
-  checkbox = row.querySelectorAll('input[type=checkbox]')[0];
-  if (checkbox.disabled == true) {
-    checkbox.disabled = false;
-  } else {
-    checkbox.disabled = true;
-  }
-  //console.log(checkbox);
-}
-
 
 
 function sourceAmend(i) {
@@ -623,7 +583,7 @@ function changeTopic(input) {
   topicChangeSelect.value=changeTo;
   topicChangeForm.submit();
 }
-
+/*
 function disableInputProperties() {
   var inputProperties = document.getElementsByClassName("inputProperties");
   console.log(inputProperties)
@@ -635,6 +595,7 @@ function disableInputProperties() {
   })
 
 }
+*/
 /*
 function selectInputs(formId) {
   var form = document.getElementById(formId);
@@ -666,7 +627,7 @@ function levelsAggregate(inst) {
   const topicSelect = document.getElementById("levelSelect_"+inst);
 
   console.clear();
-  //console.log(topicsInput);
+  console.log(topicsInput);
 
   for (var i=0; i<topicsInput.length; i++) {
     var topic = topicsInput[i];
@@ -697,40 +658,40 @@ function levelsAggregate(inst) {
 
 function boardsAggregate(inst) {
 
-var topicsInput = document.getElementsByClassName("boardSelector_"+inst);
-var topicsInputChecked = [];
-var topicString = "";
-var checkedCount = 0;
-const topicSelect = document.getElementById("boardSelect_"+inst);
+  var topicsInput = document.getElementsByClassName("boardSelector_"+inst);
+  var topicsInputChecked = [];
+  var topicString = "";
+  var checkedCount = 0;
+  const topicSelect = document.getElementById("boardSelect_"+inst);
 
-console.clear();
-//console.log(topicsInput);
+  console.clear();
+  //console.log(topicsInput);
 
-for (var i=0; i<topicsInput.length; i++) {
-  var topic = topicsInput[i];
-  if(topic.checked == true) {
-    topicsInputChecked.push(topicsInput[i]);
-  }
-}
-
-//console.log(topicsInputChecked);
-
-for(var i=0; i<topicsInputChecked.length; i++) {
-  topic = topicsInputChecked[i];
-  topicString += topic.value;
-  if(i < (topicsInputChecked.length - 1)) {
-    topicString += ",";
+  for (var i=0; i<topicsInput.length; i++) {
+    var topic = topicsInput[i];
+    if(topic.checked == true) {
+      topicsInputChecked.push(topicsInput[i]);
+    }
   }
 
-}
+  //console.log(topicsInputChecked);
 
-console.log(topicString);
+  for(var i=0; i<topicsInputChecked.length; i++) {
+    topic = topicsInputChecked[i];
+    topicString += topic.value;
+    if(i < (topicsInputChecked.length - 1)) {
+      topicString += ",";
+    }
 
-topicSelect.value = topicString;
+  }
 
-console.log(topicString);
-console.log(topicSelect);
-topicSelect.value = topicString;
+  console.log(topicString);
+
+  topicSelect.value = topicString;
+
+  console.log(topicString);
+  console.log(topicSelect);
+  topicSelect.value = topicString;
 }
 
 </script>
