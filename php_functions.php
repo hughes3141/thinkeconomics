@@ -2034,6 +2034,115 @@ function getTopicList($tableName, $topicColumn, $topics = null, $flashCard = nul
 
 }
 
+function getTopicsAllList($topicId = null, $code = null, $examBoardId = null, $subjectId = null, $levelId = null, $topicName = null, $root = null, $general = null, $userCreate = null) {
+  /**
+   * This function returns information from topics_all table given input paramters
+   * 
+   * Used in:
+   * -topic_spec_map.php
+   */
+
+  global $conn;
+
+  $params="";
+  $bindArray = array();
+  $results = array();
+
+
+  $sql = "SELECT *, 
+          LENGTH(code) - LENGTH(REPLACE(code, '.', '')) AS topicLevel
+          FROM topics_all
+           ";
+
+  if(!is_null($topicId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " id = ? ";
+    $params .= "i";
+    array_push($bindArray, $topicId);
+  }
+
+  if(!is_null($code)) {
+    $sql .= sql_conjoin($params);
+    $code = $code."%";
+    $sql .= " code LIKE ? ";
+    $params .= "s";
+    array_push($bindArray, $code);
+  }
+
+  if(!is_null($examBoardId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " examBoardId = ? ";
+    $params .= "i";
+    array_push($bindArray, $examBoardId);
+  }
+
+  if(!is_null($subjectId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " subjectId = ? ";
+    $params .= "i";
+    array_push($bindArray, $subjectId);
+  }
+
+  if(!is_null($levelId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " levelId = ? ";
+    $params .= "i";
+    array_push($bindArray, $levelId);
+  }
+
+  if(!is_null($topicName)) {
+    $sql .= sql_conjoin($params);
+    $topicName = "&".$topicName."%";
+    $sql .= " name LIKE ? ";
+    $params .= "s";
+    array_push($bindArray, $topicName);
+  }
+
+  if(!is_null($root)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " root = ? ";
+    $params .= "i";
+    array_push($bindArray, $root);
+  }
+
+  if(!is_null($general)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " general = ? ";
+    $params .= "i";
+    array_push($bindArray, $general);
+  }
+
+  if(!is_null($userCreate)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " userCreate = ? ";
+    $params .= "i";
+    array_push($bindArray, $userCreate);
+  }
+
+  
+
+  $sql .= " ORDER BY code";
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
+
+
+
+}
+
 function getTopicsGeneralList($topicId = null, $code = null, $examBoardId = null, $subjectId = null, $levelId = null, $topicName = null) {
   /**
    * This function returns information from topics_general table given input paramters
@@ -2247,26 +2356,20 @@ function insertTopicsAllList($code, $name, $subjectId, $examBoardId, $root, $par
 
    global $conn;
 
+   $dateTime = date("Y-m-d H:i:s");
+
    $sql = "INSERT INTO topics_all
-          (code, name, subjectId, examBoardId, root, parentId, general, levelId, levelsArray, userCreate) 
-          VALUES (?,?,?,?,?,?,?,?,?,?)";
+          (code, name, subjectId, examBoardId, root, parentId, general, levelId, levelsArray, userCreate, dateCreate) 
+          VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 
     $stmt = $conn->prepare($sql);
-
-    $params = "ssiiiiiisi";
-    $bindArray = array($code, $name, $subjectId, $examBoardId, $root, $parentId, $general, $levelId, $levelsArray, $userCreate);
-
-    
-
-    $levelsArray = explode(",",$levelsArray);
-    $levelsArray = json_encode($levelsArray);
 
     $levelId = strval($levelId);
     $levelsArray = array($levelId);
     $levelsArray = json_encode($levelsArray);
 
-    $params = "ssiiiiiisi";
-    $bindArray = array($code, $name, $subjectId, $examBoardId, $root, $parentId, $general, $levelId, $levelsArray, $userCreate);
+    $params = "ssiiiiiisis";
+    $bindArray = array($code, $name, $subjectId, $examBoardId, $root, $parentId, $general, $levelId, $levelsArray, $userCreate, $dateTime);
 
     $stmt=$conn->prepare($sql);
     $stmt->bind_param($params, ...$bindArray);
@@ -2303,6 +2406,27 @@ function updateTopicsGeneralList($id, $code, $name, $subjectId, $levelsArray) {
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssisi", $code, $name, $subjectId, $levelsArray, $id);
+    $stmt->execute();
+
+    return "Record $id updated";
+}
+
+function updateTopicsAllList($id, $parentId) {
+  /**
+   * Used to update topics_all
+   * Currently only used to update parentId value but can be expanded
+   * 
+   * Used in:
+   * -topic_spec_map.php
+   */
+
+    global $conn;
+    $sql = "UPDATE topics_all
+            SET parentId = ?
+            WHERE id = ? ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $topicId, $id);
     $stmt->execute();
 
     return "Record $id updated";

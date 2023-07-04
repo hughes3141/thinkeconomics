@@ -66,7 +66,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       echo "<br>";
       */
       
-      $updateMessage = updateTopicsSpecList($id, $topicId);
+      //$updateMessage = updateTopicsSpecList($id, $topicId);
       array_push($updateMessageArray, $updateMessage);
     
   
@@ -76,8 +76,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 $examBoardId = 4;
 $subjectId = 7;
-$specTopics = getTopicsSpecList(null, 4,7);
-$genTopics = getTopicsGeneralList(null, null, null, 7);
+//$specTopics = getTopicsSpecList(null, 4,7);
+//$genTopics = getTopicsGeneralList(null, null, null, 7);
+
+$specTopics = getTopicsAllList(null, null, $examBoardId, $subjectId, null, null, 0, null, null);
+$genTopics = getTopicsAllList(null, null, null, $subjectId, null, null, 1, null, null);
 
 include($path."/header_tailwind.php");
 ?>
@@ -91,6 +94,9 @@ include($path."/header_tailwind.php");
   <?php
     if(isset($_GET['test'])) {
       //print_r($specTopics);
+      foreach($genTopics as $topic) {
+        echo $topic['code']." ".$topic['name']." || ";
+      }
       if($_SERVER['REQUEST_METHOD'] == 'POST') {
         print_r($_POST);
         echo "<br>Update Message:</br>";
@@ -114,7 +120,7 @@ include($path."/header_tailwind.php");
               <?php
               foreach($genTopics as $genTopic) {
                 $selected = "";
-                if($genTopic['id'] == $topic['topicId']) {
+                if($genTopic['id'] == $topic['parentId']) {
                   $selected = " selected ";
                 }
                 ?>
