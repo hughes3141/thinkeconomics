@@ -2237,6 +2237,51 @@ function insertTopicsGeneralList($code, $name, $subjectId, $levelId, $levelsArra
 
 }
 
+function insertTopicsAllList($code, $name, $subjectId, $examBoardId, $root, $parentId, $general, $levelId, $levelsArray, $userCreate) {
+  /*
+   * This funciton enters new entries into topics_all table
+   * 
+   * Used in:
+   * -
+   */
+
+   global $conn;
+
+   $sql = "INSERT INTO topics_all
+          (code, name, subjectId, examBoardId, root, parentId, general, levelId, levelsArray, userCreate) 
+          VALUES (?,?,?,?,?,?,?,?,?,?)";
+
+    $stmt = $conn->prepare($sql);
+
+    $params = "ssiiiiiisi";
+    $bindArray = array($code, $name, $subjectId, $examBoardId, $root, $parentId, $general, $levelId, $levelsArray, $userCreate);
+
+    
+
+    $levelsArray = explode(",",$levelsArray);
+    $levelsArray = json_encode($levelsArray);
+
+    $levelId = strval($levelId);
+    $levelsArray = array($levelId);
+    $levelsArray = json_encode($levelsArray);
+
+    $params = "ssiiiiiisi";
+    $bindArray = array($code, $name, $subjectId, $examBoardId, $root, $parentId, $general, $levelId, $levelsArray, $userCreate);
+
+    $stmt=$conn->prepare($sql);
+    $stmt->bind_param($params, ...$bindArray);
+
+    //var_dump($bindArray);
+
+    if($stmt->execute()) {
+      return "Record \"$code $name\" inserted<br>";
+    }
+
+    
+
+
+}
+
 function updateTopicsGeneralList($id, $code, $name, $subjectId, $levelsArray) {
   /**
    * Used to update topics_general
