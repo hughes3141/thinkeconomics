@@ -184,6 +184,9 @@ $type = null;
 $examBoardId = null;
 
 $topicId = null;
+$root = 1;
+
+$levelId = null;
 
 //$userPreferredSubject comes from a user's information.
 if(isset($userInfo['userPreferredSubjectId'])) {
@@ -211,6 +214,9 @@ if(isset($_GET['subjectId'])) {
 if(isset($_POST['subjectId'])) {
   $subjectId = $_POST['subjectId'];
 }
+if(isset($_POST['levelId'])) {
+  $levelId = $_POST['levelId'];
+}
 if(isset($_GET['userCreate'])) {
   $userCreate = $_GET['userCreate'];
 }
@@ -221,6 +227,7 @@ if(isset($_GET['topicId'])) {
 
 if(isset($_GET['examBoardId'])) {
   $examBoardId = $_GET['examBoardId'];
+  $root = 0;
 }
 
 if(is_null($showFlashCards)) {
@@ -251,11 +258,11 @@ if(!is_null($subjectId)) {
   $subjectSelector = $subjectId;
 }
 
-$levelId = null;
+
 
 //$topics = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectSelector, null, null, $flashCard);
 
-$topics = getTopicsGeneralList(null, null, null, $subjectSelector, $levelId, null);
+$topics = getTopicsAllList(null, $root, $examBoardId, $subjectId);
 
 
 include($path."/header_tailwind.php");
@@ -296,6 +303,11 @@ include($path."/header_tailwind.php");
     
   }
 
+  echo count($topics)."<br>";
+    //print_r($topics);
+
+
+
 
 
 ?>
@@ -314,7 +326,7 @@ include($path."/header_tailwind.php");
             }
             ?>
         </select>
-        <select class="inputProperties" id="levelSelect" name = "levelId">
+        <select class="inputProperties" id="levelSelect" name = "levelId" >
           <?php
             foreach ($levels as $subject) {
                 ?>
@@ -335,7 +347,7 @@ include($path."/header_tailwind.php");
         </select>
 
 
-        <select class="inputProperties" id="boardSelect" name = "examBoardId">
+        <select class="inputProperties" id="boardSelect" name = "examBoardId" onchange="changeExamBoard(this)">
           <?php
             foreach ($examBoards as $subject) {
                 ?>
@@ -445,6 +457,26 @@ include($path."/header_tailwind.php");
             ?>
         </select>
 
+        <select id="examBoardSelectGet" name = "examBoardId">
+        <?php
+            foreach ($examBoards as $subject) {
+                ?>
+                <option value="<?=$subject['id'];?>" <?php
+                  if(isset($_POST['levelId'])) {
+                    if($subject['id'] == $_POST['examBoardId']) {
+                      echo "selected";
+                    }
+                    
+                  }
+                  else if ($subject['id'] == $userPreferredExamBoard) {
+                    echo "selected";
+                  }              
+                ?> > <?=htmlspecialchars($subject['name']);?></option>
+            <?php
+            }
+            ?>
+        </select>
+
       
       <label for="topicGet">Topic:</label>
       <select id="topicGet" class="w-20" name="topicId">
@@ -476,10 +508,10 @@ include($path."/header_tailwind.php");
             }
           ?>
       </select>
-      <span class="<?=is_null($showFlashCards)?"hidden":""?>">
+      <div class="<?=is_null($showFlashCards)?"hidden":""?>">
         <input id="flashcard_select" type="checkbox" name="flashCard" value="1" <?=(isset($_GET['flashCard'])) ? "checked":""?>>
         <label for="flashcard_select">FlashCards Only</label>
-      </span>
+      </div>
 
 
       <input class="bg-pink-200 px-2" type="submit" value="Choose Topic">
@@ -829,6 +861,16 @@ function changeTopic(input) {
   var topicChangeForm = document.getElementById("database_get_form");
   var changeTo = input.value;
   var topicChangeSelect = document.getElementById("topicGet");
+  //console.log(topicChangeSelect);
+  //console.log(changeTo);
+  topicChangeSelect.value=changeTo;
+  topicChangeForm.submit();
+}
+
+function changeExamBoard(input) {
+  var topicChangeForm = document.getElementById("database_get_form");
+  var changeTo = input.value;
+  var topicChangeSelect = document.getElementById("examBoardSelectGet");
   //console.log(topicChangeSelect);
   //console.log(changeTo);
   topicChangeSelect.value=changeTo;
