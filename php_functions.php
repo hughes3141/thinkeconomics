@@ -2034,6 +2034,8 @@ function getTopicList($tableName, $topicColumn, $topics = null, $flashCard = nul
 
 }
 
+// topics_all:
+
 function getTopicsAllList($topicId = null, $root = null, $examBoardId = null, $subjectId = null,  $code = null, $parentId = null, $parentCode = null,  $levelId = null, $topicName = null,  $general = null, $userCreate = null) {
   /**
    * This function returns information from topics_all table given input paramters
@@ -2168,6 +2170,45 @@ function getTopicsAllList($topicId = null, $root = null, $examBoardId = null, $s
 
 }
 
+function insertTopicsAllList($code, $name, $subjectId, $examBoardId, $root, $parentId, $general, $levelId, $levelsArray, $userCreate) {
+  /*
+   * This funciton enters new entries into topics_all table
+   * 
+   * Used in:
+   * -
+   */
+
+   global $conn;
+
+   $dateTime = date("Y-m-d H:i:s");
+
+   $sql = "INSERT INTO topics_all
+          (code, name, subjectId, examBoardId, root, parentId, general, levelId, levelsArray, userCreate, dateCreate) 
+          VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+
+    $stmt = $conn->prepare($sql);
+
+    $levelId = strval($levelId);
+    $levelsArray = array($levelId);
+    $levelsArray = json_encode($levelsArray);
+
+    $params = "ssiiiiiisis";
+    $bindArray = array($code, $name, $subjectId, $examBoardId, $root, $parentId, $general, $levelId, $levelsArray, $userCreate, $dateTime);
+
+    $stmt=$conn->prepare($sql);
+    $stmt->bind_param($params, ...$bindArray);
+
+    //var_dump($bindArray);
+
+    if($stmt->execute()) {
+      return "Record \"$code $name\" inserted<br>";
+    }
+
+    
+
+
+}
+
 function getTopicsGeneralList($topicId = null, $code = null, $examBoardId = null, $subjectId = null, $levelId = null, $topicName = null) {
   /**
    * This function returns information from topics_general table given input paramters
@@ -2247,6 +2288,29 @@ function getTopicsGeneralList($topicId = null, $code = null, $examBoardId = null
 
 
 }
+
+function updateTopicsAllList($id, $parentId) {
+  /**
+   * Used to update topics_all
+   * Currently only used to update parentId value but can be expanded
+   * 
+   * Used in:
+   * -topic_spec_map.php
+   */
+
+    global $conn;
+    $sql = "UPDATE topics_all
+            SET parentId = ?
+            WHERE id = ? ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $parentId, $id);
+    $stmt->execute();
+
+    return "Record $id updated with value $parentId";
+}
+
+// topics_spec:
 
 function getTopicsSpecList($id = null, $examBoardId = null, $subjectId = null,$topicId = null, $specCode = null, $topicName=null,  $levelId = null) {
   /**
@@ -2334,6 +2398,28 @@ function getTopicsSpecList($id = null, $examBoardId = null, $subjectId = null,$t
 
 }
 
+function updateTopicsSpecList($id, $topicId) {
+  /**
+   * Used in: $topic_spec_map.php
+   */
+
+  global $conn;
+
+  $sql = "UPDATE topics_spec
+            SET topicId = ?
+            WHERE id = ? ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $topicId, $id);
+    $stmt->execute();
+
+    return "Record $id updated";
+
+
+}
+
+// topics_general:
+
 function insertTopicsGeneralList($code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray, $userCreate) {
   /*
    * This funciton enters new entries into topics_general table
@@ -2371,44 +2457,6 @@ function insertTopicsGeneralList($code, $name, $subjectId, $levelId, $levelsArra
 
 }
 
-function insertTopicsAllList($code, $name, $subjectId, $examBoardId, $root, $parentId, $general, $levelId, $levelsArray, $userCreate) {
-  /*
-   * This funciton enters new entries into topics_all table
-   * 
-   * Used in:
-   * -
-   */
-
-   global $conn;
-
-   $dateTime = date("Y-m-d H:i:s");
-
-   $sql = "INSERT INTO topics_all
-          (code, name, subjectId, examBoardId, root, parentId, general, levelId, levelsArray, userCreate, dateCreate) 
-          VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-
-    $stmt = $conn->prepare($sql);
-
-    $levelId = strval($levelId);
-    $levelsArray = array($levelId);
-    $levelsArray = json_encode($levelsArray);
-
-    $params = "ssiiiiiisis";
-    $bindArray = array($code, $name, $subjectId, $examBoardId, $root, $parentId, $general, $levelId, $levelsArray, $userCreate, $dateTime);
-
-    $stmt=$conn->prepare($sql);
-    $stmt->bind_param($params, ...$bindArray);
-
-    //var_dump($bindArray);
-
-    if($stmt->execute()) {
-      return "Record \"$code $name\" inserted<br>";
-    }
-
-    
-
-
-}
 
 function updateTopicsGeneralList($id, $code, $name, $subjectId, $levelsArray) {
   /**
@@ -2436,46 +2484,7 @@ function updateTopicsGeneralList($id, $code, $name, $subjectId, $levelsArray) {
     return "Record $id updated";
 }
 
-function updateTopicsAllList($id, $parentId) {
-  /**
-   * Used to update topics_all
-   * Currently only used to update parentId value but can be expanded
-   * 
-   * Used in:
-   * -topic_spec_map.php
-   */
 
-    global $conn;
-    $sql = "UPDATE topics_all
-            SET parentId = ?
-            WHERE id = ? ";
-
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ii", $topicId, $id);
-    $stmt->execute();
-
-    return "Record $id updated";
-}
-
-function updateTopicsSpecList($id, $topicId) {
-  /**
-   * Used in: $topic_spec_map.php
-   */
-
-  global $conn;
-
-  $sql = "UPDATE topics_spec
-            SET topicId = ?
-            WHERE id = ? ";
-
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ii", $topicId, $id);
-    $stmt->execute();
-
-    return "Record $id updated";
-
-
-}
 
 function getExamBoards($id = null) {
   global $conn;

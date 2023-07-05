@@ -66,7 +66,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       echo "<br>";
       */
       
-      //$updateMessage = updateTopicsSpecList($id, $topicId);
+      $updateMessage = updateTopicsAllList($id, $topicId);
       array_push($updateMessageArray, $updateMessage);
     
   
@@ -97,13 +97,13 @@ include($path."/header_tailwind.php");
   <?php
     if(isset($_GET['test'])) {
       echo "<pre>";
-      print_r($specTopics);
+      //print_r($specTopics);
       /*
       foreach($genTopics as $topic) {
         echo $topic['code']." ".$topic['name']." || ";
       }
       */
-      print_r($genTopics);
+      //print_r($genTopics);
       echo "</pre>";
       if($_SERVER['REQUEST_METHOD'] == 'POST') {
         print_r($_POST);
