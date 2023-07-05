@@ -122,7 +122,7 @@ if (isset($_POST['submit'])) {
 
     if($_POST['active_entry_'.$x] == "1") {
 
-      //insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId, $topicId);
+      insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId, $topicId);
       
       //Update topic_order for new Entry:
       //changeOrderNumberWithinTopic(null, $topic, $topic_order, $subjectId, $levelId);
@@ -334,15 +334,17 @@ include($path."/header_tailwind.php");
       echo "POST:<br>";
       var_dump($_POST);
     }
+    /*
     echo "<br><br>User Info:<br>";
-    print_r($userInfo);
+    //print_r($userInfo);
     echo "<br><br>Subjects:<br>";
-    print_r($subjects);
+    //print_r($subjects);
     echo "<br><br>Levels:<br>";
-    print_r($levels);
+    //print_r($levels);
     echo "<br><br>Topics:<br>";
     echo count($topics)."<br>";
-    print_r($topics);
+    //print_r($topics);
+    */
     
   }
 
