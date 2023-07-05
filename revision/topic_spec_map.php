@@ -82,6 +82,9 @@ $subjectId = 7;
 $specTopics = getTopicsAllList(null, null, $examBoardId, $subjectId, null, null, 0, null, null);
 $genTopics = getTopicsAllList(null, null, null, $subjectId, null, null, 1, null, null);
 
+$specTopics = getTopicsAllList(null, 0, $examBoardId, $subjectId);
+$genTopics = getTopicsAllList(null, 1, null, $subjectId);
+
 include($path."/header_tailwind.php");
 ?>
 
@@ -93,10 +96,15 @@ include($path."/header_tailwind.php");
 <div class=" container mx-auto px-4 pb-4 mt-2 bg-white text-black mb-5">
   <?php
     if(isset($_GET['test'])) {
-      //print_r($specTopics);
+      echo "<pre>";
+      print_r($specTopics);
+      /*
       foreach($genTopics as $topic) {
         echo $topic['code']." ".$topic['name']." || ";
       }
+      */
+      print_r($genTopics);
+      echo "</pre>";
       if($_SERVER['REQUEST_METHOD'] == 'POST') {
         print_r($_POST);
         echo "<br>Update Message:</br>";

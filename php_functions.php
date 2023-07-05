@@ -2034,7 +2034,7 @@ function getTopicList($tableName, $topicColumn, $topics = null, $flashCard = nul
 
 }
 
-function getTopicsAllList($topicId = null, $code = null, $examBoardId = null, $subjectId = null, $levelId = null, $topicName = null, $root = null, $general = null, $userCreate = null) {
+function getTopicsAllList($topicId = null, $root = null, $examBoardId = null, $subjectId = null,  $code = null, $parentId = null, $parentCode = null,  $levelId = null, $topicName = null,  $general = null, $userCreate = null) {
   /**
    * This function returns information from topics_all table given input paramters
    * 
@@ -2049,43 +2049,74 @@ function getTopicsAllList($topicId = null, $code = null, $examBoardId = null, $s
   $results = array();
 
 
-  $sql = "SELECT *, 
-          LENGTH(code) - LENGTH(REPLACE(code, '.', '')) AS topicLevel
-          FROM topics_all
-           ";
+  $sql = "SELECT c.*,
+          IF(c.root = 1, c.id, p.id) AS par_id,
+          IF(c.root = 1, c.code, p.code) AS par_code,
+          IF(c.root = 1, c.name, p.name) AS par_name, 
+          LENGTH(c.code) - LENGTH(REPLACE(c.code, '.', '')) AS topicLevel
+          FROM topics_all c
+          LEFT JOIN (
+              SELECT code, name, id
+              FROM topics_all
+            ) p
+            ON (c.parentId = p.id OR (c.root = 1 AND c.id = p.id)) ";
 
   if(!is_null($topicId)) {
     $sql .= sql_conjoin($params);
-    $sql .= " id = ? ";
+    $sql .= " c.id = ? ";
     $params .= "i";
     array_push($bindArray, $topicId);
   }
 
-  if(!is_null($code)) {
+  if(!is_null($root)) {
     $sql .= sql_conjoin($params);
-    $code = $code."%";
-    $sql .= " code LIKE ? ";
-    $params .= "s";
-    array_push($bindArray, $code);
+    $sql .= " c.root = ? ";
+    $params .= "i";
+    array_push($bindArray, $root);
   }
 
   if(!is_null($examBoardId)) {
     $sql .= sql_conjoin($params);
-    $sql .= " examBoardId = ? ";
+    $sql .= " c.examBoardId = ? ";
     $params .= "i";
     array_push($bindArray, $examBoardId);
   }
 
   if(!is_null($subjectId)) {
     $sql .= sql_conjoin($params);
-    $sql .= " subjectId = ? ";
+    $sql .= " c.subjectId = ? ";
     $params .= "i";
     array_push($bindArray, $subjectId);
   }
 
+  if(!is_null($code)) {
+    $sql .= sql_conjoin($params);
+    $code = $code."%";
+    $sql .= " c.code LIKE ? ";
+    $params .= "s";
+    array_push($bindArray, $code);
+  }
+
+  if(!is_null($parentId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " p.id = ? ";
+    $params .= "i";
+    array_push($bindArray, $parentId);
+  }
+
+
+  if(!is_null($parentCode)) {
+    $sql .= sql_conjoin($params);
+    $parentCode = $parentCode."%";
+    $sql .= " p.code LIKE ? ";
+    $params .= "s";
+    array_push($bindArray, $parentCode);
+  }
+
+
   if(!is_null($levelId)) {
     $sql .= sql_conjoin($params);
-    $sql .= " levelId = ? ";
+    $sql .= " c.levelId = ? ";
     $params .= "i";
     array_push($bindArray, $levelId);
   }
@@ -2093,35 +2124,29 @@ function getTopicsAllList($topicId = null, $code = null, $examBoardId = null, $s
   if(!is_null($topicName)) {
     $sql .= sql_conjoin($params);
     $topicName = "&".$topicName."%";
-    $sql .= " name LIKE ? ";
+    $sql .= " c.name LIKE ? ";
     $params .= "s";
     array_push($bindArray, $topicName);
   }
 
-  if(!is_null($root)) {
-    $sql .= sql_conjoin($params);
-    $sql .= " root = ? ";
-    $params .= "i";
-    array_push($bindArray, $root);
-  }
-
   if(!is_null($general)) {
     $sql .= sql_conjoin($params);
-    $sql .= " general = ? ";
+    $sql .= " c.general = ? ";
     $params .= "i";
     array_push($bindArray, $general);
   }
 
   if(!is_null($userCreate)) {
     $sql .= sql_conjoin($params);
-    $sql .= " userCreate = ? ";
+    $sql .= " c.userCreate = ? ";
     $params .= "i";
     array_push($bindArray, $userCreate);
   }
 
-  
 
-  $sql .= " ORDER BY code";
+  $sql .= " ORDER BY c.code";
+
+  //echo $sql;
 
   $stmt=$conn->prepare($sql);
   if(count($bindArray)>0) {
