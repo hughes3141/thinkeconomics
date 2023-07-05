@@ -178,15 +178,20 @@ if(isset($_GET['topic'])) {
 }
 
 $flashCard = null;
+
 $subjectId = null;
+$levelId = null;
+$examBoardId = null;
+$topicId = null;
+
+
+
 $userCreate = null;
 $type = null;
-$examBoardId = null;
 
-$topicId = null;
 $root = 1;
 
-$levelId = null;
+
 
 //$userPreferredSubject comes from a user's information.
 if(isset($userInfo['userPreferredSubjectId'])) {
@@ -214,21 +219,38 @@ if(isset($_GET['subjectId'])) {
 if(isset($_POST['subjectId'])) {
   $subjectId = $_POST['subjectId'];
 }
+
+if(isset($_GET['levelId'])) {
+  $levelId = $_GET['levelId'];
+}
 if(isset($_POST['levelId'])) {
   $levelId = $_POST['levelId'];
-}
-if(isset($_GET['userCreate'])) {
-  $userCreate = $_GET['userCreate'];
-}
-
-if(isset($_GET['topicId'])) {
-  $topicId = $_GET['topicId'];
 }
 
 if(isset($_GET['examBoardId'])) {
   $examBoardId = $_GET['examBoardId'];
   $root = 0;
 }
+if(isset($_POST['examBoardId'])) {
+  $examBoardId = $_POST['examBoardId'];
+  $root = 0;
+}
+
+
+if(isset($_GET['topicId'])) {
+  $topicId = $_GET['topicId'];
+}
+if(isset($_POST['topicId'])) {
+  $topicId = $_POST['topicId'];
+}
+
+
+
+if(isset($_GET['userCreate'])) {
+  $userCreate = $_GET['userCreate'];
+}
+
+
 
 if(is_null($showFlashCards)) {
   $flashCard = 1;
@@ -253,10 +275,26 @@ $examBoards = getExamBoards();
 //Use getColumnListFromTable becuase it returns only non-blank values:
 
 //$subjectSelector is the subjectId that is either determined by (1) user preference or (2) $subjectId;
+
 $subjectSelector = $userPreferredSubject;
+$examBoardSelector = $userPreferredExamBoard;
+$levelSelector = 1;
+$topicSelector = null;
+
 if(!is_null($subjectId)) {
   $subjectSelector = $subjectId;
 }
+
+if(!is_null($examBoardId)) {
+  $examBoardSelector = $examBoardId;
+}
+if(!is_null($levelId)) {
+  $levelSelector = $levelId;
+}
+if(!is_null($topicId)) {
+  $topicSelector = $topicId;
+}
+
 
 
 
@@ -317,7 +355,7 @@ include($path."/header_tailwind.php");
   <form method="post" id="new_question_post_form">
     <div class="my-2">
         <label for ="subjectSelect">Subject:</label>
-        <select class="inputProperties" id="subjectSelect" name = "subjectId" onchange="changeSubject(this);">
+        <select class="inputProperties" id="subjectSelect" name = "subjectId" onchange="changeInput(this, 'subjectSelectGet');">
           <?php
             foreach ($subjects as $subject) {
                 ?>
@@ -326,42 +364,22 @@ include($path."/header_tailwind.php");
             }
             ?>
         </select>
-        <select class="inputProperties" id="levelSelect" name = "levelId" >
+        <select class="inputProperties" id="levelSelect" name = "levelId" onchange="changeInput(this, 'levelSelectGet');">
           <?php
             foreach ($levels as $subject) {
                 ?>
-                <option value="<?=$subject['id'];?>" <?php
-                  if(isset($_POST['levelId'])) {
-                    if($subject['id'] == $_POST['levelId']) {
-                      echo "selected";
-                    }
-                    
-                  }
-                  else if ($subject['id'] == $userPreferredSubject) {
-                    echo "selected";
-                  }              
-                ?> > <?=htmlspecialchars($subject['name']);?></option>
+                <option value="<?=$subject['id'];?>" <?=($subject['id'] == $levelSelector) ? "selected" : ""?> > <?=htmlspecialchars($subject['name']);?></option>
             <?php
             }
             ?>
         </select>
 
 
-        <select class="inputProperties" id="boardSelect" name = "examBoardId" onchange="changeExamBoard(this)">
+        <select class="inputProperties" id="boardSelect" name = "examBoardId" onchange="changeInput(this, 'examBoardSelectGet');"">
           <?php
             foreach ($examBoards as $subject) {
                 ?>
-                <option value="<?=$subject['id'];?>" <?php
-                  if(isset($_POST['examBoardId'])) {
-                    if($subject['id'] == $_POST['examBoard']) {
-                      echo "selected";
-                    }
-                    
-                  }
-                  else if ($subject['id'] == $userPreferredExamBoard) {
-                    echo "selected";
-                  }              
-                ?> > <?=htmlspecialchars($subject['name']);?></option>
+                <option value="<?=$subject['id'];?>" <?=($subject['id'] == $examBoardSelector) ? "selected" : ""?> > <?=htmlspecialchars($subject['name']);?></option>
             <?php
             }
             ?>
@@ -370,15 +388,8 @@ include($path."/header_tailwind.php");
           if(count($topics)>0) {
             ?>
             <label for="topic">Topic:</label>
-            <select class="inputProperties w-20 " id ="topic" name="topicId" class="topicSelector" onchange="changeTopic(this);">
+            <select class="inputProperties w-20 " id ="topic" name="topicId" class="topicSelector" onchange="changeInput(this, 'topicGet');">
               <?php
-                $topicPostSelect = null;
-                if(isset($_POST['topicId'])) {
-                  $topicPostSelect = $_POST['topicId'];
-                }
-                if(isset($_GET['topicId'])) {
-                  $topicPostSelect = $_GET['topicId'];
-                }
                 foreach ($topics as $topic) {
                   
                   $indent = "";
@@ -395,7 +406,7 @@ include($path."/header_tailwind.php");
                     }
                     */
                   ?>
-                  <option class="" value="<?=$topic['id']?>" <?=($topicPostSelect == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$topic['code']?> <?=$indent.$topic['name']?></option>
+                  <option class="" value="<?=$topic['id']?>" <?=($topicSelector == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$topic['code']?> <?=$indent.$topic['name']?></option>
                   <?php
                 }
               ?>
@@ -441,17 +452,7 @@ include($path."/header_tailwind.php");
           <?php
             foreach ($levels as $subject) {
                 ?>
-                <option value="<?=$subject['id'];?>" <?php
-                  if(isset($_POST['levelId'])) {
-                    if($subject['id'] == $_POST['levelId']) {
-                      echo "selected";
-                    }
-                    
-                  }
-                  else if ($subject['id'] == $userPreferredSubject) {
-                    echo "selected";
-                  }              
-                ?> > <?=htmlspecialchars($subject['name']);?></option>
+                <option value="<?=$subject['id'];?>" <?=($subject['id'] == $levelSelector) ? "selected" : ""?>><?=htmlspecialchars($subject['name']);?></option>
             <?php
             }
             ?>
@@ -461,17 +462,7 @@ include($path."/header_tailwind.php");
         <?php
             foreach ($examBoards as $subject) {
                 ?>
-                <option value="<?=$subject['id'];?>" <?php
-                  if(isset($_POST['levelId'])) {
-                    if($subject['id'] == $_POST['examBoardId']) {
-                      echo "selected";
-                    }
-                    
-                  }
-                  else if ($subject['id'] == $userPreferredExamBoard) {
-                    echo "selected";
-                  }              
-                ?> > <?=htmlspecialchars($subject['name']);?></option>
+                <option value="<?=$subject['id'];?>" <?=($subject['id'] == $examBoardSelector) ? "selected" : ""?> > <?=htmlspecialchars($subject['name']);?></option>
             <?php
             }
             ?>
@@ -871,6 +862,16 @@ function changeExamBoard(input) {
   var topicChangeForm = document.getElementById("database_get_form");
   var changeTo = input.value;
   var topicChangeSelect = document.getElementById("examBoardSelectGet");
+  //console.log(topicChangeSelect);
+  //console.log(changeTo);
+  topicChangeSelect.value=changeTo;
+  topicChangeForm.submit();
+}
+
+function changeInput(input, getSelectElement) {
+  var topicChangeForm = document.getElementById("database_get_form");
+  var changeTo = input.value;
+  var topicChangeSelect = document.getElementById(getSelectElement);
   //console.log(topicChangeSelect);
   //console.log(changeTo);
   topicChangeSelect.value=changeTo;
