@@ -1586,13 +1586,13 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
 
   $sql .= " ORDER BY topic";
 
-  //echo $sql;
+
 
   if(!is_null($userIdOrder)) {
     $sql .= ", userTopicOrder, topic_order";
   }
 
-  echo $sql;
+  //echo $sql;
 
   $stmt=$conn->prepare($sql);
   if(count($bindArray)>0) {

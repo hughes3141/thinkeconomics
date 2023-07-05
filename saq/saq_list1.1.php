@@ -89,11 +89,12 @@ if (isset($_POST['submit'])) {
   //$topic = $_POST['topic'];
   $topicId = $_POST['topicId'];
 
-  $topic = getTopicsGeneralList($topicId)[0]['code'];
+  $topic = getTopicsAllList($topicId)[0]['code'];
 
 
   $subjectId = $_POST['subjectId'];
   $levelId = $_POST['levelId'];
+  $examBoardId = $_POST['examBoardId'];
 
   $userCreate = $_SESSION['userid'];
   $timeAdded = date("Y-m-d H:i:s");
@@ -121,7 +122,7 @@ if (isset($_POST['submit'])) {
 
     if($_POST['active_entry_'.$x] == "1") {
 
-      insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId, $topicId);
+      //insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId, $topicId);
       
       //Update topic_order for new Entry:
       //changeOrderNumberWithinTopic(null, $topic, $topic_order, $subjectId, $levelId);
@@ -206,6 +207,9 @@ if(isset($userInfo['userPreferredExamBoardId'])) {
   $userPreferredExamBoard = 1;
 }
 
+$subjectId = $userPreferredSubject;
+$examBoardId = $userPreferredExamBoard;
+
 if(isset($_GET['type'])) {
   $type = $_GET['type'];
 }
@@ -257,6 +261,7 @@ if(is_null($showFlashCards)) {
 }
 
 $questions = getSAQQuestions(null, $topicGet, $flashCard, $subjectId, $userCreate, $type, $userId, $topicId);
+
 
 //$questions = getSAQQuestions(null, null, null, null, null, null, null, null);
 
@@ -340,13 +345,6 @@ include($path."/header_tailwind.php");
     print_r($topics);
     
   }
-
-  echo count($topics)."<br>";
-    //print_r($topics);
-
-
-
-
 
 ?>
 
