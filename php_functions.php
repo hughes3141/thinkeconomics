@@ -1448,6 +1448,7 @@ function sql_conjoin($x, $startParams ="") {
    - getColumnListFromTable()
 
    */
+  
   $y = "";
   if($x != $startParams) {
     $y = " AND ";
@@ -1455,6 +1456,15 @@ function sql_conjoin($x, $startParams ="") {
     $y = " WHERE ";
   }
   return $y;
+  
+/*
+  if($x == $startParams) {
+    return " WHERE ";
+  }
+  else {
+    return " AND ";
+  }
+  */
 }
 
 function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, $subjectId = null, $userCreate = null, $type = null, $userIdOrder = null, $topicId = null) {
@@ -1530,6 +1540,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
       $topic = $topic."%";
       
       $params .= "s";
+      $paramsExpected = "";
       array_push($bindArray, $topic);
     }
 
@@ -1538,7 +1549,6 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
 
   if($subjectId) {
     $sql .= sql_conjoin($params, $paramsExpected);
-
     $sql .= " q.subjectId = ? ";
     $params .= "i";
     array_push($bindArray, $subjectId);
@@ -1555,12 +1565,14 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   if($flashCard) {
     $sql .= sql_conjoin($params, $paramsExpected);
     $sql .= " ( q.flashCard = 1 OR q.type LIKE '%flashCard%' )";
+    $paramsExpected = "x";
   }
 
   if($type) {
     $sql .= sql_conjoin($params, $paramsExpected);
     $sql .= " q.type LIKE ? ";
     $params .= "s";
+    $paramsExpected = "";
     $type = "%".$type."%";
     array_push($bindArray, $type);
   }
@@ -1580,6 +1592,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
     $sql .= ", userTopicOrder, topic_order";
   }
 
+  echo $sql;
 
   $stmt=$conn->prepare($sql);
   if(count($bindArray)>0) {
@@ -1604,6 +1617,8 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
       array_push($results, $row);
     }
   }
+
+  
   return $results;
 
 }
