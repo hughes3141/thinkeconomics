@@ -61,6 +61,19 @@ Notes on command GET variables:
     - $_GET['restrict'] = 'minutes' : 3 mins and 5 mins
 */
 
+//Set img path:
+
+/**
+ * images find the path set via $question['q_path'] etc.
+ * This is assumed to be in root foler if thinkeonomics
+ * If other site: udpate variable $imgSourcePathPrefix to 
+ */
+
+ $imgSourcePathPrefix = "";
+ //$imgSourcePathPrefix = "https://www.thinkeconomics.co.uk";
+
+
+
   if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $insert = insertFlashcardResponse($_POST['questionId'], $userId, $_POST['rightWrong'], $_POST['timeStart'], date("Y-m-d H:i:s", time()), $_POST['cardCategory']);
 
@@ -85,6 +98,20 @@ Notes on command GET variables:
   $subjectLevel_subjectId = null;
 
 
+
+  $topicIds = $topicIdsArray = null;
+
+  $examBoardId = null;
+
+  if(isset($_GET['topicIds'])) {
+    $topicIds = $_GET['topicIds'];
+    $topicIdsArray = explode(",", $topicIds);
+    
+  }
+
+
+
+
   if(isset($_GET['topic'])) {
     $_GET['topics'] = $_GET['topic'];
   }
@@ -93,6 +120,8 @@ Notes on command GET variables:
     $topics = $_GET['topics'];
     
   }
+
+
 
   if(isset($_GET['subjectId'])) {
     $subjectId = $_GET['subjectId'];
@@ -114,6 +143,10 @@ Notes on command GET variables:
     $levelIdSet = $_GET['levelIdSet'];
   }
 
+  if(isset($_GET['examBoardId'])) {
+    $examBoardId = $_GET['examBoardId'];
+  }
+
   if(isset($_GET['subjectLevel'])) {
     $subjectLevel = $_GET['subjectLevel'];
     $subjectLevelArray = explode("_", $subjectLevel);
@@ -129,15 +162,25 @@ Notes on command GET variables:
   //$subjects = getOutputFromTable("subjects", null, "name");
   
   $subjects = getDistinctFlashcardSubjectLevels();
+  $examBoardIds = getSAQExamBoards($subjectIdSet);
+  $examBoards = array();
 
-  //print_r($subjects);
+  //print_r($examBoardIds);
 
- 
+  foreach ($examBoardIds as $examBoard) {
+    $id= $examBoard['examBoardId'];
+    $inst = getExamBoards($id);
+    if(count($inst)==1) {
+      array_push($examBoards, $inst[0]);
+    }     
+  }
 
   $topicsArray = array();
 
   if(!is_null($subjectIdSet)) {
-    $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectIdSet, null, null, 1);
+    //$topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectIdSet, null, null, 1);
+
+    $topicsArray =getSAQTopics(null, $subjectIdSet, 1, $examBoardId);
 
   }
 
@@ -151,11 +194,13 @@ Notes on command GET variables:
 
   $questions = array();
 
-  if(!empty($topics)) {
+  if(!empty($topicIds)) {
+    /*
     if($topics == "all") {
       $topics = null;
     }
-    $questions = getFlashcardsQuestions($topics, $userId, $subjectIdSet);
+    */
+    $questions = getFlashcardsQuestions(null, $userId, null, $topicIds);
   }
   //$topics = $topics = explode(",", $topics);
 
@@ -184,7 +229,6 @@ include($path."/header_tailwind.php");
     echo "<br>Subjects:<br>";
     print_r($subjects);
   }
-
 
 
       //Embeds topic selector:
@@ -227,7 +271,7 @@ include($path."/header_tailwind.php");
               <?php
                 if(!is_null($question['q_path'])) {
                   ?>
-                  <img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
+                  <img class = "mx-auto content-center object-center" src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
                   <?php
                 }
               ?>
@@ -248,7 +292,7 @@ include($path."/header_tailwind.php");
                 <?php
                   if(!is_null($question['a_path'])) {
                     ?>
-                    <img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
+                    <img class = "mx-auto content-center object-center" src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
                     <?php
                   }
                 ?>

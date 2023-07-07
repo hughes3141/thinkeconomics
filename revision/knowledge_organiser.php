@@ -34,6 +34,20 @@ $style_input = "
   ";
 
 
+//Set img path:
+
+/**
+ * images find the path set via $question['q_path'] etc.
+ * This is assumed to be in root foler if thinkeonomics
+ * If other site: udpate variable $imgSourcePathPrefix to 
+ */
+
+ $imgSourcePathPrefix = "";
+ //$imgSourcePathPrefix = "https://www.thinkeconomics.co.uk";
+
+
+
+
 include($path."/header_tailwind.php");
 
 
@@ -51,6 +65,17 @@ $userCreate = null;
 $topics = null;
 $subjectLevel = null;
 
+
+$topicIds = $topicIdsArray = null;
+
+$examBoardId = null;
+
+if(isset($_GET['topicIds'])) {
+  $topicIds = $_GET['topicIds'];
+  $topicIdsArray = explode(",", $topicIds);
+  
+}
+
 if(isset($_GET['topic'])) {
   $_GET['topics'] = $_GET['topic'];
 }
@@ -66,6 +91,10 @@ if(isset($_GET['subjectId'])) {
 }
 if(isset($_GET['userCreate'])) {
   $userCreate = $_GET['userCreate'];
+}
+
+if(isset($_GET['examBoardId'])) {
+  $examBoardId = $_GET['examBoardId'];
 }
 
 if(isset($_GET['subjectLevel'])) {
@@ -86,16 +115,32 @@ $subjects = getDistinctFlashcardSubjectLevels();
 
 $allSubjects = getOutputFromTable("subjects", null, "name");
 
+$examBoardIds = getSAQExamBoards($subjectId);
+$examBoards = array();
+
+//print_r($examBoardIds);
+
+foreach ($examBoardIds as $examBoard) {
+  $id= $examBoard['examBoardId'];
+  $inst = getExamBoards($id);
+  if(count($inst)==1) {
+    array_push($examBoards, $inst[0]);
+  }     
+}
+
 $topicsArray = array();
 
 if(!is_null($subjectId)) {
-  $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectId, null, null, 1);
+  //$topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectIdSet, null, null, 1);
+
+  $topicsArray =getSAQTopics(null, $subjectId, 1, $examBoardId);
 
 }
 
 
 
-$questions = getSAQQuestions(null, $topics, true, $subjectId, $userCreate, null, null);
+$questions = getSAQQuestions(null, $topics, true, $subjectId, $userCreate, null, null, $topicIds);
+
 $topicList = getTopicList("saq_question_bank_3", "topic", $topics, true, $subjectId, $userCreate);
 
 
@@ -160,7 +205,7 @@ $topicList = getTopicList("saq_question_bank_3", "topic", $topics, true, $subjec
               <?php
                 if(!is_null($question['q_path'])) {
                   ?>
-                  <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
+                  <img class = "mx-auto my-1 max-h-80" src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
                   <?php
                 }
                 ?>
@@ -170,7 +215,7 @@ $topicList = getTopicList("saq_question_bank_3", "topic", $topics, true, $subjec
               <?php
                 if(!is_null($question['a_path'])) {
                   ?>
-                  <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
+                  <img class = "mx-auto my-1 max-h-80" src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
                   <?php
                 }
                 ?>

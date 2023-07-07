@@ -435,7 +435,7 @@ include($path."/header_tailwind.php");
     <p>
       <button class="w-full bg-pink-300 rounded border border-black mb-1">Create Question</button>
     </p>
-    <input type="text" name="questionsCount" id="questionsCount">
+    <input type="hidden" name="questionsCount" id="questionsCount">
     <input class="w-full bg-pink-300 rounded border border-black mb-1" type="hidden" name="submit" value="Create Question">
     
   </form>
@@ -555,7 +555,9 @@ include($path."/header_tailwind.php");
         
           <td class="align-top">
             <div class="show_<?=$row['id'];?>">
+              <!--
               <?=htmlspecialchars($row['topicName']);?><br>
+              -->
               <?=htmlspecialchars($row['userTopicOrder'])?> 
             </div>
             <div class="hide hide_<?=$row['id'];?>">

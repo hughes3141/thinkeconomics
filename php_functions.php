@@ -1159,7 +1159,7 @@ function getFlashcardSummaryByStudent($userId, $startDate = null, $endDate = nul
 
 }
 
-function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
+function getFlashcardsQuestions($topics = null, $userId, $subjectId = null, $topicIds = null) {
   /*
   This function returns Flashcard quesiton information that will then be used in flashcards.php. This will return information on all flashcard questions in a the database given the filter, plus information on the last time a given $userId has attempted the question. Returns a ranked array of questions that can then be used to generate flashcards.php
 
@@ -1174,7 +1174,7 @@ function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
   
 
 
-  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, q.flashCard, q.subjectId, r.userId, r.gotRight, r.dontKnow, r.correct, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory, q.questionAssetId, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt
+  $sql = "SELECT q.id qId, r.id rId, q.question, q.topic, q.img, q.model_answer, q.answer_img, q.answer_img_alt, q.flashCard, q.subjectId, q.topicId topicId, r.userId, r.gotRight, r.dontKnow, r.correct, r.timeStart, r.timeSubmit, r.most_recent, r.cardCategory, q.questionAssetId, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt
           FROM saq_question_bank_3 q
           LEFT JOIN (
             SELECT rr.id, rr.questionId, rr.userId, rr.timeSubmit, rr.gotRight, rr.dontKnow, rr.correct, rr.cardCategory, t.most_recent, rr.timeStart
@@ -1193,6 +1193,9 @@ function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
           ON q.questionAssetId = aq.id
           LEFT JOIN upload_record aa
           ON q.answerAssetId = aa.id
+          LEFT JOIN topics_all topic
+          ON topic.id = q.topicId
+
           WHERE ";
 
   if($topics) {
@@ -1225,6 +1228,38 @@ function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
     $params .= "i";
     array_push($bindArray, $subjectId);
   }
+
+  if(!is_null($topicIds)) {
+    if($conjoiner == 1) {
+      $sql .= " AND ";
+    }
+    $conjoiner = 1;
+    $topicIdsArray = array();
+    $topicIdsArray = explode(",",$topicIds);
+
+    
+
+    $sql .= " topicId IN ( ";
+    foreach($topicIdsArray as $key => $array) {
+      if($key < (count($topicIdsArray)-1)) {
+        $comma = ", ";
+      } else {
+        $comma = " ";
+      }
+      $sql .= " ?".$comma;
+      $params .= "i";
+      array_push($bindArray, $topicIdsArray[$key]);
+
+    }
+    $sql .= " )";
+
+    
+    /*
+    $sql .= " topicId = ? ";
+    $params .= "i";     
+    */
+
+  }
   
   if($conjoiner == 1) {
     $sql .= " AND ";
@@ -1236,6 +1271,7 @@ function getFlashcardsQuestions($topics = null, $userId, $subjectId = null) {
   ";
 
   //echo $sql;
+
   $stmt = $conn->prepare($sql);
   $stmt->bind_param($params, ...$bindArray);
 
@@ -1440,6 +1476,7 @@ function getDistinctFlashcardSubjectLevels() {
 
 }
 
+
 function sql_conjoin($x, $startParams ="") {
   /*
    Used  to join up different optional elemlents in sql query.
@@ -1484,7 +1521,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   $bindArray = array();
   $results = array();
 
-  $sql = "SELECT q.*, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt, topic.code, topic.name topicName, topic.subjectId subjectId, topic.levelId levelId, topic.levelsArray, topic.examBoardsArray ";
+  $sql = "SELECT q.*, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt, topic.code, topic.name topicName, topic.subjectId subjectId, topic.levelId levelId, topic.levelsArray, topic.examBoardId, topic.root, topic.parentId, topic.general ";
   
   if(!is_null($userIdOrder)) {
     $sql .= ", ld.topicOrder userTopicOrder, ld.isActive, ld.comments userComments, ld.extraTopics, ld.studentHide ";
@@ -1495,7 +1532,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
           ON aq.id = q.questionAssetId
           LEFT JOIN upload_record aa
           ON aa.id = q.answerAssetId
-          LEFT JOIN topics_general topic
+          LEFT JOIN topics_all topic
           ON topic.id = q.topicId";
 
   if(!is_null($userIdOrder)) {
@@ -1702,6 +1739,111 @@ function SAQQuestionTopicCount($topic) {
     }
 
 }
+
+function getSAQTopics($topicId = null, $subjectId=null, $flashCard = null, $examBoardId = null) {
+  /**
+   * Returns a distinct list of topics in saq_question_bank_3 given parameters
+   */
+
+  global $conn;
+  $params = "";
+  $bindArray = array();
+  $results = array();
+
+  
+  $sql = "SELECT DISTINCT q.topicId, t.*
+          FROM saq_question_bank_3 q
+          LEFT JOIN topics_all t
+          ON t.id = q.topicId ";
+          
+
+
+  if($subjectId) {
+    $sql .= sql_conjoin($params);
+    $sql .= " q.subjectId = ? ";
+    $params .= "i";
+    array_push($bindArray, $subjectId);
+  }
+
+  if($flashCard) {
+    $sql .= sql_conjoin($params);
+    $sql .= " ( q.flashCard = 1 )";
+  }
+
+  if($examBoardId) {
+    $sql .= sql_conjoin($params);
+    $sql .= " ( t.examBoardId = ? )";
+    $params .= "i";
+    array_push($bindArray, $examBoardId);
+  }
+
+  $sql .= "ORDER BY t.code";
+
+  //echo $sql;
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
+
+
+}
+
+function getSAQExamBoards($subjectId = null) {
+  /**
+   * Returns a distinct list of topics in saq_question_bank_3 given parameters
+   * 
+   * Used in:
+   * -flashcards.php
+   */
+
+  global $conn;
+  $params = "";
+  $bindArray = array();
+  $results = array();
+
+  $sql = "SELECT DISTINCT t.examBoardId
+          FROM topics_all t
+          INNER JOIN saq_question_bank_3 q
+          ON t.id = q.topicId ";
+
+
+  if(!is_null($subjectId)) {
+    $sql .= " WHERE t.subjectId = ? ";
+    $params .= "i";
+    array_push($bindArray, $subjectId);
+
+  }
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
+
+}
+
 
 function lastFlashcardResponse($questionId, $userId, $timeStart) {
   /*
@@ -2502,6 +2644,7 @@ function updateTopicsGeneralList($id, $code, $name, $subjectId, $levelsArray) {
 
 
 function getExamBoards($id = null) {
+
   global $conn;
   $results = array();
   $params = "";
