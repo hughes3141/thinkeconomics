@@ -1448,6 +1448,7 @@ function sql_conjoin($x, $startParams ="") {
    - getColumnListFromTable()
 
    */
+  
   $y = "";
   if($x != $startParams) {
     $y = " AND ";
@@ -1455,9 +1456,18 @@ function sql_conjoin($x, $startParams ="") {
     $y = " WHERE ";
   }
   return $y;
+  
+/*
+  if($x == $startParams) {
+    return " WHERE ";
+  }
+  else {
+    return " AND ";
+  }
+  */
 }
 
-function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, $subjectId = null, $userCreate = null, $type = null, $userIdOrder = null) {
+function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, $subjectId = null, $userCreate = null, $type = null, $userIdOrder = null, $topicId = null) {
   /*
   Used to find information about questions in saq_question_bank_3 for a given number of parameters
 
@@ -1474,7 +1484,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   $bindArray = array();
   $results = array();
 
-  $sql = "SELECT q.*, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt ";
+  $sql = "SELECT q.*, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt, topic.code, topic.name topicName, topic.subjectId subjectId, topic.levelId levelId, topic.levelsArray, topic.examBoardsArray ";
   
   if(!is_null($userIdOrder)) {
     $sql .= ", ld.topicOrder userTopicOrder, ld.isActive, ld.comments userComments, ld.extraTopics, ld.studentHide ";
@@ -1484,7 +1494,9 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
           LEFT JOIN upload_record aq
           ON aq.id = q.questionAssetId
           LEFT JOIN upload_record aa
-          ON aa.id = q.answerAssetId";
+          ON aa.id = q.answerAssetId
+          LEFT JOIN topics_general topic
+          ON topic.id = q.topicId";
 
   if(!is_null($userIdOrder)) {
     $params .= "i";
@@ -1528,6 +1540,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
       $topic = $topic."%";
       
       $params .= "s";
+      $paramsExpected = "";
       array_push($bindArray, $topic);
     }
 
@@ -1536,7 +1549,6 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
 
   if($subjectId) {
     $sql .= sql_conjoin($params, $paramsExpected);
-
     $sql .= " q.subjectId = ? ";
     $params .= "i";
     array_push($bindArray, $subjectId);
@@ -1553,22 +1565,34 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   if($flashCard) {
     $sql .= sql_conjoin($params, $paramsExpected);
     $sql .= " ( q.flashCard = 1 OR q.type LIKE '%flashCard%' )";
+    $paramsExpected = "x";
   }
 
   if($type) {
     $sql .= sql_conjoin($params, $paramsExpected);
     $sql .= " q.type LIKE ? ";
     $params .= "s";
+    $paramsExpected = "";
     $type = "%".$type."%";
     array_push($bindArray, $type);
   }
 
+  if(!is_null($topicId)) {
+    $sql .= sql_conjoin($params, $paramsExpected);
+    $sql .= " q.topicId = ? ";
+    $params .= "i";
+    array_push($bindArray, $topicId);
+  }
+
   $sql .= " ORDER BY topic";
+
+
 
   if(!is_null($userIdOrder)) {
     $sql .= ", userTopicOrder, topic_order";
   }
 
+  //echo $sql;
 
   $stmt=$conn->prepare($sql);
   if(count($bindArray)>0) {
@@ -1593,11 +1617,13 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
       array_push($results, $row);
     }
   }
+
+  
   return $results;
 
 }
 
-function insertSAQQuestion($topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId) {
+function insertSAQQuestion($topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId, $topicId) {
   /**
    * This function inserts a new question into saq_question_bank_3
    * 
@@ -1608,18 +1634,18 @@ function insertSAQQuestion($topic, $question, $points, $type, $image, $model_ans
   global $conn;
 
   $sql = "INSERT INTO saq_question_bank_3 
-        (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, time_added, questionAssetId, answerAssetId, flashCard, topic_order, levelId) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        (topic, question, points, type, img, model_answer, userCreate, subjectId, answer_img, answer_img_alt, time_added, questionAssetId, answerAssetId, flashCard, topic_order, levelId, topicId) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   $stmt = $conn->prepare($sql);
 
-  $stmt->bind_param("ssisssissssiiiii", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
+  $stmt->bind_param("ssisssissssiiiiii", $topic, $question, $points, $type, $image, $model_answer, $userCreate, $subjectId, $answer_img, $answer_img_alt, $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId, $topicId);
 
   $stmt->execute();
 
 }
 
-function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $type, $img, $model_answer, $answer_img, $answer_img_alt, $questionAsset, $answerAsset, $flashCard=0) {
+function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $type, $img, $model_answer, $answer_img, $answer_img_alt, $questionAsset, $answerAsset, $flashCard=0, $topicId) {
   /**
    * This function updates entries in saq_question_bank_3
    * 
@@ -1630,7 +1656,7 @@ function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $ty
    global $conn;
 
    $sql = " UPDATE saq_question_bank_3 
-            SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?,  questionAssetId =?, answerAssetId = ?, flashCard = ? 
+            SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, answer_img = ?, answer_img_alt = ?,  questionAssetId =?, answerAssetId = ?, flashCard = ?, topicId = ?
             WHERE id = ?";
 
   //Set values to null if left blank:
@@ -1642,7 +1668,7 @@ function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $ty
   }
 
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("ssssssssiiii", $question, $topic, $points, $type, $img, $model_answer, $answer_img, $answer_img_alt, $questionAsset, $answerAsset, $flashCard, $questionId);
+  $stmt->bind_param("ssssssssiiiii", $question, $topic, $points, $type, $img, $model_answer, $answer_img, $answer_img_alt, $questionAsset, $answerAsset, $flashCard, $topicId, $questionId);
 
   $questionUserCreator = getSAQQuestions($questionId)[0]['userCreate'];
   
@@ -2023,7 +2049,527 @@ function getTopicList($tableName, $topicColumn, $topics = null, $flashCard = nul
 
 }
 
+// topics_all:
 
+function getTopicsAllList($topicId = null, $root = null, $examBoardId = null, $subjectId = null,  $code = null, $parentId = null, $parentCode = null,  $levelId = null, $topicName = null,  $general = null, $userCreate = null) {
+  /**
+   * This function returns information from topics_all table given input paramters
+   * 
+   * Used in:
+   * -topic_spec_map.php
+   */
+
+  global $conn;
+
+  $params="";
+  $bindArray = array();
+  $results = array();
+
+
+  $sql = "SELECT c.*,
+          IF(c.root = 1, c.id, p.id) AS par_id,
+          IF(c.root = 1, c.code, p.code) AS par_code,
+          IF(c.root = 1, c.name, p.name) AS par_name, 
+          LENGTH(c.code) - LENGTH(REPLACE(c.code, '.', '')) AS topicLevel
+          FROM topics_all c
+          LEFT JOIN (
+              SELECT code, name, id
+              FROM topics_all
+            ) p
+            ON (c.parentId = p.id OR (c.root = 1 AND c.id = p.id)) ";
+
+  if(!is_null($topicId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " c.id = ? ";
+    $params .= "i";
+    array_push($bindArray, $topicId);
+  }
+
+  if(!is_null($root)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " c.root = ? ";
+    $params .= "i";
+    array_push($bindArray, $root);
+  }
+
+  if(!is_null($examBoardId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " c.examBoardId = ? ";
+    $params .= "i";
+    array_push($bindArray, $examBoardId);
+  }
+
+  if(!is_null($subjectId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " c.subjectId = ? ";
+    $params .= "i";
+    array_push($bindArray, $subjectId);
+  }
+
+  if(!is_null($code)) {
+    $sql .= sql_conjoin($params);
+    $code = $code."%";
+    $sql .= " c.code LIKE ? ";
+    $params .= "s";
+    array_push($bindArray, $code);
+  }
+
+  if(!is_null($parentId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " p.id = ? ";
+    $params .= "i";
+    array_push($bindArray, $parentId);
+  }
+
+
+  if(!is_null($parentCode)) {
+    $sql .= sql_conjoin($params);
+    $parentCode = $parentCode."%";
+    $sql .= " p.code LIKE ? ";
+    $params .= "s";
+    array_push($bindArray, $parentCode);
+  }
+
+
+  if(!is_null($levelId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " c.levelId = ? ";
+    $params .= "i";
+    array_push($bindArray, $levelId);
+  }
+
+  if(!is_null($topicName)) {
+    $sql .= sql_conjoin($params);
+    $topicName = "&".$topicName."%";
+    $sql .= " c.name LIKE ? ";
+    $params .= "s";
+    array_push($bindArray, $topicName);
+  }
+
+  if(!is_null($general)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " c.general = ? ";
+    $params .= "i";
+    array_push($bindArray, $general);
+  }
+
+  if(!is_null($userCreate)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " c.userCreate = ? ";
+    $params .= "i";
+    array_push($bindArray, $userCreate);
+  }
+
+
+  $sql .= " ORDER BY c.code";
+
+  //echo $sql;
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
+
+
+
+}
+
+function insertTopicsAllList($code, $name, $subjectId, $examBoardId, $root, $parentId, $general, $levelId, $levelsArray, $userCreate) {
+  /*
+   * This funciton enters new entries into topics_all table
+   * 
+   * Used in:
+   * -
+   */
+
+   global $conn;
+
+   $dateTime = date("Y-m-d H:i:s");
+
+   $sql = "INSERT INTO topics_all
+          (code, name, subjectId, examBoardId, root, parentId, general, levelId, levelsArray, userCreate, dateCreate) 
+          VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+
+    $stmt = $conn->prepare($sql);
+
+    $levelId = strval($levelId);
+    $levelsArray = array($levelId);
+    $levelsArray = json_encode($levelsArray);
+
+    $params = "ssiiiiiisis";
+    $bindArray = array($code, $name, $subjectId, $examBoardId, $root, $parentId, $general, $levelId, $levelsArray, $userCreate, $dateTime);
+
+    $stmt=$conn->prepare($sql);
+    $stmt->bind_param($params, ...$bindArray);
+
+    //var_dump($bindArray);
+
+    if($stmt->execute()) {
+      return "Record \"$code $name\" inserted<br>";
+    }
+
+    
+
+
+}
+
+function getTopicsGeneralList($topicId = null, $code = null, $examBoardId = null, $subjectId = null, $levelId = null, $topicName = null) {
+  /**
+   * This function returns information from topics_general table given input paramters
+   * 
+   * Used in:
+   * -saq_list1.1.php
+   */
+
+  global $conn;
+
+  $params="";
+  $bindArray = array();
+  $results = array();
+
+
+  $sql = "SELECT *, 
+          LENGTH(code) - LENGTH(REPLACE(code, '.', '')) AS topicLevel
+          FROM topics_general ";
+
+  if(!is_null($topicId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " id = ? ";
+    $params .= "i";
+    array_push($bindArray, $topicId);
+  }
+
+  if(!is_null($code)) {
+    $sql .= sql_conjoin($params);
+    $code = $code."%";
+    $sql .= " code LIKE ? ";
+    $params .= "s";
+    array_push($bindArray, $code);
+  }
+
+  if(!is_null($subjectId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " subjectId = ? ";
+    $params .= "i";
+    array_push($bindArray, $subjectId);
+  }
+
+  if(!is_null($levelId)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " levelId = ? ";
+    $params .= "i";
+    array_push($bindArray, $levelId);
+  }
+
+  if(!is_null($topicName)) {
+    $sql .= sql_conjoin($params);
+    $topicName = "&".$topicName."%";
+    $sql .= " name LIKE ? ";
+    $params .= "s";
+    array_push($bindArray, $topicName);
+  }
+
+  
+
+  $sql .= " ORDER BY code";
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
+
+
+
+}
+
+function updateTopicsAllList($id, $parentId) {
+  /**
+   * Used to update topics_all
+   * Currently only used to update parentId value but can be expanded
+   * 
+   * Used in:
+   * -topic_spec_map.php
+   */
+
+    global $conn;
+    $sql = "UPDATE topics_all
+            SET parentId = ?
+            WHERE id = ? ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $parentId, $id);
+    $stmt->execute();
+
+    return "Record $id updated with value $parentId";
+}
+
+// topics_spec:
+
+function getTopicsSpecList($id = null, $examBoardId = null, $subjectId = null,$topicId = null, $specCode = null, $topicName=null,  $levelId = null) {
+  /**
+   * This function gets topics from topics_spec table
+   * The idea is that a user can call on a topic from this list which then maps onto a topic from topic_general using $topicId varaible
+   * 
+   * Used in:
+   * -topic_spec_map.php
+   */
+
+   global $conn;
+
+   $params="";
+   $bindArray = array();
+   $results = array();
+
+   $sql = "SELECT *, 
+          LENGTH(code) - LENGTH(REPLACE(code, '.', '')) AS topicLevel
+          FROM topics_spec ";
+
+    if(!is_null($topicId)) {
+      $sql .= sql_conjoin($params);
+      $sql .= " id = ? ";
+      $params .= "i";
+      array_push($bindArray, $topicId);
+    }
+
+    if(!is_null($specCode)) {
+      $sql .= sql_conjoin($params);
+      $sql .= " code = ? ";
+      $params .= "s";
+      array_push($bindArray, $code);
+    }
+
+    if(!is_null($examBoardId)) {
+      $sql .= sql_conjoin($params);
+      $sql .= " examBoardId = ? ";
+      $params .= "i";
+      array_push($bindArray, $examBoardId);
+    }
+
+    if(!is_null($subjectId)) {
+      $sql .= sql_conjoin($params);
+      $sql .= " subjectId = ? ";
+      $params .= "i";
+      array_push($bindArray, $subjectId);
+    }
+
+    if(!is_null($levelId)) {
+      $sql .= sql_conjoin($params);
+      $sql .= " levelId = ? ";
+      $params .= "i";
+      array_push($bindArray, $levelId);
+    }
+
+    if(!is_null($topicName)) {
+      $sql .= sql_conjoin($params);
+      $topicName = '%'.$topicName.'%';
+      $sql .= " name LIKE ? ";
+      $params .= "s";
+      array_push($bindArray, $topicName);
+    }
+
+    $sql .= " ORDER BY code";
+
+
+    $stmt=$conn->prepare($sql);
+    if(count($bindArray)>0) {
+      $stmt->bind_param($params, ...$bindArray);
+    }
+
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if($result->num_rows>0) {
+      while($row = $result->fetch_assoc()) {
+        array_push($results, $row);
+      }
+    }
+
+    
+    return $results;
+
+
+
+}
+
+function updateTopicsSpecList($id, $topicId) {
+  /**
+   * Used in: $topic_spec_map.php
+   */
+
+  global $conn;
+
+  $sql = "UPDATE topics_spec
+            SET topicId = ?
+            WHERE id = ? ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $topicId, $id);
+    $stmt->execute();
+
+    return "Record $id updated";
+
+
+}
+
+// topics_general:
+
+function insertTopicsGeneralList($code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray, $userCreate) {
+  /*
+   * This funciton enters new entries into topics_general table
+   * 
+   * Used in:
+   * -revision/topic_list.php
+   */
+
+   global $conn;
+
+   $sql = "INSERT INTO topics_general
+          (code, name, subjectId, levelId, levelsArray, examBoardsArray, userCreate) 
+          VALUES (?,?,?,?,?,?,?)";
+
+    $stmt = $conn->prepare($sql);
+
+    $params = "ssiissi";
+    $bindArray = array();
+
+    $levelsArray = explode(",",$levelsArray);
+    $levelsArray = json_encode($levelsArray);
+
+    $examBoardsArray = explode(",",$examBoardsArray);
+    $examBoardsArray = json_encode($examBoardsArray);
+
+    $stmt=$conn->prepare($sql);
+    $stmt->bind_param($params, $code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray, $userCreate);
+
+    $stmt->execute();
+
+    return "Record \"$name\" inserted<br>";
+
+
+
+
+}
+
+
+function updateTopicsGeneralList($id, $code, $name, $subjectId, $levelsArray) {
+  /**
+   * Used to update topics_general
+   * 
+   * Used in:
+   * -topic_list.php
+   */
+
+    global $conn;
+
+    $levelsArray = explode(",", $levelsArray);
+    foreach ($levelsArray as &$item) {
+      $item = trim($item);
+    }
+    $levelsArray = json_encode($levelsArray);
+    $sql = "UPDATE topics_general
+            SET code =?, name =?, subjectId =?, levelsArray =?
+            WHERE id = ? ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssisi", $code, $name, $subjectId, $levelsArray, $id);
+    $stmt->execute();
+
+    return "Record $id updated";
+}
+
+
+
+function getExamBoards($id = null) {
+  global $conn;
+  $results = array();
+  $params = "";
+  $bindArray = array();
+
+  $sql = "SELECT *
+          FROM exam_boards";
+
+  if(!is_null($id)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " id = ? ";
+    $params .= "i";
+    array_push($bindArray, $id);
+  }
+
+  $stmt=$conn->prepare($sql);
+  
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
+}
+
+function getSubjects_Level($id = null) {
+  global $conn;
+  $results = array();
+  $params = "";
+  $bindArray = array();
+
+  $sql = "SELECT *
+          FROM subjects_level";
+
+  if(!is_null($id)) {
+    $sql .= sql_conjoin($params);
+    $sql .= " id = ? ";
+    $params .= "i";
+    array_push($bindArray, $id);
+  }
+
+  $stmt=$conn->prepare($sql);
+  
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
+}
 
 function loginLogReturn($limit = null, $likeName = null) {
   global $conn;
