@@ -433,9 +433,11 @@ include($path."/header_tailwind.php");
       <button type="button" class= "w-full rounded bg-sky-300 hover:bg-sky-200 border border-black mb-2 mt-2" onclick="addRow()">Add Row</button>
     </p>
     <p>
-      <input class="w-full bg-pink-300 rounded border border-black mb-1" type="submit" name="submit" value="Create Question"></input>
+      <button class="w-full bg-pink-300 rounded border border-black mb-1">Create Question</button>
     </p>
     <input type="hidden" name="questionsCount" id="questionsCount">
+    <input class="w-full bg-pink-300 rounded border border-black mb-1" type="hidden" name="submit" value="Create Question">
+    
   </form>
   
   
@@ -511,7 +513,8 @@ include($path."/header_tailwind.php");
       </div>
 
 
-      <input class="bg-pink-200 px-2" type="submit" value="Choose Topic">
+      <button class="bg-pink-200 px-2 border border-black rounded">Choose Topic</button>
+      <input type="hidden" value="Choose Topic">
       <div class="hidden">
         <input type="checkbox" value="1" name="noFlashCard" <?=is_null($showFlashCards)?"checked":""?>>
         <input type="checkbox" value="1" name="noAssetInput" <?=is_null($showAssetId)?"checked":""?>>
