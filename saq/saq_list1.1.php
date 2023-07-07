@@ -208,7 +208,7 @@ if(isset($userInfo['userPreferredExamBoardId'])) {
 }
 
 $subjectId = $userPreferredSubject;
-$examBoardId = $userPreferredExamBoard;
+//$examBoardId = $userPreferredExamBoard;
 
 if(isset($_GET['type'])) {
   $type = $_GET['type'];
@@ -334,6 +334,8 @@ include($path."/header_tailwind.php");
       echo "POST:<br>";
       var_dump($_POST);
     }
+
+
     /*
     echo "<br><br>User Info:<br>";
     //print_r($userInfo);
@@ -341,10 +343,13 @@ include($path."/header_tailwind.php");
     //print_r($subjects);
     echo "<br><br>Levels:<br>";
     //print_r($levels);
+
+    */
+
     echo "<br><br>Topics:<br>";
     echo count($topics)."<br>";
     //print_r($topics);
-    */
+    
     
   }
 
@@ -376,10 +381,11 @@ include($path."/header_tailwind.php");
 
 
         <select class="inputProperties" id="boardSelect" name = "examBoardId" onchange="changeInput(this, 'examBoardSelectGet');"">
+          <option></option>
           <?php
             foreach ($examBoards as $subject) {
                 ?>
-                <option value="<?=$subject['id'];?>" <?=($subject['id'] == $examBoardSelector) ? "selected" : ""?> > <?=htmlspecialchars($subject['name']);?></option>
+                <option value="<?=$subject['id'];?>" <?=($subject['id'] == $examBoardId) ? "selected" : ""?> > <?=htmlspecialchars($subject['name']);?></option>
             <?php
             }
             ?>
@@ -589,7 +595,8 @@ include($path."/header_tailwind.php");
           </td>
           <td class="align-top">
             <div class="show_<?=$row['id'];?>">
-              <?=htmlspecialchars($row['question']);?>
+              <div class="whitespace-pre-line"><?=htmlspecialchars($row['question']);?></div>
+              
               <?php
                     if(!is_null($row['q_path'])) {
                       ?>
