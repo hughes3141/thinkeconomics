@@ -88,6 +88,8 @@ Notes on command GET variables:
 
   $topicIds = $topicIdsArray = null;
 
+  $examBoardId = null;
+
   if(isset($_GET['topicIds'])) {
     $topicIds = $_GET['topicIds'];
     $topicIdsArray = explode(",", $topicIds);
@@ -128,6 +130,10 @@ Notes on command GET variables:
     $levelIdSet = $_GET['levelIdSet'];
   }
 
+  if(isset($_GET['examBoardId'])) {
+    $examBoardId = $_GET['examBoardId'];
+  }
+
   if(isset($_GET['subjectLevel'])) {
     $subjectLevel = $_GET['subjectLevel'];
     $subjectLevelArray = explode("_", $subjectLevel);
@@ -143,17 +149,25 @@ Notes on command GET variables:
   //$subjects = getOutputFromTable("subjects", null, "name");
   
   $subjects = getDistinctFlashcardSubjectLevels();
+  $examBoardIds = getSAQExamBoards($subjectIdSet);
+  $examBoards = array();
 
-  //print_r($subjects);
+  //print_r($examBoardIds);
 
- 
+  foreach ($examBoardIds as $examBoard) {
+    $id= $examBoard['examBoardId'];
+    $inst = getExamBoards($id);
+    if(count($inst)==1) {
+      array_push($examBoards, $inst[0]);
+    }     
+  }
 
   $topicsArray = array();
 
   if(!is_null($subjectIdSet)) {
     //$topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectIdSet, null, null, 1);
 
-    $topicsArray =getSAQTopics(null, $subjectIdSet, 1);
+    $topicsArray =getSAQTopics(null, $subjectIdSet, 1, $examBoardId);
 
   }
 
@@ -202,11 +216,6 @@ include($path."/header_tailwind.php");
     echo "<br>Subjects:<br>";
     print_r($subjects);
   }
-
-
-
-
-
 
 
       //Embeds topic selector:

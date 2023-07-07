@@ -31,13 +31,26 @@
             <div class="p-5  border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
               <div>
                 <label for="subjectLevel">Subject:</label>
-                <select class="mb-3" id="subjectLevel" name="subjectLevel" onchange="this.form.submit()">
+                <select class="mb-3" id="subjectLevel" name="subjectLevel" onchange="this.form.submit()" >
                   <option value="_"></option>
                   <?php
                     foreach ($subjects as $subject) {
                       $subjectLevelId = $subject['lId']."_".$subject['sId'];
                       ?>
                       <option value="<?=$subjectLevelId?>" <?=($subjectLevelId == $subjectLevel) ? "selected" : ""?>><?=$subject['subject']?> (<?=$subject['level']?>)</option>
+                      <?php
+                    }
+                    ?>
+
+                </select>
+                </br>
+                <label for="examBoardId">Exam Board:</label>
+                <select class="mb-3" id="examBoardId" name="examBoardId" onchange="this.form.submit()" <?=is_null($subjectIdSet) ? " disabled " : ""?>>
+                  <option value=""></option>
+                  <?php
+                    foreach ($examBoards as $examBoard) {
+                      ?>
+                      <option value="<?=$examBoard['id']?>" <?=($examBoard['id'] == $examBoardId) ? "selected" : ""?>><?=$examBoard['name']?></option>
                       <?php
                     }
                     ?>
@@ -60,7 +73,7 @@
           </h2>
           <div id="accordion-collapse-body-2" class="hidden rounded-b-xl" aria-labelledby="accordion-collapse-heading-2">
             <div class="p-5  border-gray-200 dark:border-gray-700">
-              <div class="grid gap-2 grid-cols-4">
+              <div class="grid gap-2 grid-cols-1 md:grid-cols-4">
                 <?php
                   $topics = explode(",", $topics);
                   //print_r($topics);

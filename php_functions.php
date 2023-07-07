@@ -1476,6 +1476,7 @@ function getDistinctFlashcardSubjectLevels() {
 
 }
 
+
 function sql_conjoin($x, $startParams ="") {
   /*
    Used  to join up different optional elemlents in sql query.
@@ -1739,7 +1740,7 @@ function SAQQuestionTopicCount($topic) {
 
 }
 
-function getSAQTopics($topicId = null, $subjectId=null, $flashCard = null) {
+function getSAQTopics($topicId = null, $subjectId=null, $flashCard = null, $examBoardId = null) {
   /**
    * Returns a distinct list of topics in saq_question_bank_3 given parameters
    */
@@ -1769,6 +1770,13 @@ function getSAQTopics($topicId = null, $subjectId=null, $flashCard = null) {
     $sql .= " ( q.flashCard = 1 )";
   }
 
+  if($examBoardId) {
+    $sql .= sql_conjoin($params);
+    $sql .= " ( t.examBoardId = ? )";
+    $params .= "i";
+    array_push($bindArray, $examBoardId);
+  }
+
   $sql .= "ORDER BY t.code";
 
   //echo $sql;
@@ -1791,6 +1799,51 @@ function getSAQTopics($topicId = null, $subjectId=null, $flashCard = null) {
 
 
 }
+
+function getSAQExamBoards($subjectId = null) {
+  /**
+   * Returns a distinct list of topics in saq_question_bank_3 given parameters
+   * 
+   * Used in:
+   * -flashcards.php
+   */
+
+  global $conn;
+  $params = "";
+  $bindArray = array();
+  $results = array();
+
+  $sql = "SELECT DISTINCT t.examBoardId
+          FROM topics_all t
+          INNER JOIN saq_question_bank_3 q
+          ON t.id = q.topicId ";
+
+
+  if(!is_null($subjectId)) {
+    $sql .= " WHERE t.subjectId = ? ";
+    $params .= "i";
+    array_push($bindArray, $subjectId);
+
+  }
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  return $results;
+
+
+}
+
 
 function lastFlashcardResponse($questionId, $userId, $timeStart) {
   /*
@@ -2591,6 +2644,7 @@ function updateTopicsGeneralList($id, $code, $name, $subjectId, $levelsArray) {
 
 
 function getExamBoards($id = null) {
+
   global $conn;
   $results = array();
   $params = "";
