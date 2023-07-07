@@ -61,6 +61,19 @@ Notes on command GET variables:
     - $_GET['restrict'] = 'minutes' : 3 mins and 5 mins
 */
 
+//Set img path:
+
+/**
+ * images find the path set via $question['q_path'] etc.
+ * This is assumed to be in root foler if thinkeonomics
+ * If other site: udpate variable $imgSourcePathPrefix to 
+ */
+
+ $imgSourcePathPrefix = "";
+ //$imgSourcePathPrefix = "https://www.thinkeconomics.co.uk";
+
+
+
   if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $insert = insertFlashcardResponse($_POST['questionId'], $userId, $_POST['rightWrong'], $_POST['timeStart'], date("Y-m-d H:i:s", time()), $_POST['cardCategory']);
 
@@ -258,7 +271,7 @@ include($path."/header_tailwind.php");
               <?php
                 if(!is_null($question['q_path'])) {
                   ?>
-                  <img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
+                  <img class = "mx-auto content-center object-center" src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
                   <?php
                 }
               ?>
@@ -279,7 +292,7 @@ include($path."/header_tailwind.php");
                 <?php
                   if(!is_null($question['a_path'])) {
                     ?>
-                    <img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
+                    <img class = "mx-auto content-center object-center" src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
                     <?php
                   }
                 ?>
