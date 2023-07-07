@@ -435,7 +435,7 @@ include($path."/header_tailwind.php");
     <p>
       <button class="w-full bg-pink-300 rounded border border-black mb-1">Create Question</button>
     </p>
-    <input type="hidden" name="questionsCount" id="questionsCount">
+    <input type="text" name="questionsCount" id="questionsCount">
     <input class="w-full bg-pink-300 rounded border border-black mb-1" type="hidden" name="submit" value="Create Question">
     
   </form>
@@ -820,7 +820,7 @@ function addRow() {
 
   
 
-  sourceAmend(inst)
+  sourceAmend(inst);
   
   document.getElementById("questionsCount").value = tableLength;
 
@@ -837,9 +837,12 @@ function changeOrder(x) {
 function hideRow(button) {
   var row = button.parentElement.parentElement;
   var input = button.parentElement.childNodes[1];
+  var question_input = row.children[0].children[2];
   console.log(row);
+  console.log(question_input);
   console.log(input);
   row.style.display = "none";
+  question_input.removeAttribute('required');
   input.value='0';
 }
 
