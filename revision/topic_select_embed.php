@@ -44,8 +44,9 @@
 
                 </select>
                 </br>
+                
                 <label for="examBoardId">Exam Board:</label>
-                <select class="mb-3" id="examBoardId" name="examBoardId" onchange="this.form.submit()" <?=is_null($subjectIdSet) ? " disabled " : ""?>>
+                <select class="mb-3" id="examBoardId" name="examBoardId" onchange="this.form.submit()" <?=is_null($subjectId) ? " disabled " : ""?>>
                   <option value=""></option>
                   <?php
                     foreach ($examBoards as $examBoard) {
