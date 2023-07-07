@@ -85,6 +85,18 @@ Notes on command GET variables:
   $subjectLevel_subjectId = null;
 
 
+
+  $topicIds = $topicIdsArray = null;
+
+  if(isset($_GET['topicIds'])) {
+    $topicIds = $_GET['topicIds'];
+    $topicIdsArray = explode(",", $topicIds);
+    
+  }
+
+
+
+
   if(isset($_GET['topic'])) {
     $_GET['topics'] = $_GET['topic'];
   }
@@ -93,6 +105,8 @@ Notes on command GET variables:
     $topics = $_GET['topics'];
     
   }
+
+
 
   if(isset($_GET['subjectId'])) {
     $subjectId = $_GET['subjectId'];
@@ -137,7 +151,9 @@ Notes on command GET variables:
   $topicsArray = array();
 
   if(!is_null($subjectIdSet)) {
-    $topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectIdSet, null, null, 1);
+    //$topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectIdSet, null, null, 1);
+
+    $topicsArray =getSAQTopics(null, $subjectIdSet, 1);
 
   }
 
@@ -151,11 +167,13 @@ Notes on command GET variables:
 
   $questions = array();
 
-  if(!empty($topics)) {
+  if(!empty($topicIds)) {
+    /*
     if($topics == "all") {
       $topics = null;
     }
-    $questions = getFlashcardsQuestions($topics, $userId, $subjectIdSet);
+    */
+    $questions = getFlashcardsQuestions(null, $userId, null, $topicIds);
   }
   //$topics = $topics = explode(",", $topics);
 
@@ -184,6 +202,10 @@ include($path."/header_tailwind.php");
     echo "<br>Subjects:<br>";
     print_r($subjects);
   }
+
+
+
+
 
 
 
