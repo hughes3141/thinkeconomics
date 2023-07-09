@@ -50,6 +50,7 @@ $style_input = "
 
 include($path."/header_tailwind.php");
 
+//Option to hide topic selector:
 
 $showTopicInput = 1;
 if(isset($_GET['noShow'])) {
@@ -57,14 +58,9 @@ if(isset($_GET['noShow'])) {
 }
 
 //$topic = null;
-$subjectId = null;
-$subjectId = null;
-$userCreate = null;
-$userCreate = null;
+ $subjectId = $userCreate = $userCreate = $levelId = null;
 
-$topics = null;
-$subjectLevel = null;
-
+$topics = $subjectLevel = null;
 
 $topicIds = $topicIdsArray = null;
 
@@ -73,26 +69,19 @@ $examBoardId = null;
 if(isset($_GET['topicIds'])) {
   $topicIds = $_GET['topicIds'];
   $topicIdsArray = explode(",", $topicIds);
-  
 }
-
 if(isset($_GET['topic'])) {
   $_GET['topics'] = $_GET['topic'];
 }
-
 if(isset($_GET['topics'])) {
   $topics = $_GET['topics'];
-  
 }
-
-
 if(isset($_GET['subjectId'])) {
   $subjectId = $_GET['subjectId'];
 }
 if(isset($_GET['userCreate'])) {
   $userCreate = $_GET['userCreate'];
 }
-
 if(isset($_GET['examBoardId'])) {
   $examBoardId = $_GET['examBoardId'];
 }
@@ -106,6 +95,7 @@ if(isset($_GET['subjectLevel'])) {
   }
   //Sets subjectId from here
   $subjectId = $subjectLevel_subjectId;
+  $levelId = $subjectLevel_levelId;
 }
 
 $levels = getOutputFromTable("subjects_level", null, "name");
@@ -133,7 +123,7 @@ $topicsArray = array();
 if(!is_null($subjectId)) {
   //$topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectIdSet, null, null, 1);
 
-  $topicsArray =getSAQTopics(null, $subjectId, 1, $examBoardId);
+  //$topicsArray =getSAQTopics(null, $subjectId, 1, $examBoardId);
 
 }
 
