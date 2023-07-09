@@ -50,6 +50,7 @@ $style_input = "
 
 include($path."/header_tailwind.php");
 
+//Option to hide topic selector:
 
 $showTopicInput = 1;
 if(isset($_GET['noShow'])) {
@@ -57,42 +58,37 @@ if(isset($_GET['noShow'])) {
 }
 
 //$topic = null;
-$subjectId = null;
-$subjectId = null;
-$userCreate = null;
-$userCreate = null;
+ $subjectId = $userCreate = $userCreate = $levelId = $subjectIdSet = null;
 
-$topics = null;
-$subjectLevel = null;
-
+$topics = $subjectLevel = null;
 
 $topicIds = $topicIdsArray = null;
+$topicChosenArray = array();
 
 $examBoardId = null;
 
 if(isset($_GET['topicIds'])) {
   $topicIds = $_GET['topicIds'];
   $topicIdsArray = explode(",", $topicIds);
-  
+  foreach ($topicIdsArray as $topic) {
+    if($topic != "") {
+      array_push($topicChosenArray,  getSAQTopics($topic)[0]);
+    }
+  }
 }
-
 if(isset($_GET['topic'])) {
   $_GET['topics'] = $_GET['topic'];
 }
-
 if(isset($_GET['topics'])) {
   $topics = $_GET['topics'];
-  
 }
-
-
 if(isset($_GET['subjectId'])) {
   $subjectId = $_GET['subjectId'];
+  $subjectIdSet = $_GET['subjectId'];
 }
 if(isset($_GET['userCreate'])) {
   $userCreate = $_GET['userCreate'];
 }
-
 if(isset($_GET['examBoardId'])) {
   $examBoardId = $_GET['examBoardId'];
 }
@@ -105,7 +101,8 @@ if(isset($_GET['subjectLevel'])) {
     $subjectLevel_subjectId = $subjectLevelArray[1];
   }
   //Sets subjectId from here
-  $subjectId = $subjectLevel_subjectId;
+  $subjectIdSet = $subjectLevel_subjectId;
+  $levelId = $subjectLevel_levelId;
 }
 
 $levels = getOutputFromTable("subjects_level", null, "name");
@@ -115,7 +112,7 @@ $subjects = getDistinctFlashcardSubjectLevels();
 
 $allSubjects = getOutputFromTable("subjects", null, "name");
 
-$examBoardIds = getSAQExamBoards($subjectId);
+$examBoardIds = getSAQExamBoards($subjectIdSet);
 $examBoards = array();
 
 //print_r($examBoardIds);
@@ -130,18 +127,18 @@ foreach ($examBoardIds as $examBoard) {
 
 $topicsArray = array();
 
-if(!is_null($subjectId)) {
+if(!empty($subjectIdSet)) {
   //$topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectIdSet, null, null, 1);
 
-  $topicsArray =getSAQTopics(null, $subjectId, 1, $examBoardId);
+  $topicsArray =getSAQTopics(null, $subjectIdSet, 1, $examBoardId);
 
 }
 
 
 
-$questions = getSAQQuestions(null, $topics, true, $subjectId, $userCreate, null, null, $topicIds);
+$questions = getSAQQuestions(null, null, true, $subjectIdSet, $userCreate, null, null, $topicIds);
 
-$topicList = getTopicList("saq_question_bank_3", "topic", $topics, true, $subjectId, $userCreate);
+$topicList = getTopicList("saq_question_bank_3", "topic", $topics, true, $subjectIdSet, $userCreate);
 
 
 ?>
@@ -175,29 +172,38 @@ $topicList = getTopicList("saq_question_bank_3", "topic", $topics, true, $subjec
 
 
 
-    
+    echo "<pre>";
     //print_r($topicList);
+    //print_r($topicsArray);
+    //echo "<br>";
+    //print_r($topicIdsArray);
+    //echo "<br>";
+    //print_r($topicChosenArray);
+    echo "</pre>";
+
+
+
 
     if(!is_null($showTopicInput)) {
       //Embeds topic selector:
       include("topic_select_embed.php");
     }
 
-    
-    foreach($topicList as $topic) {
-      $questions_filter_by_topic = array();
+    foreach($topicChosenArray as $topic) {
+      $question_filter = array();
 
       foreach($questions as $question) {
-        if($question['topic'] == $topic) {
-          array_push($questions_filter_by_topic, $question);
+        if ($question['topicId'] == $topic['id'] ) {
+          array_push($question_filter, $question);
         }
       }
       ?>
-      <h2 class = "bg-pink-300 -ml-4 -mr-4 mb-5 text-xl font-mono pl-1 text-gray-800"><?=$topic?></h2>
+      <h2 class = "bg-pink-300 -ml-4 -mr-4 mb-5 text-xl font-mono pl-1 text-gray-800"><?=$topic['code']?> <?=$topic['name']?></h2>
       <?php
+      //print_r($topic);
       echo "<ol class='list-decimal'>";
 
-      foreach($questions_filter_by_topic as $question) {
+      foreach($question_filter as $question) {
         ?>
         
         <div class="">

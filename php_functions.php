@@ -1615,10 +1615,28 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
   }
 
   if(!is_null($topicId)) {
+
     $sql .= sql_conjoin($params, $paramsExpected);
-    $sql .= " q.topicId = ? ";
-    $params .= "i";
-    array_push($bindArray, $topicId);
+
+    $topicIdsArray = array();
+    $topicIdsArray = explode(",",$topicId);
+
+    
+
+    $sql .= " topicId IN ( ";
+    foreach($topicIdsArray as $key => $array) {
+      if($key < (count($topicIdsArray)-1)) {
+        $comma = ", ";
+      } else {
+        $comma = " ";
+      }
+      $sql .= " ?".$comma;
+      $params .= "i";
+      array_push($bindArray, $topicIdsArray[$key]);
+
+    }
+    $sql .= " )";
+
   }
 
   $sql .= " ORDER BY topic";
@@ -1757,7 +1775,14 @@ function getSAQTopics($topicId = null, $subjectId=null, $flashCard = null, $exam
           ON t.id = q.topicId ";
           
 
+  if($topicId) {
+    $sql .= sql_conjoin($params);
+    $sql .= " t.id = ? ";
+    $params .= "i";
+    array_push($bindArray, $topicId);
 
+  }
+  
   if($subjectId) {
     $sql .= sql_conjoin($params);
     $sql .= " q.subjectId = ? ";

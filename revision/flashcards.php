@@ -177,7 +177,7 @@ Notes on command GET variables:
 
   $topicsArray = array();
 
-  if(!is_null($subjectIdSet)) {
+  if(!empty($subjectIdSet)) {
     //$topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectIdSet, null, null, 1);
 
     $topicsArray =getSAQTopics(null, $subjectIdSet, 1, $examBoardId);
