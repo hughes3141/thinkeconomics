@@ -1619,7 +1619,7 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
     $sql .= sql_conjoin($params, $paramsExpected);
 
     $topicIdsArray = array();
-    $topicIdsArray = explode(",",$topicIds);
+    $topicIdsArray = explode(",",$topicId);
 
     
 
@@ -1775,7 +1775,14 @@ function getSAQTopics($topicId = null, $subjectId=null, $flashCard = null, $exam
           ON t.id = q.topicId ";
           
 
+  if($topicId) {
+    $sql .= sql_conjoin($params);
+    $sql .= " t.id = ? ";
+    $params .= "i";
+    array_push($bindArray, $topicId);
 
+  }
+  
   if($subjectId) {
     $sql .= sql_conjoin($params);
     $sql .= " q.subjectId = ? ";

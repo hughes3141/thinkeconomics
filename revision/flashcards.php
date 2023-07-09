@@ -180,7 +180,6 @@ Notes on command GET variables:
   if(!empty($subjectIdSet)) {
     //$topicsArray = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectIdSet, null, null, 1);
 
-    if(!empty($subjectIdSet)) {}
     $topicsArray =getSAQTopics(null, $subjectIdSet, 1, $examBoardId);
 
   }
