@@ -61,6 +61,7 @@ $results = getFlashcardSummaryByQuestion($groupId, $startDate, $endDate, $orderB
 $groups = getGroupsList($userId);
 
 $date = date('Y-m-d');
+$dateLastMonth = date('Y-m-d', strtotime('-30 days'));
 
 
 
@@ -91,8 +92,9 @@ foreach($results as $array) {
   
   
   ?>
-    <form method = "get" action="">
-      <select name="groupId">
+    <form method = "get" action="" class = "border border-black rounded p-2 m-2" >
+      <label for="groupId">Class:</label>
+      <select name="groupId" id = "groupId" class="mb-2">
         <option value=""></option>
         <?php
         foreach($groups as $group) {
@@ -103,60 +105,77 @@ foreach($results as $array) {
         ?>
       </select>
       <br>
-      <label for="">Start Date:</label>
-      <input type="date" name="startDate" value="<?=(isset($_GET['startDate'])) ? $_GET['startDate'] : "" /*$dateLastMonth*/?>">
-      <br>
-      <label for="">End Date:</label>
-      <input type="date" name="endDate" value="<?=(isset($_GET['endDate'])) ? $_GET['endDate'] : $date?>">
-      <br>
-      <input type="submit" value="Select Group">
-    </form>
-    <table class="table-fixed border border-black">
-      <tr>
-        <th class="border border-black">Name</th>
-        <th class="border border-black">Count</th>
-        <th class="border border-black">Dates</th>
-        <th class="border border-black">Average Time</th>
-        <th class="border border-black">Date Summary</th>
-      </tr>
       <?php
-        foreach($students as $student) {
-          $id = $student['id'];
-          //print_r(flashCardSummary($id, "count_category"));
-          ?>
+      /*
+      <label for="startDate">Start Date:</label>
+      <input id = "startDate" type="date" name="startDate" value="<?=(!empty($_GET['startDate'])) ? $_GET['startDate'] : $dateLastMonth?>" class="mb-2">
+      <br>
+      <label for="endDate">End Date:</label>
+      <input id = "endDate" type="date" name="endDate" value="<?=(isset($_GET['endDate'])) ? $_GET['endDate'] : $date?>" class="mb-2">
+      <br>
+      <label for ="orderBy">Order By:</label>
+      <select id="orderBy" name="orderBy" class="mb-2">
+        <option value="correct" <?=($orderBy == "correct") ? " selected " : "" ?>>Correct</option>
+        <option value="wrong" <?=($orderBy == "wrong") ? " selected " : "" ?>>Incorrect</option>
+        <option value="dontknow" <?=($orderBy == "dontknow") ? " selected " : "" ?>>Don't Know</option>
+      </select>
+      <br>
+      */
+      ?>
+      <input type="submit" value="Select Group" class="p-1 w-full bg-pink-300 text-white hover:bg-pink-200">
+    </form>
+    <?php
+    if(!empty($groupId)) {
+      ?>
+        <table class="table-fixed border border-black">
           <tr>
-            <td class="border border-black"><?=$student['name_first']." ".$student['name_last']?></td>
-            <td class="border border-black"><?=flashCardSummary($id, "count")[0]['count']?></td>
-            <td class="border border-black"> <?php
-              $flashcards = flashCardSummary($id, "count_category");
-                foreach($flashcards as $array) {
-                  if ($array['gotRight']==0) {
-                    echo "Didn't Know: ";
-                  } elseif ($array['gotRight']==1) {
-                    echo "Incorrect : ";
-                  } elseif ($array['gotRight']==2) {
-                    echo "Correct: ";
-                  }
-                echo $array['count']."<br>";
-              }
-            ?></td>
-            <td class="border border-black"><?=round(flashCardSummary($id, "average")[0]['avg'])?></td>
-            <td class="border border-black">
-              <div class="grid grid-cols-4">
-              <?php
-               $flashcards = flashCardSummary($id, "count_by_date");
-               //print_r($flashcards);
-               foreach($flashcards as $array) {
-                 echo "<div class='text-sm border border-slate-400'>".date('d/m/y D',strtotime($array['date'])).": ".$array['count']."</div>";
-               }
-              ?>
-              
-            </td>
+            <th class="border border-black">Name</th>
+            <th class="border border-black">Count</th>
+            <th class="border border-black">Dates</th>
+            <th class="border border-black">Average Time</th>
+            <th class="border border-black">Date Summary</th>
           </tr>
           <?php
-        }
-      ?>
-  </table>
+            foreach($students as $student) {
+              $id = $student['id'];
+              //print_r(flashCardSummary($id, "count_category"));
+              ?>
+              <tr>
+                <td class="border border-black"><?=$student['name_first']." ".$student['name_last']?></td>
+                <td class="border border-black"><?=flashCardSummary($id, "count")[0]['count']?></td>
+                <td class="border border-black"> <?php
+                  $flashcards = flashCardSummary($id, "count_category");
+                    foreach($flashcards as $array) {
+                      if ($array['gotRight']==0) {
+                        echo "Didn't Know: ";
+                      } elseif ($array['gotRight']==1) {
+                        echo "Incorrect : ";
+                      } elseif ($array['gotRight']==2) {
+                        echo "Correct: ";
+                      }
+                    echo $array['count']."<br>";
+                  }
+                ?></td>
+                <td class="border border-black"><?=round(flashCardSummary($id, "average")[0]['avg'])?></td>
+                <td class="border border-black">
+                  <div class="grid grid-cols-4">
+                  <?php
+                  $flashcards = flashCardSummary($id, "count_by_date");
+                  //print_r($flashcards);
+                  foreach($flashcards as $array) {
+                    echo "<div class='text-sm border border-slate-400'>".date('d/m/y D',strtotime($array['date'])).": ".$array['count']."</div>";
+                  }
+                  ?>
+                  
+                </td>
+              </tr>
+              <?php
+            }
+            ?>
+        </table>
+      <?php
+    }
+    ?>
   </div>
 </div>
 
