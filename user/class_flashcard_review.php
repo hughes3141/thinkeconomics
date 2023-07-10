@@ -103,7 +103,7 @@ foreach($results as $array) {
       </select>
       <br>
       <label for="startDate">Start Date:</label>
-      <input id = "startDate" type="date" name="startDate" value="<?=(isset($_GET['startDate'])) ? $_GET['startDate'] : "" /*$dateLastMonth*/?>" class="mb-2">
+      <input id = "startDate" type="date" name="startDate" value="<?=(!empty($_GET['startDate'])) ? $_GET['startDate'] : $dateLastMonth?>" class="mb-2">
       <br>
       <label for="endDate">End Date:</label>
       <input id = "endDate" type="date" name="endDate" value="<?=(isset($_GET['endDate'])) ? $_GET['endDate'] : $date?>" class="mb-2">
