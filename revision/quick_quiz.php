@@ -17,6 +17,17 @@ include($path."/php_header.php");
 include($path."/php_functions.php");
 include ($path."/header_tailwind.php");
 
+//Set img path:
+
+/**
+ * images find the path set via $question['q_path'] etc.
+ * This is assumed to be in root foler if thinkeonomics
+ * If other site: udpate variable $imgSourcePathPrefix to 
+ */
+
+ $imgSourcePathPrefix = "";
+ $imgSourcePathPrefix = "https://www.thinkeconomics.co.uk";
+
 
 //Get topics as GET variables
 $topics = null;
@@ -156,12 +167,12 @@ GET Variables:
             
             if($question['img'] != "") {
               ?>
-                  <img class = "mx-auto object-center " src= "<?=htmlspecialchars($question['img'])?>" alt = "">
+                  <img class = "mx-auto object-center " src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['img'])?>" alt = "">
             <?php
               }
             if($question['q_path'] != "") {
               ?>
-              <img class = "mx-auto object-center " src= "<?=htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
+              <img class = "mx-auto object-center " src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
               <?php
             }
 
@@ -173,13 +184,13 @@ GET Variables:
             <?php
 
           if($question['answer_img'] != "") {
-            ?><img class = "object-center " src= "<?=htmlspecialchars($question['answer_img'])?>" alt = "<?=htmlspecialchars($question['answer_img_alt'])?>">
+            ?><img class = "object-center " src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['answer_img'])?>" alt = "<?=htmlspecialchars($question['answer_img_alt'])?>">
             <?php
           }
 
           if($question['a_path'] != "") {
             ?>
-              <img class = "object-center " src= "<?=htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
+              <img class = "object-center " src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
             <?php
           }
           
