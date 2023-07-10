@@ -202,7 +202,7 @@ include($path."/header_tailwind.php");
                       $selected = "selected";
                     }
                     ?>
-                    <option value="<?=$result['id']?>" <?=$selected?>><?=$result['level']?> <?=$result['name']?></option>
+                    <option value="<?=$result['id']?>" <?=$selected?>><?=$result['name']?></option>
                     <?php
                   }
                   ?>

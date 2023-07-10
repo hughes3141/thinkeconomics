@@ -75,7 +75,7 @@ foreach($results as $array) {
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">Flash Card Review</h1>
-  <div class="container mx-auto px-0 mt-2 bg-white text-black">
+  <div class="container mx-auto px-0 mt-2 bg-white text-black pt-1">
   <?php
   
   /*
@@ -89,8 +89,9 @@ foreach($results as $array) {
   */
   
   ?>
-    <form method = "get" action="">
-      <select name="groupId">
+    <form method = "get" action="" class = "border border-black rounded p-2 m-2" >
+      <label for="groupId">Class:</label>
+      <select name="groupId" id = "groupId" class="mb-2">
         <option value=""></option>
         <?php
         foreach($groups as $group) {
@@ -101,13 +102,20 @@ foreach($results as $array) {
         ?>
       </select>
       <br>
-      <label for="">Start Date:</label>
-      <input type="date" name="startDate" value="<?=(isset($_GET['startDate'])) ? $_GET['startDate'] : "" /*$dateLastMonth*/?>">
+      <label for="startDate">Start Date:</label>
+      <input id = "startDate" type="date" name="startDate" value="<?=(!empty($_GET['startDate'])) ? $_GET['startDate'] : $dateLastMonth?>" class="mb-2">
       <br>
-      <label for="">End Date:</label>
-      <input type="date" name="endDate" value="<?=(isset($_GET['endDate'])) ? $_GET['endDate'] : $date?>">
+      <label for="endDate">End Date:</label>
+      <input id = "endDate" type="date" name="endDate" value="<?=(isset($_GET['endDate'])) ? $_GET['endDate'] : $date?>" class="mb-2">
       <br>
-      <input type="submit" value="Select Group">
+      <label for ="orderBy">Order By:</label>
+      <select id="orderBy" name="orderBy" class="mb-2">
+        <option value="correct" <?=($orderBy == "correct") ? " selected " : "" ?>>Correct</option>
+        <option value="wrong" <?=($orderBy == "wrong") ? " selected " : "" ?>>Incorrect</option>
+        <option value="dontknow" <?=($orderBy == "dontknow") ? " selected " : "" ?>>Don't Know</option>
+      </select>
+      <br>
+      <input type="submit" value="Select Group" class="p-1 w-full bg-pink-300 text-white hover:bg-pink-200">
     </form>
     <table class="table-fixed">
       <tr>
