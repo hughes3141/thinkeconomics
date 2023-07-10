@@ -26,7 +26,7 @@ include ($path."/header_tailwind.php");
  */
 
  $imgSourcePathPrefix = "";
- $imgSourcePathPrefix = "https://www.thinkeconomics.co.uk";
+ //$imgSourcePathPrefix = "https://www.thinkeconomics.co.uk";
 
 
 //Get topics as GET variables
