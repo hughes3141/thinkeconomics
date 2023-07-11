@@ -2236,7 +2236,7 @@ function getTopicsAllList($topicId = null, $root = null, $examBoardId = null, $s
   $results = array();
 
 
-  $sql = "SELECT c.*,
+  $sql = "SELECT c.*, LEFT(c.code, 1) code_first, s.name subjectName, s.sort_order,
           IF(c.root = 1, c.id, p.id) AS par_id,
           IF(c.root = 1, c.code, p.code) AS par_code,
           IF(c.root = 1, c.name, p.name) AS par_name, 
@@ -2246,7 +2246,9 @@ function getTopicsAllList($topicId = null, $root = null, $examBoardId = null, $s
               SELECT code, name, id
               FROM topics_all
             ) p
-            ON (c.parentId = p.id OR (c.root = 1 AND c.id = p.id)) ";
+            ON (c.parentId = p.id OR (c.root = 1 AND c.id = p.id))
+          LEFT JOIN subjects s
+            ON c.subjectId = s.id";
 
   if(!is_null($topicId)) {
     $sql .= sql_conjoin($params);
@@ -2330,8 +2332,7 @@ function getTopicsAllList($topicId = null, $root = null, $examBoardId = null, $s
     array_push($bindArray, $userCreate);
   }
 
-
-  $sql .= " ORDER BY c.code";
+  $sql .= " ORDER BY c.code, c.deliveryYear";
 
   //echo $sql;
 
@@ -2348,6 +2349,66 @@ function getTopicsAllList($topicId = null, $root = null, $examBoardId = null, $s
       array_push($results, $row);
     }
   }
+  $sortOrder = null;
+  if(!empty($results)) {
+    $sortOrder = $results[0]['sort_order'];
+    $sortOrder = strtoupper($sortOrder);
+    $customOrder = explode(",",$sortOrder);
+  }
+  if(!empty($sortOrder)) {
+
+    
+
+    usort($results, function ($a, $b) use ($customOrder) {
+      //print_r($customOrder);
+
+      $prefixA = substr($a['code'], 0, 1);
+      $prefixB = substr($b['code'], 0, 1);
+
+      //echo $prefixA.$prefixB."";
+
+      $indexA = array_search($prefixA, $customOrder);
+      $indexB = array_search($prefixB, $customOrder);
+
+      if ($indexA === $indexB) {
+        $codeA = substr($a['code'], 1);
+        $codeB = substr($b['code'], 1);
+        
+        // Additional sorting criteria if the prefixes are the same
+        return strcmp($codeA, $codeB);
+      }
+
+      //echo $indexA.$indexB;
+      return $indexA - $indexB;
+    });
+  }
+
+  /*
+
+
+  // Sorting function
+  function customSort($a, $b) {
+    global $customOrder;
+    
+    print_r($customOrder);
+
+    $prefixA = substr($a['code'], 0, 1);
+    $prefixB = substr($b['code'], 0, 1);
+
+    echo $prefixA.$prefixB."<br>";
+
+    $indexA = array_search($prefixA, $customOrder);
+    $indexB = array_search($prefixB, $customOrder);
+
+    return $indexA - $indexB;
+  }
+
+  // Sort the array using the custom comparison function
+  usort($results, 'customSort');
+
+  echo $sortOrder;
+  */
+
   return $results;
 
 
