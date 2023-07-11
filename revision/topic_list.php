@@ -134,7 +134,10 @@ $levelId = null;
 $levelsArray = array();
 $examBoardsArray = array();
 $examBoardId = null;
-
+$root = null;
+$code = null;
+$parentId = null;
+$parentCode = $general = $userCreate = null;
 
 if(isset($_GET['subjectId'])) {
   $subjectId = $_GET['subjectId'];
@@ -150,7 +153,7 @@ if(!empty($_POST['examBoardId'])){
 }
 
 
-$topics = getTopicsGeneralList($topicId, $topicCode, null, $subjectId, $levelId, $topicName);
+$topics = getTopicsAllList($topicId, $root, $examBoardId, $subjectId, $code, $parentId, $parentCode, $levelId, $topicName, $general, $userCreate);
 
 $subjects = getOutputFromTable("subjects", null, "name");
 $levels =  getOutputFromTable("subjects_level", null, "name");
@@ -213,6 +216,10 @@ include($path."/header_tailwind.php");
 
     
   }
+  echo count($topics);
+  echo "<br>";
+  //print_r($topics);
+
 
 
 
@@ -323,7 +330,7 @@ include($path."/header_tailwind.php");
         <label for="flashcard_select">FlashCards Only</label>
       </span>
 
-
+      <br>
       <input class="bg-pink-200 px-2" type="submit" value="Choose Topic">
       <div class="hidden">
         <input type="checkbox" value="1" name="noFlashCard" <?=is_null($showFlashCards)?"checked":""?>>
@@ -335,6 +342,14 @@ include($path."/header_tailwind.php");
 
 
   <?php 
+
+  $subjectsLevel = getSubjects_Level();
+  $subjectsLevelKey = array();
+  foreach ($subjectsLevel as $level) {
+    $subjectsLevelKey[$level['id']] = $level['name'];
+  }
+
+  
   if(isset($subjectId)) {
     ?>
     
@@ -364,7 +379,7 @@ include($path."/header_tailwind.php");
 
           <td class="align-top">
             <div class="show_<?=$row['id'];?>">
-              <?=htmlspecialchars($row['code']);?><br>
+              <?=htmlspecialchars($row['code']);?> 
               <?=htmlspecialchars($row['name'])?> 
             </div>
             <div class="hide hide_<?=$row['id'];?>">
@@ -381,37 +396,23 @@ include($path."/header_tailwind.php");
             <div class="show_<?=$row['id'];?>">
               <p>
                 <?php
-                $levelsData = json_decode($row['levelsArray']);
-                foreach ($levelsData as $key=>$levelId) {
-                  $level = getSubjects_Level($levelId)[0];
-                  echo $level['name'];
-                  if($key<(count($levelsData)-1)) {
-                    echo ", ";
-                  }
-                }
+                  //echo($row['levelId']);
+                  echo $subjectsLevelKey[$row['levelId']];
                 ?>
               </p>
             </div>
             <div class= "hide hide_<?=$row['id'];?>">
-            <?php
-              foreach($levels as $key=>$level) {
-                //print_r($levels);
-                $level = getSubjects_Level($level['id'])[0];
-                $checked = "";
-                $levelId = $level['id'];
-                if(in_array($level['id'], $levelsData)) {
-                  $checked = "checked";
-                }
-                //print_r($level);
-                ?>
-                <input class = "w-5 levelSelector_<?=$row['id']?>" type="checkbox" id="level_checkbox_<?=$row['id']?>_<?=$key?>" value = "<?=$level['id']?>" onchange="levelsAggregate('<?=$row['id']?>');" <?=$checked?>>
-                <label for ="level_checkbox_<?=$row['id']?>_<?=$key?>"><?=$level['name']?></label><br>
+              <select name="levelId">
                 <?php
-              }
+                foreach ($levels as $subject) {
+                  ?>
+                  <option value ="<?=$subject['id']?>" <?=($subject['id'] == $row['subjectId']) ? "selected" : ""?>><?=$subject['name']?></option>
+                  <?php
+                }
 
-              ?>
+                ?>
+              </select>
 
-              <input type="text" name="levelsArray" id="levelSelect_<?=$row['id']?>">
             </div>
               
             <?php
