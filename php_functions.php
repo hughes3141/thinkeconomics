@@ -2372,22 +2372,25 @@ function insertTopicsAllList($code, $name, $subjectId, $examBoardId, $root, $par
           VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 
     $stmt = $conn->prepare($sql);
-
+    
     $levelId = strval($levelId);
     $levelsArray = array($levelId);
     $levelsArray = json_encode($levelsArray);
-
+  
     $params = "ssiiiiiisis";
     $bindArray = array($code, $name, $subjectId, $examBoardId, $root, $parentId, $general, $levelId, $levelsArray, $userCreate, $dateTime);
 
     $stmt=$conn->prepare($sql);
     $stmt->bind_param($params, ...$bindArray);
-
-    //var_dump($bindArray);
-
+    /*
+    var_dump($bindArray);
+    echo $sql;
+    */
     if($stmt->execute()) {
-      return "Record \"$code $name\" inserted<br>";
+      return "Question \"$name\" inserted successfully.";
     }
+    
+
 
     
 

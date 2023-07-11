@@ -53,18 +53,31 @@ if (isset($_POST['submit'])) {
   //Create new topics in topics_general
   
   $count = $_POST['questionsCount'];
+
   $subjectId = $_POST['subjectId'];
   $levelId = $_POST['levelId'];
   $levelsArray = json_encode($levelId);
+  $examBoardId   = $_POST['examBoardId'];
   $rootTopic = $generalTopic = null;
   if(isset($_POST['rootTopic'])) {
     $rootTopic = $_POST['rootTopic'];
+  } else {
+    $rootTopic = 0;
   }
   if(isset($_POST['generalTopic'])) {
   $generalTopic = $_POST['generalTopic'];
+  } else {
+    $generalTopic = 0;
+  }
+
+  $parentId = null;
+  if($rootTopic == 1) {
+    $examBoardId = null;
+
   }
   
   $userCreate = $userId;
+  
 
   for($x=0; $x<$count; $x++) {
 
@@ -73,7 +86,9 @@ if (isset($_POST['submit'])) {
 
     if($_POST['active_entry_'.$x] == "1") {
 
-      $newRecordMessage = insertTopicsGeneralList($code, $name, $subjectId, $examBoardId, $rootTopic,$levelId, $levelsArray, $userCreate);
+      $newRecordMessage = insertTopicsAllList($code, $name, $subjectId, $examBoardId, $rootTopic, $parentId, $generalTopic, $levelId, null, $userCreate);
+
+      //var_dump($code, $name, $subjectId, $examBoardId, $rootTopic, $parentId, $generalTopic, $levelId, $levelsArray, $userCreate);
 
 
     }
