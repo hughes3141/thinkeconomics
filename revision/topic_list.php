@@ -111,11 +111,11 @@ if(isset($_POST['updateValue'])) {
   $name = $_POST['name'];
   $subjectId = $_POST['subjectId'];
   //$levelId = $_POST['levelId'];
-  $levelsArray = $_POST['levelsArray'];
+  //$levelsArray = $_POST['levelsArray'];
   //$examBoardsArray = $_POST['examBoardsArray'];
 
   //Update Record:
-  $updateMessage = updateTopicsGeneralList($id, $code, $name, $subjectId, $levelsArray);
+  //$updateMessage = updateTopicsGeneralList($id, $code, $name, $subjectId, $levelsArray);
 
 }
 
@@ -135,6 +135,7 @@ $levelsArray = array();
 $examBoardsArray = array();
 $examBoardId = null;
 $root = null;
+$rootTopic = $generalTopic = 0;
 $code = null;
 $parentId = null;
 $parentCode = $general = $userCreate = null;
@@ -152,8 +153,15 @@ if(!empty($_POST['examBoardId'])){
   $examBoardId = $_POST['examBoardId'];
 }
 
+if(!empty($_GET['rootTopic'])) {
+  $rootTopic = $_GET['rootTopic'];
+}
+if(!empty($_GET['generalTopic'])) {
+  $generalTopic = $_GET['generalTopic'];
+}
 
-$topics = getTopicsAllList($topicId, $root, $examBoardId, $subjectId, $code, $parentId, $parentCode, $levelId, $topicName, $general, $userCreate);
+
+$topics = getTopicsAllList($topicId, $rootTopic, $examBoardId, $subjectId, $code, $parentId, $parentCode, $levelId, $topicName, $generalTopic, $userCreate);
 
 $subjects = getOutputFromTable("subjects", null, "name");
 $levels =  getOutputFromTable("subjects_level", null, "name");
@@ -322,6 +330,12 @@ include($path."/header_tailwind.php");
             }
             ?>
         </select>
+        <br>
+        <label for="rootTopicGet">Root Topic: </label>
+        <input id = "rootTopicGet" type="checkbox" name = "rootTopic" value ="1" <?=($rootTopic == 1) ? "checked" : ""?>>
+        <br>
+        <label for="generalTopicGet">General Topic: </label>
+        <input id = "generalTopicGet" type="checkbox" name = "generalTopic" value ="1" <?=($generalTopic == 1) ? "checked" : ""?>>
 
       
       
@@ -336,6 +350,7 @@ include($path."/header_tailwind.php");
         <input type="checkbox" value="1" name="noFlashCard" <?=is_null($showFlashCards)?"checked":""?>>
         <input type="checkbox" value="1" name="noAssetInput" <?=is_null($showAssetId)?"checked":""?>>
       </div>
+      
     </div>
 
   </form>
@@ -396,8 +411,12 @@ include($path."/header_tailwind.php");
             <div class="show_<?=$row['id'];?>">
               <p>
                 <?php
-                  //echo($row['levelId']);
                   echo $subjectsLevelKey[$row['levelId']];
+                ?>
+              </p>
+              <p>
+                <?php
+                  echo getSubjectInfo($row['subjectId'])['subjectName'];
                 ?>
               </p>
             </div>
