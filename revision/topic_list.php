@@ -53,22 +53,42 @@ if (isset($_POST['submit'])) {
   //Create new topics in topics_general
   
   $count = $_POST['questionsCount'];
+
   $subjectId = $_POST['subjectId'];
+  $levelId = $_POST['levelId'];
+  $levelsArray = json_encode($levelId);
+  $examBoardId   = $_POST['examBoardId'];
+  $rootTopic = $generalTopic = null;
+  if(isset($_POST['rootTopic'])) {
+    $rootTopic = $_POST['rootTopic'];
+  } else {
+    $rootTopic = 0;
+  }
+  if(isset($_POST['generalTopic'])) {
+  $generalTopic = $_POST['generalTopic'];
+  } else {
+    $generalTopic = 0;
+  }
+
+  $parentId = null;
+  if($rootTopic == 1) {
+    $examBoardId = null;
+
+  }
   
   $userCreate = $userId;
+  
 
   for($x=0; $x<$count; $x++) {
 
     $code = $_POST['topicCode_'.$x];
     $name = $_POST['topicName_'.$x];
-    //$levelId = $_POST['levelId_'.$x];
-    $levelId = null;
-    $levelsArray = $_POST['levelsArray_'.$x];
-    $examBoardsArray = $_POST['boardsArray_'.$x];
 
     if($_POST['active_entry_'.$x] == "1") {
 
-      $newRecordMessage = insertTopicsGeneralList($code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray, $userCreate);
+      $newRecordMessage = insertTopicsAllList($code, $name, $subjectId, $examBoardId, $rootTopic, $parentId, $generalTopic, $levelId, null, $userCreate);
+
+      //var_dump($code, $name, $subjectId, $examBoardId, $rootTopic, $parentId, $generalTopic, $levelId, $levelsArray, $userCreate);
 
 
     }
@@ -91,11 +111,11 @@ if(isset($_POST['updateValue'])) {
   $name = $_POST['name'];
   $subjectId = $_POST['subjectId'];
   //$levelId = $_POST['levelId'];
-  $levelsArray = $_POST['levelsArray'];
+  //$levelsArray = $_POST['levelsArray'];
   //$examBoardsArray = $_POST['examBoardsArray'];
 
   //Update Record:
-  $updateMessage = updateTopicsGeneralList($id, $code, $name, $subjectId, $levelsArray);
+  //$updateMessage = updateTopicsGeneralList($id, $code, $name, $subjectId, $levelsArray);
 
 }
 
@@ -113,14 +133,35 @@ $subjectId = null;
 $levelId = null;
 $levelsArray = array();
 $examBoardsArray = array();
-
+$examBoardId = null;
+$root = null;
+$rootTopic = $generalTopic = 0;
+$code = null;
+$parentId = null;
+$parentCode = $general = $userCreate = null;
 
 if(isset($_GET['subjectId'])) {
   $subjectId = $_GET['subjectId'];
 }
+if(isset($_GET['levelId'])) {
+  $levelId = $_GET['levelId'];
+}
+if(isset($_POST['levelId'])) {
+  $levelId = $_POST['levelId'];
+}
+if(!empty($_POST['examBoardId'])){
+  $examBoardId = $_POST['examBoardId'];
+}
+
+if(!empty($_GET['rootTopic'])) {
+  $rootTopic = $_GET['rootTopic'];
+}
+if(!empty($_GET['generalTopic'])) {
+  $generalTopic = $_GET['generalTopic'];
+}
 
 
-$topics = getTopicsGeneralList($topicId, $topicCode, null, $subjectId, $levelId, $topicName);
+$topics = getTopicsAllList($topicId, $rootTopic, $examBoardId, $subjectId, $code, $parentId, $parentCode, $levelId, $topicName, $generalTopic, $userCreate);
 
 $subjects = getOutputFromTable("subjects", null, "name");
 $levels =  getOutputFromTable("subjects_level", null, "name");
@@ -183,6 +224,10 @@ include($path."/header_tailwind.php");
 
     
   }
+  echo count($topics);
+  echo "<br>";
+  //print_r($topics);
+
 
 
 
@@ -202,13 +247,41 @@ include($path."/header_tailwind.php");
             }
             ?>
         </select>
+        <br>
+        <label for = "levelId">Level: </label>
+        <select id = "levelId" name="levelId">
+        <?php
+          foreach($levels as $key=>$level) {
+            ?>
+              <option value = "<?=$level['id']?>" <?=($level['id']==$levelId) ? "selected" : ""?>><?=$level['name']?></option>
+            <?php
+          }
+          ?>
+        </select>
+        <br>
+        <label for = "examBoardId">Exam Board: </label>
+        <select id = "examBoardId" name="examBoardId">
+        <?php
+          foreach($examBoards as $key=>$level) {
+            ?>
+              <option value = "<?=$level['id']?>" <?=($level['id']==$examBoardId) ? "selected" : ""?>><?=$level['name']?></option>
+            <?php
+          }
+          ?>
+        </select>
+        <br>
+        <label for="rootTopic">Root Topic: </label>
+        <input id = "rootTopic" type="checkbox" name = "rootTopic" value ="1">
+        <br>
+        <label for="generalTopic">General Topic: </label>
+        <input id = "generalTopic" type="checkbox" name = "generalTopic" value ="1">
+
 
     </div>
     <table id="question_input_table" class="input_table w-full table-fixed">
       <tr>
-        <th class = "w-1/5">Topic</th>
-        <th class = "w-1/5">Level</th>
-        <th class = "w-1/5">Exam Boards</th>
+        <th class = "w-1/5">Topic Code</th>
+        <th class = "w-1/5">Topic Name</th>
         <th class = "w-1/5">Remove</th>
         
       </tr>
@@ -257,6 +330,12 @@ include($path."/header_tailwind.php");
             }
             ?>
         </select>
+        <br>
+        <label for="rootTopicGet">Root Topic: </label>
+        <input id = "rootTopicGet" type="checkbox" name = "rootTopic" value ="1" <?=($rootTopic == 1) ? "checked" : ""?>>
+        <br>
+        <label for="generalTopicGet">General Topic: </label>
+        <input id = "generalTopicGet" type="checkbox" name = "generalTopic" value ="1" <?=($generalTopic == 1) ? "checked" : ""?>>
 
       
       
@@ -265,18 +344,27 @@ include($path."/header_tailwind.php");
         <label for="flashcard_select">FlashCards Only</label>
       </span>
 
-
+      <br>
       <input class="bg-pink-200 px-2" type="submit" value="Choose Topic">
       <div class="hidden">
         <input type="checkbox" value="1" name="noFlashCard" <?=is_null($showFlashCards)?"checked":""?>>
         <input type="checkbox" value="1" name="noAssetInput" <?=is_null($showAssetId)?"checked":""?>>
       </div>
+      
     </div>
 
   </form>
 
 
   <?php 
+
+  $subjectsLevel = getSubjects_Level();
+  $subjectsLevelKey = array();
+  foreach ($subjectsLevel as $level) {
+    $subjectsLevelKey[$level['id']] = $level['name'];
+  }
+
+  
   if(isset($subjectId)) {
     ?>
     
@@ -306,7 +394,7 @@ include($path."/header_tailwind.php");
 
           <td class="align-top">
             <div class="show_<?=$row['id'];?>">
-              <?=htmlspecialchars($row['code']);?><br>
+              <?=htmlspecialchars($row['code']);?> 
               <?=htmlspecialchars($row['name'])?> 
             </div>
             <div class="hide hide_<?=$row['id'];?>">
@@ -323,37 +411,27 @@ include($path."/header_tailwind.php");
             <div class="show_<?=$row['id'];?>">
               <p>
                 <?php
-                $levelsData = json_decode($row['levelsArray']);
-                foreach ($levelsData as $key=>$levelId) {
-                  $level = getSubjects_Level($levelId)[0];
-                  echo $level['name'];
-                  if($key<(count($levelsData)-1)) {
-                    echo ", ";
-                  }
-                }
+                  echo $subjectsLevelKey[$row['levelId']];
+                ?>
+              </p>
+              <p>
+                <?php
+                  echo getSubjectInfo($row['subjectId'])['subjectName'];
                 ?>
               </p>
             </div>
             <div class= "hide hide_<?=$row['id'];?>">
-            <?php
-              foreach($levels as $key=>$level) {
-                //print_r($levels);
-                $level = getSubjects_Level($level['id'])[0];
-                $checked = "";
-                $levelId = $level['id'];
-                if(in_array($level['id'], $levelsData)) {
-                  $checked = "checked";
-                }
-                //print_r($level);
-                ?>
-                <input class = "w-5 levelSelector_<?=$row['id']?>" type="checkbox" id="level_checkbox_<?=$row['id']?>_<?=$key?>" value = "<?=$level['id']?>" onchange="levelsAggregate('<?=$row['id']?>');" <?=$checked?>>
-                <label for ="level_checkbox_<?=$row['id']?>_<?=$key?>"><?=$level['name']?></label><br>
+              <select name="levelId">
                 <?php
-              }
+                foreach ($levels as $subject) {
+                  ?>
+                  <option value ="<?=$subject['id']?>" <?=($subject['id'] == $row['subjectId']) ? "selected" : ""?>><?=$subject['name']?></option>
+                  <?php
+                }
 
-              ?>
+                ?>
+              </select>
 
-              <input type="text" name="levelsArray" id="levelSelect_<?=$row['id']?>">
             </div>
               
             <?php
@@ -467,12 +545,12 @@ function addRow() {
   var cell0 = row.insertCell(0);
   var cell1 = row.insertCell(1);
   var cell2 = row.insertCell(2);
-  var cell3 = row.insertCell(3);
+  //var cell3 = row.insertCell(3);
 
   cell0.classList.add("align-top");
   cell1.classList.add("align-top");
   cell2.classList.add("align-top");
-  cell3.classList.add("align-top");
+  //cell3.classList.add("align-top");
 
   
   var inst = tableLength -1;
@@ -480,41 +558,13 @@ function addRow() {
 
   cell0.innerHTML += '<label for="topicCode_'+inst+'">Code:</label><br><input type="text" id ="topicCode_'+inst+'" name="topicCode_'+inst+'" class="w-full " required><br>';
   
-  cell0.innerHTML += '<label for="topicName'+inst+'">Topic Name:</label><br><textarea class="" type="text" id ="topicName'+inst+'" name="topicName_'+inst+'"></textarea><br>';
+  cell1.innerHTML += '<label for="topicName'+inst+'">Topic Name:</label><br><textarea class="" type="text" id ="topicName'+inst+'" name="topicName_'+inst+'"></textarea><br>';
 
 
-  cell1.innerHTML += '<div>';
-
-  <?php
-  foreach($levels as $key=>$level) {
-    ?>
-      cell1.innerHTML += '<input class = "w-5 levelSelector_'+inst+'" type="checkbox" id="level_checkbox_'+inst+'_<?=$key?>" value = "<?=$level['id']?>" onchange="levelsAggregate('+inst+');">';
-      cell1.innerHTML += '<label for ="level_checkbox_'+inst+'_<?=$key?>"><?=$level['name']?></label><br>';
-    <?php
-  }
-
-  ?>
-
-  cell1.innerHTML += '</div>';
-  cell1.innerHTML += '<input type="text" name="levelsArray_'+inst+'" id="levelSelect_'+inst+'">';
   
-  cell2.innerHTML += '<div>';
 
-  <?php
-  foreach($examBoards as $key=>$level) {
-    ?>
-      cell2.innerHTML += '<input class = "w-5 boardSelector_'+inst+'" type="checkbox" id="board_checkbox_'+inst+'_<?=$key?>" value = "<?=$level['id']?>" onchange="boardsAggregate('+inst+');">';
-      cell2.innerHTML += '<label for ="board_checkbox_'+inst+'_<?=$key?>"><?=$level['name']?></label><br>';
-    <?php
-  }
-
-  ?>
-
-  cell2.innerHTML += '</div>';
-  cell2.innerHTML += '<input type="text" name="boardsArray_'+inst+'" id="boardSelect_'+inst+'">';
-
-  cell3.innerHTML = "<button class='w-full bg-pink-300 rounded border border-black mb-1' type ='button' onclick='hideRow(this);'>Remove</button>"
-  cell3.innerHTML += "<input name='active_entry_"+inst+"' class='w-full' type='hidden' value='1'>";
+  cell2.innerHTML = "<button class='w-full bg-pink-300 rounded border border-black mb-1' type ='button' onclick='hideRow(this);'>Remove</button>"
+  cell2.innerHTML += "<input name='active_entry_"+inst+"' class='w-full' type='hidden' value='1'>";
 
   
 
