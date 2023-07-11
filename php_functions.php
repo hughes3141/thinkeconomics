@@ -2346,6 +2346,9 @@ function getTopicsAllList($topicId = null, $root = null, $examBoardId = null, $s
 
   if($result->num_rows>0) {
     while($row = $result->fetch_assoc()) {
+      if(!empty($row['deliveryYear'])) {
+        $row['name'] .= " (Y".$row['deliveryYear'].")";
+      }
       array_push($results, $row);
     }
   }
@@ -2360,54 +2363,43 @@ function getTopicsAllList($topicId = null, $root = null, $examBoardId = null, $s
     
 
     usort($results, function ($a, $b) use ($customOrder) {
-      //print_r($customOrder);
-
+      $deliveryYearA = $a['deliveryYear'];
+      $deliveryYearB = $b['deliveryYear'];
+  
+      if ($deliveryYearA !== $deliveryYearB) {
+          return $deliveryYearA - $deliveryYearB;
+      }
+  
       $prefixA = substr($a['code'], 0, 1);
       $prefixB = substr($b['code'], 0, 1);
-
-      //echo $prefixA.$prefixB."";
-
+  
       $indexA = array_search($prefixA, $customOrder);
       $indexB = array_search($prefixB, $customOrder);
-
+  
       if ($indexA === $indexB) {
-        $codeA = substr($a['code'], 1);
-        $codeB = substr($b['code'], 1);
-        
-        // Additional sorting criteria if the prefixes are the same
-        return strcmp($codeA, $codeB);
+          $codePartsA = explode('.', substr($a['code'], 1));
+          $codePartsB = explode('.', substr($b['code'], 1));
+  
+          // Compare each part of the code
+          foreach ($codePartsA as $key => $partA) {
+              $partB = $codePartsB[$key];
+  
+              if ($partA !== $partB) {
+                  // Check if the parts are numeric
+                  if (is_numeric($partA) && is_numeric($partB)) {
+                      return $partA - $partB;
+                  } else {
+                      return strcmp($partA, $partB);
+                  }
+              }
+          }
       }
-
-      //echo $indexA.$indexB;
+  
       return $indexA - $indexB;
     });
+  
   }
 
-  /*
-
-
-  // Sorting function
-  function customSort($a, $b) {
-    global $customOrder;
-    
-    print_r($customOrder);
-
-    $prefixA = substr($a['code'], 0, 1);
-    $prefixB = substr($b['code'], 0, 1);
-
-    echo $prefixA.$prefixB."<br>";
-
-    $indexA = array_search($prefixA, $customOrder);
-    $indexB = array_search($prefixB, $customOrder);
-
-    return $indexA - $indexB;
-  }
-
-  // Sort the array using the custom comparison function
-  usort($results, 'customSort');
-
-  echo $sortOrder;
-  */
 
   return $results;
 
@@ -2416,7 +2408,7 @@ function getTopicsAllList($topicId = null, $root = null, $examBoardId = null, $s
 
 }
 
-function insertTopicsAllList($code, $name, $subjectId, $examBoardId, $root, $parentId, $general, $levelId, $levelsArray, $userCreate) {
+function insertTopicsAllList($code, $name, $subjectId, $examBoardId, $root, $parentId, $general, $levelId, $levelsArray, $userCreate, $deliveryYear) {
   /*
    * This funciton enters new entries into topics_all table
    * 
@@ -2429,8 +2421,8 @@ function insertTopicsAllList($code, $name, $subjectId, $examBoardId, $root, $par
    $dateTime = date("Y-m-d H:i:s");
 
    $sql = "INSERT INTO topics_all
-          (code, name, subjectId, examBoardId, root, parentId, general, levelId, levelsArray, userCreate, dateCreate) 
-          VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+          (code, name, subjectId, examBoardId, root, parentId, general, levelId, levelsArray, userCreate, dateCreate, deliveryYear) 
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
 
     $stmt = $conn->prepare($sql);
     
@@ -2438,8 +2430,8 @@ function insertTopicsAllList($code, $name, $subjectId, $examBoardId, $root, $par
     $levelsArray = array($levelId);
     $levelsArray = json_encode($levelsArray);
   
-    $params = "ssiiiiiisis";
-    $bindArray = array($code, $name, $subjectId, $examBoardId, $root, $parentId, $general, $levelId, $levelsArray, $userCreate, $dateTime);
+    $params = "ssiiiiiisisi";
+    $bindArray = array($code, $name, $subjectId, $examBoardId, $root, $parentId, $general, $levelId, $levelsArray, $userCreate, $dateTime, $deliveryYear);
 
     $stmt=$conn->prepare($sql);
     $stmt->bind_param($params, ...$bindArray);

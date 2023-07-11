@@ -77,16 +77,21 @@ if (isset($_POST['submit'])) {
   }
   
   $userCreate = $userId;
+
+  $deliveryYear = null;
+  if(!empty($_POST['deliveryYear'])) {
+    $deliveryYear = $_POST['deliveryYear'];
+  }
   
 
   for($x=0; $x<$count; $x++) {
 
-    $code = $_POST['topicCode_'.$x];
-    $name = $_POST['topicName_'.$x];
+    $code = trim($_POST['topicCode_'.$x]);
+    $name = trim($_POST['topicName_'.$x]);
 
     if($_POST['active_entry_'.$x] == "1") {
 
-      $newRecordMessage = insertTopicsAllList($code, $name, $subjectId, $examBoardId, $rootTopic, $parentId, $generalTopic, $levelId, null, $userCreate);
+      $newRecordMessage = insertTopicsAllList($code, $name, $subjectId, $examBoardId, $rootTopic, $parentId, $generalTopic, $levelId, null, $userCreate, $deliveryYear);
 
       //var_dump($code, $name, $subjectId, $examBoardId, $rootTopic, $parentId, $generalTopic, $levelId, $levelsArray, $userCreate);
 
@@ -139,6 +144,7 @@ $rootTopic = $generalTopic = 0;
 $code = null;
 $parentId = null;
 $parentCode = $general = $userCreate = null;
+$deliveryYear = null;
 
 if(isset($_GET['subjectId'])) {
   $subjectId = $_GET['subjectId'];
@@ -158,6 +164,10 @@ if(!empty($_GET['rootTopic'])) {
 }
 if(!empty($_GET['generalTopic'])) {
   $generalTopic = $_GET['generalTopic'];
+}
+
+if(!empty($_POST['deliveryYear'])) {
+  $deliveryYear = $_POST['deliveryYear'];
 }
 
 
@@ -268,6 +278,14 @@ include($path."/header_tailwind.php");
             <?php
           }
           ?>
+        </select>
+        <br>
+        <label for ="deliveryYear">Delivery Year (optional):</label>
+        <select id= "deliveryYear" name ="deliveryYear">
+          <option value="" <?= ($deliveryYear == "") ? "selected" : ""?>></option>
+          <option value="1 <?= ($deliveryYear == "1") ? "selected" : ""?>">1</option>
+          <option value="2 <?= ($deliveryYear == "2") ? "selected" : ""?>">2</option>
+          <option value="3 <?= ($deliveryYear == "3") ? "selected" : ""?>">3</option>
         </select>
         <br>
         <label for="rootTopic">Root Topic: </label>
@@ -556,7 +574,7 @@ function addRow() {
   var inst = tableLength -1;
 
 
-  cell0.innerHTML += '<label for="topicCode_'+inst+'">Code:</label><br><input type="text" id ="topicCode_'+inst+'" name="topicCode_'+inst+'" class="w-full " required><br>';
+  cell0.innerHTML += '<label for="topicCode_'+inst+'">Code:</label><br><input type="text" id ="topicCode_'+inst+'" name="topicCode_'+inst+'" class="w-full " ><br>';
   
   cell1.innerHTML += '<label for="topicName'+inst+'">Topic Name:</label><br><textarea class="" type="text" id ="topicName'+inst+'" name="topicName_'+inst+'"></textarea><br>';
 
