@@ -258,7 +258,7 @@ include($path."/header_tailwind.php");
             
           </tr>
           <?php
-            $groupTeachers = ($groupInfo['teachers']);
+            $groupTeachers = (array) ($groupInfo['teachers']);
             foreach ($groupTeachers as $user) {
               //echo $user;
               $teacherName = getUserInfo($user);

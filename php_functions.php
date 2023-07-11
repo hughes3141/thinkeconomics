@@ -1109,7 +1109,10 @@ function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endD
         FROM saq_question_bank_3 q
         JOIN flashcard_responses r
         ON q.id = r.questionId
-        WHERE q.userCreate = 1 AND q.type LIKE '%flashCard%'";
+        WHERE ";
+        /*q.userCreate = 1 AND */
+        
+        $sql .= " q.flashCard = 1";
   
   //Clause to filter by $classid if set:
   if($classid) {
@@ -2914,8 +2917,9 @@ function createGroup($userCreate, $name, $subjectId, $schoolId, $teachers, $date
   $teachers = json_encode($teachers);
   $active = 1;
   $subjectInfo = getSubjectInfo($subjectId);
+  $level = "";
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("sisissiissss", $name, $schoolId, $teachers, $subjectId, $optionGroup, $dateFinish, $active, $userCreate, $date, $examBoard, $subjectInfo['subjectName'], $subjectInfo['level']);
+  $stmt->bind_param("sisissiissss", $name, $schoolId, $teachers, $subjectId, $optionGroup, $dateFinish, $active, $userCreate, $date, $examBoard, $subjectInfo['subjectName'], $level);
   $stmt->execute();
   //echo "New record created";
 
@@ -3259,7 +3263,7 @@ function updateGroupTeachers($groupId, $teacherId, $method = "add") {
     $row1 = $result->fetch_assoc();
   }
   
-  $listedTeachers = json_decode($row1['teachers']);
+  $listedTeachers = (array) json_decode($row1['teachers']);
 
   if($method == "add") {
     if(array_search($teacherId, $listedTeachers) === false) {
