@@ -54,6 +54,15 @@ if (isset($_POST['submit'])) {
   
   $count = $_POST['questionsCount'];
   $subjectId = $_POST['subjectId'];
+  $levelId = $_POST['levelId'];
+  $levelsArray = json_encode($levelId);
+  $rootTopic = $generalTopic = null;
+  if(isset($_POST['rootTopic'])) {
+    $rootTopic = $_POST['rootTopic'];
+  }
+  if(isset($_POST['generalTopic'])) {
+  $generalTopic = $_POST['generalTopic'];
+  }
   
   $userCreate = $userId;
 
@@ -61,14 +70,10 @@ if (isset($_POST['submit'])) {
 
     $code = $_POST['topicCode_'.$x];
     $name = $_POST['topicName_'.$x];
-    //$levelId = $_POST['levelId_'.$x];
-    $levelId = null;
-    $levelsArray = $_POST['levelsArray_'.$x];
-    $examBoardsArray = $_POST['boardsArray_'.$x];
 
     if($_POST['active_entry_'.$x] == "1") {
 
-      $newRecordMessage = insertTopicsGeneralList($code, $name, $subjectId, $levelId, $levelsArray, $examBoardsArray, $userCreate);
+      $newRecordMessage = insertTopicsGeneralList($code, $name, $subjectId, $examBoardId, $rootTopic,$levelId, $levelsArray, $userCreate);
 
 
     }
@@ -113,10 +118,20 @@ $subjectId = null;
 $levelId = null;
 $levelsArray = array();
 $examBoardsArray = array();
+$examBoardId = null;
 
 
 if(isset($_GET['subjectId'])) {
   $subjectId = $_GET['subjectId'];
+}
+if(isset($_GET['levelId'])) {
+  $levelId = $_GET['levelId'];
+}
+if(isset($_POST['levelId'])) {
+  $levelId = $_POST['levelId'];
+}
+if(!empty($_POST['examBoardId'])){
+  $examBoardId = $_POST['examBoardId'];
 }
 
 
@@ -202,13 +217,41 @@ include($path."/header_tailwind.php");
             }
             ?>
         </select>
+        <br>
+        <label for = "levelId">Level: </label>
+        <select id = "levelId" name="levelId">
+        <?php
+          foreach($levels as $key=>$level) {
+            ?>
+              <option value = "<?=$level['id']?>" <?=($level['id']==$levelId) ? "selected" : ""?>><?=$level['name']?></option>
+            <?php
+          }
+          ?>
+        </select>
+        <br>
+        <label for = "examBoardId">Exam Board: </label>
+        <select id = "examBoardId" name="examBoardId">
+        <?php
+          foreach($examBoards as $key=>$level) {
+            ?>
+              <option value = "<?=$level['id']?>" <?=($level['id']==$examBoardId) ? "selected" : ""?>><?=$level['name']?></option>
+            <?php
+          }
+          ?>
+        </select>
+        <br>
+        <label for="rootTopic">Root Topic: </label>
+        <input id = "rootTopic" type="checkbox" name = "rootTopic" value ="1">
+        <br>
+        <label for="generalTopic">General Topic: </label>
+        <input id = "generalTopic" type="checkbox" name = "generalTopic" value ="1">
+
 
     </div>
     <table id="question_input_table" class="input_table w-full table-fixed">
       <tr>
-        <th class = "w-1/5">Topic</th>
-        <th class = "w-1/5">Level</th>
-        <th class = "w-1/5">Exam Boards</th>
+        <th class = "w-1/5">Topic Code</th>
+        <th class = "w-1/5">Topic Name</th>
         <th class = "w-1/5">Remove</th>
         
       </tr>
@@ -467,12 +510,12 @@ function addRow() {
   var cell0 = row.insertCell(0);
   var cell1 = row.insertCell(1);
   var cell2 = row.insertCell(2);
-  var cell3 = row.insertCell(3);
+  //var cell3 = row.insertCell(3);
 
   cell0.classList.add("align-top");
   cell1.classList.add("align-top");
   cell2.classList.add("align-top");
-  cell3.classList.add("align-top");
+  //cell3.classList.add("align-top");
 
   
   var inst = tableLength -1;
@@ -480,41 +523,13 @@ function addRow() {
 
   cell0.innerHTML += '<label for="topicCode_'+inst+'">Code:</label><br><input type="text" id ="topicCode_'+inst+'" name="topicCode_'+inst+'" class="w-full " required><br>';
   
-  cell0.innerHTML += '<label for="topicName'+inst+'">Topic Name:</label><br><textarea class="" type="text" id ="topicName'+inst+'" name="topicName_'+inst+'"></textarea><br>';
+  cell1.innerHTML += '<label for="topicName'+inst+'">Topic Name:</label><br><textarea class="" type="text" id ="topicName'+inst+'" name="topicName_'+inst+'"></textarea><br>';
 
 
-  cell1.innerHTML += '<div>';
-
-  <?php
-  foreach($levels as $key=>$level) {
-    ?>
-      cell1.innerHTML += '<input class = "w-5 levelSelector_'+inst+'" type="checkbox" id="level_checkbox_'+inst+'_<?=$key?>" value = "<?=$level['id']?>" onchange="levelsAggregate('+inst+');">';
-      cell1.innerHTML += '<label for ="level_checkbox_'+inst+'_<?=$key?>"><?=$level['name']?></label><br>';
-    <?php
-  }
-
-  ?>
-
-  cell1.innerHTML += '</div>';
-  cell1.innerHTML += '<input type="text" name="levelsArray_'+inst+'" id="levelSelect_'+inst+'">';
   
-  cell2.innerHTML += '<div>';
 
-  <?php
-  foreach($examBoards as $key=>$level) {
-    ?>
-      cell2.innerHTML += '<input class = "w-5 boardSelector_'+inst+'" type="checkbox" id="board_checkbox_'+inst+'_<?=$key?>" value = "<?=$level['id']?>" onchange="boardsAggregate('+inst+');">';
-      cell2.innerHTML += '<label for ="board_checkbox_'+inst+'_<?=$key?>"><?=$level['name']?></label><br>';
-    <?php
-  }
-
-  ?>
-
-  cell2.innerHTML += '</div>';
-  cell2.innerHTML += '<input type="text" name="boardsArray_'+inst+'" id="boardSelect_'+inst+'">';
-
-  cell3.innerHTML = "<button class='w-full bg-pink-300 rounded border border-black mb-1' type ='button' onclick='hideRow(this);'>Remove</button>"
-  cell3.innerHTML += "<input name='active_entry_"+inst+"' class='w-full' type='hidden' value='1'>";
+  cell2.innerHTML = "<button class='w-full bg-pink-300 rounded border border-black mb-1' type ='button' onclick='hideRow(this);'>Remove</button>"
+  cell2.innerHTML += "<input name='active_entry_"+inst+"' class='w-full' type='hidden' value='1'>";
 
   
 
