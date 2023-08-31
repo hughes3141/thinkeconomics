@@ -1,67 +1,54 @@
-<html>
+<?php
 
+// Initialize the session
+session_start();
 
-<head>
+$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
 
+if (!isset($_SESSION['userid'])) {
+  
+  //header("location: /login.php");
 
-<?php //include "../header.php"; ?>
+}
 
-<style>
+else {
+  $userId = $_SESSION['userid'];
+  $userInfo = getUserInfo($_SESSION['userid']);
+  $userType = $userInfo['usertype'];
+  if (!(/*$userType == "teacher" || */ $userType =="admin")) {
+    header("location: /index.php");
+  }
+}
+
+$style_input = "
 
 table {
 
 	border-collapse: collapse;
-
 }
 
-
 th, td {
-
 	border: 1pt solid black;
 	padding: 5px;
 	text-align: center;
-
 }
-
 td.col3 {
-	
 	text-align: left;
-	
-	
 }
-
 
 .break_row {
-	
-	
 		background-color: #d9d9d9;
-	
 }
+";
 
-
-</style>
-
-
-</head>
-
-
-
-<body>
-
-<?php //include "../navbar.php"; ?>
-
-<h1>Year 1 A Level Economics Year Plan 2022-2023</h1>
-<table id="table"></table>
-
-<?php
-
-
+include "../header_tailwind.php"; 
 
 $startDate = "2023-09-04";
-
 $topics = 
-
 [
   ["Introduction to Course; What is Economics?"],
   ["1.1.1 Scarcity and Choice; 1.4.1 Types of Economic Systems"],
@@ -102,26 +89,19 @@ $topics =
   ["Index Week/Final Project"],
   ["Admin/Staff Development"]
 ];
-
 $holidays = (array) json_decode('{
   "Week":[7,15,16,23,30,31,38],
   "Descriptor":["Half Term","Break","Break","Half Term","Break","Break","Half Term"]
 }');
 
-
-
-
-
-print_r($topics);
-
-echo "<br>".$startDate;
-echo "<br>";
-print_r($holidays);
-var_dump($holidays);
-
 ?>
 
-<table>
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+  <h1 class="font-mono text-2xl bg-pink-400 pl-1">Year 1 A Level Economics Year Plan 2023-2024</h1>
+  <div class=" container mx-auto px-4 pb-4 mt-2 bg-white text-black mb-5 pt-4">
+
+
+<table class ="mt-5 mx-auto  w-full">
   <tr>
     <th>No</th>
     <th>Week</th>
@@ -133,7 +113,6 @@ var_dump($holidays);
   $holiday_count = 0;
   $weeks_total = count($topics)+count($holidays["Week"]);
 
-  echo $weeks_total;
 
   for ($key=0; $key<$weeks_total; $key++) {
   //foreach($topics as $key => $week) {
@@ -144,6 +123,8 @@ var_dump($holidays);
     if(in_array($key, $holidays['Week'])) {
       $holiday_mark = true;
     }
+
+    $week_placeholder = $monday." - \n".$friday;
     
     ?>
     <tr>
@@ -152,16 +133,16 @@ var_dump($holidays);
             ?>
 
             <td><?=$week_count?></td>
-            <td><?=$monday." - ".$friday?></td>
-            <td><?=$topics[$week_count][0]?></td>
+            <td class="whitespace-pre-line md:whitespace-normal text-left md:text-center"><?=$week_placeholder?></td>
+            <td class="whitespace-pre-line text-left"><?=$topics[$week_count][0]?></td>
             <?php
             $week_count++;
           }
           else {
             ?>
-            <td></td>
-            <td><?=$monday." - ".$friday?></td>
-            <td><?=$holidays['Descriptor'][$holiday_count]?></td>
+            <td class="bg-sky-200"></td>
+            <td class="bg-sky-200 bg-sky-200whitespace-pre-line md:whitespace-normal text-left md:text-center"><?=$week_placeholder?></td>
+            <td class=" bg-sky-200"><?=$holidays['Descriptor'][$holiday_count]?></td>
             <?php
             $holiday_count++;
 
@@ -177,7 +158,11 @@ var_dump($holidays);
 
 </table>
 
-<?php include "../footer.php"; ?>
+</div>
+</div>
+
+
+<?php include "../footer_tailwind.php"; ?>
 
 <script>
 
@@ -281,76 +266,7 @@ index =
   [37,"10 Jul - 14-Jul","Admin/Staff Development"]
 ]
 
-var table1 = document.getElementById("table1");
-	var row = [];
-	var cell = [];
-	
-	
 
-for(var i=0; i<index.length; i++) {
-	
-		row.push(table1.insertRow(i))
-		
-		var cellInstance = [];
-		
-		var classname ="";
-		
-		for (var j=0; j<3; j++) {
-			
-			
-			
-			var cell2 = row[i].insertCell(j);
-			cell2.innerHTML = index[i][j];
-			
-			
-			if (i==0) {
-				
-				cell2.style.fontWeight = 'bold';
-			}
-			
-			if (cell2.innerHTML =="-") {
-				
-				classname = "break_row"
-				
-			}
-			
-			cell2.setAttribute("class", classname);
-			
-			if (j == 2) {
-				
-				cell2.classList.add("col3");
-				
-			}
-				cellInstance.push(cell2);
-			}
-		
-			
-			
-		/*	
-			if (cellInstance[0].innerHTML == "-") {
-				
-				
-	
-				
-				for (var k=0; k<cellInstance.length; k++) {
-					
-					cellInstance[k].setAttribute("class", "break_row");
-					
-				}
-				
-				
-				//cell2.setAttribute("class", "break_row");
-			
-			
-			 
-		}
-		
-		*/
-		
-		cell.push(cellInstance);
-	
-	}
-console.log(cell);
 </script>
 
 
