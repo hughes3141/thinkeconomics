@@ -1,60 +1,168 @@
-<html>
+<?php
 
+// Initialize the session
+session_start();
 
-<head>
+$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
 
+if (!isset($_SESSION['userid'])) {
+  
+  //header("location: /login.php");
 
-<?php include "../header.php"; ?>
+}
 
-<style>
+else {
+  $userId = $_SESSION['userid'];
+  $userInfo = getUserInfo($_SESSION['userid']);
+  $userType = $userInfo['usertype'];
+  if (!(/*$userType == "teacher" || */ $userType =="admin")) {
+    header("location: /index.php");
+  }
+}
+
+$style_input = "
 
 table {
 
 	border-collapse: collapse;
-
 }
 
-
 th, td {
-
 	border: 1pt solid black;
 	padding: 5px;
 	text-align: center;
-
 }
-
 td.col3 {
-	
 	text-align: left;
-	
-	
 }
-
 
 .break_row {
-	
-	
 		background-color: #d9d9d9;
-	
 }
+";
+
+include "../header_tailwind.php"; 
+
+$startDate = "2023-09-04";
+$topics = 
+[
+  ["Introduction to Course; What is Economics?"],
+  ["1.1.1 Scarcity and Choice; 1.4.1 Types of Economic Systems"],
+  ["1.1.2 Production Possibility Frontiers (PPFs)"],
+  ["1.1.3 Specialisation"],
+  ["1.2.1 Supply and Demand Curves"],
+  ["1.2.2 The Determination of Economic Equilibrium\n1.4.1 The Role of Profit and Prices in a Market System"],
+  ["1.2.3 Producer and Consumer Surplus; 1.2.4 Introduction to Elasticity"],
+  ["1.2.4 Elasticity: PED and YED"],
+  ["1.2.4 Elasticities: XED and PES"],
+  ["1.3.1 Labour Markets: Wage Determination"],
+  ["1.3.2 Labour Market Issues"],
+  ["1.7.1 Market Failure: Externalities"],
+  ["1.7.1 Market Failure: Information Assymetry"],
+  ["1.7.2 Government Intervention in Markets"],
+  ["1.7.3 Government Failure"],
+  ["Intro to Macro; 2.2.1 Government Policy Objectives"],
+  ["2.1.1 The Circular Flow of Income"],
+  ["2.1.2 The Components of Aggregate Demand"],
+  ["2.1.3 The AD Function; 2.1.4 The Aggregate Supply (AS) Function"],
+  ["2.1.7 AD/AS Analysis"],
+  ["2.1.5-2.1.6: SRAS and LRAS; Neoclassical Economists and Keynes vs Hayek"],
+  ["2.2.2 Economic Growth"],
+  ["2.2.3 Unemployment"],
+  ["2.2.4 Inflation and Deflation"],
+  ["2.2.5 The Balance of Payments"],
+  ["2.2.6 Control of National Debt"],
+  ["2.3.1 Fiscal Policy"],
+  ["2.3.2 Monetary Policy: Bank of England"],
+  ["2.3.2 Monetary Policy: Quantitative Easing"],
+  ["2.3.4 Exchange Rates: Interpretation and Calculation"],
+  ["2.3.4 Exchange Rate Policy: Fixed vs Floating Exchange Rates"],
+  ["2.3.5 Supply Side Policies"],
+  ["1.4.1 Assumptions of Rationality"],
+  ["1.4.1 Assumptions of Rationality"],
+  ["1.4.1 Assumptions of Rationality (Presentations); Introduciton to Final Project"],
+  ["Your Future Week"],
+  ["Index Week/Final Project"],
+  ["Admin/Staff Development"]
+];
+$holidays = (array) json_decode('{
+  "Week":[7,15,16,23,30,31,38],
+  "Descriptor":["Half Term","Break","Break","Half Term","Break","Break","Half Term"]
+}');
+
+?>
+
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+  <h1 class="font-mono text-2xl bg-pink-400 pl-1">Year 1 A Level Economics Year Plan 2023-2024</h1>
+  <div class=" container mx-auto px-4 pb-4 mt-2 bg-white text-black mb-5 pt-4">
 
 
-</style>
+<table class ="mt-5 mx-auto  w-full">
+  <tr>
+    <th>No</th>
+    <th>Week</th>
+    <th>Topic</th>
+  </tr>
+
+<?php
+  $week_count = 0;
+  $holiday_count = 0;
+  $weeks_total = count($topics)+count($holidays["Week"]);
 
 
-</head>
+  for ($key=0; $key<$weeks_total; $key++) {
+  //foreach($topics as $key => $week) {
+    $format = 'd M';
+    $monday = date($format, strtotime($startDate . ' + '.($key * 7).' day'));
+    $friday = date($format, strtotime($monday . ' + 4 day'));
+    $holiday_mark = false;
+    if(in_array($key, $holidays['Week'])) {
+      $holiday_mark = true;
+    }
+
+    $week_placeholder = $monday." - \n".$friday;
+    
+    ?>
+    <tr>
+      <?php
+          if($holiday_mark == false) {
+            ?>
+
+            <td><?=$week_count?></td>
+            <td class="whitespace-pre-line md:whitespace-normal text-left md:text-center"><?=$week_placeholder?></td>
+            <td class="whitespace-pre-line text-left"><?=$topics[$week_count][0]?></td>
+            <?php
+            $week_count++;
+          }
+          else {
+            ?>
+            <td class="bg-sky-200"></td>
+            <td class="bg-sky-200 bg-sky-200whitespace-pre-line md:whitespace-normal text-left md:text-center"><?=$week_placeholder?></td>
+            <td class=" bg-sky-200"><?=$holidays['Descriptor'][$holiday_count]?></td>
+            <?php
+            $holiday_count++;
+
+          }
+      ?>
 
 
+    </tr>
+    <?php
+  }
 
-<body>
+?>
 
-<?php include "../navbar.php"; ?>
+</table>
 
-<h1>Year 1 A Level Economics Year Plan 2022-2023</h1>
-<table id="table1"></table>
+</div>
+</div>
 
-<?php include "../footer.php"; ?>
+
+<?php include "../footer_tailwind.php"; ?>
 
 <script>
 
@@ -158,76 +266,7 @@ index =
   [37,"10 Jul - 14-Jul","Admin/Staff Development"]
 ]
 
-var table1 = document.getElementById("table1");
-	var row = [];
-	var cell = [];
-	
-	
 
-for(var i=0; i<index.length; i++) {
-	
-		row.push(table1.insertRow(i))
-		
-		var cellInstance = [];
-		
-		var classname ="";
-		
-		for (var j=0; j<3; j++) {
-			
-			
-			
-			var cell2 = row[i].insertCell(j);
-			cell2.innerHTML = index[i][j];
-			
-			
-			if (i==0) {
-				
-				cell2.style.fontWeight = 'bold';
-			}
-			
-			if (cell2.innerHTML =="-") {
-				
-				classname = "break_row"
-				
-			}
-			
-			cell2.setAttribute("class", classname);
-			
-			if (j == 2) {
-				
-				cell2.classList.add("col3");
-				
-			}
-				cellInstance.push(cell2);
-			}
-		
-			
-			
-		/*	
-			if (cellInstance[0].innerHTML == "-") {
-				
-				
-	
-				
-				for (var k=0; k<cellInstance.length; k++) {
-					
-					cellInstance[k].setAttribute("class", "break_row");
-					
-				}
-				
-				
-				//cell2.setAttribute("class", "break_row");
-			
-			
-			 
-		}
-		
-		*/
-		
-		cell.push(cellInstance);
-	
-	}
-console.log(cell);
 </script>
 
 
