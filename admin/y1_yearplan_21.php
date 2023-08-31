@@ -56,75 +56,119 @@ td.col3 {
 
 <?php
 
-$dates = array(
-  [-1,"28 Aug - 01-Sep",""],
-  ["","04 Sep - 08-Sep",""],
-  [1,"11 Sep - 15-Sep",""],
-  [2,"18 Sep - 22-Sep",""],
-  [3,"25 Sep - 29-Sep",""],
-  [4,"02 Oct - 06-Oct",""],
-  [5,"09 Oct - 13-Oct",""],
-  [6,"16 Oct - 20-Oct",""],
-  ["","23 Oct - 27-Oct","Half Term"],
-  [7,"30 Oct - 03-Nov",""],
-  [8,"06 Nov - 10-Nov",""],
-  [9,"13 Nov - 17-Nov",""],
-  [10,"20 Nov - 24-Nov",""],
-  [11,"27 Nov - 01-Dec",""],
-  [12,"04 Dec - 08-Dec",""],
-  [13,"11 Dec - 15-Dec",""],
-  [14,"18 Dec - 22-Dec",""],
-  ["","25 Dec - 29-Dec","Break"],
-  [14.5,"01 Jan - 05-Jan",""],
-  [15,"08 Jan - 12-Jan",""],
-  [16,"15 Jan - 19-Jan",""],
-  [17,"22 Jan - 26-Jan",""],
-  [18,"29 Jan - 02-Feb",""],
-  [19,"05 Feb - 09-Feb",""],
-  ["","12 Feb - 16-Feb","Half Term"],
-  [20,"19 Feb - 23-Feb",""],
-  [21,"26 Feb - 01-Mar",""],
-  [22,"04 Mar - 08-Mar",""],
-  [23,"11 Mar - 15-Mar",""],
-  [24,"18 Mar - 22-Mar",""],
-  [25,"25 Mar - 29-Mar",""],
-  ["","01 Apr - 05-Apr","Break"],
-  ["","08 Apr - 12-Apr","Break"],
-  [26,"15 Apr - 19-Apr",""],
-  [27,"22 Apr - 26-Apr",""],
-  [28,"29 Apr - 03-May",""],
-  [29,"06 May - 10-May",""],
-  [30,"13 May - 17-May",""],
-  [31,"20 May - 24-May",""],
-  ["","27 May - 31-May","Half Term"],
-  [32,"03 Jun - 07-Jun",""],
-  [33,"10 Jun - 14-Jun",""],
-  [34,"17 Jun - 21-Jun",""],
-  [35,"24 Jun - 28-Jun",""],
-  [36,"01 Jul - 05-Jul",""],
-  [37,"08 Jul - 12-Jul","Admin/Staff Development"]
 
-);
 
-$startDate = "2023-09-03";
+$startDate = "2023-09-04";
 
-print_r($dates);
+$topics = 
+
+[
+  ["Introduction to Course; What is Economics?"],
+  ["1.1.1 Scarcity and Choice; 1.4.1 Types of Economic Systems"],
+  ["1.1.2 Production Possibility Frontiers (PPFs)"],
+  ["1.1.3 Specialisation"],
+  ["1.2.1 Supply and Demand Curves"],
+  ["1.2.2 The Determination of Economic Equilibrium\n1.4.1 The Role of Profit and Prices in a Market System"],
+  ["1.2.3 Producer and Consumer Surplus; 1.2.4 Introduction to Elasticity"],
+  ["1.2.4 Elasticity: PED and YED"],
+  ["1.2.4 Elasticities: XED and PES"],
+  ["1.3.1 Labour Markets: Wage Determination"],
+  ["1.3.2 Labour Market Issues"],
+  ["1.7.1 Market Failure: Externalities"],
+  ["1.7.1 Market Failure: Information Assymetry"],
+  ["1.7.2 Government Intervention in Markets"],
+  ["1.7.3 Government Failure"],
+  ["Intro to Macro; 2.2.1 Government Policy Objectives"],
+  ["2.1.1 The Circular Flow of Income"],
+  ["2.1.2 The Components of Aggregate Demand"],
+  ["2.1.3 The AD Function; 2.1.4 The Aggregate Supply (AS) Function"],
+  ["2.1.7 AD/AS Analysis"],
+  ["2.1.5-2.1.6: SRAS and LRAS; Neoclassical Economists and Keynes vs Hayek"],
+  ["2.2.2 Economic Growth"],
+  ["2.2.3 Unemployment"],
+  ["2.2.4 Inflation and Deflation"],
+  ["2.2.5 The Balance of Payments"],
+  ["2.2.6 Control of National Debt"],
+  ["2.3.1 Fiscal Policy"],
+  ["2.3.2 Monetary Policy: Bank of England"],
+  ["2.3.2 Monetary Policy: Quantitative Easing"],
+  ["2.3.4 Exchange Rates: Interpretation and Calculation"],
+  ["2.3.4 Exchange Rate Policy: Fixed vs Floating Exchange Rates"],
+  ["2.3.5 Supply Side Policies"],
+  ["1.4.1 Assumptions of Rationality"],
+  ["1.4.1 Assumptions of Rationality"],
+  ["1.4.1 Assumptions of Rationality (Presentations); Introduciton to Final Project"],
+  ["Your Future Week"],
+  ["Index Week/Final Project"],
+  ["Admin/Staff Development"]
+];
+
+$holidays = (array) json_decode('{
+  "Week":[7,15,16,23,30,31,38],
+  "Descriptor":["Half Term","Break","Break","Half Term","Break","Break","Half Term"]
+}');
+
+
+
+
+
+print_r($topics);
 
 echo "<br>".$startDate;
+echo "<br>";
+print_r($holidays);
+var_dump($holidays);
 
 ?>
 
 <table>
+  <tr>
+    <th>No</th>
+    <th>Week</th>
+    <th>Topic</th>
+  </tr>
 
 <?php
-  foreach($dates as $key => $date) {
+  $week_count = 0;
+  $holiday_count = 0;
+  $weeks_total = count($topics)+count($holidays["Week"]);
+
+  echo $weeks_total;
+
+  for ($key=0; $key<$weeks_total; $key++) {
+  //foreach($topics as $key => $week) {
     $format = 'd M';
     $monday = date($format, strtotime($startDate . ' + '.($key * 7).' day'));
-    $friday = date($format, strtotime($monday . ' + 5 day'));
+    $friday = date($format, strtotime($monday . ' + 4 day'));
+    $holiday_mark = false;
+    if(in_array($key, $holidays['Week'])) {
+      $holiday_mark = true;
+    }
+    
     ?>
     <tr>
-      <td><?=$date[1]?><?//=var_dump($date[0])?></td>
-      <td><?=$monday." - ".$friday?></td>
+      <?php
+          if($holiday_mark == false) {
+            ?>
+
+            <td><?=$week_count?></td>
+            <td><?=$monday." - ".$friday?></td>
+            <td><?=$topics[$week_count][0]?></td>
+            <?php
+            $week_count++;
+          }
+          else {
+            ?>
+            <td></td>
+            <td><?=$monday." - ".$friday?></td>
+            <td><?=$holidays['Descriptor'][$holiday_count]?></td>
+            <?php
+            $holiday_count++;
+
+          }
+      ?>
+
+
     </tr>
     <?php
   }
