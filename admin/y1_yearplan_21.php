@@ -5,7 +5,7 @@
 
 
 
-<?php include "../header.php"; ?>
+<?php //include "../header.php"; ?>
 
 <style>
 
@@ -49,10 +49,89 @@ td.col3 {
 
 <body>
 
-<?php include "../navbar.php"; ?>
+<?php //include "../navbar.php"; ?>
 
 <h1>Year 1 A Level Economics Year Plan 2022-2023</h1>
-<table id="table1"></table>
+<table id="table"></table>
+
+<?php
+
+$dates = array(
+  [-1,"28 Aug - 01-Sep",""],
+  ["","04 Sep - 08-Sep",""],
+  [1,"11 Sep - 15-Sep",""],
+  [2,"18 Sep - 22-Sep",""],
+  [3,"25 Sep - 29-Sep",""],
+  [4,"02 Oct - 06-Oct",""],
+  [5,"09 Oct - 13-Oct",""],
+  [6,"16 Oct - 20-Oct",""],
+  ["","23 Oct - 27-Oct","Half Term"],
+  [7,"30 Oct - 03-Nov",""],
+  [8,"06 Nov - 10-Nov",""],
+  [9,"13 Nov - 17-Nov",""],
+  [10,"20 Nov - 24-Nov",""],
+  [11,"27 Nov - 01-Dec",""],
+  [12,"04 Dec - 08-Dec",""],
+  [13,"11 Dec - 15-Dec",""],
+  [14,"18 Dec - 22-Dec",""],
+  ["","25 Dec - 29-Dec","Break"],
+  [14.5,"01 Jan - 05-Jan",""],
+  [15,"08 Jan - 12-Jan",""],
+  [16,"15 Jan - 19-Jan",""],
+  [17,"22 Jan - 26-Jan",""],
+  [18,"29 Jan - 02-Feb",""],
+  [19,"05 Feb - 09-Feb",""],
+  ["","12 Feb - 16-Feb","Half Term"],
+  [20,"19 Feb - 23-Feb",""],
+  [21,"26 Feb - 01-Mar",""],
+  [22,"04 Mar - 08-Mar",""],
+  [23,"11 Mar - 15-Mar",""],
+  [24,"18 Mar - 22-Mar",""],
+  [25,"25 Mar - 29-Mar",""],
+  ["","01 Apr - 05-Apr","Break"],
+  ["","08 Apr - 12-Apr","Break"],
+  [26,"15 Apr - 19-Apr",""],
+  [27,"22 Apr - 26-Apr",""],
+  [28,"29 Apr - 03-May",""],
+  [29,"06 May - 10-May",""],
+  [30,"13 May - 17-May",""],
+  [31,"20 May - 24-May",""],
+  ["","27 May - 31-May","Half Term"],
+  [32,"03 Jun - 07-Jun",""],
+  [33,"10 Jun - 14-Jun",""],
+  [34,"17 Jun - 21-Jun",""],
+  [35,"24 Jun - 28-Jun",""],
+  [36,"01 Jul - 05-Jul",""],
+  [37,"08 Jul - 12-Jul","Admin/Staff Development"]
+
+);
+
+$startDate = "2023-09-03";
+
+print_r($dates);
+
+echo "<br>".$startDate;
+
+?>
+
+<table>
+
+<?php
+  foreach($dates as $key => $date) {
+    $format = 'd M';
+    $monday = date($format, strtotime($startDate . ' + '.($key * 7).' day'));
+    $friday = date($format, strtotime($monday . ' + 5 day'));
+    ?>
+    <tr>
+      <td><?=$date[1]?><?//=var_dump($date[0])?></td>
+      <td><?=$monday." - ".$friday?></td>
+    </tr>
+    <?php
+  }
+
+?>
+
+</table>
 
 <?php include "../footer.php"; ?>
 
