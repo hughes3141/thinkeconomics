@@ -89,12 +89,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
     $firstName = $lastName = $username= $email_name = "";
     $username_err =  $password_err = $email_err = $name_err="";
-    $name_validate = $username_validate = $password_validate = $email_validate = 0;
-    
-    //Temporary change to allow number-only passwords:
-
-    $password_validate = 1;
-    
+    $name_validate = $username_validate = $password_validate = $email_validate = 0;   
     $fn_validate = $ln_validate = $user_avail_validate = $user_rule_validate = $pass_match_validate = $pass_rule_validate = $privacy_validate = $usertype_validate = 0;
 
     //First Name and Last Name
