@@ -3183,6 +3183,11 @@ function validatePassword($password1, $password2) {
       $password_validate = 1;
     }
 
+    //Temporary code to bypass password validation if required:
+
+      $password_err = "";
+      $password_validate = 1;
+
     $results = array(
       "password_err" => $password_err,
       "password_validate" => $password_validate,
