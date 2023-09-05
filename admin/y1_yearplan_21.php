@@ -64,6 +64,7 @@ $topics =
   ["1.7.1 Market Failure: Externalities"],
   ["1.7.1 Market Failure: Information Assymetry"],
   ["1.7.2 Government Intervention in Markets"],
+  ["1.7.2 Government Intervention in Markets"],
   ["1.7.3 Government Failure"],
   ["Intro to Macro; 2.2.1 Government Policy Objectives"],
   ["2.1.1 The Circular Flow of Income"],
@@ -90,8 +91,8 @@ $topics =
   ["Admin/Staff Development"]
 ];
 $holidays = (array) json_decode('{
-  "Week":[7,15,16,23,30,31,38],
-  "Descriptor":["Half Term","Break","Break","Half Term","Break","Break","Half Term"]
+  "Week":[7,16,23,30,31,38],
+  "Descriptor":["Half Term","Break","Half Term","Break","Break","Half Term"]
 }');
 
 ?>
