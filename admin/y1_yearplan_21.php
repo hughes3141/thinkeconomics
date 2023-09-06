@@ -49,13 +49,13 @@ include "../header_tailwind.php";
 
 $startDate = "2023-09-04";
 $topics = 
+
 [
-  ["Introduction to Course; What is Economics?"],
   ["1.1.1 Scarcity and Choice; 1.4.1 Types of Economic Systems"],
   ["1.1.2 Production Possibility Frontiers (PPFs)"],
   ["1.1.3 Specialisation"],
-  ["1.2.1 Supply and Demand Curves"],
-  ["1.2.2 The Determination of Economic Equilibrium\n1.4.1 The Role of Profit and Prices in a Market System"],
+  ["1.2.1 Demand and Supply"],
+  ["1.2.2 The Determination of Economic Equilibrium 1.4.1 The Role of Profit and Prices in a Market System"],
   ["1.2.3 Producer and Consumer Surplus; 1.2.4 Introduction to Elasticity"],
   ["1.2.4 Elasticity: PED and YED"],
   ["1.2.4 Elasticities: XED and PES"],
@@ -63,9 +63,9 @@ $topics =
   ["1.3.2 Labour Market Issues"],
   ["1.7.1 Market Failure: Externalities"],
   ["1.7.1 Market Failure: Information Assymetry"],
-  ["1.7.2 Government Intervention in Markets"],
-  ["1.7.2 Government Intervention in Markets"],
-  ["1.7.3 Government Failure"],
+  ["1.7.2 Government Intervention in Markets: Maximum/Minimum Prices"],
+  ["1.7.2 Government Intervention in Markets: Tradable Pollution Permits (1/2 Week)"],
+  ["1.7.3 Government Failure (1/2 Week)"],
   ["Intro to Macro; 2.2.1 Government Policy Objectives"],
   ["2.1.1 The Circular Flow of Income"],
   ["2.1.2 The Components of Aggregate Demand"],
@@ -76,20 +76,22 @@ $topics =
   ["2.2.3 Unemployment"],
   ["2.2.4 Inflation and Deflation"],
   ["2.2.5 The Balance of Payments"],
-  ["2.2.6 Control of National Debt"],
-  ["2.3.1 Fiscal Policy"],
+  ["2.3.1 Fiscal Policy: Types of Taxes"],
+  ["2.3.1 Fiscal Policy: Laffer Curve"],
   ["2.3.2 Monetary Policy: Bank of England"],
-  ["2.3.2 Monetary Policy: Quantitative Easing"],
+  ["2.3.2 Monetary Policy: Effectiveness"],
   ["2.3.4 Exchange Rates: Interpretation and Calculation"],
   ["2.3.4 Exchange Rate Policy: Fixed vs Floating Exchange Rates"],
   ["2.3.5 Supply Side Policies"],
   ["1.4.1 Assumptions of Rationality"],
   ["1.4.1 Assumptions of Rationality"],
-  ["1.4.1 Assumptions of Rationality (Presentations); Introduciton to Final Project"],
+  ["1.4.1 Assumptions of Rationality"],
+  ["Year 1 Progress Exams"],
   ["Your Future Week"],
-  ["Index Week/Final Project"],
   ["Admin/Staff Development"]
 ];
+
+
 $holidays = (array) json_decode('{
   "Week":[7,16,23,30,31,38],
   "Descriptor":["Half Term","Break","Half Term","Break","Break","Half Term"]
