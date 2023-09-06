@@ -55,7 +55,7 @@ $topics =
   ["1.1.2 Production Possibility Frontiers (PPFs)"],
   ["1.1.3 Specialisation"],
   ["1.2.1 Demand and Supply"],
-  ["1.2.2 The Determination of Economic Equilibrium 1.4.1 The Role of Profit and Prices in a Market System"],
+  ["1.2.2 The Determination of Economic Equilibrium\n1.4.1 The Role of Profit and Prices in a Market System"],
   ["1.2.3 Producer and Consumer Surplus; 1.2.4 Introduction to Elasticity"],
   ["1.2.4 Elasticity: PED and YED"],
   ["1.2.4 Elasticities: XED and PES"],
