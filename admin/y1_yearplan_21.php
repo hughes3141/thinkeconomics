@@ -51,6 +51,7 @@ $startDate = "2023-09-04";
 $topics = 
 
 [
+	["Introduction to the Course; What is Economics?"],
   ["1.1.1 Scarcity and Choice; 1.4.1 Types of Economic Systems"],
   ["1.1.2 Production Possibility Frontiers (PPFs)"],
   ["1.1.3 Specialisation"],
