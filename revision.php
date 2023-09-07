@@ -40,8 +40,8 @@ include "header_tailwind.php";
             <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/flashcards.php">FlashCards (All Topics)</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/flashcards.php?subjectLevel=1_1&examBoardId=1&topicIds=184">FlashCards (1.1 Topics)</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/flashcards.php?subjectLevel=1_1&examBoardId=1&topicIds=185">FlashCards (1.2 Topics)</a></li>
-            <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/flashcards.php??subjectLevel=1_1&examBoardId=1&topicIds=186">FlashCards (1.3 Topics)</a></li>
-            <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/flashcards.php??subjectLevel=1_1&examBoardId=1&topicIds=193">FlashCards (1.7 Topics)</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/flashcards.php?subjectLevel=1_1&examBoardId=1&topicIds=186">FlashCards (1.3 Topics)</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/flashcards.php?subjectLevel=1_1&examBoardId=1&topicIds=193">FlashCards (1.4 Topics)</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/flashcards.php?topics=2.1.1,2.1.2,2.1,3,2.1.4,2.1.5,2.1.6,2.1.7,2.1.8">FlashCards (2.1 Topics)</a></li>
           <h3 class="font-mono text-lg bg-pink-200 pl-1">Quick Quizzes</h3>
             <li class="ml-2 hover:bg-sky-100" ><a class="block" href="revision/quick_quiz.php">Quick Quiz (All Topics)</a></li>
