@@ -207,7 +207,7 @@ display: none;
 
 
 
-$sql = "SELECT * FROM activities_responses WHERE activityid='1'";
+$sql = "SELECT * FROM activities_responses WHERE activityid='1' AND datetime > '2023-09-08'";
 $stmt = $conn->prepare($sql);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -230,6 +230,16 @@ if($result->num_rows>0) {
   }
 }
 
+$length_diff = 5 - count($allData);
+
+//echo $length_diff;
+
+if($length_diff > 0) {
+  for($x = 0; $x<=$length_diff; $x++) {
+    $data = array("", "");
+    array_push($allData, $data);
+  }
+}
 
 	
 	//print_r($allData);
@@ -383,6 +393,14 @@ for ($x=0; $x<=5; $x++) {
 <p>Your task: Decide on the mix of consumer goods and capital goods that will give your citizens the most happiness (utility).</p>
 <p>The winning team is the team with the highest total utility over the 10 year period.</p>
 <p>You can compare your score against the all-time leader board below:</p>
+
+
+<?php
+/*
+print_r($allData);
+echo $length_diff;
+*/
+?>
 		<table class="highScoreTable">
 		<tr><th>Name</th><th>Score</th></tr>
 		
