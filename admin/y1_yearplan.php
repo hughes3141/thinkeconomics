@@ -19,11 +19,11 @@ else {
   $userId = $_SESSION['userid'];
   $userInfo = getUserInfo($_SESSION['userid']);
   $userType = $userInfo['usertype'];
-/*
+
   if (!(/*$userType == "teacher" || */ $userType =="admin")) {
-    header("location: /index.php");
+    //header("location: /index.php");
   }
-*/
+
 }
 
 $style_input = "
