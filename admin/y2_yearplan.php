@@ -49,10 +49,11 @@ td.col3 {
 
 include "../header_tailwind.php"; 
 
-$startDate = "2023-09-11";
+$startDate = "2023-09-04";
 $topics =
 
 [
+	[""],
   ["Welcome back to course; 1.6.1 Introduction to Market Structures 1.5.1 Costs"," Revenues"," and Profits"],
   ["1.5.1 Economies of Scale","",""],
   ["1.5.2 The growth of Firms","",""],
@@ -90,7 +91,7 @@ $topics =
 
 
 $holidays = (array) json_decode('{
-  "Week":[6,15,22,29,30,37],
+  "Week":[7,16,23,30,31,38],
   "Descriptor":["Half Term","Break","Half Term","Break","Break","Half Term"]
 }');
 
