@@ -53,7 +53,7 @@ $startDate = "2023-09-11";
 $topics =
 
 [
-  ["Welcome back to course; 1.6.1 Introduction to Market Structures\n1.5.1 Costs"," Revenues"," and Profits"],
+  ["Welcome back to course; 1.6.1 Introduction to Market Structures 1.5.1 Costs"," Revenues"," and Profits"],
   ["1.5.1 Economies of Scale","",""],
   ["1.5.2 The growth of Firms","",""],
   ["1.5.3 Efficiency","",""],
@@ -66,8 +66,8 @@ $topics =
   ["1.6.8 Privatisation","",""],
   ["2.1.4"," 2.1.5"," 2.1.6: Review of SRAS"],
   ["2.1.8 The Phillips Curve: Short Run and Long Run Implications","",""],
+  ["2.1.8 The Phillips Curve: Short Run and Long Run Implications (1/2 week)","",""],
   ["3.1.1 Tariffs and Protectionism; Comparative vs Absolute Advantage","",""],
-  ["3.1.1 Globalisation and the WTO (1/2 Week)","",""],
   ["3.1.1 Globalisation and the WTO (1/2 Week)","",""],
   ["3.2.1 The European Union; Advantages and Disadvantages of Member States. The European Monetary Union","",""],
   ["3.3.1 Measurement of Economic Development: GNP and PPP; HDI","",""],
@@ -78,8 +78,7 @@ $topics =
   ["2.2.6 Control of the National Debt","",""],
   ["2.3.3 Financial Stability: The Financial Sector"," Asset Bubbles"," The Role and Purpose of Regulation"],
   ["2.2.1: Government Policy Objectives; 2.2.2 Economics Growth (Review)","",""],
-  ["2.2.3 Unemployment; 2.2.4 Inflation and Deflation (Review)","",""],
-  ["2.2.5 The Balance of Payments (Review)","",""],
+  ["2.2.3 Unemployment; 2.2.4 Inflation and Deflation; 2.2.5 The Balance of Payments (Review)","",""],
   ["Revision and Review","",""],
   ["Revision and Review","",""],
   ["Revision and Review","",""],
