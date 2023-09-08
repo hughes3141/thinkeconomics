@@ -30,8 +30,6 @@ include($path."/header_tailwind.php");
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/y2_yearplan.php">Year 2 Year Plan</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/topic_list.php">Eduqas A Level Topic list</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href ="admin/eduqas-a-economics-spec-from-2015.pdf" target ="_blank">A Level Economics Specification</a></li>
-      <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href ="admin/files/advanced_info_spec.pdf" target ="_blank">A Level Economics Specification (2022 Edit)</a></li>
-      <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href ="admin/files/wjec-eduqas-gce-a-level-economics-advance-information-2022.pdf" target ="_blank"> Advanced Information for 2022 Exams (from Eduqas)</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href ="https://www.eduqas.co.uk/qualifications/economics-as-a-level" target="_blank">Eduqas A Level Economics Website</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="https://truropenwith-my.sharepoint.com/:w:/g/personal/ryanhughes_callywith_ac_uk/Ea7XKox99mdEkm99FUjy7XMBFe9jKLMPIx9nf2ZXbAOSlw?e=e5C6ff" target ="_blank">Textbook Reading Guide</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/powerpoints.php">Topic PowerPoints</a></li>
