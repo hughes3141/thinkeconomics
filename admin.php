@@ -27,7 +27,7 @@ include($path."/header_tailwind.php");
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/courseguide_21.php" >Course Guide</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/course_intro.php">Pre-Course Information: What is Economics?</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/y1_yearplan.php">Year 1 Year Plan</a></li>
-      <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/y2_yearplan_21.php">Year 2 Year Plan</a></li>
+      <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/y2_yearplan.php">Year 2 Year Plan</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/topic_list.php">Eduqas A Level Topic list</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href ="admin/eduqas-a-economics-spec-from-2015.pdf" target ="_blank">A Level Economics Specification</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href ="admin/files/advanced_info_spec.pdf" target ="_blank">A Level Economics Specification (2022 Edit)</a></li>
