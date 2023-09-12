@@ -207,7 +207,7 @@ display: none;
 
 
 
-$sql = "SELECT * FROM activities_responses WHERE activityid='1' AND datetime > '2023-09-11'";
+$sql = "SELECT * FROM activities_responses WHERE activityid='1' AND datetime > '2023-09-12'";
 $stmt = $conn->prepare($sql);
 $stmt->execute();
 $result = $stmt->get_result();
