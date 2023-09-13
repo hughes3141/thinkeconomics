@@ -593,6 +593,7 @@ include($path."/header_tailwind.php");
               <br>
 
               <input type="text" name ="topic_order" value ="<?=htmlspecialchars($row['topic_order'])?>" style="width:100px;"></input>
+              <input type="text" name="topic" value="<?=htmlspecialchars($row['topic'])?>"></input>
             </div>
             <p>
               <i>id: <?=$row['id'];?></i>
