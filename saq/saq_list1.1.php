@@ -164,7 +164,7 @@ if(isset($_POST['updateValue'])) {
   $updateMessage = updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $topic, $_POST['points'], $_POST['type'], "", $_POST['model_answer'], "", "", $questionAsset, $answerAsset, $flashCard, $topicId);
 
   //Change order value:
-  //changeOrderNumberWithinTopic($_POST['id'], $_POST['topic'], $_POST['topic_order'], $_POST['subjectId'], $_POST['levelId'], $userId);
+  changeOrderNumberWithinTopic($_POST['id'], $_POST['topic'], $_POST['topic_order'], $_POST['subjectId'], $_POST['levelId'], $userId);
 
 }
 
@@ -260,7 +260,8 @@ if(is_null($showFlashCards)) {
   $flashCard = 1;
 }
 
-$questions = getSAQQuestions(null, $topicGet, $flashCard, $subjectId, $userCreate, $type, $userId, $topicId);
+//(change second-to-last parameter below if user_topic_order is ever sorted)
+$questions = getSAQQuestions(null, $topicGet, $flashCard, $subjectId, $userCreate, $type, null, $topicId);
 
 
 //$questions = getSAQQuestions(null, null, null, null, null, null, null, null);
@@ -558,7 +559,7 @@ include($path."/header_tailwind.php");
               <!--
               <?=htmlspecialchars($row['topicName']);?><br>
               -->
-              <?=htmlspecialchars($row['userTopicOrder'])?> 
+              <?=htmlspecialchars($row['topic_order'])?> 
             </div>
             <div class="hide hide_<?=$row['id'];?>">
             <select name="topicId" class='w-full'>
