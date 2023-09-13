@@ -1647,7 +1647,11 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
 
 
   if(!is_null($userIdOrder)) {
-    $sql .= ", userTopicOrder, topic_order";
+    $sql .= ", userTopicOrder";
+  }
+
+  else {
+    $sql .=", topic_order";
   }
 
   //echo $sql;
