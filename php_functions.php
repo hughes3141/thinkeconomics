@@ -1647,7 +1647,11 @@ function getSAQQuestions($questionId = null, $topics = null, $flashCard = null, 
 
 
   if(!is_null($userIdOrder)) {
-    $sql .= ", userTopicOrder, topic_order";
+    $sql .= ", userTopicOrder";
+  }
+
+  else {
+    $sql .=", topic_order";
   }
 
   //echo $sql;
@@ -1968,6 +1972,7 @@ function updateTopicOrder($id, $newPlace, $table) {
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("ii", $newPlace, $id);
   $stmt->execute();
+  //echo $id;
 }
 
 function getInfoFromUserListData($dataId, $userCreate, $dataSource) {
@@ -2085,7 +2090,7 @@ function changeOrderNumberWithinTopic($id, $topic, $newPlace, $subjectId, $level
     array_push($bindArray, $id);
     $params .= "i";
   }
-  $sql .= "ORDER BY topicOrder";
+  $sql .= "ORDER BY topic_order";
 
   if(is_null($id)) {
     $sql .= " , id DESC"; 
@@ -2110,7 +2115,8 @@ function changeOrderNumberWithinTopic($id, $topic, $newPlace, $subjectId, $level
   if(!is_null($id)) {
 
     //(This will need to be fixed in order to update table):
-    $questionSelect = getSAQQuestions($id,null, null, null, null, null, $userId )[0];
+    //Change 7th parameter to $userId when updating for ordering by user topic order
+    $questionSelect = getSAQQuestions($id,null, null, null, null, null, null )[0];
 
     $questions = array_merge(array_slice($questions, 0, $newPlace), array($questionSelect), array_slice($questions, $newPlace));
     $index = 0;
@@ -2131,13 +2137,15 @@ function changeOrderNumberWithinTopic($id, $topic, $newPlace, $subjectId, $level
   */
 
   for($x=$index; $x<count($questions); $x++) {
-    //updateTopicOrder($questions[$x]['id'], $index, $table);
+    updateTopicOrder($questions[$x]['id'], $index, "saq_question_bank_3");
+    /*
     if($questions[$x]['userTopicOrder'] =="") {
       createInfoToUserListData($questions[$x]['id'], $index, $userId);
     }
     if($questions[$x]['userTopicOrder'] !="") {
       updateTopicOrder2($questions[$x]['id'], $index, $userId);
     }
+    */
     $index ++;
   }
 
