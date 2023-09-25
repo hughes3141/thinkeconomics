@@ -159,6 +159,8 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
   <tr>
     <th>id</th>
     <th>Name</th>
+    <th>Name</th>
+    <th>Username</th>
     <th>Password</th>
     <th>usertype</th>
     <th>schoolid</th>
@@ -178,8 +180,22 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
 
   //echo $sort;
   $sortArray = array("id", "name", "usertype", "schoolid", "groupid");
+
+  $params = "i";
+  $bindArray = array($_GET['active']);
   
   $sql="SELECT * FROM users WHERE usertype != 'admin' AND active = ?";
+
+  if(isset($_GET['schoolid'])) {
+
+      $schoolid = $_GET['schoolid'];
+      $sql .=  " AND schoolid = ? ";
+      $params .= "i";
+      array_push($bindArray, $schoolid);
+    
+  }
+
+
 
   if(isset($_GET['sort'])) {
     if(in_array($_GET['sort'], $sortArray)) {
@@ -191,7 +207,7 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
   //echo $sql;
   $stmt=$conn->prepare($sql);
   
-  $stmt->bind_param("i", $_GET['active']);
+  $stmt->bind_param($params, ...$bindArray);
   $stmt->execute();
   $result = $stmt->get_result();
 
@@ -202,6 +218,8 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
         <form method ="post" action="">
           <td><?=$row['id']?></td>
           <td><input type="text" name="name" style="//width: 50px" value="<?=htmlspecialchars($row['name'])?>"></td>
+          <td><?=$row['name_first']?> <?=$row['name_last']?></td>
+          <td><?=$row['username']?></td>
           <td><input type="text" name="password" style="width: 60px" value="<?=htmlspecialchars($row['password'])?>"></td>
           <td><input type="text" name="usertype" style="width: 100px" value="<?=htmlspecialchars($row['usertype'])?>"></td>
           <td><input type="text" name="schoolid" style="width: 60px" value="<?=htmlspecialchars($row['schoolid'])?>"></td>
