@@ -3342,6 +3342,7 @@ function updateGroupTeachers($groupId, $teacherId, $method = "add") {
   if($method == "remove") {
     if (($key = array_search($teacherId, $listedTeachers)) !== false) {
       unset($listedTeachers[$key]);
+      //Ensure that unset array values are re-ordered
       $listedTeachers = array_values($listedTeachers);
     }
   }
@@ -3385,6 +3386,7 @@ function updateStudentGroup($groupId, $studentId, $method = "add") {
   if($method == "remove") {
     if (($key = array_search($groupId, $listedGroups)) !== false) {
       unset($listedGroups[$key]);
+      //Ensure that unset array values are re-ordered
       $listedGroups = array_values($listedGroups);
     }
   }
