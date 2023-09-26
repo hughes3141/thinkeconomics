@@ -33,6 +33,7 @@ include($path."/header_tailwind.php");
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href ="https://www.eduqas.co.uk/qualifications/economics-as-a-level" target="_blank">Eduqas A Level Economics Website</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="https://truropenwith-my.sharepoint.com/:w:/g/personal/ryanhughes_callywith_ac_uk/Ea7XKox99mdEkm99FUjy7XMBFe9jKLMPIx9nf2ZXbAOSlw?e=e5C6ff" target ="_blank">Textbook Reading Guide</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/powerpoints.php">Topic PowerPoints</a></li>
+      <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/textbook.php">Textbook Chapters</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/mark_schemes.html">Eduqas AL Economics Mark Schemes</a></li>
     </ul>
     <?php for($x=0; $x<10; $x++) {echo "<br>";}?>
