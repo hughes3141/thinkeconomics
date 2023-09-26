@@ -3342,6 +3342,8 @@ function updateGroupTeachers($groupId, $teacherId, $method = "add") {
   if($method == "remove") {
     if (($key = array_search($teacherId, $listedTeachers)) !== false) {
       unset($listedTeachers[$key]);
+      //Ensure that unset array values are re-ordered
+      $listedTeachers = array_values($listedTeachers);
     }
   }
   $listedTeachers = json_encode($listedTeachers);
@@ -3384,14 +3386,18 @@ function updateStudentGroup($groupId, $studentId, $method = "add") {
   if($method == "remove") {
     if (($key = array_search($groupId, $listedGroups)) !== false) {
       unset($listedGroups[$key]);
+      //Ensure that unset array values are re-ordered
+      $listedGroups = array_values($listedGroups);
     }
   }
+  //print_r($listedGroups);
   $listedGroups = json_encode($listedGroups);
   
   //Ensure empty arrays are entered as blank, not [""]
   if ($listedGroups =='[""]') {
     $listedGroups = "";
   }
+  //echo $listedGroups;
   $sql2 = "UPDATE users
           SET groupid_array = ?
           WHERE id = ?";
