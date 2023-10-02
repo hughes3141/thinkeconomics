@@ -125,12 +125,14 @@ if (isset($_POST['submit'])) {
       insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId, $topicId);
       
       //Update topic_order for new Entry:
-      //changeOrderNumberWithinTopic(null, $topic, $topic_order, $subjectId, $levelId);
+      changeOrderNumberWithinTopic(null, $topic, $topic_order, $subjectId, $levelId, $userCreate);
 
       //echo "Record $question inserted<br>";
     }
 
     //echo "New records created successfully";
+
+
 
   }
 
@@ -165,6 +167,8 @@ if(isset($_POST['updateValue'])) {
 
   //Change order value:
   changeOrderNumberWithinTopic($_POST['id'], $_POST['topic'], $_POST['topic_order'], $_POST['subjectId'], $_POST['levelId'], $userId);
+
+  
 
 }
 
@@ -310,6 +314,8 @@ $topics = getTopicsAllList(null, $root, $examBoardId, $subjectId);
 
 
 include($path."/header_tailwind.php");
+
+
 ?>
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
@@ -322,6 +328,8 @@ include($path."/header_tailwind.php");
 
 
 <?php
+
+
 
   if(isset($_GET['test'])) {
     /*
@@ -716,6 +724,13 @@ include($path."/header_tailwind.php");
 </div>
 
 <script>
+
+<?php
+
+if(isset($_POST['updateValue'])) {
+  echo "document.getElementById('row_".$_POST['id']."').scrollIntoView();";
+}
+?>
 
 
 var questionCount = <?=$questionTopicCount?>;
