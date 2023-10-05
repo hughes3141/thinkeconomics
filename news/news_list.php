@@ -31,6 +31,14 @@ if (!isset($_SESSION['userid'])) {
 
 <?php include "../header.php"; ?>
 
+<!--
+
+GET variables:
+-topic = filter by topic
+-keyword = filter by keyword
+
+-->
+
 <style>
 
   .hide {
@@ -95,9 +103,37 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
 
 <?php
 $loggedid = $_SESSION['userid'];
-$sql = "SELECT * FROM news_data WHERE user = ?  ORDER BY dateCreated DESC";
+if(isset($_GET['keyword'])) {
+  $keyword = $_GET['keyword'];
+}
+
+if(isset($_GET['topic'])) {
+  $topic = $_GET['topic'];
+}
+
+$params = "i";
+$bindArray = array($loggedid);
+
+$sql = "SELECT * FROM news_data WHERE user = ?";
+if(isset($topic)) {
+  $sql .= " AND topic LIKE ? ";
+  $params .= "s";
+  $topic = "%".$topic."%";
+  array_push($bindArray, $topic);
+}
+
+if(isset($keyword)) {
+  $sql .= " AND keyWords LIKE ? ";
+  $keyword = "%".$keyword."%";
+  $params .= "s";
+  array_push($bindArray, $keyword);
+
+
+}
+
+$sql .= " ORDER BY dateCreated DESC";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $loggedid);
+$stmt->bind_param($params, ...$bindArray);
 $stmt->execute();
 $result = $stmt->get_result();
 

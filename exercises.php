@@ -38,6 +38,7 @@ include($path."/header_tailwind.php");
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.2.1demand_stories_2020.php">1.2.1 Demand Stories 2020</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.2.1demand_stories_2021.php">1.2.1 Demand Stories 2021</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.2.1substitution_income.php">1.2.1 Substitution and Income Effects</a></li>
+        <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.2.1supply_stories.php">1.2.1 Supply Stories</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.2.2housemarket1.2.php">1.2.2 Housing Market Equilibrium Game</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.2.2equilibrium_stories2021.php">1.2.2 Equilibrium Stories 2021</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.2.2equilibrium_stories1.1.php">1.2.2 Equilibrium Articles (from The Economist)</a></li>

@@ -16,6 +16,7 @@ module.exports = {
     "../user/**/*.{html,js,php}",
 
     "../revision/**/*.{html,js,php}",
+    "../exercises/**/*.{html,js,php}",
 
     "../mcq/**/*.{html,js,php}",
     "../saq/**/*.{html,js,php}",
