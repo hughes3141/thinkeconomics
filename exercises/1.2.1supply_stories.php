@@ -45,7 +45,7 @@ include($path."/header_tailwind.php"); ?>
 
     foreach($articles as $article) {
         ?><div class="mb-2 border-2 rounded border-sky-200 p-1">
-          <h3 class=" text-lg bg-sky-100 -mx-1 -mt-1 px-1"><li class=""><span class=""><?=$article['headline']?></span> (<?=date("d M y", strtotime($article['datePublished']));?>)</li></h3>
+          <h3 class=" text-lg bg-sky-100 -mx-1 -mt-1 px-1"><li class=""><span class=""><?=$article['headline']?></span> <span class="inline-block">(<?=date("d M y", strtotime($article['datePublished']));?>)</span></li></h3>
           <p class="truncate"><span class="font-bold">Link</span>: <a class=" hover:bg-sky-100 " target="_blank" href="<?=$article['link']?>"><?=$article['link']?></a></p>
           <?php
             if(($article['explanation'] != "") ) {

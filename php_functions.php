@@ -921,6 +921,102 @@ function getNewsArticlesByTopic($topic) {
   return $articles;
 }
 
+function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null) {
+  global $conn;
+  $articles = array();
+
+  $bindArray = array();
+  $params = "";
+  $conjoiner = 0;
+
+
+  $sql = "SELECT * FROM news_data ";
+
+  if($id OR $keyword OR $topic OR $startDate OR $endDate) {
+    $sql .= " WHERE ";
+  }
+
+  if($id) {
+    $sql .= " id = ? ";
+    array_push($bindArray, $id);
+    $params .= "i";
+    $conjoiner = 1;
+  }
+
+  if($keyword) {
+    $conjoin = ($conjoiner == 1) ? " AND " : "";
+    $sql .= $conjoin;
+    $sql .= " keyWords LIKE ? ";
+    $keyword = "%".$keyword."%";
+    array_push($bindArray, $keyword);
+    $params .= "s";
+    $conjoiner = 1;
+  }
+
+  if($topic) {
+    $conjoin = ($conjoiner == 1) ? " AND " : "";
+    $sql .= $conjoin;
+    $sql .= " topic = ? ";
+    //$keyword = "%".$keyword."%";
+    array_push($bindArray, $topic);
+    $params .= "s";
+    $conjoiner = 1;
+  }
+
+  if($startDate) {
+    $conjoin = ($conjoiner == 1) ? " AND " : "";
+    $sql .= $conjoin;
+    $sql .= " datePublished > ? ";
+    //$keyword = "%".$keyword."%";
+    array_push($bindArray, $startDate);
+    $params .= "s";
+    $conjoiner = 1;
+  }
+
+  if($endDate) {
+    $conjoin = ($conjoiner == 1) ? " AND " : "";
+    $sql .= $conjoin;
+    $sql .= " datePublished < ? ";
+    //$keyword = "%".$keyword."%";
+    array_push($bindArray, $endDate);
+    $params .= "s";
+    $conjoiner = 1;
+  }
+
+  if(is_null($orderBy)) {
+    $sql .= " ORDER BY datePublished DESC";
+  }
+  else {
+    if($orderBy == "dateCreated") {
+      $sql .= "ORDER BY dateCreated DESC";
+    }
+  }
+
+  
+  //echo $params;
+  //print_r($bindArray);
+  //echo $sql;
+  
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray) > 0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($articles, $row);
+    }
+  }
+
+  
+
+  return $articles;
+
+
+}
+
 function login_log($userid) {
   //Very simple: this function logs when a user has logged in. Used primarily wiht login.php. Also used in newuser upon first registration.
   global $conn;
