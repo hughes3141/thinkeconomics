@@ -53,7 +53,10 @@ if(isset($_GET['orderBy'])) {
 
 
 
-$results = getFlashcardSummaryByQuestion($groupId, $startDate, $endDate, $orderBy);
+//$results = getFlashcardSummaryByQuestion($groupId, $startDate, $endDate, $orderBy);
+
+$results2 = getFlashcardResponses(null, null, $startDate, $endDate, $groupId, 185);
+//$results2 = getFlashcardResponses(null, 1152);
 
 $groups = getGroupsList($userId);
 
@@ -74,8 +77,11 @@ $dateLastMonth = date('Y-m-d', strtotime('-30 days'));
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">Flash Card Review</h1>
   <div class="container mx-auto px-0 mt-2 bg-white text-black pt-1">
   <?php
+  echo "<pre>";
+  print_r($results2);
+  echo "</pre>";
 
-  foreach($results as $array) {
+  foreach($results2 as $array) {
     print_r($array);
     echo "<br>";
   }
