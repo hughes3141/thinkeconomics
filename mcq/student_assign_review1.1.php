@@ -97,7 +97,7 @@ if ($result = mysqli_query($conn, $query)) {
 			$selected = " selected = 'selected'";
 			}
 			else {$selected = "";}
-		echo "<option value = '".$row[id]."'".$selected.">".$row[name_first]." ".$row[name_last]"</option>";
+		echo "<option value = '".$row[id]."'".$selected.">".$row[name_first]." ".$row[name_last]."</option>";
 	}
 }
 
