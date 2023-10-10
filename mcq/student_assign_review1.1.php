@@ -89,7 +89,7 @@ $_SESSION["userid"] = $_GET['userid'];
 
 
 
-$query = "SELECT id, name FROM users";
+$query = "SELECT id, name, name_first, name_last FROM users";
 
 if ($result = mysqli_query($conn, $query)) {	
 	while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
@@ -97,7 +97,7 @@ if ($result = mysqli_query($conn, $query)) {
 			$selected = " selected = 'selected'";
 			}
 			else {$selected = "";}
-		echo "<option value = '".$row[id]."'".$selected.">".$row[name]."</option>";
+		echo "<option value = '".$row[id]."'".$selected.">".$row[name_first]." ".$row[name_last]"</option>";
 	}
 }
 
