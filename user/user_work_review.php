@@ -74,7 +74,7 @@ foreach($groupList as $array) {
       echo " selected ";
     }
     
-    echo ">".$user['name']."</option>";
+    echo ">".$user['name_first']." ".$user['name_last']."</option>";
 
 ?>
 
@@ -190,7 +190,7 @@ foreach($groupList as $array) {
                 <table class = "copyTo" id="summaryTable">
                   <tr>
                     <td>
-                    <?php echo $user_info['name'];?>
+                    <?php echo $user['name_first']." ".$user['name_last'];?>
                   </td>
                   </tr>
                 <tr>
