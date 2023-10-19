@@ -3734,4 +3734,74 @@ function getUploadsInfo($assetId = null) {
 
 }
 
+
+function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords) {
+
+  /*
+  This function inserts new Past Paper Question into pastpaper_question_bank
+  Used in:
+  -pastpapers_questions.php
+  */
+
+  global $conn;
+  date_default_timezone_set('Europe/London');
+  $datetime = date("Y-m-d H:i:s");
+  $active = 1;
+  $series = "June";
+
+  $sql = "INSERT INTO pastpaper_question_bank
+          (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, answer, questionAssets, markSchemeAssets, examReportAssets, topic, keywords, dateCreate, active, series)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("isssssssssssssssis", $userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $datetime, $active, $series);
+  $stmt->execute();
+
+}
+
+function getPastPaperQuestionDetails($id=null, $topic=null) {
+  /**
+   * This function retrieves information on past paper questions from pastpaper_question_bank
+   * Used in:
+   * -pastpapers_questions.php
+   */
+
+   global $conn;
+   $results = array();
+
+   $params = "";
+   $bindArray = array();
+   $conjoiner = 0;
+
+   $sql = " SELECT *
+            FROM pastpaper_question_bank ";
+
+    if($id) {
+      if($conjoiner == 0) {
+        $sql .= " WHERE id = ? ";
+      }
+      else {
+        $sql .= " AND ";
+      }
+      $params .= "i";
+      array_push($bindArray, $id);
+      $conjoiner = 1;
+    }
+
+  $stmt = $conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+
+  return $results;
+
+
+}
+
 ?>
