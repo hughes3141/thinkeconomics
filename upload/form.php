@@ -121,6 +121,7 @@ include($path."/header_tailwind.php");
         <option value ='/assets/'>Assets</option>
         <option value = '/mcq/question_img/'>MCQ Image</option>
         <option value = '/assets/flashcard_img/'>Flashcard Image</option>
+        <option value = '/assets/pastpaper_img/'>Past Paper Images</option>
       </select>
     </p>
     <p>

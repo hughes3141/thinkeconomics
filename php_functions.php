@@ -3734,6 +3734,27 @@ function getUploadsInfo($assetId = null) {
 
 }
 
+function jsonEncoder($string) {
+  $string = explode(",",$string);
+  return json_encode($string);
+}
+function jsonDecoder($string) {
+  if($string) {
+    $string = json_decode($string);
+    //print_r($string);
+    //var_dump($string);
+    $string2 = "";
+    foreach ($string as $key=>$value) {
+      $string2 .= $value;
+      if($key<(count($string)-1)) {
+        $string2 .= ",";
+      }
+
+    }
+    //return implode($string,",");
+    return $string2;
+  }
+}
 
 function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords) {
 
@@ -3748,6 +3769,10 @@ function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examB
   $datetime = date("Y-m-d H:i:s");
   $active = 1;
   $series = "June";
+
+  //$questionAssets = jsonEncoder($questionAssets);
+  //$markSchemeAssets = jsonEncoder($markSchemeAssets);
+  //$examReportAssets = jsonEncoder($examReportAssets);
 
   $sql = "INSERT INTO pastpaper_question_bank
           (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, answer, questionAssets, markSchemeAssets, examReportAssets, topic, keywords, dateCreate, active, series)
@@ -3777,13 +3802,28 @@ function getPastPaperQuestionDetails($id=null, $topic=null) {
 
     if($id) {
       if($conjoiner == 0) {
-        $sql .= " WHERE id = ? ";
+        $sql .= " WHERE  ";
       }
       else {
         $sql .= " AND ";
       }
+      $sql .= " id = ? ";
       $params .= "i";
       array_push($bindArray, $id);
+      $conjoiner = 1;
+    }
+
+    if($topic) {
+      if($conjoiner == 0) {
+        $sql .= " WHERE ";
+      }
+      else {
+        $sql .= " AND ";
+      }
+      $sql .= " topic LIKE ? ";
+      $topic = $topic."%";
+      $params .= "s";
+      array_push($bindArray, $topic);
       $conjoiner = 1;
     }
 
@@ -3795,12 +3835,38 @@ function getPastPaperQuestionDetails($id=null, $topic=null) {
   $result = $stmt->get_result();
   if($result->num_rows>0) {
     while($row = $result->fetch_assoc()) {
+      /*
+      $row['questionAssets'] = jsonDecoder($row['questionAssets']);
+      $row['markSchemeAssets'] = jsonDecoder($row['markSchemeAssets']);
+      $row['examReportAssets'] = jsonDecoder($row['examReportAssets']);
+      */
       array_push($results, $row);
     }
   }
 
   return $results;
 
+
+}
+
+function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation) {
+  /**
+   * Used to update pastpaper_question_bank
+   * Used in:
+   * -pastpapers_questions.php
+   */
+
+   //$questionAssets = jsonEncoder($questionAssets);
+   //$markSchemeAssets = jsonEncoder($markSchemeAssets);
+   //$examReportAssets = jsonEncoder($examReportAssets);
+
+   global $conn;
+   $sql = " UPDATE pastpaper_question_bank
+            SET question = ?, answer = ?,  questionAssets = ?, markSchemeAssets = ?, examReportAssets =?, topic = ?, keywords = ?, explanation = ?
+   WHERE id = ?";
+  $stmt=$conn->prepare($sql);
+  $stmt->bind_param("ssssssssi", $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $id);
+  $stmt->execute();
 
 }
 

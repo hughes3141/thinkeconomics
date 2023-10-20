@@ -174,15 +174,9 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
     if($_POST['submit'] == 'Update') {
 
       $updateQuestionBool = 1;
-      //Create array for options:
-      $options = ['A', 'B', 'C', 'D', 'E'];
-      $optionsArray = array();
-      for($x=0; $x<$_POST['optionCount']; $x++) {
-        $optionsArray[$options[$x]] = $_POST['option_'.$x];
-      }
-      $optionsArray = json_encode($optionsArray);
       
-      //updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['topicsAQA'], $_POST['topicsEdexcel'], $_POST['topicsOCR'], $_POST['topicsCIE']);
+      
+      updatePastPaperQuestionDetails($_POST['id'], $_POST['question'], $_POST['answer'], $_POST['questionAssets'], $_POST['markSchemeAssets'], $_POST['examreportAssets'], $_POST['topic'], $_POST['keywords'], $_POST['explanation']);
       ?>
       <?php
     }
@@ -190,23 +184,9 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 }
 
 $questions = array();
-if(isset($_GET['questionNo']) && $_GET['questionNo'] !="") {
-  
-  $result = getMCQquestionDetails(null, $_GET['questionNo']);
-  //There's a bit of formatting that has to happen here to filter out a poor design in the original function, which outputs a single array result rather than an array wiht a single result array[0]. If the result is singular, make a new array with this output as its [0]:
-  if(isset($result['id'])) {
-    array_push($questions, $result);
-    //Or else just return the array wiht many different sub-arrays:
-  } else {
-    $questions = $result;
-  }
-
-
-
-}
 if(isset($_GET['topic']) && $_GET['topic'] !="") {
-  $questions = getPastPaperQuestionDetails();
-  //$questions = getMCQquestionDetails(null, null, $_GET['topic']);
+
+  $questions = getPastPaperQuestionDetails(null, $_GET['topic']);
 }
 
 
@@ -306,7 +286,7 @@ $_GET controls:
       </div>
 
       <?php
-      print_r(getPastPaperQuestionDetails(1));
+      //print_r(getPastPaperQuestionDetails(1));
       ?>
       
       <div>
@@ -337,7 +317,33 @@ $_GET controls:
                         <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question']?></p>
                         <textarea  name="question" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question']?></textarea>
                       </div>
+                      <div>
+                        <h3>Answer:</h3>
+                        <p class="toggleClass_<?=$question['id']?>"><?=$question['answer']?></p>
+                        <input type="text" name = "answer" class="toggleClass_<?=$question['id']?> hidden" value = "<?=$question['answer']?>">
+                      </div>
+                      <div>
+                        <h3>Assets:</h3>
+                        <div class="toggleClass_<?=$question['id']?>">
+                          <p><?=$question['questionAssets']?></p>
+                        </div>
+
+                        <div class="toggleClass_<?=$question['id']?> hidden">
+                          <label for="question_assets_<?=$question['id']?>">Question Assets:</label>
+                            <p><input  id= "question_assets_<?=$question['id']?>" type="text" name = "questionAssets"  value = "<?=$question['questionAssets']?>"></p>
+
+                            <label for="markScheme_assets_<?=$question['id']?>">Mark Scheme Assets:</label>
+                            <p><input  id= "markScheme_assets_<?=$question['id']?>" type="text" name = "markSchemeAssets"  value = "<?=$question['markSchemeAssets']?>"></p>
+
+                            <label for="examReport_assets_<?=$question['id']?>">Exam Report Assets:</label>
+                            <p><input  id= "examReport_assets_<?=$question['id']?>" type="text" name = "examreportAssets"  value = "<?=$question['examReportAssets']?>"></p>
+                        </div>
+
+
+                      </div>
+
                       <?php
+                      /*
                         $imgSource = "";
                         if($question['path']!="") {
                           //$imgSource = $path.$question['path'];
@@ -346,38 +352,21 @@ $_GET controls:
                         else {
                           $imgSource = "question_img/".$question['No'].".JPG";
                         }
+                        */
                       ?>
+                      <!--
                       <p><img class = "w-3/4" src = "<?=$imgSource?>"></p>
+                      -->
                       <div>
                         <h3>Topics:</h3>
                         <div class="toggleClass_<?=$question['id']?>">
-                          <p><?=$question['Topic']?> <?=$question['topics']?> <?=$question['topicsAQA']?> <?=$question['topicsEdexcel']?> <?=$question['topicsOCR']?> <?=$question['topicsCIE']?></p>
+                          <p><?=$question['topic']?></p>
                         </div>
                         <div class="toggleClass_<?=$question['id']?> hidden">
-                          <label>Primary Topic:</label>
-                            <p><input type="text" name = "topic"  value = "<?=$question['Topic']?>"></p>
-                          <label>Secondary Topics:</label>
-                            <p><input type="text" name = "topics" value = "<?=$question['topics']?>"></p>
+                          <label>Topic:</label>
+                            <p><input type="text" name = "topic"  value = "<?=$question['topic']?>"></p>
+                          
 
-                          <label for="topicsAQA_input">AQA Topics:</label>
-                          <p>
-                            <input type ="text" id="topicsAQA_input" name="topicsAQA" value = "<?=$question['topicsAQA']?>">
-                        </p>
-
-                        <label for="topicsEdexcel_input">Edexcel Topics:</label>
-                          <p>
-                            <input type ="text" id="topicsEdexcel_input" name="topicsEdexcel" value = "<?=$question['topicsEdexcel']?>">
-                        </p>
-
-                        <label for="topicsOCR_input">OCR Topics:</label>
-                          <p>
-                            <input type ="text" id="topicsOCR_input" name="topicsOCR" value = "<?=$question['topicsOCR']?>">
-                        </p>
-
-                        <label for="topicsCIE_input">CIE Topics:</label>
-                          <p>
-                            <input type ="text" id="topicsCIE_input" name="topicsCIE" value = "<?=$question['topicsEdexcel']?>">
-                        </p>
 
                         </div>
                       </div>
@@ -386,11 +375,7 @@ $_GET controls:
                         <p class="toggleClass_<?=$question['id']?>"><?=$question['keywords']?></p>
                         <input type="text" name = "keywords" class="toggleClass_<?=$question['id']?> hidden" value = "<?=$question['keywords']?>">
                       </div>
-                      <div>
-                        <h3>Answer:</h3>
-                        <p class="toggleClass_<?=$question['id']?>"><?=$question['Answer']?></p>
-                        <input type="text" name = "answer" class="toggleClass_<?=$question['id']?> hidden" value = "<?=$question['Answer']?>">
-                      </div>
+
                       <div>
                           <?php
                             $explanations = json_decode($question['explanation']);
@@ -419,65 +404,11 @@ $_GET controls:
                           ?>
                           <div class="toggleClass_<?=$question['id']?> hidden">
                             <h3>Explanation:</h3>
-                            <p><textarea name="explanation" class="resize w-full " spellcheck="true"><?=$userExplanation?></textarea></p>
+                            <p><textarea name="explanation" class="resize w-full " spellcheck="true"><?=$question['explanation']?></textarea></p>
                           </div>
                         </div>                    
-                      <div>
-                        <h3>Options:</h3>
-                        <div class="toggleClass_<?=$question['id']?>">
-                            <?php
-                              $options =(array) json_decode($question['options']);
-                              echo "<ul>";
-                              $optionsNonStandard = 0;
-                              foreach ($options as $key=>$option) {
-                                if($key != $option) {
-                                  $optionsNonStandard = 1;
-                                ?>
-                                  <li><?=$key?>: <?=$option?></li>
-                                <?php
-                                }
-                              }
-                              echo "</ul>";
-                              if($optionsNonStandard == 0) {
-                                echo "Standard Options";
-                              }
-                              //print_r($options);
-                            ?>
-                        </div>
-                        <div class="toggleClass_<?=$question['id']?> hidden">
-                            <?php
-                            echo "<ul>";
-                            $optionCount = 0;
-                            foreach ($options as $key=>$option) {
-                              ?>
-                              <li><label for="option_<?=$optionCount?>"><?=$key?></label>: <textarea id="option_<?=$optionCount?>" class="w-full"name="option_<?=$optionCount?>" onfocus="this.select()" spellcheck="true"><?=$option?></textarea></li>
-                              <?php
-                              $optionCount ++;
-                              
-                            }
-                            echo "</ul>";
-                            //echo $optionCount;
-                            ?>
-                            <input type="hidden" name="optionCount" value="<?=$optionCount?>">
-                        </div>
-                      </div>
-                      <!-- Text Only Input:-->
-                      <div>
-                        <div class="toggleClass_<?=$question['id']?>">
-                          <p><?=($question['textOnly']==1) ? "Text Only Enabled" : ""?><p>
-                        </div>
-                        <div class="toggleClass_<?=$question['id']?> hidden">
-                          <p>
-                            <input id="textOnly_yes" name="textOnly" type="radio" value="1" <?=($question['textOnly']==1) ? "checked" : ""?>>
-                            <label for="textOnly_yes">Text Only</label>
-                          </p>
-                          <p>
-                            <input id="textOnly_no" name="textOnly" type="radio" value="0" <?=($question['textOnly']==0) ? "checked" : ""?>>
-                            <label for="textOnly_no">No Text Only</label>
-                          </p>
-                        </div>
 
-                      </div>
+
                         <p>
                           <?php 
                             if(isset($_GET['test'])) {
