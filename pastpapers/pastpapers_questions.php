@@ -177,7 +177,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       $updateQuestionBool = 1;
       
       
-      updatePastPaperQuestionDetails($_POST['id'], $_POST['question'], $_POST['answer'], $_POST['questionAssets'], $_POST['markSchemeAssets'], $_POST['examreportAssets'], $_POST['topic'], $_POST['keywords'], $_POST['explanation']);
+      updatePastPaperQuestionDetails($_POST['id'], $_POST['question'], $_POST['answer'], $_POST['questionAssets'], $_POST['markSchemeAssets'], $_POST['examreportAssets'], $_POST['topic'], $_POST['keywords'], $_POST['explanation'], $_POST['marks']);
       ?>
       <?php
     }
@@ -313,7 +313,7 @@ $_GET controls:
                       <?=$question['No']?>
                     </td>
                     <td>
-                      <p><?=$question['examBoard']?> <?=$question['unitName']?> <?=$question['qualLevel']?></p>
+                      <p><?=$question['examBoard']?> <?=$question['unitName']?> <?=$question['qualLevel']?> <?$question['series']=?> <?=$question['year']?> Question <?=$question['questionNo']?> </p>
                       <div>
                         <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question']?></p>
                         <textarea  name="question" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question']?></textarea>
@@ -322,6 +322,11 @@ $_GET controls:
                         <h3>Answer:</h3>
                         <p class="toggleClass_<?=$question['id']?>"><?=$question['answer']?></p>
                         <input type="text" name = "answer" class="toggleClass_<?=$question['id']?> hidden" value = "<?=$question['answer']?>">
+                      </div>
+                      <div>
+                        <h3>Marks:</h3>
+                        <p class="toggleClass_<?=$question['id']?>"><?=$question['marks']?></p>
+                        <input type="text" name = "marks" class="toggleClass_<?=$question['id']?> hidden" value = "<?=$question['marks']?>">
                       </div>
                       <div>
                         <h3>Assets:</h3>
@@ -340,17 +345,30 @@ $_GET controls:
                             <?php
                           }
 
-                          $quesitonAssets = explode(",",$question['markSchemeAssets']);
+                          $markSchemeAssets = explode(",",$question['markSchemeAssets']);
                           //print_r($quesitonAssets);
 
-                          foreach($quesitonAssets as $asset) {
-                            $asset = getUploadsInfo($asset)[0];
-                            //print_r($asset);
-                            $imgSource = "https://www.thinkeconomics.co.uk";
-                            ?>
-                            <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
-                            <?php
+                          if($question['markSchemeAssets']!="") {
+                            
+
+                          ?>
+                          <button class="border rounded bg-pink-300 border-black mb-1 p-1" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$asset['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
+                          <div class="markSchemeToggle_<?=$asset['id']?> hidden">
+                          <?php
+
+                            foreach($markSchemeAssets as $asset) {
+                              $asset = getUploadsInfo($asset)[0];
+                              //print_r($asset);
+                              $imgSource = "https://www.thinkeconomics.co.uk";
+                              ?>
+                              <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                              <?php
+                            }
+                          ?>
+                          </div>
+                          <?php
                           }
+                          
                           ?>
                         </div>
 

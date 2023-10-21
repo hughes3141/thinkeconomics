@@ -3849,7 +3849,7 @@ function getPastPaperQuestionDetails($id=null, $topic=null) {
 
 }
 
-function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation) {
+function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks) {
   /**
    * Used to update pastpaper_question_bank
    * Used in:
@@ -3862,10 +3862,10 @@ function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets
 
    global $conn;
    $sql = " UPDATE pastpaper_question_bank
-            SET question = ?, answer = ?,  questionAssets = ?, markSchemeAssets = ?, examReportAssets =?, topic = ?, keywords = ?, explanation = ?
+            SET question = ?, answer = ?,  questionAssets = ?, markSchemeAssets = ?, examReportAssets =?, topic = ?, keywords = ?, explanation = ?, marks = ?
    WHERE id = ?";
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("ssssssssi", $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $id);
+  $stmt->bind_param("ssssssssii", $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks, $id);
   $stmt->execute();
 
 }

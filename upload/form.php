@@ -35,6 +35,10 @@ else {
 
 $style_input = "";
 
+$lastFolder = "";
+$lastAltText = "";
+$lastNotes = "";
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   //Process server upload:
@@ -42,6 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   if(isset($_GET['test'])) {
     print_r($_POST);
   }
+
+  $lastFolder = $_POST['filepath'];
+  $lastAltText = $_POST['altText'];
+  $lastNotes = $_POST['notes'];
 
   $uploadMessage = "";
 
@@ -118,19 +126,19 @@ include($path."/header_tailwind.php");
     <p>
       <label>Folder</label>
       <select name="filepath" id = "filepath">
-        <option value ='/assets/'>Assets</option>
-        <option value = '/mcq/question_img/'>MCQ Image</option>
-        <option value = '/assets/flashcard_img/'>Flashcard Image</option>
-        <option value = '/assets/pastpaper_img/'>Past Paper Images</option>
+        <option value ='/assets/' <?=($lastFolder == "/assets/") ? "selected": ""?>>Assets</option>
+        <option value = '/mcq/question_img/' <?=($lastFolder == "/mcq/question_img/") ? "selected": ""?>>MCQ Image</option>
+        <option value = '/assets/flashcard_img/' <?=($lastFolder == "/assets/flashcard_img/") ? "selected": ""?>>Flashcard Image</option>
+        <option value = '/assets/pastpaper_img/' <?=($lastFolder == "/assets/pastpaper_img/") ? "selected": ""?>>Past Paper Images</option>
       </select>
     </p>
     <p>
       <label>Alt Text</label>
-      <textarea name= "altText"></textarea>
+      <textarea name= "altText"><?=$lastAltText?></textarea>
     </p>
     <p>
       <label>Notes</label>
-      <textarea name= "notes"></textarea>
+      <textarea name= "notes"><?=$lastNotes?></textarea>
     </p>
     <input type="submit" value="Upload Image" name="submit">
   </form>
