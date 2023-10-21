@@ -97,7 +97,8 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         //'topics' => $_POST['topics_'.$x], 
         'keyWords' => $_POST['keyWords_'.$x],
         'active_entry' => $_POST['active_entry_'.$x],
-        'specPaper' => $specPaper
+        'specPaper' => $specPaper,
+        'marks' => $_POST['marks_'.$x]
       );
       array_push($questionsCollect, $newQuestion);
     }
@@ -158,7 +159,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
         //print_r($question);
 
-        insertPastPaperQuestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['answerText'], $question['assetId'], $question['markScheme_assetId'], $question['examReport_assetId'], $question['topic'], $question['keyWords']);
+        insertPastPaperQuestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['answerText'], $question['assetId'], $question['markScheme_assetId'], $question['examReport_assetId'], $question['topic'], $question['keyWords'], $question['marks']);
 
         
         
@@ -176,7 +177,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       $updateQuestionBool = 1;
       
       
-      updatePastPaperQuestionDetails($_POST['id'], $_POST['question'], $_POST['answer'], $_POST['questionAssets'], $_POST['markSchemeAssets'], $_POST['examreportAssets'], $_POST['topic'], $_POST['keywords'], $_POST['explanation']);
+      updatePastPaperQuestionDetails($_POST['id'], $_POST['question'], $_POST['answer'], $_POST['questionAssets'], $_POST['markSchemeAssets'], $_POST['examreportAssets'], $_POST['topic'], $_POST['keywords'], $_POST['explanation'], $_POST['marks']);
       ?>
       <?php
     }
@@ -184,9 +185,16 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 }
 
 $questions = array();
-if(isset($_GET['topic']) && $_GET['topic'] !="") {
+if(isset($_GET['topic'])) {
+  $get_selectors = array(
+    'id' => ($_GET['id']!="") ? $_GET['id'] : null,
+    'topic' => ($_GET['topic']!="") ? $_GET['topic'] : null,
+    'questionNo' => ($_GET['questionNo']!="") ? $_GET['questionNo'] : null
+  );
 
-  $questions = getPastPaperQuestionDetails(null, $_GET['topic']);
+  //var_dump($get_selectors);
+
+  $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic']);
 }
 
 
@@ -276,9 +284,11 @@ $_GET controls:
 
       <div>
         <form method ="get"  action="">
-          <label for="topic_select">Topic:</label>
+          <label for="id_select">ID:</label>
+          <input type="text" name="id" value="<?=isset($_GET['id']) ? $_GET['id'] : "" ?>"</input>
+          <label for="_select">Topic:</label>
           <input type="text" name="topic" value="<?=isset($_GET['topic']) ? $_GET['topic'] : "" ?>"</input>
-          <label for="questionNo_select">Question No:</label>
+          <label for="questionNo_select">Question Code:</label>
           <input type="text" name="questionNo" value="<?=isset($_GET['questionNo']) ? $_GET['questionNo'] : "" ?>"</input>
 
           <input type="submit"  value="Select">
@@ -312,7 +322,7 @@ $_GET controls:
                       <?=$question['No']?>
                     </td>
                     <td>
-                      <p><?=$question['examBoard']?> <?=$question['unitName']?> <?=$question['qualLevel']?></p>
+                      <p><?=$question['examBoard']?> <?=$question['unitName']?> <?=$question['qualLevel']?> <?$question['series']=?> <?=$question['year']?> Question <?=$question['questionNo']?> </p>
                       <div>
                         <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question']?></p>
                         <textarea  name="question" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question']?></textarea>
@@ -323,9 +333,52 @@ $_GET controls:
                         <input type="text" name = "answer" class="toggleClass_<?=$question['id']?> hidden" value = "<?=$question['answer']?>">
                       </div>
                       <div>
+                        <h3>Marks:</h3>
+                        <p class="toggleClass_<?=$question['id']?>"><?=$question['marks']?></p>
+                        <input type="text" name = "marks" class="toggleClass_<?=$question['id']?> hidden" value = "<?=$question['marks']?>">
+                      </div>
+                      <div>
                         <h3>Assets:</h3>
                         <div class="toggleClass_<?=$question['id']?>">
                           <p><?=$question['questionAssets']?></p>
+                          <?php
+                          $quesitonAssets = explode(",",$question['questionAssets']);
+                          //print_r($quesitonAssets);
+
+                          foreach($quesitonAssets as $asset) {
+                            $asset = getUploadsInfo($asset)[0];
+                            //print_r($asset);
+                            $imgSource = "https://www.thinkeconomics.co.uk";
+                            ?>
+                            <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                            <?php
+                          }
+
+                          $markSchemeAssets = explode(",",$question['markSchemeAssets']);
+                          //print_r($quesitonAssets);
+
+                          if($question['markSchemeAssets']!="") {
+                            
+
+                          ?>
+                          <button class="border rounded bg-pink-300 border-black mb-1 p-1" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$asset['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
+                          <div class="markSchemeToggle_<?=$asset['id']?> hidden">
+                          <?php
+
+                            foreach($markSchemeAssets as $asset) {
+                              $asset = getUploadsInfo($asset)[0];
+                              //print_r($asset);
+                              $imgSource = "https://www.thinkeconomics.co.uk";
+                              ?>
+                              <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                              <?php
+                            }
+                          ?>
+                          </div>
+                          <?php
+                          }
+                          
+                          ?>
                         </div>
 
                         <div class="toggleClass_<?=$question['id']?> hidden">
@@ -569,12 +622,18 @@ function addInputRow() {
       case 1:
         var label = "questionText_"+(rowNo-1);
         var label2 = "answerText_"+(rowNo-1);
+        var label3 = "marks_"+(rowNo-1);
         //var value = "value = '"+(rowNo)+"'";
         cells[i].innerHTML = "<p>Question Text:</p>";
         cells[i].innerHTML += "<textarea name="+label+" id= "+label+" "+"class='w-full rounded p-1 h-30'></textarea>";
         
         cells[i].innerHTML += "<p>Answer Text:</p>";
         cells[i].innerHTML += "<textarea name="+label2+" id= "+label2+" "+"class='w-full rounded p-1 h-30'></textarea>";
+
+        cells[i].innerHTML += "<p>Marks:</p>";
+        cells[i].innerHTML += "<input type ='number' name="+label3+" id= "+label3+" "+"class=' rounded p-1 '></input>";
+
+
         break;
 
 
