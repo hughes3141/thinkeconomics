@@ -97,7 +97,8 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         //'topics' => $_POST['topics_'.$x], 
         'keyWords' => $_POST['keyWords_'.$x],
         'active_entry' => $_POST['active_entry_'.$x],
-        'specPaper' => $specPaper
+        'specPaper' => $specPaper,
+        'marks' => $_POST['marks_'.$x]
       );
       array_push($questionsCollect, $newQuestion);
     }
@@ -158,7 +159,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
         //print_r($question);
 
-        insertPastPaperQuestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['answerText'], $question['assetId'], $question['markScheme_assetId'], $question['examReport_assetId'], $question['topic'], $question['keyWords']);
+        insertPastPaperQuestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['answerText'], $question['assetId'], $question['markScheme_assetId'], $question['examReport_assetId'], $question['topic'], $question['keyWords'], $question['marks']);
 
         
         
@@ -326,6 +327,31 @@ $_GET controls:
                         <h3>Assets:</h3>
                         <div class="toggleClass_<?=$question['id']?>">
                           <p><?=$question['questionAssets']?></p>
+                          <?php
+                          $quesitonAssets = explode(",",$question['questionAssets']);
+                          //print_r($quesitonAssets);
+
+                          foreach($quesitonAssets as $asset) {
+                            $asset = getUploadsInfo($asset)[0];
+                            //print_r($asset);
+                            $imgSource = "https://www.thinkeconomics.co.uk";
+                            ?>
+                            <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                            <?php
+                          }
+
+                          $quesitonAssets = explode(",",$question['markSchemeAssets']);
+                          //print_r($quesitonAssets);
+
+                          foreach($quesitonAssets as $asset) {
+                            $asset = getUploadsInfo($asset)[0];
+                            //print_r($asset);
+                            $imgSource = "https://www.thinkeconomics.co.uk";
+                            ?>
+                            <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                            <?php
+                          }
+                          ?>
                         </div>
 
                         <div class="toggleClass_<?=$question['id']?> hidden">
@@ -569,12 +595,18 @@ function addInputRow() {
       case 1:
         var label = "questionText_"+(rowNo-1);
         var label2 = "answerText_"+(rowNo-1);
+        var label3 = "marks_"+(rowNo-1);
         //var value = "value = '"+(rowNo)+"'";
         cells[i].innerHTML = "<p>Question Text:</p>";
         cells[i].innerHTML += "<textarea name="+label+" id= "+label+" "+"class='w-full rounded p-1 h-30'></textarea>";
         
         cells[i].innerHTML += "<p>Answer Text:</p>";
         cells[i].innerHTML += "<textarea name="+label2+" id= "+label2+" "+"class='w-full rounded p-1 h-30'></textarea>";
+
+        cells[i].innerHTML += "<p>Marks:</p>";
+        cells[i].innerHTML += "<input type ='number' name="+label3+" id= "+label3+" "+"class=' rounded p-1 '></input>";
+
+
         break;
 
 

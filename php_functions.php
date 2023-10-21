@@ -3689,7 +3689,7 @@ function newUploadsRecord($userid, $path, $altText = "", $root, $notes) {
   $stmt->bind_param("isssss", $userid, $datetime, $path, $altText, $root, $notes);
   $stmt->execute();
 
-  echo $altText." is this as in the function.";
+  //echo $altText." is this as in the function.";
 
 
 }
@@ -3756,7 +3756,7 @@ function jsonDecoder($string) {
   }
 }
 
-function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords) {
+function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $marks) {
 
   /*
   This function inserts new Past Paper Question into pastpaper_question_bank
@@ -3775,10 +3775,10 @@ function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examB
   //$examReportAssets = jsonEncoder($examReportAssets);
 
   $sql = "INSERT INTO pastpaper_question_bank
-          (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, answer, questionAssets, markSchemeAssets, examReportAssets, topic, keywords, dateCreate, active, series)
-          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+          (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, answer, questionAssets, markSchemeAssets, examReportAssets, topic, keywords, dateCreate, active, series, marks)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("isssssssssssssssis", $userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $datetime, $active, $series);
+  $stmt->bind_param("isssssssssssssssisi", $userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $datetime, $active, $series, $marks);
   $stmt->execute();
 
 }
