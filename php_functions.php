@@ -3833,7 +3833,7 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null) 
 
   $sql .= " ORDER BY year, component, questionNo";
 
-  echo $sql;
+  //echo $sql;
 
   $stmt = $conn->prepare($sql);
   if(count($bindArray)>0) {
