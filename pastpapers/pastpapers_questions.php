@@ -185,9 +185,16 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 }
 
 $questions = array();
-if(isset($_GET['topic']) && $_GET['topic'] !="") {
+if(isset($_GET['topic'])) {
+  $get_selectors = array(
+    'id' => ($_GET['id']!="") ? $_GET['id'] : null,
+    'topic' => ($_GET['topic']!="") ? $_GET['topic'] : null,
+    'questionNo' => ($_GET['questionNo']!="") ? $_GET['questionNo'] : null
+  );
 
-  $questions = getPastPaperQuestionDetails(null, $_GET['topic']);
+  //var_dump($get_selectors);
+
+  $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic']);
 }
 
 
@@ -277,9 +284,11 @@ $_GET controls:
 
       <div>
         <form method ="get"  action="">
-          <label for="topic_select">Topic:</label>
+          <label for="id_select">ID:</label>
+          <input type="text" name="id" value="<?=isset($_GET['id']) ? $_GET['id'] : "" ?>"</input>
+          <label for="_select">Topic:</label>
           <input type="text" name="topic" value="<?=isset($_GET['topic']) ? $_GET['topic'] : "" ?>"</input>
-          <label for="questionNo_select">Question No:</label>
+          <label for="questionNo_select">Question Code:</label>
           <input type="text" name="questionNo" value="<?=isset($_GET['questionNo']) ? $_GET['questionNo'] : "" ?>"</input>
 
           <input type="submit"  value="Select">

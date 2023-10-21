@@ -3770,20 +3770,20 @@ function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examB
   $active = 1;
   $series = "June";
 
-  //$questionAssets = jsonEncoder($questionAssets);
-  //$markSchemeAssets = jsonEncoder($markSchemeAssets);
-  //$examReportAssets = jsonEncoder($examReportAssets);
+  $questionAssets_array = jsonEncoder($questionAssets);
+  $markSchemeAssets_array = jsonEncoder($markSchemeAssets);
+  $examReportAssets_array = jsonEncoder($examReportAssets);
 
   $sql = "INSERT INTO pastpaper_question_bank
-          (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, answer, questionAssets, markSchemeAssets, examReportAssets, topic, keywords, dateCreate, active, series, marks)
-          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+          (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, answer, questionAssets, markSchemeAssets, examReportAssets, topic, keywords, dateCreate, active, series, marks, questionAssets_array, markSchemeAssets_array, examReportAssets_array)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("isssssssssssssssisi", $userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $datetime, $active, $series, $marks);
+  $stmt->bind_param("isssssssssssssssisisss", $userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $datetime, $active, $series, $marks, $questionAssets_array, $markSchemeAssets_array, $examReportAssets_array);
   $stmt->execute();
 
 }
 
-function getPastPaperQuestionDetails($id=null, $topic=null) {
+function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null) {
   /**
    * This function retrieves information on past paper questions from pastpaper_question_bank
    * Used in:
@@ -3801,12 +3801,8 @@ function getPastPaperQuestionDetails($id=null, $topic=null) {
             FROM pastpaper_question_bank ";
 
     if($id) {
-      if($conjoiner == 0) {
-        $sql .= " WHERE  ";
-      }
-      else {
-        $sql .= " AND ";
-      }
+      $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
+      $sql .= $conjoin;
       $sql .= " id = ? ";
       $params .= "i";
       array_push($bindArray, $id);
@@ -3814,18 +3810,30 @@ function getPastPaperQuestionDetails($id=null, $topic=null) {
     }
 
     if($topic) {
-      if($conjoiner == 0) {
-        $sql .= " WHERE ";
-      }
-      else {
-        $sql .= " AND ";
-      }
+      $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
+      $sql .= $conjoin;
       $sql .= " topic LIKE ? ";
       $topic = $topic."%";
       $params .= "s";
       array_push($bindArray, $topic);
       $conjoiner = 1;
     }
+
+    if($questionCode) {
+      $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
+      $sql .= $conjoin;
+      $sql .= " No LIKE ? ";
+      $questionCode = $questionCode."%";
+      $params .= "s";
+      array_push($bindArray, $questionCode);
+      $conjoiner = 1;
+    }
+
+
+
+  $sql .= " ORDER BY year, component, questionNo";
+
+  echo $sql;
 
   $stmt = $conn->prepare($sql);
   if(count($bindArray)>0) {
@@ -3856,16 +3864,16 @@ function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets
    * -pastpapers_questions.php
    */
 
-   //$questionAssets = jsonEncoder($questionAssets);
-   //$markSchemeAssets = jsonEncoder($markSchemeAssets);
-   //$examReportAssets = jsonEncoder($examReportAssets);
+  $questionAssets_array = jsonEncoder($questionAssets);
+  $markSchemeAssets_array = jsonEncoder($markSchemeAssets);
+  $examReportAssets_array = jsonEncoder($examReportAssets);
 
    global $conn;
    $sql = " UPDATE pastpaper_question_bank
-            SET question = ?, answer = ?,  questionAssets = ?, markSchemeAssets = ?, examReportAssets =?, topic = ?, keywords = ?, explanation = ?, marks = ?
+            SET question = ?, answer = ?,  questionAssets = ?, markSchemeAssets = ?, examReportAssets =?, topic = ?, keywords = ?, explanation = ?, marks = ?, questionAssets_array = ?, markSchemeAssets_array = ?, examReportAssets_array = ?
    WHERE id = ?";
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("ssssssssii", $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks, $id);
+  $stmt->bind_param("ssssssssisssi", $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks, $questionAssets_array, $markSchemeAssets_array, $examReportAssets_array, $id);
   $stmt->execute();
 
 }
