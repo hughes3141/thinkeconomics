@@ -3783,7 +3783,7 @@ function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examB
 
 }
 
-function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null) {
+function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, $examBoard = null, $year = null, $component = null) {
   /**
    * This function retrieves information on past paper questions from pastpaper_question_bank
    * Used in:
@@ -3829,11 +3829,35 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null) 
       $conjoiner = 1;
     }
 
+    if($examBoard) {
+      $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+      $sql .= " examBoard = ? ";
+      $params .= "s";
+      array_push($bindArray, $examBoard);
+      $conjoiner = 1;
+    }
+
+    if($year) {
+      $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+      $sql .= " year = ? ";
+      $params .= "s";
+      array_push($bindArray, $year);
+      $conjoiner = 1;
+    }
+
+    if($component) {
+      $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+      $sql .= " component = ? ";
+      $params .= "i";
+      array_push($bindArray, $component);
+      $conjoiner = 1;
+    }
+
 
 
   $sql .= " ORDER BY component, year, questionNo";
 
-  //echo $sql;
+  echo $sql;
 
   $stmt = $conn->prepare($sql);
   if(count($bindArray)>0) {

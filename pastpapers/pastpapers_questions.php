@@ -195,12 +195,17 @@ if(isset($_GET['topic'])) {
   $get_selectors = array(
     'id' => ($_GET['id']!="") ? $_GET['id'] : null,
     'topic' => ($_GET['topic']!="") ? $_GET['topic'] : null,
-    'questionNo' => ($_GET['questionNo']!="") ? $_GET['questionNo'] : null
+    'questionNo' => ($_GET['questionNo']!="") ? $_GET['questionNo'] : null,
+    'examBoard' => ($_GET['examBoard']!="") ? $_GET['examBoard'] : null,
+    'year' => ($_GET['year']!="") ? $_GET['year'] : null,
+    'component' => ($_GET['component']!="") ? $_GET['component'] : null,
+
   );
 
   //var_dump($get_selectors);
+  //var_dump($_GET);
 
-  $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic']);
+  $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionNo'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component']);
 }
 
 
@@ -296,6 +301,15 @@ $_GET controls:
           <input type="text" name="topic" value="<?=isset($_GET['topic']) ? $_GET['topic'] : "" ?>"</input>
           <label for="questionNo_select">Question Code:</label>
           <input type="text" name="questionNo" value="<?=isset($_GET['questionNo']) ? $_GET['questionNo'] : "" ?>"</input>
+
+          <label for="examBoard_select">Exam Board:</label>
+          <input type="text" id="examBoard_select" name="examBoard" value="<?=isset($_GET['examBoard']) ? $_GET['examBoard'] : "" ?>"</input>
+
+          <label for="year_select">Year:</label>
+          <input type="text" id="year_select" name="year" value="<?=isset($_GET['year']) ? $_GET['year'] : "" ?>"</input>
+
+          <label for="component_select">Component:</label>
+          <input type="text" id="component_select" name="component" value="<?=isset($_GET['examBoard']) ? $_GET['component'] : "" ?>"</input>
 
           <input type="submit"  value="Select">
         </form>

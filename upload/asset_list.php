@@ -45,7 +45,7 @@ include($path."/header_tailwind.php");
     <pre>
     <?php
       $assets = getUploadsInfo();
-      print_r($assets);
+      //print_r($assets);
     ?>
     </pre>
 
