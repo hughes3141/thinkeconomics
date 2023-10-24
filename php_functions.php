@@ -3857,7 +3857,7 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, 
 
   $sql .= " ORDER BY component, year, questionNo";
 
-  echo $sql;
+  //echo $sql;
 
   $stmt = $conn->prepare($sql);
   if(count($bindArray)>0) {
@@ -3901,5 +3901,53 @@ function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets
   $stmt->execute();
 
 }
+
+function getPastPaperCategoryValues() {
+  /**
+   * This function returns unique category values from pastpaper_question_bank for purposes of updating input drop-downs etc.
+   * 
+   * Used in:
+   * -pastpapers/questions.php
+   */
+
+   global $conn;
+   
+
+   $categories = array('topic', 'examBoard', 'qualLevel', 'component', 'unitName');
+   $categoryResults = array();
+
+   foreach($categories as $category) {
+
+      $results = array();
+      $params = "";
+      $bindArray = array();
+
+      $sql = " SELECT DISTINCT ".$category;
+      $sql .= " FROM pastpaper_question_bank";
+      //echo $sql;
+
+
+      $sql .= " ORDER BY ".$category;
+
+      $stmt = $conn->prepare($sql);
+      if(count($bindArray)>0) {
+        $stmt->bind_param($params, ...$bindArray);
+      }
+      $stmt->execute();
+      $result = $stmt->get_result();
+      if($result->num_rows>0) {
+        while($row = $result->fetch_assoc()) {
+          array_push($results, $row[$category]);
+          //$results = $row[$category];
+        }
+      }
+      $categoryResults[$category] = $results;
+    }
+
+    return $categoryResults;
+
+  
+}
+
 
 ?>
