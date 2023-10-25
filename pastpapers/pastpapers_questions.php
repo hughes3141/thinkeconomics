@@ -41,7 +41,10 @@ include($path."/header_tailwind.php");
 
 $examBoardCodeKey = array(
   ["Original", 10],
-  ["Eduqas", 11],
+  ["Eduqas", array(
+    ["AL", 11],
+    ["AS", 21]
+  )],
   ["AQA", array(
     ["AL", 12],
     ["AS", 14]
@@ -370,7 +373,9 @@ $_GET controls:
                             $caseStudy = getPastPaperQuestionDetails($question['caseId'])[0];
 
                             $questionAssets = explode(",",$caseStudy['questionAssets']);
-
+                            
+                            // Following script commented out only so that all case study images do not come up in manager page. Un-comment to see case study for each question.
+                            /*
                             foreach($questionAssets as $asset) {
                               $asset = getUploadsInfo($asset)[0];
                               //print_r($asset);
@@ -379,6 +384,7 @@ $_GET controls:
                               <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
                               <?php
                             }
+                            */
                             
                           }
 
@@ -671,7 +677,7 @@ function addInputRow() {
         }
 
         //Question Number:
-        cells[i].innerHTML = "<p><label for = 'questionNo_"+num+"'>No.</label></p><p><input  name='questionNo_"+num+"' id= 'questionNo_"+num+"' class='p-2 w-full rounded border border-black text-center' value= '"+value+"'><p>";
+        cells[i].innerHTML = "<p><label for = 'questionNo_"+num+"'>No.</label></p><p><input name='questionNo_"+num+"' id= 'questionNo_"+num+"' class='p-2 w-full rounded border border-black text-center' value= '"+value+"'><p>";
 
         break;
       case 1:
@@ -680,7 +686,7 @@ function addInputRow() {
         
         //var value = "value = '"+(rowNo)+"'";
         cells[i].innerHTML = "<p>Question Text:</p>";
-        cells[i].innerHTML += "<textarea name="+label+" id= "+label+" "+"class='w-full rounded p-1 h-30'></textarea>";
+        cells[i].innerHTML += "<textarea required name="+label+" id= "+label+" "+"class='w-full rounded p-1 h-30'></textarea>";
         
         cells[i].innerHTML += "<p>Answer Text:</p>";
         cells[i].innerHTML += "<textarea name="+label2+" id= "+label2+" "+"class='w-full rounded p-1 h-30'></textarea>";

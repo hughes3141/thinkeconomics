@@ -3783,7 +3783,7 @@ function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examB
 
 }
 
-function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, $examBoard = null, $year = null, $component = null) {
+function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, $examBoard = null, $year = null, $component = null, $qualLevel = null, $noCaseStudies = null) {
   /**
    * This function retrieves information on past paper questions from pastpaper_question_bank
    * Used in:
@@ -3796,14 +3796,18 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, 
    $params = "";
    $bindArray = array();
    $conjoiner = 0;
+   $tableAlias ="q.";
 
-   $sql = " SELECT *
-            FROM pastpaper_question_bank ";
+   $sql = " SELECT q.*, t.topicName
+            FROM pastpaper_question_bank q 
+            LEFT JOIN topics t
+            ON q.topic = t.topicCode ";
 
     if($id) {
       $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
       $sql .= $conjoin;
-      $sql .= " id = ? ";
+      $sql .= $tableAlias;
+      $sql .= "id = ? ";
       $params .= "i";
       array_push($bindArray, $id);
       $conjoiner = 1;
@@ -3812,7 +3816,8 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, 
     if($topic) {
       $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
       $sql .= $conjoin;
-      $sql .= " topic LIKE ? ";
+      $sql .= $tableAlias;
+      $sql .= "topic LIKE ? ";
       $topic = $topic."%";
       $params .= "s";
       array_push($bindArray, $topic);
@@ -3822,7 +3827,8 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, 
     if($questionCode) {
       $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
       $sql .= $conjoin;
-      $sql .= " No LIKE ? ";
+      $sql .= $tableAlias;
+      $sql .= "No LIKE ? ";
       $questionCode = $questionCode."%";
       $params .= "s";
       array_push($bindArray, $questionCode);
@@ -3831,7 +3837,8 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, 
 
     if($examBoard) {
       $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
-      $sql .= " examBoard = ? ";
+      $sql .= $tableAlias;
+      $sql .= "examBoard = ? ";
       $params .= "s";
       array_push($bindArray, $examBoard);
       $conjoiner = 1;
@@ -3839,7 +3846,8 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, 
 
     if($year) {
       $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
-      $sql .= " year = ? ";
+      $sql .= $tableAlias;
+      $sql .= "year = ? ";
       $params .= "s";
       array_push($bindArray, $year);
       $conjoiner = 1;
@@ -3847,10 +3855,26 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, 
 
     if($component) {
       $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
-      $sql .= " component = ? ";
+      $sql .= $tableAlias;
+      $sql .= "component = ? ";
       $params .= "i";
       array_push($bindArray, $component);
       $conjoiner = 1;
+    }
+
+    if($qualLevel) {
+      $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+      $conjoiner = 1;
+      $sql .= $tableAlias;
+      $sql .= "qualLevel = ? ";
+      $params .= "s";
+      array_push($bindArray, $qualLevel);
+    }
+
+    if($noCaseStudies) {
+      $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+      $conjoiner = 1;
+      $sql .= "caseBool IS NULL ";
     }
 
 
