@@ -3769,16 +3769,17 @@ function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examB
   $datetime = date("Y-m-d H:i:s");
   $active = 1;
   $series = "June";
+  $specYear = 2015;
 
   $questionAssets_array = jsonEncoder($questionAssets);
   $markSchemeAssets_array = jsonEncoder($markSchemeAssets);
   $examReportAssets_array = jsonEncoder($examReportAssets);
 
   $sql = "INSERT INTO pastpaper_question_bank
-          (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, answer, questionAssets, markSchemeAssets, examReportAssets, topic, keywords, dateCreate, active, series, marks, questionAssets_array, markSchemeAssets_array, examReportAssets_array, caseId, caseBool)
-          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+          (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, answer, questionAssets, markSchemeAssets, examReportAssets, topic, keywords, dateCreate, active, series, marks, questionAssets_array, markSchemeAssets_array, examReportAssets_array, caseId, caseBool, specYear)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("isssssssssssssssisisssii", $userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $datetime, $active, $series, $marks, $questionAssets_array, $markSchemeAssets_array, $examReportAssets_array, $caseId, $caseBool);
+  $stmt->bind_param("isssssssssssssssisisssiii", $userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $datetime, $active, $series, $marks, $questionAssets_array, $markSchemeAssets_array, $examReportAssets_array, $caseId, $caseBool, $specYear);
   $stmt->execute();
 
 }
@@ -3937,7 +3938,7 @@ function getPastPaperCategoryValues() {
    global $conn;
    
 
-   $categories = array('topic', 'examBoard', 'qualLevel', 'component', 'unitName');
+   $categories = array('topic', 'examBoard', 'qualLevel', 'component', 'unitName', 'year');
    $categoryResults = array();
 
    foreach($categories as $category) {
@@ -3950,6 +3951,14 @@ function getPastPaperCategoryValues() {
       $sql .= " FROM pastpaper_question_bank";
       //echo $sql;
 
+      if($category == 'topic') {
+        $sql = "SELECT DISTINCT q.topic, t.topicName
+            FROM pastpaper_question_bank q 
+            LEFT JOIN topics t
+            ON q.topic = t.topicCode ";
+        //$category = "topic";
+      }
+
 
       $sql .= " ORDER BY ".$category;
 
@@ -3961,6 +3970,11 @@ function getPastPaperCategoryValues() {
       $result = $stmt->get_result();
       if($result->num_rows>0) {
         while($row = $result->fetch_assoc()) {
+          
+          if($category == 'topic') {
+            $row[$category] = $row['topic'].",".$row['topicName'];
+          }
+          
           array_push($results, $row[$category]);
           //$results = $row[$category];
         }

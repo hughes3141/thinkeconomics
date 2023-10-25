@@ -66,25 +66,52 @@ if(isset($_GET['topic'])) {
     <h1 class="font-mono text-2xl bg-pink-400 pl-1">Past Paper Questions</h1>
     <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
       <div>
+        <h2 class="text-lg bg-pink-300 mb-3 font-mono p-2">Select Exam:</h2>
         <form method ="get"  action="">
-          <label for="id_select">ID:</label>
-          <input type="text" name="id" value="<?=isset($_GET['id']) ? $_GET['id'] : "" ?>"</input>
+          <div class="hidden">
+            <label for="id_select">ID:</label>
+            <input type="text" name="id" value="<?=isset($_GET['id']) ? $_GET['id'] : "" ?>"</input>
+
+            <label for="questionNo_select">Question Code:</label>
+            <input type="text" name="questionNo" value="<?=isset($_GET['questionNo']) ? $_GET['questionNo'] : "" ?>"</input>
+          </div>
+          <div>
+            <label for="examBoard_select">Exam Board:</label>
+            <select id="examBoard_select" name="examBoard" value="<?=isset($_GET['examBoard']) ? $_GET['examBoard'] : "" ?>">
+              <?php
+                $controlName = 'examBoard';
+                $controls = $controls[$controlName];
+                foreach($controls as $control) {
+                  if(count($controls)>0) {
+                    ?><option value=""></option><?php
+                  }
+                  ?>
+                  <option value=<?=$control?> <?=(isset($_GET[$controlName]) && $control == $_GET[$controlName]) ? "selected" : ""?>><?=$control?></option>
+                  <?php
+
+                }
+              ?>
+            </select>
+          </div>
+          <div class="<?=(!$_GET['examBoard'] OR $_GET['examBoard']=="") ? 'hidden' : ''?>">
+            <label for="qualLevel_select">Qualification:</label>
+            <input type="text" id="qualLevel_select" name="qualLevel" value="<?=isset($_GET['qualLevel']) ? $_GET['qualLevel'] : "" ?>"</input>
+
+            <label for="year_select">Year:</label>
+            <input type="text" id="year_select" name="year" value="<?=isset($_GET['year']) ? $_GET['year'] : "" ?>"</input>
+
+            <label for="component_select">Component:</label>
+            <input type="text" id="component_select" name="component" value="<?=isset($_GET['examBoard']) ? $_GET['component'] : "" ?>"</input>
+
+          </div>
           <label for="_select">Topic:</label>
           <input type="text" name="topic" value="<?=isset($_GET['topic']) ? $_GET['topic'] : "" ?>"</input>
-          <label for="questionNo_select">Question Code:</label>
-          <input type="text" name="questionNo" value="<?=isset($_GET['questionNo']) ? $_GET['questionNo'] : "" ?>"</input>
 
-          <label for="examBoard_select">Exam Board:</label>
-          <input type="text" id="examBoard_select" name="examBoard" value="<?=isset($_GET['examBoard']) ? $_GET['examBoard'] : "" ?>"</input>
+          
 
-          <label for="qualLevel_select">Qualification:</label>
-          <input type="text" id="qualLevel_select" name="qualLevel" value="<?=isset($_GET['qualLevel']) ? $_GET['qualLevel'] : "" ?>"</input>
 
-          <label for="year_select">Year:</label>
-          <input type="text" id="year_select" name="year" value="<?=isset($_GET['year']) ? $_GET['year'] : "" ?>"</input>
 
-          <label for="component_select">Component:</label>
-          <input type="text" id="component_select" name="component" value="<?=isset($_GET['examBoard']) ? $_GET['component'] : "" ?>"</input>
+          
 
           <input type="submit"  value="Select">
         </form>

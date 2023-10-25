@@ -79,7 +79,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       if(isset($_POST['specPaper'])) {
         $specPaper = $_POST['specPaper'];
         //Putting this in here just as a default for specification year publication:
-        //$_POST['year'] = "2015";
+        $_POST['year'] = "Specimen Assessment Materials";
       }
       
       $newQuestion = array(
