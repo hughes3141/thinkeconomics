@@ -36,7 +36,7 @@ include($path."/header_tailwind.php");
 if($_SERVER['REQUEST_METHOD']==='POST') {}
 
 
-$controls = getPastPaperCategoryValues();
+
 
 $questions = array();
 if(isset($_GET['topic'])) {
@@ -51,10 +51,25 @@ if(isset($_GET['topic'])) {
 
   );
 
+  $run = 0;
+  if(
+    $get_selectors['topic'] ||
+    $get_selectors['examBoard'] && $get_selectors['year'] ||
+    $get_selectors['examBoard'] && $get_selectors['component']
+  ) {
+    $run = 1;
+  }
+
   //var_dump($get_selectors);
   //var_dump($_GET);
 
-  $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionNo'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel'], 1);
+  $controls = getPastPaperCategoryValues(/*$get_selectors['topic']*/ null, /*$get_selectors['examBoard']*/ null, $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel']);
+
+  if($run == 1) {
+    $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionNo'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel'], 1);
+
+
+  }
 
   $usedCaseStudies = array();
   
@@ -77,16 +92,18 @@ if(isset($_GET['topic'])) {
           </div>
           <div>
             <label for="examBoard_select">Exam Board:</label>
-            <select id="examBoard_select" name="examBoard" value="<?=isset($_GET['examBoard']) ? $_GET['examBoard'] : "" ?>">
+            <select id="examBoard_select" name="examBoard" value="<?=isset($_GET['examBoard']) ? $_GET['examBoard'] : "" ?>" onchange="this.form.submit();">
               <?php
+                $resetCategory = "--Reset Category--";
+
                 $controlName = 'examBoard';
-                $controls = $controls[$controlName];
-                foreach($controls as $control) {
-                  if(count($controls)>0) {
-                    ?><option value=""></option><?php
-                  }
+                $controlsIteration = $controls[$controlName];
+                ?>
+                  <option value=""><?=(($_GET[$controlName])) ? $resetCategory : ""?></option>
+                <?php
+                foreach($controlsIteration as $control) {
                   ?>
-                  <option value=<?=$control?> <?=(isset($_GET[$controlName]) && $control == $_GET[$controlName]) ? "selected" : ""?>><?=$control?></option>
+                  <option value="<?=$control?>" <?=(isset($_GET[$controlName]) && $control == $_GET[$controlName]) ? "selected" : ""?>><?=$control?></option>
                   <?php
 
                 }
@@ -95,17 +112,79 @@ if(isset($_GET['topic'])) {
           </div>
           <div class="<?=(!$_GET['examBoard'] OR $_GET['examBoard']=="") ? 'hidden' : ''?>">
             <label for="qualLevel_select">Qualification:</label>
-            <input type="text" id="qualLevel_select" name="qualLevel" value="<?=isset($_GET['qualLevel']) ? $_GET['qualLevel'] : "" ?>"</input>
+            <select id="qualLevel_select" name="qualLevel" onchange="this.form.submit();">
+              <?php
+                $controlName = 'qualLevel';
+                $controlsIteration = $controls[$controlName];
+                ?>
+                  <option value=""><?=(($_GET[$controlName])) ? $resetCategory : ""?></option>
+                <?php
+                foreach($controlsIteration as $control) {
+                  ?>
+                  <option value="<?=$control?>" <?=(isset($_GET[$controlName]) && $control == $_GET[$controlName]) ? "selected" : ""?>><?=$control?></option>
+                  <?php
+
+                }
+              ?>
+            </select>
 
             <label for="year_select">Year:</label>
-            <input type="text" id="year_select" name="year" value="<?=isset($_GET['year']) ? $_GET['year'] : "" ?>"</input>
+            <select id="year_select" name="year" onchange="this.form.submit();">
+              <?php
+                $controlName = 'year';
+                $controlsIteration = $controls[$controlName];
+                ?>
+                  <option value=""><?=(($_GET[$controlName])) ? $resetCategory : ""?></option>
+                <?php
+                foreach($controlsIteration as $control) {
+                  ?>
+                  <option value="<?=$control?>" <?=(isset($_GET[$controlName]) && $control == $_GET[$controlName]) ? "selected" : ""?>><?=$control?></option>
+                  <?php
+
+                }
+              ?>
+            </select>
 
             <label for="component_select">Component:</label>
-            <input type="text" id="component_select" name="component" value="<?=isset($_GET['examBoard']) ? $_GET['component'] : "" ?>"</input>
+            <select id="component_select" name="component" onchange="this.form.submit();">
+              <?php
+                $controlName = 'component';
+                $controlsIteration = $controls[$controlName];
+                ?>
+                  <option value=""><?=(($_GET[$controlName])) ? $resetCategory : ""?></option>
+                <?php
+                foreach($controlsIteration as $control) {
+                  ?>
+                  <option value=<?=$control?> <?=(isset($_GET[$controlName]) && $control == $_GET[$controlName]) ? "selected" : ""?>><?=$control?></option>
+                  <?php
+
+                }
+              ?>
+            </select>
 
           </div>
-          <label for="_select">Topic:</label>
-          <input type="text" name="topic" value="<?=isset($_GET['topic']) ? $_GET['topic'] : "" ?>"</input>
+          <div>
+            <label for="topic_select">Topic:</label>
+            <select id="topic_select" name="topic" onchange="this.form.submit();">
+            <?php
+                $controlName = 'topic';
+                $controlsIteration = $controls[$controlName];
+                ?>
+                  <option value=""><?=(($_GET[$controlName])) ? $resetCategory : ""?></option>
+                <?php
+                foreach($controlsIteration as $control) {
+                  $topicList = explode("###",$control);
+                  $topicCode = $topicList[0];
+                  $topicName = $topicList[1];
+                  ?>
+                  <option value=<?=$topicCode?> <?=(isset($_GET[$controlName]) && $topicCode == $_GET[$controlName]) ? "selected" : ""?>><?=$topicName?></option>
+                  <?php
+
+                }
+              ?>
+            </select>
+          </div>
+          
 
           
 

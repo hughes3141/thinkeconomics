@@ -3927,7 +3927,7 @@ function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets
 
 }
 
-function getPastPaperCategoryValues() {
+function getPastPaperCategoryValues($topic=null, $examBoard = null, $year = null, $component = null, $qualLevel = null) {
   /**
    * This function returns unique category values from pastpaper_question_bank for purposes of updating input drop-downs etc.
    * 
@@ -3946,6 +3946,8 @@ function getPastPaperCategoryValues() {
       $results = array();
       $params = "";
       $bindArray = array();
+      $conjoiner = "";
+      $tableAlias = "";
 
       $sql = " SELECT DISTINCT ".$category;
       $sql .= " FROM pastpaper_question_bank";
@@ -3956,11 +3958,61 @@ function getPastPaperCategoryValues() {
             FROM pastpaper_question_bank q 
             LEFT JOIN topics t
             ON q.topic = t.topicCode ";
+            $tableAlias = "q.";
         //$category = "topic";
+      }
+
+      if($topic) {
+        $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
+        $sql .= $conjoin;
+        $sql .= $tableAlias;
+        $sql .= "topic LIKE ? ";
+        $topic = $topic."%";
+        $params .= "s";
+        array_push($bindArray, $topic);
+        $conjoiner = 1;
+      }
+
+      if($examBoard) {
+        $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+        $sql .= $tableAlias;
+        $sql .= "examBoard = ? ";
+        $params .= "s";
+        array_push($bindArray, $examBoard);
+        $conjoiner = 1;
+      }
+  
+      if($year) {
+        $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+        $sql .= $tableAlias;
+        $sql .= "year = ? ";
+        $params .= "s";
+        array_push($bindArray, $year);
+        $conjoiner = 1;
+      }
+  
+      if($component) {
+        $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+        $sql .= $tableAlias;
+        $sql .= "component = ? ";
+        $params .= "i";
+        array_push($bindArray, $component);
+        $conjoiner = 1;
+      }
+  
+      if($qualLevel) {
+        $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+        $conjoiner = 1;
+        $sql .= $tableAlias;
+        $sql .= "qualLevel = ? ";
+        $params .= "s";
+        array_push($bindArray, $qualLevel);
       }
 
 
       $sql .= " ORDER BY ".$category;
+
+      //echo $sql;
 
       $stmt = $conn->prepare($sql);
       if(count($bindArray)>0) {
@@ -3972,7 +4024,7 @@ function getPastPaperCategoryValues() {
         while($row = $result->fetch_assoc()) {
           
           if($category == 'topic') {
-            $row[$category] = $row['topic'].",".$row['topicName'];
+            $row[$category] = $row['topic']."###".$row['topicName'];
           }
           
           array_push($results, $row[$category]);
