@@ -3927,7 +3927,7 @@ function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets
 
 }
 
-function getPastPaperCategoryValues($topic=null, $examBoard = null, $year = null, $component = null, $qualLevel = null) {
+function getPastPaperCategoryValues($topic=null, $examBoard = null, $year = null, $component = null, $qualLevel = null, $unitName = null) {
   /**
    * This function returns unique category values from pastpaper_question_bank for purposes of updating input drop-downs etc.
    * 
@@ -3941,6 +3941,9 @@ function getPastPaperCategoryValues($topic=null, $examBoard = null, $year = null
    $categories = array('topic', 'examBoard', 'qualLevel', 'component', 'unitName', 'year');
    $categoryResults = array();
 
+   $calledVariable = "";
+
+
    foreach($categories as $category) {
 
       $results = array();
@@ -3948,6 +3951,37 @@ function getPastPaperCategoryValues($topic=null, $examBoard = null, $year = null
       $bindArray = array();
       $conjoiner = "";
       $tableAlias = "";
+
+      /*
+      for($x=0; $x<count($categories); $x++) {
+        if ($category == $categories[$x]) {
+          $calledVariable = $category;
+        }
+      }
+      */
+
+      switch($category) {
+        case 'topic':
+          $calledVariable = $topic;
+          break;
+        case 'examBoard':
+          $calledVariable = $examBoard;
+          break;
+        case 'qualLevel':
+          $calledVariable = $qualLevel;
+          break;
+        case 'component':
+          $calledVariable = $component;
+          break;
+        case 'unitName':
+          $calledVariable = $unitName;
+          break;
+        case 'year':
+          $calledVariable = $year;
+          break;
+
+
+      }
 
       $sql = " SELECT DISTINCT ".$category;
       $sql .= " FROM pastpaper_question_bank";
@@ -3961,53 +3995,58 @@ function getPastPaperCategoryValues($topic=null, $examBoard = null, $year = null
             $tableAlias = "q.";
         //$category = "topic";
       }
+      //var_dump($calledVariable);
+      //if(!$calledVariable) {
+        
 
-      if($topic) {
-        $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
-        $sql .= $conjoin;
-        $sql .= $tableAlias;
-        $sql .= "topic LIKE ? ";
-        $topic = $topic."%";
-        $params .= "s";
-        array_push($bindArray, $topic);
-        $conjoiner = 1;
-      }
+        if($topic) {
+          $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
+          $sql .= $conjoin;
+          $sql .= $tableAlias;
+          $sql .= "topic LIKE ? ";
+          $topic = $topic."%";
+          $params .= "s";
+          array_push($bindArray, $topic);
+          $conjoiner = 1;
+        }
 
-      if($examBoard) {
-        $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
-        $sql .= $tableAlias;
-        $sql .= "examBoard = ? ";
-        $params .= "s";
-        array_push($bindArray, $examBoard);
-        $conjoiner = 1;
-      }
-  
-      if($year) {
-        $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
-        $sql .= $tableAlias;
-        $sql .= "year = ? ";
-        $params .= "s";
-        array_push($bindArray, $year);
-        $conjoiner = 1;
-      }
-  
-      if($component) {
-        $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
-        $sql .= $tableAlias;
-        $sql .= "component = ? ";
-        $params .= "i";
-        array_push($bindArray, $component);
-        $conjoiner = 1;
-      }
-  
-      if($qualLevel) {
-        $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
-        $conjoiner = 1;
-        $sql .= $tableAlias;
-        $sql .= "qualLevel = ? ";
-        $params .= "s";
-        array_push($bindArray, $qualLevel);
-      }
+        if($examBoard) {
+          $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+          $sql .= $tableAlias;
+          $sql .= "examBoard = ? ";
+          $params .= "s";
+          array_push($bindArray, $examBoard);
+          $conjoiner = 1;
+        }
+    
+        if($year) {
+          $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+          $sql .= $tableAlias;
+          $sql .= "year = ? ";
+          $params .= "s";
+          array_push($bindArray, $year);
+          $conjoiner = 1;
+        }
+    
+        if($component) {
+          $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+          $sql .= $tableAlias;
+          $sql .= "component = ? ";
+          $params .= "i";
+          array_push($bindArray, $component);
+          $conjoiner = 1;
+        }
+    
+        if($qualLevel) {
+          $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+          $conjoiner = 1;
+          $sql .= $tableAlias;
+          $sql .= "qualLevel = ? ";
+          $params .= "s";
+          array_push($bindArray, $qualLevel);
+        }
+
+      //}
 
 
       $sql .= " ORDER BY ".$category;

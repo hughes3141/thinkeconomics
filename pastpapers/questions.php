@@ -39,17 +39,23 @@ if($_SERVER['REQUEST_METHOD']==='POST') {}
 
 
 $questions = array();
-if(isset($_GET['topic'])) {
-  $get_selectors = array(
-    'id' => ($_GET['id']!="") ? $_GET['id'] : null,
-    'topic' => ($_GET['topic']!="") ? $_GET['topic'] : null,
-    'questionNo' => ($_GET['questionNo']!="") ? $_GET['questionNo'] : null,
-    'examBoard' => ($_GET['examBoard']!="") ? $_GET['examBoard'] : null,
-    'year' => ($_GET['year']!="") ? $_GET['year'] : null,
-    'component' => ($_GET['component']!="") ? $_GET['component'] : null,
-    'qualLevel' => ($_GET['qualLevel']!="") ? $_GET['qualLevel'] : null
 
-  );
+$get_selectors = array(
+  'id' => (isset($_GET['id']) && $_GET['id']!="") ? $_GET['id'] : null,
+  'topic' => (isset($_GET['topic']) && $_GET['topic']!="") ? $_GET['topic'] : null,
+  'questionNo' => (isset($_GET['questionNo']) && $_GET['questionNo']!="") ? $_GET['questionNo'] : null,
+  'examBoard' => (isset($_GET['examBoard']) && $_GET['examBoard']!="") ? $_GET['examBoard'] : null,
+  'year' => (isset($_GET['year']) && $_GET['year']!="") ? $_GET['year'] : null,
+  'component' => (isset($_GET['component']) && $_GET['component']!="") ? $_GET['component'] : null,
+  'qualLevel' => (isset($_GET['qualLevel']) && $_GET['qualLevel']!="") ? $_GET['qualLevel'] : null
+
+);
+
+$controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel']);
+
+
+if(isset($_GET['topic'])) {
+  
 
   $run = 0;
   if(
@@ -63,7 +69,8 @@ if(isset($_GET['topic'])) {
   //var_dump($get_selectors);
   //var_dump($_GET);
 
-  $controls = getPastPaperCategoryValues(/*$get_selectors['topic']*/ null, /*$get_selectors['examBoard']*/ null, $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel']);
+
+  
 
   if($run == 1) {
     $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionNo'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel'], 1);
@@ -78,132 +85,140 @@ if(isset($_GET['topic'])) {
 ?>
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
-    <h1 class="font-mono text-2xl bg-pink-400 pl-1">Past Paper Questions</h1>
+    <h1 class="font-mono text-2xl bg-pink-400 pl-1">Past Paper Questions Database</h1>
     <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
-      <div>
-        <h2 class="text-lg bg-pink-300 mb-3 font-mono p-2">Select Exam:</h2>
+          <?php
+            if(isset($_GET['test'])) {
+              echo "<div><pre>";
+              print_r($controls);
+              echo "</div></pre>";
+            }
+          ?>
+      <div class="border-2 rounded border-sky-200 p-2 mb-2 pb-3">
+        <h2 class="bg-sky-100 -mx-2 -mt-2 pl-2 text-lg font-mono">Search By:</h2>
         <form method ="get"  action="">
           <div class="hidden">
-            <label for="id_select">ID:</label>
+            <label for="id_select">ID:</label><br>
             <input type="text" name="id" value="<?=isset($_GET['id']) ? $_GET['id'] : "" ?>"</input>
 
             <label for="questionNo_select">Question Code:</label>
             <input type="text" name="questionNo" value="<?=isset($_GET['questionNo']) ? $_GET['questionNo'] : "" ?>"</input>
           </div>
           <div>
-            <label for="examBoard_select">Exam Board:</label>
-            <select id="examBoard_select" name="examBoard" value="<?=isset($_GET['examBoard']) ? $_GET['examBoard'] : "" ?>" onchange="this.form.submit();">
+            <label for="examBoard_select">Exam Board:</label><br>
+            <select class="w-full" id="examBoard_select" name="examBoard" value="<?=isset($_GET['examBoard']) ? $_GET['examBoard'] : "" ?>" onchange="this.form.submit();">
               <?php
                 $resetCategory = "--Reset Category--";
+                //$resetCategory = "";
+                $resetCategoryStyle = "class='bg-pink-200'";
+                $selectedStyle = 'bg-sky-200';
+                $selectedStyle = "";
 
                 $controlName = 'examBoard';
                 $controlsIteration = $controls[$controlName];
+                
                 ?>
-                  <option value=""><?=(($_GET[$controlName])) ? $resetCategory : ""?></option>
+                  <option value="" <?=($get_selectors[$controlName]) ? $resetCategoryStyle : ""?> ><?=($get_selectors[$controlName]) ? $resetCategory : ""?></option>
                 <?php
                 foreach($controlsIteration as $control) {
                   ?>
-                  <option value="<?=$control?>" <?=(isset($_GET[$controlName]) && $control == $_GET[$controlName]) ? "selected" : ""?>><?=$control?></option>
+                  <option class = "<?=($get_selectors[$controlName] == $control) ? $selectedStyle : ""?>" value="<?=$control?>" <?=($get_selectors[$controlName] == $control) ? "selected" : ""?>><?=$control?></option>
                   <?php
 
                 }
               ?>
             </select>
           </div>
-          <div class="<?=(!$_GET['examBoard'] OR $_GET['examBoard']=="") ? 'hidden' : ''?>">
-            <label for="qualLevel_select">Qualification:</label>
-            <select id="qualLevel_select" name="qualLevel" onchange="this.form.submit();">
-              <?php
-                $controlName = 'qualLevel';
-                $controlsIteration = $controls[$controlName];
-                ?>
-                  <option value=""><?=(($_GET[$controlName])) ? $resetCategory : ""?></option>
+          <?php
+          if(!is_null($get_selectors['examBoard'])) {
+          ?>
+          <div class="<?=(is_null($get_selectors['examBoard'])) ? 'hidden' : ''?>">
+            <div>
+              <label for="qualLevel_select">Qualification:</label><br>
+              <select class="w-full" id="qualLevel_select" name="qualLevel" onchange="this.form.submit();">
                 <?php
-                foreach($controlsIteration as $control) {
+                  $controlName = 'qualLevel';
+                  $controlsIteration = $controls[$controlName];
                   ?>
-                  <option value="<?=$control?>" <?=(isset($_GET[$controlName]) && $control == $_GET[$controlName]) ? "selected" : ""?>><?=$control?></option>
+                    <option value="" <?=($get_selectors[$controlName]) ? $resetCategoryStyle : ""?> ><?=($get_selectors[$controlName]) ? $resetCategory : ""?></option>
                   <?php
+                  foreach($controlsIteration as $control) {
+                    ?>
+                    <option  value="<?=$control?>" <?=($get_selectors[$controlName] == $control) ? "selected" : ""?>><?=$control?></option>
+                    <?php
 
-                }
-              ?>
-            </select>
-
-            <label for="year_select">Year:</label>
-            <select id="year_select" name="year" onchange="this.form.submit();">
-              <?php
-                $controlName = 'year';
-                $controlsIteration = $controls[$controlName];
+                  }
                 ?>
-                  <option value=""><?=(($_GET[$controlName])) ? $resetCategory : ""?></option>
+              </select>
+            </div>
+            <div>
+              <label for="component_select">Unit/Component:</label><br>
+              <select class="w-full" id="component_select" name="component" onchange="this.form.submit();">
                 <?php
-                foreach($controlsIteration as $control) {
+                  $controlName = 'component';
+                  $controlsIteration = $controls[$controlName];
                   ?>
-                  <option value="<?=$control?>" <?=(isset($_GET[$controlName]) && $control == $_GET[$controlName]) ? "selected" : ""?>><?=$control?></option>
+                    <option value="" <?=($get_selectors[$controlName]) ? $resetCategoryStyle : ""?>><?=($get_selectors[$controlName]) ? $resetCategory : ""?></option>
                   <?php
-
-                }
-              ?>
-            </select>
-
-            <label for="component_select">Component:</label>
-            <select id="component_select" name="component" onchange="this.form.submit();">
-              <?php
-                $controlName = 'component';
-                $controlsIteration = $controls[$controlName];
+                  foreach($controlsIteration as $control) {
+                    ?>
+                    <option value=<?=$control?> <?=($get_selectors[$controlName] == $control) ? "selected" : ""?>><?=$control?></option>
+                    <?php
+                  }
                 ?>
-                  <option value=""><?=(($_GET[$controlName])) ? $resetCategory : ""?></option>
+              </select>
+            </div>
+            <div>
+              <label for="year_select">Year:</label><br>
+              <select class="w-full" id="year_select" name="year" onchange="this.form.submit();">
                 <?php
-                foreach($controlsIteration as $control) {
+                  $controlName = 'year';
+                  $controlsIteration = $controls[$controlName];
                   ?>
-                  <option value=<?=$control?> <?=(isset($_GET[$controlName]) && $control == $_GET[$controlName]) ? "selected" : ""?>><?=$control?></option>
+                    <option value="" <?=($get_selectors[$controlName]) ? $resetCategoryStyle : ""?>><?=($get_selectors[$controlName]) ? $resetCategory : ""?></option>
                   <?php
+                  foreach($controlsIteration as $control) {
+                    ?>
+                    <option value="<?=$control?>" <?=($get_selectors[$controlName] == $control) ? "selected" : ""?>><?=$control?></option>
+                    <?php
 
-                }
-              ?>
-            </select>
-
+                  }
+                ?>
+              </select>
+            </div>
+            
           </div>
+          <?php
+          }
+          ?>
           <div>
-            <label for="topic_select">Topic:</label>
-            <select id="topic_select" name="topic" onchange="this.form.submit();">
+            <label for="topic_select">Topic:</label><br>
+            <select class="w-full" id="topic_select" name="topic" onchange="this.form.submit();">
             <?php
                 $controlName = 'topic';
                 $controlsIteration = $controls[$controlName];
                 ?>
-                  <option value=""><?=(($_GET[$controlName])) ? $resetCategory : ""?></option>
+                  <option value="" <?=($get_selectors[$controlName]) ? $resetCategoryStyle : ""?> ><?=(($get_selectors[$controlName])) ? $resetCategory : ""?></option>
                 <?php
                 foreach($controlsIteration as $control) {
                   $topicList = explode("###",$control);
                   $topicCode = $topicList[0];
                   $topicName = $topicList[1];
-                  ?>
-                  <option value=<?=$topicCode?> <?=(isset($_GET[$controlName]) && $topicCode == $_GET[$controlName]) ? "selected" : ""?>><?=$topicName?></option>
-                  <?php
+                  if($topicCode != "") {
+                    ?>
+                    <option value="<?=$topicCode?>" <?=($get_selectors[$controlName] == $topicList[0]) ? "selected" : ""?>><?=$topicName?></option>
+                    <?php
+                  }
 
                 }
               ?>
             </select>
           </div>
-          
 
-          
-
-
-
-          
-
-          <input type="submit"  value="Select">
+          <input type="hidden"  value="Select">
         </form>
       </div>
-      <div>
-        <pre>
-          <?php
-            if(isset($_GET['test'])) {
-              print_r($controls);
-            }
-          ?>
-        </pre>
-      </div>
+      <?=(count($questions)>0) ? "<h2 class='text-lg mb-2 bg-pink-300 rounded px-1 font-mono'>Questions</h2>" : ""?>
       <div>
         <?php
           //print_r($questions);
@@ -211,40 +226,42 @@ if(isset($_GET['topic'])) {
           foreach($questions as $question) {
             //print_r($question);
             ?>
-            <div class="mb-3 p-1 border rounded border-pink-300">
+            <div class="mb-3 border-2 rounded border-pink-300">
               <!--id: <?=$question['id']?> topic <?=$question['topic']?>-->
-              <p class="text-lg"><?=$question['examBoard']?> <?=$question['qualLevel']?> Unit <?=$question['component']?> <?=$question['series']?> <?=$question['year']?> Q<?=$question['questionNo']?></p>
-              <?php
-              if($question['topicName'] != "") {
-                echo "<p>Topic: ".$question['topicName']."</p>";
-              }
-              ?>
-              <p><?php
-                //Case Study:
-                if($question['caseId']) {
-                  $caseId = $question['caseId'];
-                  if(!in_array($caseId, $usedCaseStudies))
-                  {
-                    array_push($usedCaseStudies, $caseId);
-                    $caseStudy = getPastPaperQuestionDetails($question['caseId'])[0];
-                    
-
-                    $questionAssets = explode(",",$caseStudy['questionAssets']);
-
-                    foreach($questionAssets as $asset) {
-                      $asset = getUploadsInfo($asset)[0];
-                      //print_r($asset);
+              <div class="bg-pink-200 px-1 ">
+                <p class="bg-white"><?php
+                  //Case Study:
+                  if($question['caseId']) {
+                    $caseId = $question['caseId'];
+                    if(!in_array($caseId, $usedCaseStudies))
+                    {
+                      array_push($usedCaseStudies, $caseId);
+                      $caseStudy = getPastPaperQuestionDetails($question['caseId'])[0];
                       
-                      ?>
-                      <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
-                      <?php
+
+                      $questionAssets = explode(",",$caseStudy['questionAssets']);
+
+                      foreach($questionAssets as $asset) {
+                        $asset = getUploadsInfo($asset)[0];
+                        //print_r($asset);
+                        
+                        ?>
+                        <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                        <?php
+                      }
                     }
+                    
                   }
-                  
+                
+                ?></p>
+                <p class="text-lg"><?=$question['examBoard']?> <?=$question['qualLevel']?> Unit <?=$question['component']?> <?=$question['series']?> <?=$question['year']?> Q<?=$question['questionNo']?></p>
+                <?php
+                if($question['topicName'] != "") {
+                  echo "<p>Topic: ".$question['topicName']."</p>";
                 }
-              
-              ?></p>
-              <p class="whitespace-pre-line"><?php
+                ?>
+              </div>
+              <p class="whitespace-pre-line border-t-2 border-slate-500 -mx-0  p-2 "><?php
                 //Questions:
                 $questionAssets = explode(",",$question['questionAssets']);
                 //var_dump($questionAssets);

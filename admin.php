@@ -28,6 +28,7 @@ include($path."/header_tailwind.php");
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/course_intro.php">Pre-Course Information: What is Economics?</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/y1_yearplan.php">Year 1 Year Plan</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/y2_yearplan.php">Year 2 Year Plan</a></li>
+      <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="pastpapers/questions.php">Past Paper Questions Database</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/topic_list.php">Eduqas A Level Topic list</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href ="admin/eduqas-a-economics-spec-from-2015.pdf" target ="_blank">A Level Economics Specification</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href ="https://www.eduqas.co.uk/qualifications/economics-as-a-level" target="_blank">Eduqas A Level Economics Website</a></li>

@@ -147,6 +147,9 @@ include "../header_tailwind.php";
 
             <h2 class="font-mono text-lg bg-pink-200 pl-1">Revision Management</h2>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../revision/flashcard_collection_entry.php">Flashcard Collection Entry</a></p>
+
+            <h2 class="font-mono text-lg bg-pink-200 pl-1">Past Paper Questions</h3>
+              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../pastpapers/pastpapers_questions.php">Past Paper Questions Manager</a></p>
              
 
             <h2 class="font-mono text-lg bg-pink-200 pl-1">Assignment Management</h2>
