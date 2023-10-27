@@ -97,6 +97,8 @@ if(isset($_GET['topic'])) {
       <div class="border-2 rounded border-sky-200 p-2 mb-2 pb-3">
         <h2 class="bg-sky-100 -mx-2 -mt-2 pl-2 text-lg font-mono">Search By:</h2>
         <form method ="get"  action="">
+          <?php
+          /*
           <div class="hidden">
             <label for="id_select">ID:</label><br>
             <input type="text" name="id" value="<?=isset($_GET['id']) ? $_GET['id'] : "" ?>"</input>
@@ -104,6 +106,8 @@ if(isset($_GET['topic'])) {
             <label for="questionNo_select">Question Code:</label>
             <input type="text" name="questionNo" value="<?=isset($_GET['questionNo']) ? $_GET['questionNo'] : "" ?>"</input>
           </div>
+          */
+          ?>
           <div>
             <label for="examBoard_select">Exam Board:</label><br>
             <select class="w-full" id="examBoard_select" name="examBoard" value="<?=isset($_GET['examBoard']) ? $_GET['examBoard'] : "" ?>" onchange="this.form.submit();">
