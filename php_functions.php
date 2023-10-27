@@ -3852,7 +3852,7 @@ function jsonDecoder($string) {
   }
 }
 
-function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $marks) {
+function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $marks, $caseId, $caseBool) {
 
   /*
   This function inserts new Past Paper Question into pastpaper_question_bank
@@ -3865,21 +3865,22 @@ function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examB
   $datetime = date("Y-m-d H:i:s");
   $active = 1;
   $series = "June";
+  $specYear = 2015;
 
   $questionAssets_array = jsonEncoder($questionAssets);
   $markSchemeAssets_array = jsonEncoder($markSchemeAssets);
   $examReportAssets_array = jsonEncoder($examReportAssets);
 
   $sql = "INSERT INTO pastpaper_question_bank
-          (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, answer, questionAssets, markSchemeAssets, examReportAssets, topic, keywords, dateCreate, active, series, marks, questionAssets_array, markSchemeAssets_array, examReportAssets_array)
-          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+          (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, answer, questionAssets, markSchemeAssets, examReportAssets, topic, keywords, dateCreate, active, series, marks, questionAssets_array, markSchemeAssets_array, examReportAssets_array, caseId, caseBool, specYear)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("isssssssssssssssisisss", $userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $datetime, $active, $series, $marks, $questionAssets_array, $markSchemeAssets_array, $examReportAssets_array);
+  $stmt->bind_param("isssssssssssssssisisssiii", $userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $datetime, $active, $series, $marks, $questionAssets_array, $markSchemeAssets_array, $examReportAssets_array, $caseId, $caseBool, $specYear);
   $stmt->execute();
 
 }
 
-function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null) {
+function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, $examBoard = null, $year = null, $component = null, $qualLevel = null, $noCaseStudies = null) {
   /**
    * This function retrieves information on past paper questions from pastpaper_question_bank
    * Used in:
@@ -3892,14 +3893,18 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null) 
    $params = "";
    $bindArray = array();
    $conjoiner = 0;
+   $tableAlias ="q.";
 
-   $sql = " SELECT *
-            FROM pastpaper_question_bank ";
+   $sql = " SELECT q.*, t.topicName
+            FROM pastpaper_question_bank q 
+            LEFT JOIN topics t
+            ON q.topic = t.topicCode ";
 
     if($id) {
       $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
       $sql .= $conjoin;
-      $sql .= " id = ? ";
+      $sql .= $tableAlias;
+      $sql .= "id = ? ";
       $params .= "i";
       array_push($bindArray, $id);
       $conjoiner = 1;
@@ -3908,7 +3913,8 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null) 
     if($topic) {
       $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
       $sql .= $conjoin;
-      $sql .= " topic LIKE ? ";
+      $sql .= $tableAlias;
+      $sql .= "topic LIKE ? ";
       $topic = $topic."%";
       $params .= "s";
       array_push($bindArray, $topic);
@@ -3918,16 +3924,59 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null) 
     if($questionCode) {
       $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
       $sql .= $conjoin;
-      $sql .= " No LIKE ? ";
+      $sql .= $tableAlias;
+      $sql .= "No LIKE ? ";
       $questionCode = $questionCode."%";
       $params .= "s";
       array_push($bindArray, $questionCode);
       $conjoiner = 1;
     }
 
+    if($examBoard) {
+      $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+      $sql .= $tableAlias;
+      $sql .= "examBoard = ? ";
+      $params .= "s";
+      array_push($bindArray, $examBoard);
+      $conjoiner = 1;
+    }
+
+    if($year) {
+      $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+      $sql .= $tableAlias;
+      $sql .= "year = ? ";
+      $params .= "s";
+      array_push($bindArray, $year);
+      $conjoiner = 1;
+    }
+
+    if($component) {
+      $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+      $sql .= $tableAlias;
+      $sql .= "component = ? ";
+      $params .= "i";
+      array_push($bindArray, $component);
+      $conjoiner = 1;
+    }
+
+    if($qualLevel) {
+      $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+      $conjoiner = 1;
+      $sql .= $tableAlias;
+      $sql .= "qualLevel = ? ";
+      $params .= "s";
+      array_push($bindArray, $qualLevel);
+    }
+
+    if($noCaseStudies) {
+      $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+      $conjoiner = 1;
+      $sql .= "caseBool IS NULL ";
+    }
 
 
-  $sql .= " ORDER BY year, component, questionNo";
+
+  $sql .= " ORDER BY component, year, questionNo";
 
   //echo $sql;
 
@@ -3953,7 +4002,7 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null) 
 
 }
 
-function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks) {
+function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks, $caseId, $caseBool) {
   /**
    * Used to update pastpaper_question_bank
    * Used in:
@@ -3966,12 +4015,164 @@ function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets
 
    global $conn;
    $sql = " UPDATE pastpaper_question_bank
-            SET question = ?, answer = ?,  questionAssets = ?, markSchemeAssets = ?, examReportAssets =?, topic = ?, keywords = ?, explanation = ?, marks = ?, questionAssets_array = ?, markSchemeAssets_array = ?, examReportAssets_array = ?
+            SET question = ?, answer = ?,  questionAssets = ?, markSchemeAssets = ?, examReportAssets =?, topic = ?, keywords = ?, explanation = ?, marks = ?, questionAssets_array = ?, markSchemeAssets_array = ?, examReportAssets_array = ?, caseId = ?, caseBool = ?
    WHERE id = ?";
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("ssssssssisssi", $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks, $questionAssets_array, $markSchemeAssets_array, $examReportAssets_array, $id);
+  $stmt->bind_param("ssssssssisssiii", $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks, $questionAssets_array, $markSchemeAssets_array, $examReportAssets_array, $caseId, $caseBool, $id);
   $stmt->execute();
 
 }
+
+function getPastPaperCategoryValues($topic=null, $examBoard = null, $year = null, $component = null, $qualLevel = null, $unitName = null) {
+  /**
+   * This function returns unique category values from pastpaper_question_bank for purposes of updating input drop-downs etc.
+   * 
+   * Used in:
+   * -pastpapers/questions.php
+   */
+
+   global $conn;
+   
+
+   $categories = array('topic', 'examBoard', 'qualLevel', 'component', 'unitName', 'year');
+   $categoryResults = array();
+
+   $calledVariable = "";
+
+
+   foreach($categories as $category) {
+
+      $results = array();
+      $params = "";
+      $bindArray = array();
+      $conjoiner = "";
+      $tableAlias = "";
+
+      /*
+      for($x=0; $x<count($categories); $x++) {
+        if ($category == $categories[$x]) {
+          $calledVariable = $category;
+        }
+      }
+      */
+
+      switch($category) {
+        case 'topic':
+          $calledVariable = $topic;
+          break;
+        case 'examBoard':
+          $calledVariable = $examBoard;
+          break;
+        case 'qualLevel':
+          $calledVariable = $qualLevel;
+          break;
+        case 'component':
+          $calledVariable = $component;
+          break;
+        case 'unitName':
+          $calledVariable = $unitName;
+          break;
+        case 'year':
+          $calledVariable = $year;
+          break;
+
+
+      }
+
+      $sql = " SELECT DISTINCT ".$category;
+      $sql .= " FROM pastpaper_question_bank";
+      //echo $sql;
+
+      if($category == 'topic') {
+        $sql = "SELECT DISTINCT q.topic, t.topicName
+            FROM pastpaper_question_bank q 
+            LEFT JOIN topics t
+            ON q.topic = t.topicCode ";
+            $tableAlias = "q.";
+        //$category = "topic";
+      }
+      //var_dump($calledVariable);
+      //if(!$calledVariable) {
+        
+
+        if($topic) {
+          $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
+          $sql .= $conjoin;
+          $sql .= $tableAlias;
+          $sql .= "topic LIKE ? ";
+          $topic = $topic."%";
+          $params .= "s";
+          array_push($bindArray, $topic);
+          $conjoiner = 1;
+        }
+
+        if($examBoard) {
+          $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+          $sql .= $tableAlias;
+          $sql .= "examBoard = ? ";
+          $params .= "s";
+          array_push($bindArray, $examBoard);
+          $conjoiner = 1;
+        }
+    
+        if($year) {
+          $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+          $sql .= $tableAlias;
+          $sql .= "year = ? ";
+          $params .= "s";
+          array_push($bindArray, $year);
+          $conjoiner = 1;
+        }
+    
+        if($component) {
+          $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+          $sql .= $tableAlias;
+          $sql .= "component = ? ";
+          $params .= "i";
+          array_push($bindArray, $component);
+          $conjoiner = 1;
+        }
+    
+        if($qualLevel) {
+          $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+          $conjoiner = 1;
+          $sql .= $tableAlias;
+          $sql .= "qualLevel = ? ";
+          $params .= "s";
+          array_push($bindArray, $qualLevel);
+        }
+
+      //}
+
+
+      $sql .= " ORDER BY ".$category;
+
+      //echo $sql;
+
+      $stmt = $conn->prepare($sql);
+      if(count($bindArray)>0) {
+        $stmt->bind_param($params, ...$bindArray);
+      }
+      $stmt->execute();
+      $result = $stmt->get_result();
+      if($result->num_rows>0) {
+        while($row = $result->fetch_assoc()) {
+          
+          if($category == 'topic') {
+            $row[$category] = $row['topic']."###".$row['topicName'];
+          }
+          
+          array_push($results, $row[$category]);
+          //$results = $row[$category];
+        }
+      }
+      $categoryResults[$category] = $results;
+    }
+
+    return $categoryResults;
+
+  
+}
+
 
 ?>

@@ -20,7 +20,7 @@ else {
   $userInfo = getUserInfo($_SESSION['userid']);
   $userId = $_SESSION['userid'];
   $permissions = $userInfo['permissions'];
-  if (!(str_contains($permissions, 'teacher'))) {
+  if (!(str_contains($permissions, 'main_admin'))) {
     header("location: /index.php");
   }
 
@@ -41,7 +41,10 @@ include($path."/header_tailwind.php");
 
 $examBoardCodeKey = array(
   ["Original", 10],
-  ["Eduqas", 11],
+  ["Eduqas", array(
+    ["AL", 11],
+    ["AS", 21]
+  )],
   ["AQA", array(
     ["AL", 12],
     ["AS", 14]
@@ -76,9 +79,9 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       if(isset($_POST['specPaper'])) {
         $specPaper = $_POST['specPaper'];
         //Putting this in here just as a default for specification year publication:
-        //$_POST['year'] = "2015";
+        $_POST['year'] = "Specimen Assessment Materials";
       }
-
+      
       $newQuestion = array(
         'questionNo' => $_POST['questionNo_'.$x],
         'examBoard' => $_POST['examBoard'],
@@ -98,7 +101,9 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         'keyWords' => $_POST['keyWords_'.$x],
         'active_entry' => $_POST['active_entry_'.$x],
         'specPaper' => $specPaper,
-        'marks' => $_POST['marks_'.$x]
+        'marks' => $_POST['marks_'.$x],
+        'caseStudyBool' => (isset($_POST['caseStudy_'.$x]) && $_POST['caseStudy_'.$x] == 1 ) ? 1 : null,
+        'caseStudyId' => $_POST['caseStudyId_'.$x]
       );
       array_push($questionsCollect, $newQuestion);
     }
@@ -157,9 +162,11 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         */
         $questionCode .=".".$questionNo;
 
-        //print_r($question);
+        if(isset($_GET['test'])) {
+          var_dump($question);
+        }
 
-        insertPastPaperQuestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['answerText'], $question['assetId'], $question['markScheme_assetId'], $question['examReport_assetId'], $question['topic'], $question['keyWords'], $question['marks']);
+        insertPastPaperQuestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['answerText'], $question['assetId'], $question['markScheme_assetId'], $question['examReport_assetId'], $question['topic'], $question['keyWords'], $question['marks'], $question['caseStudyId'], $question['caseStudyBool']);
 
         
         
@@ -175,9 +182,11 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
     if($_POST['submit'] == 'Update') {
 
       $updateQuestionBool = 1;
+      $caseBool = (isset($_POST['caseBool']) && $_POST['caseBool'] == 1) ? 1 : null;
+      $caseId = ($_POST['caseId'] != "") ? $_POST['caseId'] : null;
       
       
-      updatePastPaperQuestionDetails($_POST['id'], $_POST['question'], $_POST['answer'], $_POST['questionAssets'], $_POST['markSchemeAssets'], $_POST['examreportAssets'], $_POST['topic'], $_POST['keywords'], $_POST['explanation'], $_POST['marks']);
+      updatePastPaperQuestionDetails($_POST['id'], $_POST['question'], $_POST['answer'], $_POST['questionAssets'], $_POST['markSchemeAssets'], $_POST['examreportAssets'], $_POST['topic'], $_POST['keywords'], $_POST['explanation'], $_POST['marks'], $caseId, $caseBool);
       ?>
       <?php
     }
@@ -189,12 +198,17 @@ if(isset($_GET['topic'])) {
   $get_selectors = array(
     'id' => ($_GET['id']!="") ? $_GET['id'] : null,
     'topic' => ($_GET['topic']!="") ? $_GET['topic'] : null,
-    'questionNo' => ($_GET['questionNo']!="") ? $_GET['questionNo'] : null
+    'questionNo' => ($_GET['questionNo']!="") ? $_GET['questionNo'] : null,
+    'examBoard' => ($_GET['examBoard']!="") ? $_GET['examBoard'] : null,
+    'year' => ($_GET['year']!="") ? $_GET['year'] : null,
+    'component' => ($_GET['component']!="") ? $_GET['component'] : null,
+
   );
 
   //var_dump($get_selectors);
+  //var_dump($_GET);
 
-  $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic']);
+  $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionNo'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component']);
 }
 
 
@@ -291,6 +305,15 @@ $_GET controls:
           <label for="questionNo_select">Question Code:</label>
           <input type="text" name="questionNo" value="<?=isset($_GET['questionNo']) ? $_GET['questionNo'] : "" ?>"</input>
 
+          <label for="examBoard_select">Exam Board:</label>
+          <input type="text" id="examBoard_select" name="examBoard" value="<?=isset($_GET['examBoard']) ? $_GET['examBoard'] : "" ?>"</input>
+
+          <label for="year_select">Year:</label>
+          <input type="text" id="year_select" name="year" value="<?=isset($_GET['year']) ? $_GET['year'] : "" ?>"</input>
+
+          <label for="component_select">Component:</label>
+          <input type="text" id="component_select" name="component" value="<?=isset($_GET['examBoard']) ? $_GET['component'] : "" ?>"</input>
+
           <input type="submit"  value="Select">
         </form>
       </div>
@@ -322,7 +345,7 @@ $_GET controls:
                       <?=$question['No']?>
                     </td>
                     <td>
-                      <p><?=$question['examBoard']?> <?=$question['unitName']?> <?=$question['qualLevel']?> <?=$question['series']=?> <?=$question['year']?> Question <?=$question['questionNo']?> </p>
+                      <p><?=$question['examBoard']?> <?=$question['unitName']?> <?=$question['qualLevel']?> <?=$question['series']?> <?=$question['year']?> Question <?=$question['questionNo']?> </p>
                       <div>
                         <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question']?></p>
                         <textarea  name="question" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question']?></textarea>
@@ -342,20 +365,45 @@ $_GET controls:
                         <div class="toggleClass_<?=$question['id']?>">
                           <p><?=$question['questionAssets']?></p>
                           <?php
-                          $quesitonAssets = explode(",",$question['questionAssets']);
-                          //print_r($quesitonAssets);
+                          $imgSource = "https://www.thinkeconomics.co.uk";
 
-                          foreach($quesitonAssets as $asset) {
+
+                          //Case Study:
+                          if($question['caseId']) {
+                            $caseStudy = getPastPaperQuestionDetails($question['caseId'])[0];
+
+                            $questionAssets = explode(",",$caseStudy['questionAssets']);
+                            
+                            // Following script commented out only so that all case study images do not come up in manager page. Un-comment to see case study for each question.
+                            /*
+                            foreach($questionAssets as $asset) {
+                              $asset = getUploadsInfo($asset)[0];
+                              //print_r($asset);
+                              
+                              ?>
+                              <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                              <?php
+                            }
+                            */
+                            
+                          }
+
+                          //Questions:
+
+                          $questionAssets = explode(",",$question['questionAssets']);
+                          //print_r($questionAssets);
+
+                          foreach($questionAssets as $asset) {
                             $asset = getUploadsInfo($asset)[0];
                             //print_r($asset);
-                            $imgSource = "https://www.thinkeconomics.co.uk";
+                            
                             ?>
                             <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
                             <?php
                           }
 
                           $markSchemeAssets = explode(",",$question['markSchemeAssets']);
-                          //print_r($quesitonAssets);
+                          //print_r($questionAssets);
 
                           if($question['markSchemeAssets']!="") {
                             
@@ -364,6 +412,11 @@ $_GET controls:
                           <button class="border rounded bg-pink-300 border-black mb-1 p-1" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$asset['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
                           <div class="markSchemeToggle_<?=$asset['id']?> hidden">
                           <?php
+
+                            
+
+                       
+
 
                             foreach($markSchemeAssets as $asset) {
                               $asset = getUploadsInfo($asset)[0];
@@ -459,12 +512,20 @@ $_GET controls:
                             <h3>Explanation:</h3>
                             <p><textarea name="explanation" class="resize w-full " spellcheck="true"><?=$question['explanation']?></textarea></p>
                           </div>
+                        </div>
+                        <div class="toggleClass_<?=$question['id']?> hidden">
+                            <label for="caseId_<?=$question['id']?>">Case Id: </label>
+                            <p><input id="caseId_<?=$question['id']?>" type="number" name= "caseId" value="<?=$question['caseId']?>"><p>
+                            <label for="caseBool_<?=$question['id']?>">Case Study</label>
+                            <input id = "caseBool_<?=$question['id']?>" name = "caseBool" type="checkbox" value="1" <?=($question['caseBool'] == 1) ? "checked" : ""?>>
+
                         </div>                    
 
 
                         <p>
                           <?php 
                             if(isset($_GET['test'])) {
+                              //var_dump($question);
                               print_r($question);
                             }
                           ?>
@@ -616,28 +677,32 @@ function addInputRow() {
         }
 
         //Question Number:
-        cells[i].innerHTML = "<p><label for = 'questionNo_"+num+"'>No.</label></p><p><input  name='questionNo_"+num+"' id= 'questionNo_"+num+"' class='p-2 w-full rounded border border-black text-center' value= '"+value+"'><p>";
+        cells[i].innerHTML = "<p><label for = 'questionNo_"+num+"'>No.</label></p><p><input name='questionNo_"+num+"' id= 'questionNo_"+num+"' class='p-2 w-full rounded border border-black text-center' value= '"+value+"'><p>";
 
         break;
       case 1:
         var label = "questionText_"+(rowNo-1);
         var label2 = "answerText_"+(rowNo-1);
-        var label3 = "marks_"+(rowNo-1);
+        
         //var value = "value = '"+(rowNo)+"'";
         cells[i].innerHTML = "<p>Question Text:</p>";
-        cells[i].innerHTML += "<textarea name="+label+" id= "+label+" "+"class='w-full rounded p-1 h-30'></textarea>";
+        cells[i].innerHTML += "<textarea required name="+label+" id= "+label+" "+"class='w-full rounded p-1 h-30'></textarea>";
         
         cells[i].innerHTML += "<p>Answer Text:</p>";
         cells[i].innerHTML += "<textarea name="+label2+" id= "+label2+" "+"class='w-full rounded p-1 h-30'></textarea>";
 
-        cells[i].innerHTML += "<p>Marks:</p>";
-        cells[i].innerHTML += "<input type ='number' name="+label3+" id= "+label3+" "+"class=' rounded p-1 '></input>";
+        
 
 
         break;
 
 
       case 2:
+
+        //Marks:
+        var label3 = "marks_"+(rowNo-1);
+        cells[i].innerHTML += "<p>Marks:</p>";
+        cells[i].innerHTML += "<input type ='number' name="+label3+" id= "+label3+" "+"class=' rounded w-full '></input>";
 
 
         //Topic:
@@ -663,6 +728,14 @@ function addInputRow() {
         var label = "examReport_assetId_"+num;
         //var value = "value = '"+(rowNo)+"'";
         cells[i].innerHTML += "<label for = "+label+">Exam Report Asset  Id: </label><input name="+label+" id= "+label+" class='w-full rounded'>";
+
+        //Case Study 
+        var label = "caseStudyId_"+num;
+        cells[i].innerHTML += "<label for = "+label+">Case Study Id: </label><input type = 'number' name="+label+" id= "+label+" class=' rounded w-full'>";
+
+        //Case Study Bool
+        var label = "caseStudy_"+num;
+        cells[i].innerHTML += "<label for = "+label+">Case Study: </label><input type = 'checkbox' value = '1' name="+label+" id= "+label+" class=' rounded'>";
 
         break;
       case 3:
