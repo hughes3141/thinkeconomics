@@ -244,14 +244,20 @@ if(isset($_GET['topic'])) {
                       
 
                       $questionAssets = explode(",",$caseStudy['questionAssets']);
+                      
 
-                      foreach($questionAssets as $asset) {
-                        $asset = getUploadsInfo($asset)[0];
-                        //print_r($asset);
-                        
-                        ?>
-                        <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
-                        <?php
+                      if(count($questionAssets) == 1 && $questionAssets[0]=="") {
+                        echo "<span class='font-medium'>".$caseStudy['questionNo']."</span>. ".$caseStudy['question'];
+                      }
+                      else {
+                        foreach($questionAssets as $asset) {
+                          $asset = getUploadsInfo($asset)[0];
+                          //print_r($asset);
+                          
+                          ?>
+                          <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                          <?php
+                        }
                       }
                     }
                     
@@ -265,12 +271,12 @@ if(isset($_GET['topic'])) {
                 }
                 ?>
               </div>
-              <p class="whitespace-pre-line border-t-2 border-slate-500 -mx-0  p-2 "><?php
+              <p class="whitespace-pre-line border-t-2 border-slate-500 -mx-0  p-2 -indent-6 pl-8 "><?php
                 //Questions:
                 $questionAssets = explode(",",$question['questionAssets']);
                 //var_dump($questionAssets);
                 if(count($questionAssets) == 1 && $questionAssets[0]=="") {
-                  echo $question['question']." [".$question['marks']." marks]";
+                  echo "<span class='font-medium'>".$question['questionNo']."</span>. ".$question['question']." [".$question['marks']." marks]";
                 }
                 else {
                   //Questions Images:

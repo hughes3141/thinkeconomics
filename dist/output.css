@@ -1196,10 +1196,6 @@ textarea, input, select {
   border-top-width: 2px;
 }
 
-.border-t-4 {
-  border-top-width: 4px;
-}
-
 .border-transparent {
   border-color: transparent;
 }
@@ -1493,12 +1489,36 @@ textarea, input, select {
   padding-bottom: 0.75rem;
 }
 
+.pl-7 {
+  padding-left: 1.75rem;
+}
+
+.pl-9 {
+  padding-left: 2.25rem;
+}
+
+.pl-8 {
+  padding-left: 2rem;
+}
+
 .text-left {
   text-align: left;
 }
 
 .text-center {
   text-align: center;
+}
+
+.-indent-5 {
+  text-indent: -1.25rem;
+}
+
+.-indent-7 {
+  text-indent: -1.75rem;
+}
+
+.-indent-6 {
+  text-indent: -1.5rem;
 }
 
 .align-top {
