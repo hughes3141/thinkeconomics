@@ -166,7 +166,7 @@ if(isset($_GET['topic'])) {
                   <?php
                   foreach($controlsIteration as $control) {
                     ?>
-                    <option value=<?=$control?> <?=($get_selectors[$controlName] == $control) ? "selected" : ""?>><?=$control?></option>
+                    <option value="<?=$control?>" <?=($get_selectors[$controlName] == $control) ? "selected" : ""?>><?=$control?></option>
                     <?php
                   }
                 ?>
