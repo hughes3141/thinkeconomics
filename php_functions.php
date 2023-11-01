@@ -3976,7 +3976,7 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, 
 
 
 
-  $sql .= " ORDER BY component, year, questionNo";
+  $sql .= " ORDER BY component, qualLevel, year, questionNo";
 
   //echo $sql;
 

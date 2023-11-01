@@ -166,7 +166,7 @@ if(isset($_GET['topic'])) {
                   <?php
                   foreach($controlsIteration as $control) {
                     ?>
-                    <option value=<?=$control?> <?=($get_selectors[$controlName] == $control) ? "selected" : ""?>><?=$control?></option>
+                    <option value="<?=$control?>" <?=($get_selectors[$controlName] == $control) ? "selected" : ""?>><?=$control?></option>
                     <?php
                   }
                 ?>
@@ -233,7 +233,7 @@ if(isset($_GET['topic'])) {
             <div class="mb-3 border-2 rounded border-pink-300">
               <!--id: <?=$question['id']?> topic <?=$question['topic']?>-->
               <div class="bg-pink-200 px-1 ">
-                <p class="bg-white"><?php
+                <p class="bg-white whitespace-pre-line"><?php
                   //Case Study:
                   if($question['caseId']) {
                     $caseId = $question['caseId'];
