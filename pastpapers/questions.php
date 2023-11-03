@@ -299,7 +299,7 @@ if(isset($_GET['topic'])) {
                   if($questionNoLength < 2) {
                     $indentOffset = "&nbsp&nbsp&nbsp";
                   } 
-                  if ($questionNo == 6) {
+                  if ($questionNo == 6 || $questionNo == 1) {
                     $indentOffset = "&nbsp&nbsp";
                   }
                   if($questionNoLength>4) {
