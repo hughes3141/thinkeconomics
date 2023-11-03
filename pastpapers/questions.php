@@ -229,41 +229,58 @@ if(isset($_GET['topic'])) {
           $imgSource = "https://www.thinkeconomics.co.uk";
           foreach($questions as $question) {
             //print_r($question);
+
+            //Case Study:
+            if($question['caseId']) {
+              $caseId = $question['caseId'];
+              if(!in_array($caseId, $usedCaseStudies))
+              {
+                array_push($usedCaseStudies, $caseId);
+                $caseStudy = getPastPaperQuestionDetails($question['caseId'])[0];
+                $questionAssets = explode(",",$caseStudy['questionAssets']);
+                ?>
+                <div class="mb-3 border-2 rounded border-pink-300">
+                  <!--id: <?=$caseStudy['id']?> topic <?=$caseStudy['topic']?>-->
+                  <div class="bg-pink-200 px-1 ">
+                    <p class="text-lg"><?=$caseStudy['examBoard']?> <?=$caseStudy['qualLevel']?> Unit <?=$caseStudy['component']?> <?=$caseStudy['series']?> <?=$caseStudy['year']?> Q<?=$caseStudy['questionNo']?></p>
+                    
+                  </div>
+                  <p class="whitespace-pre-line border-t-2 border-slate-500 -mx-0  p-2 -indent-6 pl-8 "><?php
+                      if(count($questionAssets) == 1 && $questionAssets[0]=="") {
+                      $questionNo = $caseStudy['questionNo'];
+                      $questionNoLength = strlen($questionNo);
+                      $indentOffset = "";
+                      if($questionNoLength < 2) {
+                        $indentOffset = "&nbsp&nbsp&nbsp";
+                      } 
+                      if ($questionNo == 6) {
+                        $indentOffset = "&nbsp&nbsp";
+                      }
+                      echo "<span class='font-medium'>".$caseStudy['questionNo']."</span>. ".$indentOffset.$caseStudy['question'];
+                    }
+                    else {
+                      foreach($questionAssets as $asset) {
+                        $asset = getUploadsInfo($asset)[0];
+                        //print_r($asset);
+                        
+                        ?>
+                        <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                        <?php
+                      }
+                    }
+                  ?>
+                  </p>
+                </div>
+                <?php
+              }
+              
+            }
+            
+            //Question:
             ?>
             <div class="mb-3 border-2 rounded border-pink-300">
               <!--id: <?=$question['id']?> topic <?=$question['topic']?>-->
               <div class="bg-pink-200 px-1 ">
-                <p class="bg-white whitespace-pre-line"><?php
-                  //Case Study:
-                  if($question['caseId']) {
-                    $caseId = $question['caseId'];
-                    if(!in_array($caseId, $usedCaseStudies))
-                    {
-                      array_push($usedCaseStudies, $caseId);
-                      $caseStudy = getPastPaperQuestionDetails($question['caseId'])[0];
-                      
-
-                      $questionAssets = explode(",",$caseStudy['questionAssets']);
-                      
-
-                      if(count($questionAssets) == 1 && $questionAssets[0]=="") {
-                        echo "<span class='font-medium'>".$caseStudy['questionNo']."</span>. ".$caseStudy['question'];
-                      }
-                      else {
-                        foreach($questionAssets as $asset) {
-                          $asset = getUploadsInfo($asset)[0];
-                          //print_r($asset);
-                          
-                          ?>
-                          <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
-                          <?php
-                        }
-                      }
-                    }
-                    
-                  }
-                
-                ?></p>
                 <p class="text-lg"><?=$question['examBoard']?> <?=$question['qualLevel']?> Unit <?=$question['component']?> <?=$question['series']?> <?=$question['year']?> Q<?=$question['questionNo']?></p>
                 <?php
                 if($question['topicName'] != "") {
@@ -276,7 +293,21 @@ if(isset($_GET['topic'])) {
                 $questionAssets = explode(",",$question['questionAssets']);
                 //var_dump($questionAssets);
                 if(count($questionAssets) == 1 && $questionAssets[0]=="") {
-                  echo "<span class='font-medium'>".$question['questionNo']."</span>. ".$question['question']." [".$question['marks']." marks]";
+                  $questionNo = $question['questionNo'];
+                  $questionNoLength = strlen($questionNo);
+                  $indentOffset = "";
+                  if($questionNoLength < 2) {
+                    $indentOffset = "&nbsp&nbsp&nbsp";
+                  } 
+                  if ($questionNo == 6) {
+                    $indentOffset = "&nbsp&nbsp";
+                  }
+                  if($questionNoLength>4) {
+                    $indentOffset = "\n";
+                  }
+                  
+
+                  echo "<span class='font-medium'>".$question['questionNo']."</span>. ".$indentOffset.$question['question']." \n[".$question['marks']." marks]";
                 }
                 else {
                   //Questions Images:
