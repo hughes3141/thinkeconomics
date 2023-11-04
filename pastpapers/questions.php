@@ -288,7 +288,7 @@ if(isset($_GET['topic'])) {
                 }
                 ?>
               </div>
-              <p class="whitespace-pre-line border-t-2 border-slate-500 -mx-0  p-2 -indent-6 pl-8 "><?php
+              <?php
                 //Questions:
                 $questionAssets = explode(",",$question['questionAssets']);
                 //var_dump($questionAssets);
@@ -297,17 +297,18 @@ if(isset($_GET['topic'])) {
                   $questionNoLength = strlen($questionNo);
                   $indentOffset = "";
                   if($questionNoLength < 2) {
-                    $indentOffset = "&nbsp&nbsp&nbsp";
+                    $indentOffset = "&nbsp";
                   } 
-                  if ($questionNo == 6) {
-                    $indentOffset = "&nbsp&nbsp";
-                  }
                   if($questionNoLength>4) {
                     $indentOffset = "\n";
                   }
                   
 
-                  echo "<span class='font-medium'>".$question['questionNo']."</span>. ".$indentOffset.$question['question']." \n[".$question['marks']." marks]";
+                  ?>
+                  <div class="whitespace-pre-line border-t-2 border-slate-500 -mx-0  p-2 -indent-9 pl-11 "><span class='font-medium font-mono'><?=$question['questionNo']?>.<?=$indentOffset?> </span><?=$question['question']?>
+                  
+                  [<?=$question['marks']?> marks]</div>
+                  <?php
                 }
                 else {
                   //Questions Images:
@@ -316,7 +317,7 @@ if(isset($_GET['topic'])) {
                     //print_r($asset);
                     
                     ?>
-                    <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                    <img class="" alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
                     <?php
                   }
 
