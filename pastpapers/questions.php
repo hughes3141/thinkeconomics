@@ -302,12 +302,29 @@ if(isset($_GET['topic'])) {
                   if($questionNoLength>4) {
                     $indentOffset = "\n";
                   }
+
+                  $questionArray=explode("\n",$question['question']);
                   
 
                   ?>
-                  <div class="whitespace-pre-line border-t-2 border-slate-500 -mx-0  p-2 -indent-9 pl-11 "><span class='font-medium font-mono'><?=$question['questionNo']?>.<?=$indentOffset?> </span><?=$question['question']?>
-                  
-                  [<?=$question['marks']?> marks]</div>
+                  <div class="border-t-2 border-slate-500 -mx-0  p-2 pl-11 ">
+                  <?php
+                  //print_r($questionArray);
+                  foreach($questionArray as $key => $newLine) {
+                    if($key == 0) {
+                      ?>
+                      <p class="-indent-9 mb-2"><span class='font-medium font-mono'><?=$question['questionNo']?>.<?=$indentOffset?> </span><?=$newLine?></p>
+                      <?php
+                    }
+                    else {
+                      ?>
+                      <p class=" mb-2"><?=$newLine?></p>
+                      <?php
+                    }
+                  }
+                  ?>
+                    <p>[<?=$question['marks']?> marks]<p>
+                  </div>
                   <?php
                 }
                 else {
