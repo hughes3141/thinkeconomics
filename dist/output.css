@@ -1362,6 +1362,16 @@ textarea, input, select {
   fill: currentColor;
 }
 
+.object-contain {
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+
+.object-none {
+  -o-object-fit: none;
+     object-fit: none;
+}
+
 .object-center {
   -o-object-position: center;
      object-position: center;
@@ -1556,6 +1566,10 @@ textarea, input, select {
 
 .pl-11 {
   padding-left: 2.75rem;
+}
+
+.pb-2 {
+  padding-bottom: 0.5rem;
 }
 
 .text-left {

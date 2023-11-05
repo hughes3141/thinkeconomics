@@ -281,15 +281,18 @@ if(isset($_GET['topic'])) {
                     }
                     else {
                       //Questions Images:
+                      echo "<div class='p-2'>";
                       foreach($questionAssets as $asset) {
                         $asset = getUploadsInfo($asset)[0];
                         //print_r($asset);
                         
                         ?>
-                        <img class="" alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                        
+                        <img class=" object-contain" alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                        
                         <?php
                       }
-    
+                      echo "</div>";
                     }
                   ?>
                 </div>
@@ -350,19 +353,23 @@ if(isset($_GET['topic'])) {
                 }
                 else {
                   //Questions Images:
+                  echo "<div class='p-2'>";
                   foreach($questionAssets as $asset) {
                     $asset = getUploadsInfo($asset)[0];
                     //print_r($asset);
                     
                     ?>
-                    <img class="" alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                    
+                     <img class=" object-contain" alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                    
                     <?php
                   }
+                  echo "</div>";
 
                 }
                 
                 ?>
-                
+                <div id="second_part_<?=$question['id']?>" class="px-2 pb-2">
                 <?php
 
                 $markSchemeAssets = explode(",",$question['markSchemeAssets']);
@@ -387,6 +394,7 @@ if(isset($_GET['topic'])) {
                 <?php
                 }
                 ?>
+              </div>
             </div>
             <?php
           }
