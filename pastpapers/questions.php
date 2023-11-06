@@ -251,11 +251,11 @@ if(isset($_GET['topic'])) {
                       $questionNo = $questionElements['questionNo'];
                       $questionNoLength = strlen($questionNo);
                       $indentOffset = "";
-                      if($questionNoLength < 2) {
-                        $indentOffset = "&nbsp";
+                      if($questionNoLength == 1) {
+                        $indentOffset = "&nbsp&nbsp";
                       } 
-                      if($questionNoLength>4) {
-                        $indentOffset = "\n";
+                      if($questionNoLength == 2) {
+                        $indentOffset = "&nbsp";
                       }
     
                       $questionArray=explode("\n",$questionElements['question']);
@@ -266,7 +266,7 @@ if(isset($_GET['topic'])) {
                         foreach($questionArray as $key => $newLine) {
                           if($key == 0) {
                             ?>
-                            <p class="-indent-9 mb-2"><span class='font-medium font-mono'><?=$questionElements['questionNo']?>.<?=$indentOffset?> </span><?=$newLine?></p>
+                            <p class="-indent-9 mb-2"><span class='font-medium font-mono'><?=$questionElements['questionNo']?>.<?=$indentOffset?></span><?=$newLine?></p>
                             <?php
                           }
                           else {
@@ -320,11 +320,11 @@ if(isset($_GET['topic'])) {
                   $questionNo = $question['questionNo'];
                   $questionNoLength = strlen($questionNo);
                   $indentOffset = "";
-                  if($questionNoLength < 2) {
-                    $indentOffset = "&nbsp";
+                  if($questionNoLength == 1) {
+                    $indentOffset = "&nbsp&nbsp";
                   } 
-                  if($questionNoLength>4) {
-                    $indentOffset = "\n";
+                  if($questionNoLength == 2) {
+                    $indentOffset = "&nbsp";
                   }
 
                   $questionArray=explode("\n",$question['question']);
@@ -337,7 +337,8 @@ if(isset($_GET['topic'])) {
                   foreach($questionArray as $key => $newLine) {
                     if($key == 0) {
                       ?>
-                      <p class="-indent-9 mb-2"><span class='font-medium font-mono'><?=$question['questionNo']?>.<?=$indentOffset?> </span><?=$newLine?></p>
+                      <p class="-indent-9 mb-2"><span class='font-medium font-mono'><?=$question['questionNo']?>.<?=$indentOffset?></span><?=$newLine?></p>
+                      <?php //echo $questionNoLength; ?>
                       <?php
                     }
                     else {
