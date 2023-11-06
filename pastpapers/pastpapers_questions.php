@@ -103,7 +103,11 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         'specPaper' => $specPaper,
         'marks' => $_POST['marks_'.$x],
         'caseStudyBool' => (isset($_POST['caseStudy_'.$x]) && $_POST['caseStudy_'.$x] == 1 ) ? 1 : null,
-        'caseStudyId' => $_POST['caseStudyId_'.$x]
+        'caseStudyId' => $_POST['caseStudyId_'.$x],
+        'dataBool' => (isset($_POST['dataBool_'.$x]) && $_POST['dataBool_'.$x] == 1 ) ? 1 : null,
+        'examPaperLink' => $_POST['examPaperLink_'.$x],
+        'markSchemeLink' => $_POST['markSchemeLink_'.$x],
+        'examReportLink' => $_POST['examReportLink_'.$x]
       );
       array_push($questionsCollect, $newQuestion);
     }
@@ -165,8 +169,11 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         if(isset($_GET['test'])) {
           var_dump($question);
         }
+        else {
 
         insertPastPaperQuestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['answerText'], $question['assetId'], $question['markScheme_assetId'], $question['examReport_assetId'], $question['topic'], $question['keyWords'], $question['marks'], $question['caseStudyId'], $question['caseStudyBool']);
+
+        }
 
         
         
@@ -736,6 +743,22 @@ function addInputRow() {
         //Case Study Bool
         var label = "caseStudy_"+num;
         cells[i].innerHTML += "<label for = "+label+">Case Study: </label><input type = 'checkbox' value = '1' name="+label+" id= "+label+" class=' rounded'>";
+
+        //Data Bool:
+        var label = "dataBool_"+num;
+        cells[i].innerHTML += "<br><label for = "+label+">Data (MetaData) Entry: </label><input type = 'checkbox' value = '1' name="+label+" id= "+label+" class=' rounded'>";
+
+        //Data elements
+        cells[i].innerHTML += "<br>";
+        var label = "examPaperLink_"+num;
+        cells[i].innerHTML += "<label for = "+label+">Exam Link: </label><input type = 'text' name="+label+" id= "+label+" class=' rounded w-full'>";
+
+        var label = "markSchemeLink_"+num;
+        cells[i].innerHTML += "<label for = "+label+">Mark Scheme Link: </label><input type = 'text' name="+label+" id= "+label+" class=' rounded w-full'>";
+
+        var label = "examReportLink_"+num;
+        cells[i].innerHTML += "<label for = "+label+">Exam Report Link: </label><input type = 'text' name="+label+" id= "+label+" class=' rounded w-full'>";
+
 
         break;
       case 3:
