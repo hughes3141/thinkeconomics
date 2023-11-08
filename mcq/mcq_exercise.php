@@ -376,7 +376,7 @@ function load_q() {
 	*/
 	
 	var optionsNumber;
-	var examBoardOptions = [["10",5],["11", 5],["12",4], ["13",5]]
+	var examBoardOptions = [["10",5],["11", 5],["12",4], ["13",5], ["14",4] ]
 	
 	for (var i=0; i<examBoardOptions.length; i++) {
 		
