@@ -786,6 +786,9 @@ function hideRow(button) {
   var input = button.parentElement.childNodes[1];
   console.log(row);
   console.log(input);
+  var textarea = row.childNodes[1].childNodes[1];
+  textarea.required = false;
+  console.log(textarea);
   row.style.display = "none";
   input.value='0';
 }
