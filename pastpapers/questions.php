@@ -401,9 +401,21 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   }
                 ?>
                 </div>
+                <p>
                 <?php
                 }
+                if($question['examPaperLink'] != "") {
+                  ?>
+                  <a class ="hover:bg-pink-200" href="<?=$question['examPaperLink']?>" target="_blank">Link to Exam Paper</a><span>  </span>
+                  <?php
+                }
+                if($question['markSchemeLink'] != "") {
+                  ?>
+                  <a class ="hover:bg-sky-200" href="<?=$question['markSchemeLink']?>" target="_blank">Link to Mark Scheme</a>
+                  <?php
+                }
                 ?>
+                </p>
               </div>
             </div>
             <?php

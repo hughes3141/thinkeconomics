@@ -3895,11 +3895,20 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, 
    $conjoiner = 0;
    $tableAlias ="q.";
 
-   $sql = " SELECT q.*, t.topicName
+   $sql = " SELECT q.*, t.topicName, d.examPaperLink, d.markSchemeLink, d.examReportLink
             FROM pastpaper_question_bank q 
             LEFT JOIN topics t
             ON q.topic = t.topicCode ";
 
+    $sql .= "
+            LEFT JOIN (
+              SELECT examPaperLink, markSchemeLink, examReportLink, unitName, year
+              FROM pastpaper_question_bank
+              WHERE dataBool = 1
+            ) d
+            ON (q.unitName = d.unitName AND q.year = d.year) ";
+
+    
     if($id) {
       $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
       $sql .= $conjoin;
