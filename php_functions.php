@@ -3852,7 +3852,7 @@ function jsonDecoder($string) {
   }
 }
 
-function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $marks, $caseId, $caseBool) {
+function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $marks, $caseId, $caseBool, $dataBool, $examPaperLink, $markSchemeLink, $examReportLink) {
 
   /*
   This function inserts new Past Paper Question into pastpaper_question_bank
@@ -3872,15 +3872,15 @@ function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examB
   $examReportAssets_array = jsonEncoder($examReportAssets);
 
   $sql = "INSERT INTO pastpaper_question_bank
-          (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, answer, questionAssets, markSchemeAssets, examReportAssets, topic, keywords, dateCreate, active, series, marks, questionAssets_array, markSchemeAssets_array, examReportAssets_array, caseId, caseBool, specYear)
-          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+          (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, answer, questionAssets, markSchemeAssets, examReportAssets, topic, keywords, dateCreate, active, series, marks, questionAssets_array, markSchemeAssets_array, examReportAssets_array, caseId, caseBool, specYear, dataBool, examPaperLink, markSchemeLink, examReportLink)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("isssssssssssssssisisssiii", $userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $datetime, $active, $series, $marks, $questionAssets_array, $markSchemeAssets_array, $examReportAssets_array, $caseId, $caseBool, $specYear);
+  $stmt->bind_param("isssssssssssssssisisssiiiisss", $userCreate, $questionCode, $quesitonNo, $examBoard, $level, $unitNo, $unitName, $year, $quesitonText, $answerText, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $datetime, $active, $series, $marks, $questionAssets_array, $markSchemeAssets_array, $examReportAssets_array, $caseId, $caseBool, $specYear, $dataBool, $examPaperLink, $markSchemeLink, $examReportLink);
   $stmt->execute();
 
 }
 
-function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, $examBoard = null, $year = null, $component = null, $qualLevel = null, $noCaseStudies = null) {
+function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, $examBoard = null, $year = null, $component = null, $qualLevel = null, $noCaseStudies = null, $noData = null) {
   /**
    * This function retrieves information on past paper questions from pastpaper_question_bank
    * Used in:
@@ -3972,6 +3972,12 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, 
       $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
       $conjoiner = 1;
       $sql .= "caseBool IS NULL ";
+    }
+
+    if($noData) {
+      $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+      $conjoiner = 1;
+      $sql .= "dataBool IS NULL ";
     }
 
 

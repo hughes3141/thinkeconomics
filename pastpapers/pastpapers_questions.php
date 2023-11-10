@@ -171,7 +171,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         }
         else {
 
-        insertPastPaperQuestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['answerText'], $question['assetId'], $question['markScheme_assetId'], $question['examReport_assetId'], $question['topic'], $question['keyWords'], $question['marks'], $question['caseStudyId'], $question['caseStudyBool']);
+        insertPastPaperQuestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['answerText'], $question['assetId'], $question['markScheme_assetId'], $question['examReport_assetId'], $question['topic'], $question['keyWords'], $question['marks'], $question['caseStudyId'], $question['caseStudyBool'], $question['dataBool'], $question['examPaperLink'], $question['markSchemeLink'], $question['examReportLink']);
 
         }
 
