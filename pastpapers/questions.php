@@ -54,14 +54,15 @@ $get_selectors = array(
 $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel']);
 
 
-if(isset($_GET['topic'])) {
+
   
 
   $run = 0;
   if(
     $get_selectors['topic'] ||
     $get_selectors['examBoard'] && $get_selectors['year'] ||
-    $get_selectors['examBoard'] && $get_selectors['component']
+    $get_selectors['examBoard'] && $get_selectors['component'] ||
+    $get_selectors['id']
   ) {
     $run = 1;
   }
@@ -73,14 +74,14 @@ if(isset($_GET['topic'])) {
   
 
   if($run == 1) {
-    $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionNo'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel'], 1);
+    $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionNo'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel'], 1, 1);
 
 
   }
 
   $usedCaseStudies = array();
   
-}
+
 
 ?>
 
@@ -222,6 +223,14 @@ if(isset($_GET['topic'])) {
           <input type="hidden"  value="Select">
         </form>
       </div>
+      <?php
+        if(isset($_GET['test'])) {
+          echo "<div><pre>";
+          print_r($questions);
+          echo "</div></pre>";
+        }
+      ?>
+
       <?=(count($questions)>0) ? "<h2 class='text-lg mb-2 bg-pink-300 rounded px-1 font-mono'>Questions</h2>" : ""?>
       <div>
         <?php
@@ -242,20 +251,20 @@ if(isset($_GET['topic'])) {
 
                 ?>
                 <div class="mb-3 border-2 rounded border-pink-300">
-                  <!--id: <?=$questionElements['id']?> topic <?=$questionElements['topic']?>-->
+                  <!--id: <?=$questionElements['id']?> topic <?=$questionElements['topic']?> Code: <?=$question['No']?>  -->
                   <div class="bg-pink-200 px-1 ">
-                    <p class="text-lg"><?=$questionElements['examBoard']?> <?=$questionElements['qualLevel']?> Unit <?=$questionElements['component']?> <?=$questionElements['series']?> <?=$questionElements['year']?> Q<?=$questionElements['questionNo']?></p>
+                    <h3 class="text-lg"><?=$questionElements['examBoard']?> <?=$questionElements['qualLevel']?> Unit <?=$questionElements['component']?> <?=$questionElements['series']?> <?=$questionElements['year']?> Q<?=$questionElements['questionNo']?></h3>
                   </div>
                   <?php
                     if(count($questionAssets) == 1 && $questionAssets[0]=="") {
                       $questionNo = $questionElements['questionNo'];
                       $questionNoLength = strlen($questionNo);
                       $indentOffset = "";
-                      if($questionNoLength < 2) {
-                        $indentOffset = "&nbsp";
+                      if($questionNoLength == 1) {
+                        $indentOffset = "&nbsp&nbsp";
                       } 
-                      if($questionNoLength>4) {
-                        $indentOffset = "\n";
+                      if($questionNoLength == 2) {
+                        $indentOffset = "&nbsp";
                       }
     
                       $questionArray=explode("\n",$questionElements['question']);
@@ -266,7 +275,7 @@ if(isset($_GET['topic'])) {
                         foreach($questionArray as $key => $newLine) {
                           if($key == 0) {
                             ?>
-                            <p class="-indent-9 mb-2"><span class='font-medium font-mono'><?=$questionElements['questionNo']?>.<?=$indentOffset?> </span><?=$newLine?></p>
+                            <p class="-indent-9 mb-2"><span class='font-medium font-mono'><?=$questionElements['questionNo']?>.<?=$indentOffset?></span><?=$newLine?></p>
                             <?php
                           }
                           else {
@@ -303,9 +312,9 @@ if(isset($_GET['topic'])) {
             //Question:
             ?>
             <div class="mb-3 border-2 rounded border-pink-300">
-              <!--id: <?=$question['id']?> topic <?=$question['topic']?>-->
+              <!--id: <?=$question['id']?> topic <?=$question['topic']?> Code: <?=$question['No']?>  -->
               <div class="bg-pink-200 px-1 ">
-                <p class="text-lg"><?=$question['examBoard']?> <?=$question['qualLevel']?> Unit <?=$question['component']?> <?=$question['series']?> <?=$question['year']?> Q<?=$question['questionNo']?></p>
+                <h3 class="text-lg"><?=$question['examBoard']?> <?=$question['qualLevel']?> Unit <?=$question['component']?> <?=$question['series']?> <?=$question['year']?> Q<?=$question['questionNo']?></h3>
                 <?php
                 if($question['topicName'] != "") {
                   echo "<p>Topic: ".$question['topicName']."</p>";
@@ -320,11 +329,11 @@ if(isset($_GET['topic'])) {
                   $questionNo = $question['questionNo'];
                   $questionNoLength = strlen($questionNo);
                   $indentOffset = "";
-                  if($questionNoLength < 2) {
-                    $indentOffset = "&nbsp";
+                  if($questionNoLength == 1) {
+                    $indentOffset = "&nbsp&nbsp";
                   } 
-                  if($questionNoLength>4) {
-                    $indentOffset = "\n";
+                  if($questionNoLength == 2) {
+                    $indentOffset = "&nbsp";
                   }
 
                   $questionArray=explode("\n",$question['question']);
@@ -337,7 +346,8 @@ if(isset($_GET['topic'])) {
                   foreach($questionArray as $key => $newLine) {
                     if($key == 0) {
                       ?>
-                      <p class="-indent-9 mb-2"><span class='font-medium font-mono'><?=$question['questionNo']?>.<?=$indentOffset?> </span><?=$newLine?></p>
+                      <p class="-indent-9 mb-2"><span class='font-medium font-mono'><?=$question['questionNo']?>.<?=$indentOffset?></span><?=$newLine?></p>
+                      <?php //echo $questionNoLength; ?>
                       <?php
                     }
                     else {
@@ -391,9 +401,21 @@ if(isset($_GET['topic'])) {
                   }
                 ?>
                 </div>
+                <p>
                 <?php
                 }
+                if($question['examPaperLink'] != "") {
+                  ?>
+                  <a class ="hover:bg-pink-200" href="<?=$question['examPaperLink']?>" target="_blank">Link to Exam Paper</a><span>  </span>
+                  <?php
+                }
+                if($question['markSchemeLink'] != "") {
+                  ?>
+                  <a class ="hover:bg-sky-200" href="<?=$question['markSchemeLink']?>" target="_blank">Link to Mark Scheme</a>
+                  <?php
+                }
                 ?>
+                </p>
               </div>
             </div>
             <?php
