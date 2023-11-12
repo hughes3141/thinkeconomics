@@ -237,6 +237,11 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
           //print_r($questions);
           $imgSource = "https://www.thinkeconomics.co.uk";
           foreach($questions as $question) {
+
+            echo "Question";
+
+
+
             //print_r($question);
 
             //Case Study:
