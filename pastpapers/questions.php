@@ -238,7 +238,119 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
           $imgSource = "https://www.thinkeconomics.co.uk";
           foreach($questions as $question) {
 
-            echo "Question";
+            $groupQuestions = array();
+            $usedQuestions = array();
+            $caseId = null;
+          
+
+            //print_r($question);
+
+            if(!in_array($question['id'], $usedQuestions)) {
+              if($question['caseId']) {
+                $caseId = $question['caseId'];
+                $caseStudy = getPastPaperQuestionDetails($question['caseId'])[0];
+                array_push($groupQuestions, $caseStudy);
+                foreach($questions as $question2) {
+                  if($question2['caseId'] == $caseId) {
+                    array_push($groupQuestions, $question2);
+                    array_push($usedQuestions, $question2['id']);
+                  }
+                }
+              }
+              else {
+                array_push($groupQuestions, $question);
+              }
+              ?>
+              <div class="mb-3 border-2 rounded border-pink-300">
+                <?php
+                foreach($groupQuestions as $key2 => $question2) {
+                  ?>
+                <!--id: <?=$question2['id']?> topic <?=$question2['topic']?> Code: <?=$question2['No']?>  -->
+                <div class="bg-pink-200 px-1 ">
+                  <?php
+                  if($key2 == 0) {
+                    ?>
+                    <h3 class="text-lg"><?=$question2['examBoard']?> <?=$question2['qualLevel']?> Unit <?=$question2['component']?> <?=$question2['series']?> <?=$question2['year']?> Q<?=$question2['questionNo']?></h3>
+                    <?php
+                    } else {
+                    ?>
+                    <h3 class="text-lg">
+                      <?php
+                      //echo $question2['examBoard']." ";
+                      //echo $question2['qualLevel']." ";
+                      //echo "Unit ".$question2['component']." ";
+                      //echo $question2['series']." ";
+                      //echo $question2['year']." ";
+                      echo "Q".$question2['questionNo'];
+                      ?></h3>
+                    <?php
+                    }
+                    if($question2['topicName'] != "") {
+                      echo "<p>Topic: ".$question2['topicName']."</p>";
+                    }
+                    ?>
+                </div>
+                <?php
+
+                //Questions:
+                $questionAssets = explode(",",$question2['questionAssets']);
+                //var_dump($questionAssets);
+                if(count($questionAssets) == 1 && $questionAssets[0]=="") {
+                  $questionNo = $question2['questionNo'];
+                  $questionNoLength = strlen($questionNo);
+                  $indentOffset = "";
+                  if($questionNoLength == 1) {
+                    $indentOffset = "&nbsp&nbsp";
+                  } 
+                  if($questionNoLength == 2) {
+                    $indentOffset = "&nbsp";
+                  }
+                  $questionArray=explode("\n",$question2['question']);
+                  ?>
+                  <div class="border-t-2 border-slate-500 -mx-0  p-2 pl-11 ">
+                  <?php
+                  //print_r($questionArray);
+                  foreach($questionArray as $key => $newLine) {
+                    if($key == 0) {
+                      ?>
+                      <p class="-indent-9 mb-2"><span class='font-medium font-mono'><?=$question2['questionNo']?>.<?=$indentOffset?></span><?=$newLine?></p>
+                      <?php //echo $questionNoLength; ?>
+                      <?php
+                    }
+                    else {
+                      ?>
+                      <p class=" mb-2"><?=$newLine?></p>
+                      <?php
+                    }
+                  }
+                  if(!$caseId || $key2 !=0) {
+                    ?>
+                      <p>[<?=$question2['marks']?> marks]<p>
+                    <?php
+                  }
+                  ?>
+                  </div>
+                  <?php
+                }
+                else {
+                  //Questions Images:
+                  echo "<div class='p-2'>";
+                  foreach($questionAssets as $asset) {
+                    $asset = getUploadsInfo($asset)[0];
+                    //print_r($asset);
+                    ?>
+                      <img class=" object-contain" alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                    <?php
+                  }
+                  echo "</div>";
+
+                }
+                echo $question2['question']."<br>";
+                }
+                ?>
+              </div>
+              <?php
+            }
 
 
 
