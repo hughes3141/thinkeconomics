@@ -3880,9 +3880,16 @@ function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examB
 
 }
 
-function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, $examBoard = null, $year = null, $component = null, $qualLevel = null, $noCaseStudies = null, $noData = null) {
+function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, $examBoard = null, $year = null, $component = null, $qualLevel = null, $caseStudiesFilter = null, $dataFilter = null) {
   /**
    * This function retrieves information on past paper questions from pastpaper_question_bank
+   *
+   * 
+   * Controls:
+   * -$caseStudiesFilter: if set as anything then all values with caseStudyBool are filtered out; if set to '2' then only case studies are returned
+   * - $dataFilter: if set as anything then all value with dataBool are filtered out; if set to '2' then only dataBool values are returned.
+
+
    * Used in:
    * -pastpapers_questions.php
    */
@@ -3977,16 +3984,18 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, 
       array_push($bindArray, $qualLevel);
     }
 
-    if($noCaseStudies) {
+    if($caseStudiesFilter) {
       $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+      $notSelector = ($caseStudiesFilter == 2) ? " NOT " : "";
       $conjoiner = 1;
-      $sql .= "caseBool IS NULL ";
+      $sql .= "caseBool IS ".$notSelector." NULL ";
     }
 
-    if($noData) {
+    if($dataFilter) {
       $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+      $notSelector = ($dataFilter == 2) ? " NOT " : "";
       $conjoiner = 1;
-      $sql .= "dataBool IS NULL ";
+      $sql .= "dataBool IS ".$notSelector." NULL ";
     }
 
 
@@ -4017,7 +4026,7 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, 
 
 }
 
-function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks, $caseId, $caseBool) {
+function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks, $caseId, $caseBool, $examPaperLink, $markSchemeLink, $examReportLink) {
   /**
    * Used to update pastpaper_question_bank
    * Used in:
@@ -4030,10 +4039,10 @@ function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets
 
    global $conn;
    $sql = " UPDATE pastpaper_question_bank
-            SET question = ?, answer = ?,  questionAssets = ?, markSchemeAssets = ?, examReportAssets =?, topic = ?, keywords = ?, explanation = ?, marks = ?, questionAssets_array = ?, markSchemeAssets_array = ?, examReportAssets_array = ?, caseId = ?, caseBool = ?
+            SET question = ?, answer = ?,  questionAssets = ?, markSchemeAssets = ?, examReportAssets =?, topic = ?, keywords = ?, explanation = ?, marks = ?, questionAssets_array = ?, markSchemeAssets_array = ?, examReportAssets_array = ?, caseId = ?, caseBool = ?, examPaperLink=?, markSchemeLink=?, examReportLink = ?
    WHERE id = ?";
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("ssssssssisssiii", $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks, $questionAssets_array, $markSchemeAssets_array, $examReportAssets_array, $caseId, $caseBool, $id);
+  $stmt->bind_param("ssssssssisssiisssi", $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks, $questionAssets_array, $markSchemeAssets_array, $examReportAssets_array, $caseId, $caseBool, $examPaperLink, $markSchemeLink, $examReportLink, $id);
   $stmt->execute();
 
 }
@@ -4159,7 +4168,8 @@ function getPastPaperCategoryValues($topic=null, $examBoard = null, $year = null
 
       //}
 
-
+      $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+      $sql .= "caseBool IS NULL AND dataBool IS NULL ";
       $sql .= " ORDER BY ".$category;
 
       //echo $sql;

@@ -193,7 +193,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       $caseId = ($_POST['caseId'] != "") ? $_POST['caseId'] : null;
       
       
-      updatePastPaperQuestionDetails($_POST['id'], $_POST['question'], $_POST['answer'], $_POST['questionAssets'], $_POST['markSchemeAssets'], $_POST['examreportAssets'], $_POST['topic'], $_POST['keywords'], $_POST['explanation'], $_POST['marks'], $caseId, $caseBool);
+      updatePastPaperQuestionDetails($_POST['id'], $_POST['question'], $_POST['answer'], $_POST['questionAssets'], $_POST['markSchemeAssets'], $_POST['examreportAssets'], $_POST['topic'], $_POST['keywords'], $_POST['explanation'], $_POST['marks'], $caseId, $caseBool, $_POST['examPaperLink'], $_POST['markSchemeLink'], $_POST['examReportLink']);
       ?>
       <?php
     }
@@ -209,13 +209,17 @@ if(isset($_GET['topic'])) {
     'examBoard' => ($_GET['examBoard']!="") ? $_GET['examBoard'] : null,
     'year' => ($_GET['year']!="") ? $_GET['year'] : null,
     'component' => ($_GET['component']!="") ? $_GET['component'] : null,
+    'qualLevel' => isset($_GET['qualLevel'])&&($_GET['qualLevel'] !="") ? $_GET['qualLevel'] : null,
+    'caseStudiesFilter' => (isset($_GET['caseStudiesFilter'])&&$_GET['caseStudiesFilter'] !="") ? $_GET['caseStudiesFilter'] : null,
+    'dataFilter' => (isset($_GET['dataFilter'])&&$_GET['dataFilter'] !="") ? $_GET['dataFilter'] : null
+
 
   );
 
   //var_dump($get_selectors);
   //var_dump($_GET);
 
-  $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionNo'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component']);
+  $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionNo'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel'], $get_selectors['caseStudiesFilter'], $get_selectors['dataFilter']);
 }
 
 
@@ -526,7 +530,32 @@ $_GET controls:
                             <label for="caseBool_<?=$question['id']?>">Case Study</label>
                             <input id = "caseBool_<?=$question['id']?>" name = "caseBool" type="checkbox" value="1" <?=($question['caseBool'] == 1) ? "checked" : ""?>>
 
-                        </div>                    
+                        </div>
+                        <?php
+                        if($question['dataBool'] != "") {
+                          ?>
+                          <div class="toggleClass_<?=$question['id']?>">
+                            <p>Exam Paper: <a target="_blank" href="<?=$question['examPaperLink']?>"><?=$question['examPaperLink']?></a></p>
+                            <p>Mark Scheme: <a target="_blank" href="<?=$question['markSchemeLink']?>"><?=$question['markSchemeLink']?></a></p>
+                            <p>Examiner Report: <a target="_blank" href="<?=$question['examReportLink']?>"><?=$question['examReportLink']?></a></p>
+                          </div>
+                          
+                          <?php
+                        }
+                        
+                        ?>
+                        <div class="<?=($question['dataBool'] == "") ? "hidden" : ""?>">
+                          <div class=" toggleClass_<?=$question['id']?> hidden">
+                            <label for="examPaperLink_<?=$question['id']?>">Exam Paper Link: </label>
+                            <p><input class="w-full" id="examPaperLink_<?=$question['id']?>" type="text" name= "examPaperLink" value="<?=$question['examPaperLink']?>"></p>
+
+                            <label for="markSchemeLink<?=$question['id']?>">Mark Scheme Link: </label>
+                            <p><input class="w-full" id="markSchemeLink<?=$question['id']?>" type="text" name= "markSchemeLink" value="<?=$question['markSchemeLink']?>"></p>
+
+                            <label for="examReportLink<?=$question['id']?>">Exam Report Link: </label>
+                            <p><input class="w-full" id="examReportLink<?=$question['id']?>" type="text" name= "examReportLink" value="<?=$question['examReportLink']?>"></p>
+                          </div>
+                        </div>
 
 
                         <p>
