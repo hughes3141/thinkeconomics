@@ -237,6 +237,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
           //print_r($questions);
           $imgSource = "https://www.thinkeconomics.co.uk";
           $usedQuestions = array();
+          $usedExamInstance =array();
           foreach($questions as $question) {
 
             $groupQuestions = array();
@@ -247,6 +248,20 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
             //print_r($question);
 
             if(!in_array($question['id'], $usedQuestions)) {
+              
+              $examInstance = $question['examBoard']." ".$question['qualLevel']." "."Unit ".$question['component']." ".$question['series']." ".$question['year'];
+
+              if(!in_array($examInstance, $usedExamInstance)) {
+                ?>
+                <h2 class="text-xl bg-sky-300 mb-2 p-1 rounded"><?=$examInstance?></h2>
+                <?php
+                array_push($usedExamInstance, $examInstance);
+
+              }
+              
+
+
+
               if($question['caseId']) {
                 $caseId = $question['caseId'];
                 $caseStudy = getPastPaperQuestionDetails($question['caseId'])[0];
@@ -282,7 +297,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                     <?php
                     } else {
                     ?>
-                    <div class="w-1/2 rounded-r-lg bg-pink-100 px-1">
+                    <div class="lg:w-1/2 lg:rounded-r-lg bg-pink-100 px-1">
                       <h3 class="text-lg">
                         <?php
                         //echo $question2['examBoard']." ";
@@ -362,7 +377,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
 
                   if($question2['markSchemeAssets']!="") {
                     ?>
-                  <button class="border rounded bg-pink-300 border-black mb-1 p-1" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$question2['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
+                  <button class="border rounded bg-pink-200 border-black mb-1 px-1 ml-9" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$question2['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
 
                   <div class="markSchemeToggle_<?=$question2['id']?> hidden">
                   <?php
@@ -385,7 +400,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                 <?php
                 }
                 ?>
-                <div class="px-2 py-2 bg-pink-200 grid grid-cols-2">       
+                <div class="px-2 py-2 bg-pink-200 grid lg:grid-cols-2">       
                   <?php
                   if($question['examPaperLink'] != "") {
                     ?>

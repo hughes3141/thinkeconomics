@@ -774,6 +774,18 @@ textarea, input, select {
   margin-top: -0.5rem;
 }
 
+.ml-11 {
+  margin-left: 2.75rem;
+}
+
+.ml-10 {
+  margin-left: 2.5rem;
+}
+
+.ml-9 {
+  margin-left: 2.25rem;
+}
+
 .block {
   display: block;
 }
@@ -2172,6 +2184,10 @@ textarea, input, select {
     width: 100%;
   }
 
+  .lg\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .lg\:items-center {
     align-items: center;
   }
@@ -2179,6 +2195,11 @@ textarea, input, select {
   .lg\:rounded-l-lg {
     border-top-left-radius: 0.5rem;
     border-bottom-left-radius: 0.5rem;
+  }
+
+  .lg\:rounded-r-lg {
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
   }
 
   .lg\:bg-transparent {
