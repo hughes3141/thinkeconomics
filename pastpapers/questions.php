@@ -337,7 +337,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   foreach($questionArray as $key => $newLine) {
                     if($key == 0) {
                       ?>
-                      <p class="-indent-9 mb-2"><span class='font-medium font-mono'><?=$question2['questionNo']?>.<?=$indentOffset?></span><?=$newLine?></p>
+                      <p class="-indent-9 <?=(!$caseId || $key2 !=0) ? "mb-2" : ""?>"><span class='font-medium font-mono'><?=$question2['questionNo']?>.<?=$indentOffset?></span><?=$newLine?></p>
                       <?php //echo $questionNoLength; ?>
                       <?php
                     }
@@ -370,34 +370,32 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
 
                 }
                 ?>
-                <div id="second_part_<?=$question['id']?>" class="px-2 pb-2">
+                
                 <?php
                   $markSchemeAssets = explode(",",$question2['markSchemeAssets']);
                   //print_r($questionAssets);
 
                   if($question2['markSchemeAssets']!="") {
                     ?>
-                  <button class="border rounded bg-pink-200 border-black mb-1 px-1 ml-9" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$question2['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
+                  <div id="second_part_<?=$question['id']?>" class="px-2 pb-2">
+                    <button class="border rounded bg-pink-200 border-black mb-1 px-1 ml-9" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$question2['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
 
-                  <div class="markSchemeToggle_<?=$question2['id']?> hidden">
-                  <?php
-                    //Mark Scheme:
-                    foreach($markSchemeAssets as $asset) {
-                    $asset = getUploadsInfo($asset)[0];
-                    //print_r($asset);
-                    ?>
-                    <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                    <div class="markSchemeToggle_<?=$question2['id']?> hidden">
                     <?php
-                    }
-                  ?>
+                      //Mark Scheme:
+                      foreach($markSchemeAssets as $asset) {
+                      $asset = getUploadsInfo($asset)[0];
+                      //print_r($asset);
+                      ?>
+                      <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                      <?php
+                      }
+                    ?>
+                    </div>
                   </div>
                   <?php
                   }
-                  ?>
 
-
-                </div>
-                <?php
                 }
                 ?>
                 <div class="px-2 py-2 bg-pink-200 grid lg:grid-cols-2">       
