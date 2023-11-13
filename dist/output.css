@@ -1160,6 +1160,16 @@ textarea, input, select {
   border-bottom-left-radius: 0.75rem;
 }
 
+.rounded-r {
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+}
+
+.rounded-r-lg {
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
 .border {
   border-width: 1px;
 }
@@ -1194,6 +1204,10 @@ textarea, input, select {
 
 .border-t-2 {
   border-top-width: 2px;
+}
+
+.border-b-2 {
+  border-bottom-width: 2px;
 }
 
 .border-transparent {
@@ -1502,10 +1516,6 @@ textarea, input, select {
   padding-bottom: 0.5rem;
 }
 
-.pl-12 {
-  padding-left: 3rem;
-}
-
 .text-left {
   text-align: left;
 }
@@ -1516,14 +1526,6 @@ textarea, input, select {
 
 .-indent-9 {
   text-indent: -2.25rem;
-}
-
-.-indent-10 {
-  text-indent: -2.5rem;
-}
-
-.-indent-11 {
-  text-indent: -2.75rem;
 }
 
 .align-top {
@@ -1838,6 +1840,11 @@ textarea, input, select {
 .hover\:text-pink-500:hover {
   --tw-text-opacity: 1;
   color: rgb(236 72 153 / var(--tw-text-opacity));
+}
+
+.hover\:text-pink-300:hover {
+  --tw-text-opacity: 1;
+  color: rgb(249 168 212 / var(--tw-text-opacity));
 }
 
 .hover\:underline:hover {

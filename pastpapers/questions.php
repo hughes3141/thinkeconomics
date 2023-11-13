@@ -267,30 +267,38 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                 foreach($groupQuestions as $key2 => $question2) {
                   ?>
                 <!--id: <?=$question2['id']?> topic <?=$question2['topic']?> Code: <?=$question2['No']?>  -->
-                <div class="bg-pink-200 px-1 ">
+                
                   <?php
                   if($key2 == 0) {
                     ?>
-                    <h3 class="text-lg"><?=$question2['examBoard']?> <?=$question2['qualLevel']?> Unit <?=$question2['component']?> <?=$question2['series']?> <?=$question2['year']?> Q<?=$question2['questionNo']?></h3>
+                    <div class="bg-pink-200 px-1 border-b-2 border-slate-500">
+                      <h3 class="text-lg"><?=$question2['examBoard']?> <?=$question2['qualLevel']?> Unit <?=$question2['component']?> <?=$question2['series']?> <?=$question2['year']?> Q<?=$question2['questionNo']?></h3>
+                      <?php
+                      if($question2['topicName'] != "") {
+                        echo "<p>Topic: ".$question2['topicName']."</p>";
+                      }
+                      ?>
+                    </div>
                     <?php
                     } else {
                     ?>
-                    <h3 class="text-lg">
-                      <?php
-                      //echo $question2['examBoard']." ";
-                      //echo $question2['qualLevel']." ";
-                      //echo "Unit ".$question2['component']." ";
-                      //echo $question2['series']." ";
-                      //echo $question2['year']." ";
-                      echo "Q".$question2['questionNo'];
-                      ?></h3>
+                    <div class="w-1/2 rounded-r-lg bg-pink-100 px-1">
+                      <h3 class="text-lg">
+                        <?php
+                        //echo $question2['examBoard']." ";
+                        //echo $question2['qualLevel']." ";
+                        //echo "Unit ".$question2['component']." ";
+                        //echo $question2['series']." ";
+                        //echo $question2['year']." ";
+                        echo "Q".$question2['questionNo'];
+                        ?></h3>
+                        <?=($question2['topicName'] != "") ? $question2['topicName'] : ""?>
+                    </div>
                     <?php
                     }
-                    if($question2['topicName'] != "") {
-                      echo "<p>Topic: ".$question2['topicName']."</p>";
-                    }
+                    
                     ?>
-                </div>
+                
                 <?php
 
                 //Questions:
@@ -308,7 +316,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   }
                   $questionArray=explode("\n",$question2['question']);
                   ?>
-                  <div class="border-t-2 border-slate-500 -mx-0  p-2 pl-11 ">
+                  <div class=" -mx-0  p-2 pl-11 ">
                   <?php
                   //print_r($questionArray);
                   foreach($questionArray as $key => $newLine) {
@@ -377,21 +385,23 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                 <?php
                 }
                 ?>
-                <div class="px-2 pb-2">
-                  <p>
-                    <?php
-                    if($question['examPaperLink'] != "") {
-                      ?>
-                      <a class ="hover:bg-pink-200" href="<?=$question['examPaperLink']?>" target="_blank">Link to Exam Paper</a><span>  </span>
-                      <?php
-                    }
-                    if($question['markSchemeLink'] != "") {
-                      ?>
-                      <a class ="hover:bg-sky-200" href="<?=$question['markSchemeLink']?>" target="_blank">Link to Mark Scheme</a>
-                      <?php
-                    }
+                <div class="px-2 py-2 bg-pink-200 grid grid-cols-2">       
+                  <?php
+                  if($question['examPaperLink'] != "") {
                     ?>
-                  </p>
+                    <div class = "text-center">
+                      <a class ="hover:bg-sky-200 hover:text-pink-500 w-full block underline rounded" href="<?=$question['examPaperLink']?>" target="_blank">Link to Exam Paper</a>
+                    </div>
+                    <?php
+                  }
+                  if($question['markSchemeLink'] != "") {
+                    ?>
+                    <div class="text-center">
+                      <a class ="hover:bg-sky-200 hover:text-pink-500 w-full block underline rounded" href="<?=$question['markSchemeLink']?>" target="_blank">Link to Mark Scheme</a>
+                    </div>
+                    <?php
+                  }
+                  ?>
                 </div>
               </div>
               <?php
