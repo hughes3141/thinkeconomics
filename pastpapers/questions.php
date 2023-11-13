@@ -231,7 +231,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
         }
       ?>
 
-      <?=(count($questions)>0) ? "<h2 class='text-lg mb-2 bg-pink-300 rounded px-1 font-mono'>Questions</h2>" : ""?>
+      <?=(count($questions)>0) ? "<h2 class='text-xl mb-2 bg-pink-300 rounded p-1 font-mono'>Questions</h2>" : ""?>
       <div>
         <?php
           //print_r($questions);
@@ -253,7 +253,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
 
               if(!in_array($examInstance, $usedExamInstance)) {
                 ?>
-                <h2 class="text-xl bg-sky-300 mb-2 p-1 rounded"><?=$examInstance?></h2>
+                <h2 class="text-xl bg-sky-200 mb-2 p-1 rounded"><?=$examInstance?></h2>
                 <?php
                 array_push($usedExamInstance, $examInstance);
 
