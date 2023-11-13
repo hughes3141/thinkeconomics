@@ -236,10 +236,11 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
         <?php
           //print_r($questions);
           $imgSource = "https://www.thinkeconomics.co.uk";
+          $usedQuestions = array();
           foreach($questions as $question) {
 
             $groupQuestions = array();
-            $usedQuestions = array();
+            
             $caseId = null;
           
 
@@ -345,14 +346,58 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   echo "</div>";
 
                 }
-                echo $question2['question']."<br>";
+                ?>
+                <div id="second_part_<?=$question['id']?>" class="px-2 pb-2">
+                <?php
+                  $markSchemeAssets = explode(",",$question2['markSchemeAssets']);
+                  //print_r($questionAssets);
+
+                  if($question2['markSchemeAssets']!="") {
+                    ?>
+                  <button class="border rounded bg-pink-300 border-black mb-1 p-1" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$question2['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
+
+                  <div class="markSchemeToggle_<?=$question2['id']?> hidden">
+                  <?php
+                    //Mark Scheme:
+                    foreach($markSchemeAssets as $asset) {
+                    $asset = getUploadsInfo($asset)[0];
+                    //print_r($asset);
+                    ?>
+                    <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                    <?php
+                    }
+                  ?>
+                  </div>
+                  <?php
+                  }
+                  ?>
+
+
+                </div>
+                <?php
                 }
                 ?>
+                <div class="px-2 pb-2">
+                  <p>
+                    <?php
+                    if($question['examPaperLink'] != "") {
+                      ?>
+                      <a class ="hover:bg-pink-200" href="<?=$question['examPaperLink']?>" target="_blank">Link to Exam Paper</a><span>  </span>
+                      <?php
+                    }
+                    if($question['markSchemeLink'] != "") {
+                      ?>
+                      <a class ="hover:bg-sky-200" href="<?=$question['markSchemeLink']?>" target="_blank">Link to Mark Scheme</a>
+                      <?php
+                    }
+                    ?>
+                  </p>
+                </div>
               </div>
               <?php
             }
 
-
+            /*
 
             //print_r($question);
 
@@ -536,7 +581,9 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
               </div>
             </div>
             <?php
+            */
           }
+          
         ?>
       </div>
     </div>
