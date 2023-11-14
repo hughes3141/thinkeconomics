@@ -221,6 +221,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
           </div>
 
           <input type="hidden"  value="Select">
+          <button type="button" onClick="window.location.href=window.location.href.split('?')[0]" class="bg-pink-200 w-full border border-black rounded mt-3">Reset All Parameters</button>
         </form>
       </div>
       <?php
