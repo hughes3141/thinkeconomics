@@ -774,16 +774,24 @@ textarea, input, select {
   margin-top: -0.5rem;
 }
 
-.ml-11 {
-  margin-left: 2.75rem;
-}
-
-.ml-10 {
-  margin-left: 2.5rem;
+.-ml-2 {
+  margin-left: -0.5rem;
 }
 
 .ml-9 {
   margin-left: 2.25rem;
+}
+
+.-ml-9 {
+  margin-left: -2.25rem;
+}
+
+.-ml-11 {
+  margin-left: -2.75rem;
+}
+
+.-ml-10 {
+  margin-left: -2.5rem;
 }
 
 .block {
@@ -1170,16 +1178,6 @@ textarea, input, select {
 .rounded-b-xl {
   border-bottom-right-radius: 0.75rem;
   border-bottom-left-radius: 0.75rem;
-}
-
-.rounded-r {
-  border-top-right-radius: 0.25rem;
-  border-bottom-right-radius: 0.25rem;
-}
-
-.rounded-r-lg {
-  border-top-right-radius: 0.5rem;
-  border-bottom-right-radius: 0.5rem;
 }
 
 .border {
@@ -1852,11 +1850,6 @@ textarea, input, select {
 .hover\:text-pink-500:hover {
   --tw-text-opacity: 1;
   color: rgb(236 72 153 / var(--tw-text-opacity));
-}
-
-.hover\:text-pink-300:hover {
-  --tw-text-opacity: 1;
-  color: rgb(249 168 212 / var(--tw-text-opacity));
 }
 
 .hover\:underline:hover {
