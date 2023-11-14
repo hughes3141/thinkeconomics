@@ -334,16 +334,17 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   <div class=" -mx-0  p-2 pl-11 ">
                   <?php
                   //print_r($questionArray);
+                  $lastParagraph = count($questionArray) - 1;
                   foreach($questionArray as $key => $newLine) {
                     if($key == 0) {
                       ?>
-                      <p class="-indent-9 <?=(!$caseId || $key2 !=0) ? "mb-2" : ""?>"><span class='font-medium font-mono'><?=$question2['questionNo']?>.<?=$indentOffset?></span><?=$newLine?></p>
+                      <p class="-indent-9 <?=(($key == $lastParagraph) && $caseId) ? "" : "mb-2"?> <?=($key2!=0) ? "mb-2" : ""?>"><span class='font-medium font-mono'><?=$question2['questionNo']?>.<?=$indentOffset?></span><?=$newLine?></p>
                       <?php //echo $questionNoLength; ?>
                       <?php
                     }
                     else {
                       ?>
-                      <p class=" mb-2"><?=$newLine?></p>
+                      <p class=" <?=(($key == $lastParagraph) && $caseId) ? "" : "mb-2"?>"><?=$newLine?></p>
                       <?php
                     }
                   }
