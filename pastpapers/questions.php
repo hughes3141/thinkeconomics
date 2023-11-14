@@ -221,6 +221,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
           </div>
 
           <input type="hidden"  value="Select">
+          <button type="button" onClick="window.location.href=window.location.href.split('?')[0]" class="bg-pink-200 w-full border border-black rounded mt-3">Reset All Parameters</button>
         </form>
       </div>
       <?php
@@ -249,7 +250,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
 
             if(!in_array($question['id'], $usedQuestions)) {
               
-              $examInstance = $question['examBoard']." ".$question['qualLevel']." "."Unit ".$question['component']." ".$question['series']." ".$question['year'];
+              $examInstance = $question['examBoard']." ".$question['qualLevel']." "."Unit ".$question['component']." (".$question['unitName'].") ".$question['series']." ".$question['year'];
 
               if(!in_array($examInstance, $usedExamInstance)) {
                 ?>
@@ -287,7 +288,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   if($key2 == 0) {
                     ?>
                     <div class="bg-pink-200 px-1 border-b-2 border-slate-500">
-                      <h3 class="text-lg"><?=$question2['examBoard']?> <?=$question2['qualLevel']?> Unit <?=$question2['component']?> <?=$question2['series']?> <?=$question2['year']?> Q<?=$question2['questionNo']?></h3>
+                      <h3 class="text-lg"><?=$question2['examBoard']?> <?=$question2['qualLevel']?> Unit <?=$question2['component']?> (<?=$question['unitName']?>) <?=$question2['series']?> <?=$question2['year']?> Q<?=$question2['questionNo']?></h3>
                       <?php
                       if($question2['topicName'] != "") {
                         echo "<p>Topic: ".$question2['topicName']."</p>";
@@ -298,7 +299,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                     } else {
                     ?>
                     <div class="lg:w-1/2 lg:rounded-r-lg bg-pink-100 px-1">
-                      <h3 class="text-lg">
+                      <h4 class="text-lg">
                         <?php
                         //echo $question2['examBoard']." ";
                         //echo $question2['qualLevel']." ";
@@ -306,7 +307,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                         //echo $question2['series']." ";
                         //echo $question2['year']." ";
                         echo "Q".$question2['questionNo'];
-                        ?></h3>
+                        ?></h4>
                         <?=($question2['topicName'] != "") ? $question2['topicName'] : ""?>
                     </div>
                     <?php
@@ -320,36 +321,29 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                 $questionAssets = explode(",",$question2['questionAssets']);
                 //var_dump($questionAssets);
                 if(count($questionAssets) == 1 && $questionAssets[0]=="") {
-                  $questionNo = $question2['questionNo'];
-                  $questionNoLength = strlen($questionNo);
-                  $indentOffset = "";
-                  if($questionNoLength == 1) {
-                    $indentOffset = "&nbsp&nbsp";
-                  } 
-                  if($questionNoLength == 2) {
-                    $indentOffset = "&nbsp";
-                  }
+      
                   $questionArray=explode("\n",$question2['question']);
                   ?>
-                  <div class=" -mx-0  p-2 pl-11 ">
+                  <div class=" p-2 pl-11 relative">
                   <?php
                   //print_r($questionArray);
+
+                  $lastParagraph = count($questionArray) - 1;
                   foreach($questionArray as $key => $newLine) {
                     if($key == 0) {
                       ?>
-                      <p class="-indent-9 <?=(!$caseId || $key2 !=0) ? "mb-2" : ""?>"><span class='font-medium font-mono'><?=$question2['questionNo']?>.<?=$indentOffset?></span><?=$newLine?></p>
-                      <?php //echo $questionNoLength; ?>
+                      <p class="<?=(($key == $lastParagraph) && $caseId) ? "" : "mb-2"?> <?=($key2!=0) ? "mb-2" : ""?>"><span class="-ml-9 absolute"><?=$question2['questionNo']?>.&nbsp;</span><?=$newLine?></p>
                       <?php
                     }
                     else {
                       ?>
-                      <p class=" mb-2"><?=$newLine?></p>
+                      <p class=" <?=(($key == $lastParagraph) && $caseId) ? "" : "mb-2"?>"><?=$newLine?></p>
                       <?php
                     }
                   }
                   if(!$caseId || $key2 !=0) {
                     ?>
-                      <p>[<?=$question2['marks']?> marks]<p>
+                      <p class="">[<?=$question2['marks']?> marks]<p>
                     <?php
                   }
                   ?>
@@ -419,194 +413,9 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
               </div>
               <?php
             }
-
-            /*
-
-            //print_r($question);
-
-            //Case Study:
-            if($question['caseId']) {
-              $caseId = $question['caseId'];
-              if(!in_array($caseId, $usedCaseStudies))
-              {
-                array_push($usedCaseStudies, $caseId);
-                $caseStudy = getPastPaperQuestionDetails($question['caseId'])[0];
-                $questionAssets = explode(",",$caseStudy['questionAssets']);
-                $questionElements = $caseStudy;
-
-                ?>
-                <div class="mb-3 border-2 rounded border-pink-300">
-                  <!--id: <?=$questionElements['id']?> topic <?=$questionElements['topic']?> Code: <?=$question['No']?>  -->
-                  <div class="bg-pink-200 px-1 ">
-                    <h3 class="text-lg"><?=$questionElements['examBoard']?> <?=$questionElements['qualLevel']?> Unit <?=$questionElements['component']?> <?=$questionElements['series']?> <?=$questionElements['year']?> Q<?=$questionElements['questionNo']?></h3>
-                  </div>
-                  <?php
-                    if(count($questionAssets) == 1 && $questionAssets[0]=="") {
-                      $questionNo = $questionElements['questionNo'];
-                      $questionNoLength = strlen($questionNo);
-                      $indentOffset = "";
-                      if($questionNoLength == 1) {
-                        $indentOffset = "&nbsp&nbsp";
-                      } 
-                      if($questionNoLength == 2) {
-                        $indentOffset = "&nbsp";
-                      }
-    
-                      $questionArray=explode("\n",$questionElements['question']);
-                      ?>
-                      <div class="border-t-2 border-slate-500 -mx-0  p-2 pl-11 ">
-                        <?php
-                        //print_r($questionArray);
-                        foreach($questionArray as $key => $newLine) {
-                          if($key == 0) {
-                            ?>
-                            <p class="-indent-9 mb-2"><span class='font-medium font-mono'><?=$questionElements['questionNo']?>.<?=$indentOffset?></span><?=$newLine?></p>
-                            <?php
-                          }
-                          else {
-                            ?>
-                            <p class=" mb-2"><?=$newLine?></p>
-                            <?php
-                          }
-                        }
-                        ?>
-                      </div>
-                      <?php
-                    }
-                    else {
-                      //Questions Images:
-                      echo "<div class='p-2'>";
-                      foreach($questionAssets as $asset) {
-                        $asset = getUploadsInfo($asset)[0];
-                        //print_r($asset);
-                        
-                        ?>
-                        
-                        <img class=" object-contain" alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
-                        
-                        <?php
-                      }
-                      echo "</div>";
-                    }
-                  ?>
-                </div>
-                <?php 
-              }              
-            }
-            
-            //Question:
-            ?>
-            <div class="mb-3 border-2 rounded border-pink-300">
-              <!--id: <?=$question['id']?> topic <?=$question['topic']?> Code: <?=$question['No']?>  -->
-              <div class="bg-pink-200 px-1 ">
-                <h3 class="text-lg"><?=$question['examBoard']?> <?=$question['qualLevel']?> Unit <?=$question['component']?> <?=$question['series']?> <?=$question['year']?> Q<?=$question['questionNo']?></h3>
-                <?php
-                if($question['topicName'] != "") {
-                  echo "<p>Topic: ".$question['topicName']."</p>";
-                }
-                ?>
-              </div>
-              <?php
-                //Questions:
-                $questionAssets = explode(",",$question['questionAssets']);
-                //var_dump($questionAssets);
-                if(count($questionAssets) == 1 && $questionAssets[0]=="") {
-                  $questionNo = $question['questionNo'];
-                  $questionNoLength = strlen($questionNo);
-                  $indentOffset = "";
-                  if($questionNoLength == 1) {
-                    $indentOffset = "&nbsp&nbsp";
-                  } 
-                  if($questionNoLength == 2) {
-                    $indentOffset = "&nbsp";
-                  }
-
-                  $questionArray=explode("\n",$question['question']);
-                  
-
-                  ?>
-                  <div class="border-t-2 border-slate-500 -mx-0  p-2 pl-11 ">
-                  <?php
-                  //print_r($questionArray);
-                  foreach($questionArray as $key => $newLine) {
-                    if($key == 0) {
-                      ?>
-                      <p class="-indent-9 mb-2"><span class='font-medium font-mono'><?=$question['questionNo']?>.<?=$indentOffset?></span><?=$newLine?></p>
-                      <?php //echo $questionNoLength; ?>
-                      <?php
-                    }
-                    else {
-                      ?>
-                      <p class=" mb-2"><?=$newLine?></p>
-                      <?php
-                    }
-                  }
-                  ?>
-                    <p>[<?=$question['marks']?> marks]<p>
-                  </div>
-                  <?php
-                }
-                else {
-                  //Questions Images:
-                  echo "<div class='p-2'>";
-                  foreach($questionAssets as $asset) {
-                    $asset = getUploadsInfo($asset)[0];
-                    //print_r($asset);
-                    
-                    ?>
-                    
-                     <img class=" object-contain" alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
-                    
-                    <?php
-                  }
-                  echo "</div>";
-
-                }
-                
-                ?>
-                <div id="second_part_<?=$question['id']?>" class="px-2 pb-2">
-                <?php
-
-                $markSchemeAssets = explode(",",$question['markSchemeAssets']);
-                //print_r($questionAssets);
-
-                if($question['markSchemeAssets']!="") {
-                  ?>
-                <button class="border rounded bg-pink-300 border-black mb-1 p-1" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$asset['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
-
-                <div class="markSchemeToggle_<?=$asset['id']?> hidden">
-                <?php
-                  //Mark Scheme:
-                  foreach($markSchemeAssets as $asset) {
-                  $asset = getUploadsInfo($asset)[0];
-                  //print_r($asset);
-                  ?>
-                  <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
-                  <?php
-                  }
-                ?>
-                </div>
-                <p>
-                <?php
-                }
-                if($question['examPaperLink'] != "") {
-                  ?>
-                  <a class ="hover:bg-pink-200" href="<?=$question['examPaperLink']?>" target="_blank">Link to Exam Paper</a><span>  </span>
-                  <?php
-                }
-                if($question['markSchemeLink'] != "") {
-                  ?>
-                  <a class ="hover:bg-sky-200" href="<?=$question['markSchemeLink']?>" target="_blank">Link to Mark Scheme</a>
-                  <?php
-                }
-                ?>
-                </p>
-              </div>
-            </div>
-            <?php
-            */
           }
           
+          //var_dump($usedExamInstance);
         ?>
       </div>
     </div>
