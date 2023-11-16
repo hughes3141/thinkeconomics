@@ -932,11 +932,10 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
 
   $sql = "SELECT * FROM news_data ";
 
-  if($id OR $keyword OR $topic OR $startDate OR $endDate) {
-    $sql .= " WHERE ";
-  }
 
   if($id) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoin = 1;
     $sql .= " id = ? ";
     array_push($bindArray, $id);
     $params .= "i";
@@ -944,8 +943,8 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
   }
 
   if($keyword) {
-    $conjoin = ($conjoiner == 1) ? " AND " : "";
-    $sql .= $conjoin;
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoin = 1;
     $sql .= " keyWords LIKE ? ";
     $keyword = "%".$keyword."%";
     array_push($bindArray, $keyword);
@@ -954,8 +953,8 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
   }
 
   if($topic) {
-    $conjoin = ($conjoiner == 1) ? " AND " : "";
-    $sql .= $conjoin;
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoin = 1;
     $sql .= " topic = ? ";
     //$keyword = "%".$keyword."%";
     array_push($bindArray, $topic);
@@ -964,8 +963,8 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
   }
 
   if($startDate) {
-    $conjoin = ($conjoiner == 1) ? " AND " : "";
-    $sql .= $conjoin;
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoin = 1;
     $sql .= " datePublished > ? ";
     //$keyword = "%".$keyword."%";
     array_push($bindArray, $startDate);
@@ -974,8 +973,8 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
   }
 
   if($endDate) {
-    $conjoin = ($conjoiner == 1) ? " AND " : "";
-    $sql .= $conjoin;
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoin = 1;
     $sql .= " datePublished < ? ";
     //$keyword = "%".$keyword."%";
     array_push($bindArray, $endDate);
