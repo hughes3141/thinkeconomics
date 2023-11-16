@@ -60,7 +60,13 @@ td p {
 
 END;
 
+$get_selectors = array(
+  'id' => (isset($_GET['id']) && $_GET['id'] != "") ? $_GET['id'] : null,
+  'topic' => (isset($_GET['topic']) && $_GET['topic'] != "") ? $_GET['topic'] : null,
+  'keyword' => (isset($_GET['keyword']) && $_GET['keyword'] != "") ? $_GET['keyword'] : null,
+);
 
+$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'])
 ?>
 
 <?php include "header_tailwind.php"; ?>
@@ -93,42 +99,9 @@ if (isset($_SESSION['userid'])==false) {
 <h1 class="font-mono text-2xl bg-pink-400 pl-1 mb-2">News List</h1>
 
 <?php 
-/*
-if (isset($_SESSION['userid'])==false) {
-  
-  ?>
-    
-  <div id = 'logindiv'>
-  <h2>User Login:</h2>
-  <p>Please login to contribute to the news database:</p>
 
-  <?php include "login_embed_envelope.php"; ?>
-    
-
-
-  </div>
-  
-  <?php
-  
-} else {
-  echo "<p>Logged in as ".$_SESSION['name']."</p>";
-}
-*/
-// Using OOP:
-
-$path = $_SERVER['DOCUMENT_ROOT'];
-$path .= "/../secrets/secrets.php";
-include($path);
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
-
-//print_r($_GET);
+//print_r($newsArticles);
+//var_dump($get_selectors);
 
 
 echo <<<END
@@ -166,24 +139,7 @@ END;
 
 
 
-$topic = "%".$_GET['topic']."%";
-
-$query = "SELECT * FROM news_data";
-if((isset($_GET['topic']))&&($_GET['topic']!="")) {
-  $sql = "SELECT * FROM news_data WHERE topic LIKE ? ORDER BY datePublished DESC";
-} else {
-  $sql = "SELECT * FROM news_data ORDER BY datePublished DESC";
-}
-
-//echo $sql;
-
-$stmt = $conn -> prepare($sql);
-$stmt->bind_param("s", $topic);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if($result) {
-  while ($row = $result->fetch_assoc()) {
+foreach ($newsArticles as $row) {
     echo "<tr>";
   
     //print_r($row);
@@ -197,11 +153,13 @@ if($result) {
     }
     echo "</td>";
     //echo "<td><a target ='_blank' href='".$row['link']."'>".$row['link']."</a></td>";
-    echo "<td>".$row['datePublished']."</td>";
+    $date = strtotime($row['datePublished']);
+    $formatDate = date( 'd M Y', $date );
+    echo "<td>".$formatDate."</td>";
     
 
   }
-}
+
 
 
   

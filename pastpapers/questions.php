@@ -9,23 +9,30 @@ $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 include($path."/php_functions.php");
 
+$userId = null;
 
 if (!isset($_SESSION['userid'])) {
   
   //header("location: /login.php");
   
 }
-/*
+
 else {
   $userInfo = getUserInfo($_SESSION['userid']);
   $userId = $_SESSION['userid'];
   $permissions = $userInfo['permissions'];
+  /*
   if (!(str_contains($permissions, 'main_admin'))) {
     header("location: /index.php");
   }
+  */
 
 }
-*/
+
+
+
+
+
 $style_input = "
 
   ";
@@ -35,7 +42,18 @@ include($path."/header_tailwind.php");
 
 if($_SERVER['REQUEST_METHOD']==='POST') {}
 
+$excludedYear = 2023;
 
+/*
+
+Above variable $excludedYear is the year that will not be returned in any restults.
+This is primarly so that most-recnet exam years will not show up in query purposes.
+
+*/
+
+if($userId) {
+  $excludedYear = null;
+}
 
 
 $questions = array();
@@ -51,7 +69,7 @@ $get_selectors = array(
 
 );
 
-$controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel']);
+$controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel'], null, $excludedYear);
 
 
 
@@ -74,7 +92,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
   
 
   if($run == 1) {
-    $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionNo'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel'], 1, 1);
+    $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionNo'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel'], 1, 1, $excludedYear);
 
 
   }
@@ -337,7 +355,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                     }
                     else {
                       ?>
-                      <p class=" <?=(($key == $lastParagraph) && $caseId) ? "" : "mb-2"?>"><?=$newLine?></p>
+                      <p class=" <?=(($key == $lastParagraph) && $caseId) ? "" : "mb-2"?> <?=($key2!=0) ? "mb-2" : ""?>"><?=$newLine?></p>
                       <?php
                     }
                   }

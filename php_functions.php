@@ -932,11 +932,10 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
 
   $sql = "SELECT * FROM news_data ";
 
-  if($id OR $keyword OR $topic OR $startDate OR $endDate) {
-    $sql .= " WHERE ";
-  }
 
   if($id) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoin = 1;
     $sql .= " id = ? ";
     array_push($bindArray, $id);
     $params .= "i";
@@ -944,8 +943,8 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
   }
 
   if($keyword) {
-    $conjoin = ($conjoiner == 1) ? " AND " : "";
-    $sql .= $conjoin;
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoin = 1;
     $sql .= " keyWords LIKE ? ";
     $keyword = "%".$keyword."%";
     array_push($bindArray, $keyword);
@@ -954,8 +953,8 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
   }
 
   if($topic) {
-    $conjoin = ($conjoiner == 1) ? " AND " : "";
-    $sql .= $conjoin;
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoin = 1;
     $sql .= " topic = ? ";
     //$keyword = "%".$keyword."%";
     array_push($bindArray, $topic);
@@ -964,8 +963,8 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
   }
 
   if($startDate) {
-    $conjoin = ($conjoiner == 1) ? " AND " : "";
-    $sql .= $conjoin;
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoin = 1;
     $sql .= " datePublished > ? ";
     //$keyword = "%".$keyword."%";
     array_push($bindArray, $startDate);
@@ -974,8 +973,8 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
   }
 
   if($endDate) {
-    $conjoin = ($conjoiner == 1) ? " AND " : "";
-    $sql .= $conjoin;
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoin = 1;
     $sql .= " datePublished < ? ";
     //$keyword = "%".$keyword."%";
     array_push($bindArray, $endDate);
@@ -3880,7 +3879,7 @@ function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examB
 
 }
 
-function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, $examBoard = null, $year = null, $component = null, $qualLevel = null, $caseStudiesFilter = null, $dataFilter = null) {
+function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, $examBoard = null, $year = null, $component = null, $qualLevel = null, $caseStudiesFilter = null, $dataFilter = null, $excludedYear=null) {
   /**
    * This function retrieves information on past paper questions from pastpaper_question_bank
    *
@@ -3998,6 +3997,15 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, 
       $sql .= "dataBool IS ".$notSelector." NULL ";
     }
 
+    if($excludedYear) {
+      $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+      $conjoiner = 1;
+      $sql .= $tableAlias;
+      $sql .= "year <>  ? ";
+      $params .= "s";
+      array_push($bindArray, $excludedYear);
+    }
+
 
 
   $sql .= " ORDER BY component, qualLevel, year, unitName, questionNo";
@@ -4047,7 +4055,7 @@ function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets
 
 }
 
-function getPastPaperCategoryValues($topic=null, $examBoard = null, $year = null, $component = null, $qualLevel = null, $unitName = null) {
+function getPastPaperCategoryValues($topic=null, $examBoard = null, $year = null, $component = null, $qualLevel = null, $unitName = null, $excludedYear = null) {
   /**
    * This function returns unique category values from pastpaper_question_bank for purposes of updating input drop-downs etc.
    * 
@@ -4164,6 +4172,15 @@ function getPastPaperCategoryValues($topic=null, $examBoard = null, $year = null
           $sql .= "qualLevel = ? ";
           $params .= "s";
           array_push($bindArray, $qualLevel);
+        }
+
+        if($excludedYear) {
+          $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+          $conjoiner = 1;
+          $sql .= $tableAlias;
+          $sql .= "year <>  ? ";
+          $params .= "s";
+          array_push($bindArray, $excludedYear);
         }
 
       //}
