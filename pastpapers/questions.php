@@ -337,7 +337,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                     }
                     else {
                       ?>
-                      <p class=" <?=(($key == $lastParagraph) && $caseId) ? "" : "mb-2"?>"><?=$newLine?></p>
+                      <p class=" <?=(($key == $lastParagraph) && $caseId) ? "" : "mb-2"?> <?=($key2!=0) ? "mb-2" : ""?>"><?=$newLine?></p>
                       <?php
                     }
                   }
