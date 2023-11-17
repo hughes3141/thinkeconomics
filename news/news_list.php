@@ -30,7 +30,7 @@ $get_selectors = array(
 );
 
 
-$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['endDate'], $get_selectors['endDate'], null, $userId);
+$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['endDate'], $get_selectors['endDate'], null, $userId, 100);
 
 
 
@@ -38,14 +38,6 @@ $newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'],
 ?>
 
 
-<!DOCTYPE html>
-
-<html lang="en">
-
-
-<head>
-
-<?php include "../header.php"; ?>
 
 <!--
 
@@ -55,7 +47,11 @@ GET variables:
 
 -->
 
-<style>
+<?php
+
+$style_input = "
+
+
 
   .hide {
     display: none;
@@ -75,19 +71,15 @@ table {
   width: 100%;
 }
 
+";
 
-
-</style>
-</head>
-
-
-<body>
-
-<?php include "../navbar.php"; ?>
+?>
 
 
 
-<h1>News List</h1>
+
+
+
 <?php //if(($_POST)) {print_r($_POST);}
 
 if($_SERVER['REQUEST_METHOD']=='POST') {
@@ -102,9 +94,14 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
   echo "Record ".$_POST['id']." updated successfully.";
 }
 
-
+include($path."/header_tailwind.php");
 
 ?>
+
+<div class="container mx-auto px-4 pt-20 lg:pt-32 xl:pt-20">
+  <h1 class="font-mono text-2xl bg-pink-400 pl-1 mb-2">News List</h1>
+  <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
+
 
   <table>
       <tr>
@@ -117,114 +114,74 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
           <th>Key Words</th>
         </tr>
 
-<?php
-$loggedid = $_SESSION['userid'];
-if(isset($_GET['keyword'])) {
-  $keyword = $_GET['keyword'];
-}
+        <?php
+        foreach($newsArticles as $row) {
+          echo "<tr id = 'row_".$row['id']."'>";
+          ?>
 
-if(isset($_GET['topic'])) {
-  $topic = $_GET['topic'];
-}
-
-$params = "i";
-$bindArray = array($loggedid);
-
-$sql = "SELECT * FROM news_data WHERE user = ?";
-if(isset($topic)) {
-  $sql .= " AND topic LIKE ? ";
-  $params .= "s";
-  $topic = "%".$topic."%";
-  array_push($bindArray, $topic);
-}
-
-if(isset($keyword)) {
-  $sql .= " AND keyWords LIKE ? ";
-  $keyword = "%".$keyword."%";
-  $params .= "s";
-  array_push($bindArray, $keyword);
-
-
-}
-
-$sql .= " ORDER BY dateCreated DESC";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param($params, ...$bindArray);
-$stmt->execute();
-$result = $stmt->get_result();
-
-
-    foreach($newsArticles as $row) {
-      echo "<tr id = 'row_".$row['id']."'>";
-
-      //print_r($row);
-      //echo "<td>".$row['id']."</td>";
-
-      ?>
-
-      <form method="post" action ="">
-        <td class='col1'>
-          <div class="show_<?=$row['id'];?>">
-            <?=$row['topic'];?>
-          </div>
-          <textarea class="hide hide_<?=$row['id'];?>" name="topic"><?=$row['topic']?></textarea>
-        </td>
-        <td class='col2'>
-          <div class="show_<?=$row['id'];?>">
-            <?=$row['headline'];?>
-          </div>
-          <textarea class="hide hide_<?=$row['id'];?>" name="headline"><?=$row['headline']?></textarea>
-        </td>
-        <td class='col3'>
-          <div class="show_<?=$row['id'];?>">
-            <a target ='_blank' href='<?=$row['link'];?>'><?=$row['link'];?></a>
-          </div>
-          <textarea class="hide hide_<?=$row['id'];?>" name="link"><?=$row['link']?></textarea>
-        </td>
-        <td class='col4'>
-          <div class="show_<?=$row['id'];?>">
-            <?=$row['datePublished'];?>
-          </div>
-          <input class="hide hide_<?=$row['id'];?>" type = "date" value = "<?=$row['datePublished']?>" name="datePublished"></input>
-          <!--
-          <textarea class="hide hide_<?=$row['id'];?>" name="datePublished"><?=$row['datePublished']?></textarea>
-    -->
-        </td>
-        <td>
-          <div class="show_<?=$row['id'];?>">
-            <?=$row['explanation'];?>
-          </div>
-          <textarea class="hide hide_<?=$row['id'];?>" name="explanation"><?=$row['explanation']?></textarea>
-        </td>
-        <td>
-          <div class="show_<?=$row['id'];?>">
-            <?=$row['explanation_long'];?>
-          </div>
-          <textarea class="hide hide_<?=$row['id'];?>" name="explanation_long"><?=$row['explanation_long']?></textarea>
-        </td>
-        <td>
-          <div class="show_<?=$row['id'];?>">
-            <?=$row['keyWords'];?>
-          </div>
-          <textarea class="hide hide_<?=$row['id'];?>" name="keyWords"><?=$row['keyWords']?></textarea>
-        </td>
-        <td>
-          <div>
-            <button type ="button" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>)"">Edit</button>
-          </div>
-          <div class ="hide hide_<?=$row['id'];?>">
-            <input type="hidden" name = "id" value = "<?=$row['id'];?>">
-            <input type="submit" name="submit" value = "Submit"></input>
-          </div>
-          
-        </td>
-      </form>
-      </tr>
+          <form method="post" action ="">
+            <td class='col1'>
+              <div class="show_<?=$row['id'];?>">
+                <?=$row['topic'];?>
+              </div>
+              <textarea class="hide hide_<?=$row['id'];?>" name="topic"><?=$row['topic']?></textarea>
+            </td>
+            <td class='col2'>
+              <div class="show_<?=$row['id'];?>">
+                <?=$row['headline'];?>
+              </div>
+              <textarea class="hide hide_<?=$row['id'];?>" name="headline"><?=$row['headline']?></textarea>
+            </td>
+            <td class='col3'>
+              <div class="show_<?=$row['id'];?>">
+                <a target ='_blank' href='<?=$row['link'];?>'><?=$row['link'];?></a>
+              </div>
+              <textarea class="hide hide_<?=$row['id'];?>" name="link"><?=$row['link']?></textarea>
+            </td>
+            <td class='col4'>
+              <div class="show_<?=$row['id'];?>">
+                <?=$row['datePublished'];?>
+              </div>
+              <input class="hide hide_<?=$row['id'];?>" type = "date" value = "<?=$row['datePublished']?>" name="datePublished"></input>
+            </td>
+            <td>
+              <div class="show_<?=$row['id'];?>">
+                <?=$row['explanation'];?>
+              </div>
+              <textarea class="hide hide_<?=$row['id'];?>" name="explanation"><?=$row['explanation']?></textarea>
+            </td>
+            <td>
+              <div class="show_<?=$row['id'];?>">
+                <?=$row['explanation_long'];?>
+              </div>
+              <textarea class="hide hide_<?=$row['id'];?>" name="explanation_long"><?=$row['explanation_long']?></textarea>
+            </td>
+            <td>
+              <div class="show_<?=$row['id'];?>">
+                <?=$row['keyWords'];?>
+              </div>
+              <textarea class="hide hide_<?=$row['id'];?>" name="keyWords"><?=$row['keyWords']?></textarea>
+            </td>
+            <td>
+              <div>
+                <button type ="button" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>)"">Edit</button>
+              </div>
+              <div class ="hide hide_<?=$row['id'];?>">
+                <input type="hidden" name = "id" value = "<?=$row['id'];?>">
+                <input type="submit" name="submit" value = "Submit"></input>
+              </div>
+              
+            </td>
+          </form>
+        </tr>
       <?php
     }
   
    
-  ?> </table>
+  ?> 
+  </table>
+  </div>
+</div>
   <?php
 
   
@@ -280,6 +237,4 @@ function createUpdateRow(id) {
 
 </script>
 
-</body>
-
-</html>
+<?php   include($path."/footer_tailwind.php");?>

@@ -921,7 +921,7 @@ function getNewsArticlesByTopic($topic) {
   return $articles;
 }
 
-function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null, $userCreate = null) {
+function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null, $userCreate = null, $limit = null) {
   global $conn;
   $articles = array();
 
@@ -944,12 +944,11 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
 
   if($keyword) {
     $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
-    $conjoin = 1;
+    $conjoiner = 1;
     $sql .= " keyWords LIKE ? ";
     $keyword = "%".$keyword."%";
     array_push($bindArray, $keyword);
     $params .= "s";
-    $conjoiner = 1;
   }
 
   if($topic) {
@@ -989,6 +988,8 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
     $params .= "i";
   }
 
+
+
   if(is_null($orderBy)) {
     $sql .= " ORDER BY datePublished DESC";
   }
@@ -996,6 +997,11 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
     if($orderBy == "dateCreated") {
       $sql .= "ORDER BY dateCreated DESC";
     }
+  }
+
+  if($limit) {
+    $limit = intval($limit);
+    $sql .= " LIMIT ".$limit." ";
   }
 
   
