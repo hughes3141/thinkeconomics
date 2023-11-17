@@ -60,13 +60,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // Check if image file is a actual image or fake image
   if(isset($_POST["submit"])) {
-    $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
-    if($check !== false) {
-      $uploadMessage .=  "File is an image - " . $check["mime"] . ".";
-      $uploadOk = 1;
-    } else {
-      $uploadMessage .=  "File is not an image.";
-      $uploadOk = 0;
+    if($imageFileType != "pdf") {
+      $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+      if($check !== false) {
+        $uploadMessage .=  "File is an image - " . $check["mime"] . ".";
+        $uploadOk = 1;
+      } else {
+        $uploadMessage .=  "File is not an image.";
+        $uploadOk = 0;
+      }
     }
   }
 
@@ -77,14 +79,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   // Check file size
-  if ($_FILES["fileToUpload"]["size"] > 500000) {
+  if ($_FILES["fileToUpload"]["size"] > 5000000) {
     $uploadMessage .=  "Sorry, your file is too large.";
     $uploadOk = 0;
   }
 
   // Allow certain file formats
   if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-  && $imageFileType != "gif" ) {
+  && $imageFileType != "gif" && $imageFileType != 'pdf') {
     $uploadMessage .=  "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
     $uploadOk = 0;
   }
@@ -130,6 +132,7 @@ include($path."/header_tailwind.php");
         <option value = '/mcq/question_img/' <?=($lastFolder == "/mcq/question_img/") ? "selected": ""?>>MCQ Image</option>
         <option value = '/assets/flashcard_img/' <?=($lastFolder == "/assets/flashcard_img/") ? "selected": ""?>>Flashcard Image</option>
         <option value = '/assets/pastpaper_img/' <?=($lastFolder == "/assets/pastpaper_img/") ? "selected": ""?>>Past Paper Images</option>
+        <option value = '/assets/articles/' <?=($lastFolder == "/assets/pastpaper_img/") ? "selected": ""?>>Articles</option>
       </select>
     </p>
     <p>
