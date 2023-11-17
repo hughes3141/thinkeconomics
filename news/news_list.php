@@ -169,7 +169,7 @@ include($path."/header_tailwind.php");
 
               <label class="font-bold" for="articleAsset<?=$row['id']?>">Article Asset:</label>
               <div class="show_<?=$row['id'];?>">
-                <?=$row['articleAsset'];?>
+                <?=($row['articleAsset'] != "") ? $row['articleAsset'] : ""?>
               </div>
               <input type="text" id="articleAsset<?=$row['id']?>" class="w-full hide hide_<?=$row['id'];?>" name="articleAsset" value= "<?=$row['articleAsset']?>"></input>
 

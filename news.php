@@ -9,12 +9,30 @@ $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 include($path."/php_functions.php");
 
+$downloadPermissions = null;
+$userId = null;
 
 if (!isset($_SESSION['userid'])) {
   
   //header("location: /login.php");
   
+} else {
+  $userId = $_SESSION['userid'];
+  $userInfo = getUserInfo($userId);
+  $permissions = $userInfo['permissions'];
+  if((str_contains($permissions, "news_article_download") || str_contains($userInfo['school_permissions'], "news_article_download"))) {
+    $downloadPermissions = 1;
+  }
+
 }
+
+/*
+Note that the permission "news_article_download" must be present in either permissions for school or for user for article download to be available.
+
+
+*/
+
+
 
 
 
@@ -64,9 +82,14 @@ $get_selectors = array(
   'id' => (isset($_GET['id']) && $_GET['id'] != "") ? $_GET['id'] : null,
   'topic' => (isset($_GET['topic']) && $_GET['topic'] != "") ? $_GET['topic'] : null,
   'keyword' => (isset($_GET['keyword']) && $_GET['keyword'] != "") ? $_GET['keyword'] : null,
+  'startDate' => (isset($_GET['startDate']) && $_GET['startDate'] != "") ? $_GET['startDate'] : null,
+  'endDate' => (isset($_GET['endDate']) && $_GET['endDate'] != "") ? $_GET['endDate'] : null,
+  'orderBy' => (isset($_GET['orderBy']) && $_GET['orderBy'] != "") ? $_GET['orderBy'] : null,
+  'limit' => (isset($_GET['limit']) && $_GET['limit'] != "") ? $_GET['limit'] : 100,
+  'searchFor' => (isset($_GET['searchFor']) && $_GET['searchFor'] != "") ? $_GET['searchFor'] : ""
 );
 
-$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'])
+$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['startDate'], $get_selectors['endDate'], $get_selectors['orderBy'], null, $get_selectors['limit'], $get_selectors['searchFor'])
 ?>
 
 <?php include "header_tailwind.php"; ?>
@@ -103,6 +126,9 @@ if (isset($_SESSION['userid'])==false) {
 //print_r($newsArticles);
 //var_dump($get_selectors);
 
+//var_dump($permissions);
+//print_r($userInfo);
+
 
 echo <<<END
     <table class="bg-white text-black">
@@ -137,7 +163,7 @@ echo <<<END
 END;
 
 
-
+$imgSource = "https://www.thinkeconomics.co.uk";
 
 foreach ($newsArticles as $row) {
     echo "<tr>";
@@ -147,12 +173,23 @@ foreach ($newsArticles as $row) {
     echo "<td>".$row['topic']."</td>";
     echo "<td><p><strong>Headline: </strong>".$row['headline'];
     
-    echo "</p><p><strong>Link: </strong><a class = 'hover:bg-sky-100' target ='_blank' href='".$row['link']."'>".$row['link']."</a></p>";
-    if ($row['explanation']!="") {
-      echo "<p><strong>Explanation: </strong>".$row['explanation']."</p>";
+    echo "</p><p><strong>Link: </strong><a class = 'hover:bg-sky-100' target ='_blank' href='".$row['link']."'>".$row['link']."</a>";
+
+    if($row['path'] != "" && $downloadPermissions) {
+      ?>
+      <a class="bg-sky-100 hover:bg-sky-200  rounded whitespace-nowrap" target="_blank" href="<?=$imgSource.$row['path']?>">Download PDF</a>
+      <?php
     }
+    echo "</p>";
+
+    if ($row['explanation']!="") {
+      echo "<p><strong>Explanation: </strong>".$row['explanation']."</p";
+    }
+
+    
+
     echo "</td>";
-    //echo "<td><a target ='_blank' href='".$row['link']."'>".$row['link']."</a></td>";
+
     $date = strtotime($row['datePublished']);
     $formatDate = date( 'd M Y', $date );
     echo "<td>".$formatDate."</td>";
