@@ -929,14 +929,19 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
   $params = "";
   $conjoiner = 0;
 
+  $tableAlias = "";
 
-  $sql = "SELECT * FROM news_data ";
+
+  $sql = "SELECT d.*, u.path FROM news_data d
+          LEFT JOIN upload_record u
+          ON d.articleAsset = u.id ";
 
 
   if($id) {
     $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
     $conjoin = 1;
-    $sql .= " id = ? ";
+    $sql .= $tableAlias;
+    $sql .= "id = ? ";
     array_push($bindArray, $id);
     $params .= "i";
     $conjoiner = 1;
@@ -983,7 +988,8 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
   if($userCreate) {
     $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
     $conjoiner = 1;
-    $sql .= " user = ? ";
+    $sql .= $tableAlias;
+    $sql .= "user = ? ";
     array_push($bindArray, $userCreate);
     $params .= "i";
   }

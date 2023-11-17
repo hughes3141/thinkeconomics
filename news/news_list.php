@@ -25,12 +25,13 @@ $get_selectors = array(
   'keyword' => (isset($_GET['keyword']) && $_GET['keyword'] != "") ? $_GET['keyword'] : null,
   'startDate' => (isset($_GET['startDate']) && $_GET['startDate'] != "") ? $_GET['startDate'] : null,
   'endDate' => (isset($_GET['endDate']) && $_GET['endDate'] != "") ? $_GET['endDate'] : null,
-  'orderBy' => (isset($_GET['orderBy']) && $_GET['orderBy'] != "") ? $_GET['orderBy'] : null
+  'orderBy' => (isset($_GET['orderBy']) && $_GET['orderBy'] != "") ? $_GET['orderBy'] : null,
+  'limit' => (isset($_GET['limit']) && $_GET['limit'] != "") ? $_GET['limit'] : 100
 
 );
 
 
-$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['endDate'], $get_selectors['endDate'], null, $userId, 100);
+$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['endDate'], $get_selectors['endDate'], null, $userId, $get_selectors['limit']);
 
 
 
@@ -83,15 +84,15 @@ table {
 <?php //if(($_POST)) {print_r($_POST);}
 
 if($_SERVER['REQUEST_METHOD']=='POST') {
-  $sql = "UPDATE news_data SET headline = ?, link = ?, datePublished = ?, explanation = ?, explanation_long = ?, topic= ?, keyWords = ? WHERE id = ?";
+  $sql = "UPDATE news_data SET headline = ?, link = ?, datePublished = ?, explanation = ?, explanation_long = ?, topic= ?, keyWords = ?, articleAsset = ? WHERE id = ?";
 
   $stmt = $conn->prepare($sql);
   //print_r($_POST);
-  $stmt->bind_param("sssssssi", $_POST['headline'], $_POST['link'], $_POST['datePublished'], $_POST['explanation'], $_POST['explanation_long'], $_POST['topic'], $_POST['keyWords'],$_POST['id']);
+  $stmt->bind_param("sssssssii", $_POST['headline'], $_POST['link'], $_POST['datePublished'], $_POST['explanation'], $_POST['explanation_long'], $_POST['topic'], $_POST['keyWords'],$_POST['articleAsset'],$_POST['id']);
   $stmt->execute();
   //header("Refresh:0");
   
-  echo "Record ".$_POST['id']." updated successfully.";
+  //echo "Record ".$_POST['id']." updated successfully.";
 }
 
 include($path."/header_tailwind.php");
@@ -106,12 +107,13 @@ include($path."/header_tailwind.php");
   <table>
       <tr>
           <th class='col1'>Topic</th>
-          <th class='col2'>Headline</th>
-          <th class='col3'>Link</th>
+          <th class='col2'>Text</th>
+
           <th class='col4'>Date Published</th>
           <th>Short Explanation</th>
           <th>Long Explanation</th>
           <th>Key Words</th>
+          <th>Edit</th>
         </tr>
 
         <?php
@@ -124,51 +126,61 @@ include($path."/header_tailwind.php");
               <div class="show_<?=$row['id'];?>">
                 <?=$row['topic'];?>
               </div>
-              <textarea class="hide hide_<?=$row['id'];?>" name="topic"><?=$row['topic']?></textarea>
+              <textarea class="w-full hide hide_<?=$row['id'];?>" name="topic"><?=$row['topic']?></textarea>
+              <?php //print_r($row);?>
             </td>
             <td class='col2'>
+              <label class="font-bold" for="headline_<?=$row['id']?>">Headline:</label>
               <div class="show_<?=$row['id'];?>">
-                <?=$row['headline'];?>
+                <p><?=$row['headline'];?><p>
               </div>
-              <textarea class="hide hide_<?=$row['id'];?>" name="headline"><?=$row['headline']?></textarea>
-            </td>
-            <td class='col3'>
+              <textarea id="headline_<?=$row['id']?>" class="w-full hide hide_<?=$row['id'];?>" name="headline"><?=$row['headline']?></textarea>
+
+              <label class="font-bold" for="link_<?=$row['id']?>">Link:</label>
               <div class="show_<?=$row['id'];?>">
-                <a target ='_blank' href='<?=$row['link'];?>'><?=$row['link'];?></a>
+                <a class="underline text-sky-500  00" target ='_blank' href='<?=$row['link'];?>'><?=$row['link'];?></a>
               </div>
-              <textarea class="hide hide_<?=$row['id'];?>" name="link"><?=$row['link']?></textarea>
+              <textarea id="link_<?=$row['id']?>" class="w-full hide hide_<?=$row['id'];?>" name="link"><?=$row['link']?></textarea>
             </td>
             <td class='col4'>
               <div class="show_<?=$row['id'];?>">
                 <?=$row['datePublished'];?>
               </div>
-              <input class="hide hide_<?=$row['id'];?>" type = "date" value = "<?=$row['datePublished']?>" name="datePublished"></input>
+              <input class="w-full hide hide_<?=$row['id'];?>" type = "date" value = "<?=$row['datePublished']?>" name="datePublished"></input>
             </td>
             <td>
               <div class="show_<?=$row['id'];?>">
                 <?=$row['explanation'];?>
               </div>
-              <textarea class="hide hide_<?=$row['id'];?>" name="explanation"><?=$row['explanation']?></textarea>
+              <textarea class="w-full hide hide_<?=$row['id'];?>" name="explanation"><?=$row['explanation']?></textarea>
             </td>
             <td>
               <div class="show_<?=$row['id'];?>">
                 <?=$row['explanation_long'];?>
               </div>
-              <textarea class="hide hide_<?=$row['id'];?>" name="explanation_long"><?=$row['explanation_long']?></textarea>
+              <textarea class="w-full hide hide_<?=$row['id'];?>" name="explanation_long"><?=$row['explanation_long']?></textarea>
             </td>
             <td>
+              <label class="font-bold" for="keyWords_<?=$row['id']?>">Key Words</label>
               <div class="show_<?=$row['id'];?>">
                 <?=$row['keyWords'];?>
               </div>
-              <textarea class="hide hide_<?=$row['id'];?>" name="keyWords"><?=$row['keyWords']?></textarea>
+              <textarea id="keyWords_<?=$row['id']?>" class="w-full hide hide_<?=$row['id'];?>" name="keyWords"><?=$row['keyWords']?></textarea>
+
+              <label class="font-bold" for="articleAsset<?=$row['id']?>">Article Asset:</label>
+              <div class="show_<?=$row['id'];?>">
+                <?=$row['articleAsset'];?>
+              </div>
+              <input type="text" id="articleAsset<?=$row['id']?>" class="w-full hide hide_<?=$row['id'];?>" name="articleAsset" value= "<?=$row['articleAsset']?>"></input>
+
             </td>
             <td>
               <div>
-                <button type ="button" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>)"">Edit</button>
+                <button class = "border border-black rounded bg-pink-200 w-full mb-2" type ="button" id = "button_<?=$row['id'];?>" onclick = "changeVisibility(this, <?=$row['id'];?>)"">Edit</button>
               </div>
-              <div class ="hide hide_<?=$row['id'];?>">
+              <div class ="hide hide_<?=$row['id'];?> ">
                 <input type="hidden" name = "id" value = "<?=$row['id'];?>">
-                <input type="submit" name="submit" value = "Submit"></input>
+                <input class=" border border-black rounded bg-sky-200 w-full mb-2" type="submit" name="submit" value = "Submit"></input>
               </div>
               
             </td>

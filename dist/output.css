@@ -641,11 +641,6 @@ textarea, input, select {
   margin-right: -0.5rem;
 }
 
-.-mx-0 {
-  margin-left: -0px;
-  margin-right: -0px;
-}
-
 .mb-8 {
   margin-bottom: 2rem;
 }
@@ -774,24 +769,12 @@ textarea, input, select {
   margin-top: -0.5rem;
 }
 
-.-ml-2 {
-  margin-left: -0.5rem;
-}
-
-.ml-9 {
-  margin-left: 2.25rem;
-}
-
 .-ml-9 {
   margin-left: -2.25rem;
 }
 
-.-ml-11 {
-  margin-left: -2.75rem;
-}
-
-.-ml-10 {
-  margin-left: -2.5rem;
+.ml-9 {
+  margin-left: 2.25rem;
 }
 
 .block {
@@ -1534,10 +1517,6 @@ textarea, input, select {
   text-align: center;
 }
 
-.-indent-9 {
-  text-indent: -2.25rem;
-}
-
 .align-top {
   vertical-align: top;
 }
@@ -1703,6 +1682,16 @@ textarea, input, select {
 .text-slate-200 {
   --tw-text-opacity: 1;
   color: rgb(226 232 240 / var(--tw-text-opacity));
+}
+
+.text-sky-500 {
+  --tw-text-opacity: 1;
+  color: rgb(14 165 233 / var(--tw-text-opacity));
+}
+
+.text-sky-300 {
+  --tw-text-opacity: 1;
+  color: rgb(125 211 252 / var(--tw-text-opacity));
 }
 
 .underline {

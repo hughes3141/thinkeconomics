@@ -23,6 +23,7 @@ module.exports = {
     "../saq/**/*.{html,js,php}",
     "../admin/**/*.{html,js,php}",
     "../pastpapers/**/*.{html,js,php}",
+    "../news/**/*.{html,js,php}",
 
     "../node_modules/flowbite/**/*.js"
 
