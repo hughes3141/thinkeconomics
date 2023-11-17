@@ -7,14 +7,30 @@ $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 include($path."/php_functions.php");
 
+$userId = null;
+
 if (!isset($_SESSION['userid'])) {
   
   header("location: /login.php");
   
+} else {
+  $userId = $_SESSION['userid'];
 }
 
 
 
+$get_selectors = array(
+  'id' => (isset($_GET['id']) && $_GET['id'] != "") ? $_GET['id'] : null,
+  'topic' => (isset($_GET['topic']) && $_GET['topic'] != "") ? $_GET['topic'] : null,
+  'keyword' => (isset($_GET['keyword']) && $_GET['keyword'] != "") ? $_GET['keyword'] : null,
+  'startDate' => (isset($_GET['startDate']) && $_GET['startDate'] != "") ? $_GET['startDate'] : null,
+  'endDate' => (isset($_GET['endDate']) && $_GET['endDate'] != "") ? $_GET['endDate'] : null,
+  'orderBy' => (isset($_GET['orderBy']) && $_GET['orderBy'] != "") ? $_GET['orderBy'] : null
+
+);
+
+
+$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['endDate'], $get_selectors['endDate'], null, $userId);
 
 
 
@@ -137,9 +153,8 @@ $stmt->bind_param($params, ...$bindArray);
 $stmt->execute();
 $result = $stmt->get_result();
 
-  //$result = $conn->query($sql);
-  if($result->num_rows>0) {
-    while($row = $result->fetch_assoc()) {
+
+    foreach($newsArticles as $row) {
       echo "<tr id = 'row_".$row['id']."'>";
 
       //print_r($row);
@@ -207,7 +222,7 @@ $result = $stmt->get_result();
       </tr>
       <?php
     }
-  }
+  
    
   ?> </table>
   <?php

@@ -921,7 +921,7 @@ function getNewsArticlesByTopic($topic) {
   return $articles;
 }
 
-function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null) {
+function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null, $userCreate = null) {
   global $conn;
   $articles = array();
 
@@ -974,12 +974,19 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
 
   if($endDate) {
     $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
-    $conjoin = 1;
+    $conjoiner = 1;
     $sql .= " datePublished < ? ";
     //$keyword = "%".$keyword."%";
     array_push($bindArray, $endDate);
     $params .= "s";
+  }
+
+  if($userCreate) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
     $conjoiner = 1;
+    $sql .= " user = ? ";
+    array_push($bindArray, $userCreate);
+    $params .= "i";
   }
 
   if(is_null($orderBy)) {
