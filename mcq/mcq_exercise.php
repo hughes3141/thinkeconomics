@@ -38,6 +38,9 @@ if(isset($_GET['quizid'])) {
   $quizid = $quizInfo['id'];
 }
 
+$questions = explode(",",$quizInfo['questions_id']);
+$quesitonsCount = count($questions);
+
 
 $style_input = ".hide {
   display: none;
@@ -153,13 +156,13 @@ include($path."/header_tailwind.php");
     <h1 class="font-mono text-2xl bg-pink-400 pl-1">MCQ Exercise</h1>
     <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
       <?php
-      /*
+      
         print_r($quizInfo);
-        echo "<br>";
-        print_r($_GET);
-        echo "<br>";
-        print_r($_POST);
-        */
+        //echo "<br>";
+        //print_r($_GET);
+        //echo "<br>";
+        //print_r($_POST);
+        
       ?>
     <h1 class="font-mono text-xl bg-pink-300 pl-1"><?=$quizInfo['quizName']?></h1>
     <p class="font-mono text-lg bg-pink-200 pl-1">Name: <?=$userInfo['name_first']?> <?=$userInfo['name_last']?></p>
@@ -177,6 +180,49 @@ include($path."/header_tailwind.php");
 
 
     ?>
+
+	<form method  = "post" action ="" class="border border-black p-1">
+		<input type = "text" name ="startTime" value = "<?php echo date("Y-m-d H:i:s") ?>" >
+		<input type = "text" name ="userid" value ="<?=$userId?>" style="display: ;" >
+		
+		<?php
+		//print_r($questions);
+		foreach ($questions as $key=>$question) {
+			$questionInfo = getMCQquestionDetails($question);
+			print_r($questionInfo);
+			$imgSource = "https://thinkeconomics.co.uk";
+			$imgPath = "";
+			if($questionInfo['path'] == "") {
+				$imgPath = $questionInfo['No'].".JPG";
+			} else {
+				$imgPath = $questionInfo['path'];
+			}
+			$img = $imgSource."/mcq/question_img/".$imgPath;
+
+			$options = $questionInfo['options'];
+			$options = json_decode($options, true);
+			?>
+			<div class="border border-black p-2" id="quetion_div_<?=$key?>">
+				<h2>Question <?=$key?>/<?=$quesitonsCount?></h2>
+				<p class="text-xs"><em id = "q4"><?=$questionInfo['No']?></em></p>
+				<img src="<?=$img?>" class="lg:w-3/4 mx-auto mt-3" alt = "<?=$questionInfo['No']?>">
+				<div>
+					<?php
+					foreach($options as $optKey=>$option) {
+						?>
+						<input type="radio" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>">
+						<label></label>
+						<?php
+					}
+					?>
+				</div>
+
+			</div>
+			<?php
+		}
+		?>
+
+	</form>
 
 
     <form id="myForm" method="post" action="" style="display:none  ;">

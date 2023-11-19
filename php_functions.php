@@ -597,7 +597,7 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
           ON a.id = q.assetId";
 
   if($id) {
-    $sql .= "  WHERE id = ?";
+    $sql .= "  WHERE q.id = ?";
   }
   if($questionNo) {
     $sql .= "  WHERE No LIKE ?";
@@ -605,8 +605,6 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
   if($topic) {
     $sql .= "  WHERE topic = ?";
   }
-
-
 
   $stmt=$conn->prepare($sql);
 
@@ -720,6 +718,13 @@ function insertMCQquestion($userCreate, $questionCode, $questionNo, $examBoard, 
   $stmt->execute();
 
 
+}
+
+function markMCQs() {
+
+  /*
+  This function will mark an array of MCQs.
+  */
 }
 
 //SAQ Question handling
