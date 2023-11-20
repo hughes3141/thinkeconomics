@@ -40,6 +40,20 @@ $style_input = "
 
 include($path."/header_tailwind.php");
 
+
+
+if(str_contains($permissions, "main_admin")) {
+?>
+
+<!--
+  $_GET[]:
+
+  -testNoDate -> sets $dateBefore to null so that all results are output.
+
+-->
+<?php
+}
+
 if($_SERVER['REQUEST_METHOD']==='POST') {}
 
 $excludedYear = 2023;
@@ -51,7 +65,11 @@ This is primarly so that most-recnet exam years will not show up in query purpos
 
 */
 
-$dateBefore = "2023-11-20";
+$dateBefore = "2023-10-20";
+
+if(isset($_GET['testNoDate'])) {
+  $dateBefore = null;
+}
 
 /*
  Above variable $dateBefore sets a date that all entries must have been made before in order to be output to the user.
