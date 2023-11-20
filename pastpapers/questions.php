@@ -51,6 +51,17 @@ This is primarly so that most-recnet exam years will not show up in query purpos
 
 */
 
+$dateBefore = "2023-11-20";
+
+/*
+ Above variable $dateBefore sets a date that all entries must have been made before in order to be output to the user.
+
+ This allows for more entries to be entered and then published all at once by chaning $dateBefore.
+
+ Change $dateBefore after entering a new batch of questions into the database
+
+*/
+
 if($userId) {
   $excludedYear = null;
 }
@@ -69,7 +80,7 @@ $get_selectors = array(
 
 );
 
-$controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel'], null, $excludedYear);
+$controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel'], null, $excludedYear, $dateBefore);
 
 
 
@@ -92,7 +103,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
   
 
   if($run == 1) {
-    $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionNo'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel'], 1, 1, $excludedYear);
+    $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionNo'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel'], 1, 1, $excludedYear, $dateBefore);
 
 
   }
