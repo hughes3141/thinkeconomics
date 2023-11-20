@@ -199,19 +199,39 @@ include($path."/header_tailwind.php");
 			}
 			$img = $imgSource."/mcq/question_img/".$imgPath;
 
+			$textOnly = null;
+			if($questionInfo['textOnly'] == 1) {
+				$textOnly = 1;
+			}
+
 			$options = $questionInfo['options'];
 			$options = json_decode($options, true);
 			?>
-			<div class="border border-black p-2" id="quetion_div_<?=$key?>">
+			<div class="border border-black p-2 font-sans" id="quetion_div_<?=$key?>">
 				<h2>Question <?=$key?>/<?=$quesitonsCount?></h2>
 				<p class="text-xs"><em id = "q4"><?=$questionInfo['No']?></em></p>
+				<?php
+				if($textOnly) {
+					?>
+					<p><?=$questionInfo['question']?></p>
+					<?php
+				} else {
+				?>
 				<img src="<?=$img?>" class="lg:w-3/4 mx-auto mt-3" alt = "<?=$questionInfo['No']?>">
-				<div>
+				<?php
+				}
+				?>
+				<div class="ml-3">
 					<?php
 					foreach($options as $optKey=>$option) {
+						if(is_null($textOnly)) {
+							$option = $optKey;
+						}
 						?>
-						<input type="radio" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>">
-						<label></label>
+						<p class="">
+							<input type="radio" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>">
+						<label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
+						</p>
 						<?php
 					}
 					?>
