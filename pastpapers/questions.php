@@ -65,7 +65,7 @@ This is primarly so that most-recnet exam years will not show up in query purpos
 
 */
 
-$dateBefore = "2023-10-20";
+$dateBefore = "2023-11-20";
 
 if(isset($_GET['testNoDate'])) {
   $dateBefore = null;
