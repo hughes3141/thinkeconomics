@@ -189,7 +189,7 @@ include($path."/header_tailwind.php");
 		//print_r($questions);
 		foreach ($questions as $key=>$question) {
 			$questionInfo = getMCQquestionDetails($question);
-			print_r($questionInfo);
+			//print_r($questionInfo);
 			$imgSource = "https://thinkeconomics.co.uk";
 			$imgPath = "";
 			if($questionInfo['path'] == "") {
@@ -206,10 +206,26 @@ include($path."/header_tailwind.php");
 
 			$options = $questionInfo['options'];
 			$options = json_decode($options, true);
+
+      $navButtons = '
+      <div class="flex flex-row">
+        <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 previous" value ="Previous Question" id="previous2" onclick="changeQuestion(this);">
+        <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit2">
+        <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next2">
+      </div>
+      
+      
+      ';
 			?>
-			<div class="border border-black p-2 font-sans" id="quetion_div_<?=$key?>">
-				<h2>Question <?=$key?>/<?=$quesitonsCount?></h2>
+			<div class="border border-black p-2 font-sans" id="question_div_<?=$key?>">
+				<h2>Question <?=$key + 1?>/<?=$quesitonsCount?></h2>
 				<p class="text-xs"><em id = "q4"><?=$questionInfo['No']?></em></p>
+        <? //echo $navButtons;?>
+        <div class="flex flex-row">
+          <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 previous" value ="Previous Question" id="previous2" onclick="changeQuestion(this);" <?=($key == 0) ? "disabled" : ""?>>
+          <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit2">
+          <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next2" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
+        </div>
 				<?php
 				if($textOnly) {
 					?>
@@ -236,6 +252,7 @@ include($path."/header_tailwind.php");
 					}
 					?>
 				</div>
+        <?php //echo $navButtons;?>
 
 			</div>
 			<?php
@@ -297,6 +314,40 @@ include($path."/header_tailwind.php");
 
 <script>
 
+var question_no = 0;
+const count = <?=count($questions)?>;
+
+function hideQuestions(qNumber) {
+  for (var i = 0; i<count; i++) {
+    var questionDiv = document.getElementById("question_div_"+i);
+    //console.log(questionDiv);
+    if(i != qNumber) {
+      questionDiv.classList.add("hidden");
+    }
+    if(i == qNumber) {
+      questionDiv.classList.remove('hidden');
+    }
+  }
+}
+
+hideQuestions(0);
+
+function changeQuestion(button) {
+  button = button.value;
+  //console.log(button);
+  if(button == "Next Question") {
+    question_no ++;
+    //console.log(question_no);
+    hideQuestions(question_no);
+  }
+  if(button == "Previous Question") {
+    question_no --;
+    //console.log(question_no);
+    hideQuestions(question_no);
+  }
+
+}
+
 
 var quizName = "<?=$quizInfo['quizName']?>";
 var index = [<?=$quizInfo['questions']?>];
@@ -307,7 +358,7 @@ var record2 = []
 
 
 var question_no = 0;
-
+/*
 var next_id = document.getElementById("next");
 next_id.onclick=function() {next_q()};
 var submit_id = document.getElementById("submit");
@@ -321,7 +372,7 @@ submit_id2.onclick=function() {submit()};
 var previous_id2 = document.getElementById("previous2");
 previous_id2.onclick=function() {previous_q()};
 
-
+*/
 
 function populate() {
 	
