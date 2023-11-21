@@ -61,16 +61,13 @@ table {
 
 ";
 
-?>
 
+$updateQuestionBool = 0;
 
-
-
-
-
-<?php //if(($_POST)) {print_r($_POST);}
+//if(($_POST)) {print_r($_POST);}
 
 if($_SERVER['REQUEST_METHOD']=='POST') {
+  $updateQuestionBool = 1;
   $sql = "UPDATE news_data SET headline = ?, link = ?, datePublished = ?, explanation = ?, explanation_long = ?, topic= ?, keyWords = ?, articleAsset = ? WHERE id = ?";
 
   $stmt = $conn->prepare($sql);
@@ -249,6 +246,16 @@ function createUpdateRow(id) {
   var row = document.getElementById("row_"+id);
   console.log(row.rowIndex);
 }
+
+<?php
+if($updateQuestionBool == 1) {
+    ?>
+      //console.log(document.getElementById('<?=$_POST['id']?>'));
+      document.getElementById('row_<?=$_POST['id']?>').scrollIntoView();
+    <?php
+  
+}
+?>
 
 </script>
 
