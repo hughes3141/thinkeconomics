@@ -41,6 +41,9 @@ if(isset($_GET['quizid'])) {
 $questions = explode(",",$quizInfo['questions_id']);
 $quesitonsCount = count($questions);
 
+$randomQuestions = 0;
+$randomQuestions = 1;
+
 
 $style_input = ".hide {
   display: none;
@@ -199,7 +202,7 @@ include($path."/header_tailwind.php");
 			}
 			$img = $imgSource."/mcq/question_img/".$imgPath;
 
-			$textOnly = null;
+			$textOnly = 0;
 			if($questionInfo['textOnly'] == 1) {
 				$textOnly = 1;
 			}
@@ -227,9 +230,9 @@ include($path."/header_tailwind.php");
           <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next2" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
         </div>
 				<?php
-				if($textOnly) {
+				if($textOnly == 1) {
 					?>
-					<p><?=$questionInfo['question']?></p>
+					<p class="my-2"><?=$questionInfo['question']?></p>
 					<?php
 				} else {
 				?>
@@ -239,12 +242,17 @@ include($path."/header_tailwind.php");
 				?>
 				<div class="ml-3">
 					<?php
+
+          if($randomQuestions ==1 && $textOnly == 1) {
+            $options = shuffle_assoc($options);
+
+          }
 					foreach($options as $optKey=>$option) {
-						if(is_null($textOnly)) {
+						if($textOnly == 0) {
 							$option = $optKey;
 						}
 						?>
-						<p class="">
+						<p class="mb-2">
 							<input type="radio" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>">
 						<label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
 						</p>
@@ -679,3 +687,5 @@ function view() {
 </script>
 
 <?php   include($path."/footer_tailwind.php");?>
+
+
