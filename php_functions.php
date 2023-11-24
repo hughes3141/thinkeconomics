@@ -737,7 +737,7 @@ function insertMCQRecord($record, $userid, $startTime, $quizid, $assignid) {
 
   global $conn;
 
-  print_r($record);
+  //print_r($record);
   $record2 = array();
   $score = 0;
 
@@ -765,11 +765,9 @@ function insertMCQRecord($record, $userid, $startTime, $quizid, $assignid) {
 
   }
   $record2 = json_encode($record2);
-  echo $record2;
+  //echo $record2;
 
   $percentage = round(($score/count($record))*100, 2);
-
-  echo $score.$percentage;
 
   $sql = "INSERT INTO `responses` (`answers`, `mark`, `percentage`, `quiz_name`, `timeStart`, `datetime`, `assignID`, `userID`, `quizId`) VALUES (?,?,?,?,?,?,?,?,?)";
 

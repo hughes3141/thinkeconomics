@@ -48,12 +48,23 @@ $questions = explode(",",$quizInfo['questions_id']);
 $questionsOriginal = $questions;
 $quesitonsCount = count($questions);
 
+function getOriginalOrder($questionid) {
+  global $questionsOriginal;
+  foreach ($questionsOriginal as $key=>$question) {
+    if ($questionid == $question) {
+      return $key;
+    }
+  }
+}
+
 if($randomQuestionOrder == 1) {
   $qustions = shuffle($questions);
 }
 
 $randomQuestions = 0;
 $randomQuestions = 1;
+
+$originalQuestionNumbers = 0;
 
 
 
@@ -74,7 +85,7 @@ $style_input = ".hide {
   if($_SERVER['REQUEST_METHOD']==='POST') {
     
     if($_POST['submit_info'] == "submittedForm2") {
-      print_r($_POST);
+      //print_r($_POST);
       $record = array();
       foreach ($questionsOriginal as $question) {
         $response = "";
@@ -255,9 +266,14 @@ include($path."/header_tailwind.php");
       
       
       ';
+
+      $questionNo = $key + 1;
+      if($originalQuestionNumbers == 1) {
+        $questionNo = getOriginalOrder($question) + 1;
+      }
 			?>
 			<div class="border border-black p-2 font-sans" id="question_div_<?=$key?>">
-				<h2>Question <?=$key + 1?>/<?=$quesitonsCount?></h2>
+				<h2>Question <?=$questionNo?>/<?=$quesitonsCount?></h2>
 				<p class="text-xs"><em id = "q4"><?=$questionInfo['No']?></em></p>
         <? //echo $navButtons;?>
         <div class="flex flex-row">
