@@ -727,6 +727,79 @@ function markMCQs() {
   */
 }
 
+function insertMCQRecord($record, $userid, $startTime, $quizid, $assignid) {
+  /*
+  This function will insert a new record from a completed MCQ quiz
+
+  Used in:
+  - mcq_exercise.php
+  */
+
+  global $conn;
+
+  print_r($record);
+  $record2 = array();
+  $score = 0;
+
+  $quiz = getMCQquizInfo($quizid);
+  $quizname = $quiz['quizName'];
+
+  $timeStart = $startTime;
+  $timeEnd = date("Y-m-d H:i:s");
+
+  foreach($record as $key => $response) {
+    $questionRecord = array();
+    $question = getMCQquestionDetails($key);
+    //print_r($question);
+    array_push($questionRecord, $question['No']);
+    array_push($questionRecord, $response);
+    array_push($questionRecord, $question['Answer']);
+    $bool = false;
+    if($response == $question['Answer']) {
+      $bool = true;
+      $score ++;
+    }
+    array_push($questionRecord, $bool);
+    array_push($questionRecord, $key);
+    array_push($record2, $questionRecord);
+
+  }
+  $record2 = json_encode($record2);
+  echo $record2;
+
+  $percentage = round(($score/count($record))*100, 2);
+
+  echo $score.$percentage;
+
+  $sql = "INSERT INTO `responses` (`answers`, `mark`, `percentage`, `quiz_name`, `timeStart`, `datetime`, `assignID`, `userID`, `quizId`) VALUES (?,?,?,?,?,?,?,?,?)";
+
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("ssssssiii", $record2, $score, $percentage, $quizname, $timeStart, $timeEnd, $assignid, $userid, $quizid);
+
+  // This element is added to ensure that  the same completed assignment is not submitted twice
+
+  $sql2 = "SELECT * FROM responses WHERE userID= ? AND timeStart= ?";
+
+  $stmt2 = $conn->prepare($sql2);
+  $stmt2->bind_param("is", $userid, $timeStart);
+  $stmt2->execute();
+  $result2 = $stmt2->get_result();
+
+  if($result2->num_rows == 0) {
+    $stmt->execute();
+  }
+
+  //echo "Record entered successfully";
+
+  $responseId= getMCQresponseByUsernameTimestart($userid, $timeStart);
+
+
+  return $responseId;
+  
+  
+
+}
+
 //SAQ Question handling
 
 function getExercises($table, $topic = null, $userCreate = null) {

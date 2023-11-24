@@ -24,6 +24,8 @@ else {
   
 }
 
+$assignid = "";
+
 $quizInfo = array();
 $assignInfo = array();
 if(isset($_GET['assignid'])) {
@@ -31,6 +33,7 @@ if(isset($_GET['assignid'])) {
   //print_r($assignInfo);
   $quizid = $assignInfo['quizid'];
   $quizInfo = getMCQquizInfo($quizid);
+  $assignid = $_GET['assignid'];
 }
 
 if(isset($_GET['quizid'])) {
@@ -42,6 +45,7 @@ $randomQuestionOrder = 0;
 $randomQuestionOrder = 1;
 
 $questions = explode(",",$quizInfo['questions_id']);
+$questionsOriginal = $questions;
 $quesitonsCount = count($questions);
 
 if($randomQuestionOrder == 1) {
@@ -72,6 +76,17 @@ $style_input = ".hide {
     if($_POST['submit_info'] == "submittedForm2") {
       print_r($_POST);
       $record = array();
+      foreach ($questionsOriginal as $question) {
+        $response = "";
+        if(isset($_POST['a_'.$question])) {
+          $response = $_POST['a_'.$question];
+        }
+        $record[$question] = $response;
+      }
+    
+    $responseId = insertMCQRecord($record, $_POST['userid'], $_POST['startTime'], $_POST['quizid'], $_POST['assignid']);
+
+    echo "<script>window.location.replace('/user/user_mcq_review.php?responseId=".$responseId."')</script>";
 
     }
     if($_POST['submit_info'] == "submittedForm") {
@@ -127,6 +142,8 @@ $style_input = ".hide {
 
       $percentage = round(($score/$arrlength)*100, 2);
       $record2 = json_encode($answers);
+
+      echo $record2;
 
       /*!!!The below command determines where the results are sent to*/
 
@@ -202,6 +219,9 @@ include($path."/header_tailwind.php");
 	<form method  = "post" action ="" class="border border-black p-1">
 		<input type = "text" name ="startTime" value = "<?php echo date("Y-m-d H:i:s") ?>" >
 		<input type = "text" name ="userid" value ="<?=$userId?>" style="display: ;" >
+    <input type = "text" name="quizid" value = "<?=$quizid?>">
+    <input type = "text" name="assignid" value = "<?=$assignid?>">
+    
     <input type ="hidden" name ="submit_info" value ="submittedForm2">
 		
 		<?php
