@@ -38,11 +38,20 @@ if(isset($_GET['quizid'])) {
   $quizid = $quizInfo['id'];
 }
 
+$randomQuestionOrder = 0;
+$randomQuestionOrder = 1;
+
 $questions = explode(",",$quizInfo['questions_id']);
 $quesitonsCount = count($questions);
 
+if($randomQuestionOrder == 1) {
+  $qustions = shuffle($questions);
+}
+
 $randomQuestions = 0;
 $randomQuestions = 1;
+
+
 
 
 $style_input = ".hide {
@@ -59,6 +68,12 @@ $style_input = ".hide {
   ";
 
   if($_SERVER['REQUEST_METHOD']==='POST') {
+    
+    if($_POST['submit_info'] == "submittedForm2") {
+      print_r($_POST);
+      $record = array();
+
+    }
     if($_POST['submit_info'] == "submittedForm") {
 
       $record = json_decode($_POST['record']);
@@ -131,7 +146,7 @@ $style_input = ".hide {
       $result2 = $stmt2->get_result();
 
       if($result2->num_rows == 0) {
-        $stmt->execute();
+        //$stmt->execute();
       }
 
       echo "Record entered successfully";
@@ -139,7 +154,7 @@ $style_input = ".hide {
       $responseId= getMCQresponseByUsernameTimestart($userid, $timeStart);
    
 
-      echo "<script>window.location.replace('/user/user_mcq_review.php?responseId=".$responseId."')</script>";
+      //echo "<script>window.location.replace('/user/user_mcq_review.php?responseId=".$responseId."')</script>";
 
 
      
@@ -187,9 +202,10 @@ include($path."/header_tailwind.php");
 	<form method  = "post" action ="" class="border border-black p-1">
 		<input type = "text" name ="startTime" value = "<?php echo date("Y-m-d H:i:s") ?>" >
 		<input type = "text" name ="userid" value ="<?=$userId?>" style="display: ;" >
+    <input type ="hidden" name ="submit_info" value ="submittedForm2">
 		
 		<?php
-		//print_r($questions);
+		print_r($questions);
 		foreach ($questions as $key=>$question) {
 			$questionInfo = getMCQquestionDetails($question);
 			//print_r($questionInfo);
@@ -225,9 +241,9 @@ include($path."/header_tailwind.php");
 				<p class="text-xs"><em id = "q4"><?=$questionInfo['No']?></em></p>
         <? //echo $navButtons;?>
         <div class="flex flex-row">
-          <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 previous" value ="Previous Question" id="previous2" onclick="changeQuestion(this);" <?=($key == 0) ? "disabled" : ""?>>
-          <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit2">
-          <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next2" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
+          <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 previous" value ="Previous Question" id="previous3" onclick="changeQuestion(this);" <?=($key == 0) ? "disabled" : ""?>>
+          <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit3" onclick="this.form.submit();">
+          <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next3" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
         </div>
 				<?php
 				if($textOnly == 1) {
@@ -369,18 +385,23 @@ var question_no = 0;
 /*
 var next_id = document.getElementById("next");
 next_id.onclick=function() {next_q()};
-var submit_id = document.getElementById("submit");
-submit_id.onclick=function() {submit()};
+
 var previous_id = document.getElementById("previous");
 previous_id.onclick=function() {previous_q()};
-var next_id2 = document.getElementById("next2");
-next_id2.onclick=function() {next_q()};
-var submit_id2 = document.getElementById("submit2");
-submit_id2.onclick=function() {submit()};
 var previous_id2 = document.getElementById("previous2");
 previous_id2.onclick=function() {previous_q()};
+var next_id2 = document.getElementById("next2");
+next_id2.onclick=function() {next_q()};
 
 */
+var submit_id = document.getElementById("submit");
+submit_id.onclick=function() {submit()};
+
+var submit_id2 = document.getElementById("submit2");
+submit_id2.onclick=function() {submit()};
+
+
+
 
 function populate() {
 	
