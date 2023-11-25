@@ -1226,6 +1226,14 @@ textarea, input, select {
   border-width: 4px;
 }
 
+.border-8 {
+  border-width: 8px;
+}
+
+.border-0 {
+  border-width: 0px;
+}
+
 .border-b {
   border-bottom-width: 1px;
 }

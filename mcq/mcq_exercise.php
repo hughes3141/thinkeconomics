@@ -139,14 +139,16 @@ include($path."/header_tailwind.php");
     ?>
 
 	<form method  = "post" action ="" class="p-2">
-    <div id="alertBox" class="fixed top-10 left-1 right-1 bottom-1 border border-4 m-3 p-3 border-pink-300 rounded-xl bg-white z-10 hidden">
-      <p>You are about to confirm your answers. This will record your score.</p>
-      <p>
-        <button type="button" onclick="goBack(this)">Go Back</button>
-      </p>
-      <p>
-        <button type="button" onclick="this.form.submit()">Submit Score</button>
-      </p>
+    <div id="alertBox" class="fixed top-10 left-1 right-1 bottom-1 border-8 m-3 p-5 border-pink-400 rounded-xl bg-white z-10 hidden">
+      <div class="border border-sky-300 rounded bg-sky-200 p-2 text-center">
+        <p>You are about to submit your answers.</p>
+        <p>This will record your score.</p>
+      </div>
+
+        <button type="button" class="border border-sky-300 rounded bg-sky-200 w-full mt-2" onclick="goBack(this)">Go Back</button>
+
+        <button type="button" class="border border-pink-300 rounded bg-pink-200 w-full mt-2" onclick="this.form.submit()">Submit Score</button>
+  
     </div>
     <div class="hidden">
       <input type = "text" name ="startTime" value = "<?php echo date("Y-m-d H:i:s") ?>" >
@@ -217,7 +219,7 @@ include($path."/header_tailwind.php");
 						}
 						?>
 						<p class="mb-2">
-							<input type="radio" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>">
+							<input type="radio" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
 						<label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
 						</p>
 						<?php
@@ -330,6 +332,16 @@ function goBack() {
   const alertBox = document.getElementById("alertBox");
   alertBox.classList.add("hidden");
  
+}
+
+attemptedQuestions = [];
+
+function questionRecord(questionid) {
+  console.log(questionid);
+  if(attemptedQuestions.includes(questionid) == false) {
+    attemptedQuestions.push(questionid)
+  }
+  console.log(attemptedQuestions)
 }
 
 
