@@ -45,6 +45,7 @@ $randomQuestionOrder = 0;
 $randomQuestionOrder = 1;
 
 $questions = explode(",",$quizInfo['questions_id']);
+$questionsDetails = array();
 $questionsOriginal = $questions;
 $quesitonsCount = count($questions);
 
@@ -139,18 +140,22 @@ include($path."/header_tailwind.php");
     ?>
 
 	<form method  = "post" action ="" class="p-2">
-    <div id="alertBox" class="fixed top-10 left-1 right-1 bottom-1 border-8 m-3 p-5 border-pink-400 rounded-xl bg-white z-10 hidden">
-      <div class="border border-sky-300 rounded bg-sky-200 p-2 text-center">
-        <p>You are about to submit your answers.</p>
-        <p>This will record your score.</p>
-      </div>
-      <div id="alertIncompleteDiv" class="hidden mt-2 border border-pink-300 rounded bg-pink-400 p-2 text-center">
-        <p>You have incomplete questions</p>
-      </div>
+    <div id="alertBox" class="fixed top-10 left-1 right-1 bottom-1 border-8 m-3 p-5 border-pink-400 rounded-xl bg-white z-10 hidden ">
+      <div class="lg:w-3/4">
+        <div class="border border-sky-300 rounded bg-sky-200 p-2 text-center mx-auto">
+          <p>You are about to submit your answers.</p>
+          <p>This will record your score.</p>
+        </div>
+        <div id="alertIncompleteDiv" class="hidden mt-2 border border-pink-300 rounded bg-pink-400 p-2 text-center">
+          <p>You have incomplete questions!!</p>
+          <p>There <span id="isAreQuestionCount"></span> <span id="incompleteQuestionCount"></span> question<span id="questionCountPlural">s</span> you have not completed.</p>
+          <p>Are you sure you want to submit?</p>
+        </div>
 
-        <button type="button" class="border border-sky-300 rounded bg-sky-200 w-full mt-2" onclick="goBack(this)">Go Back</button>
+          <button type="button" class="border border-sky-300 rounded bg-sky-200 w-full mt-2" onclick="goBack(this)">Go Back</button>
 
-        <button type="button" class="border border-pink-300 rounded bg-pink-200 w-full mt-2" onclick="this.form.submit()">Submit Score</button>
+          <button type="button" class="border border-pink-300 rounded bg-pink-200 w-full mt-2" onclick="this.form.submit()">Submit Score</button>
+      </div>
   
     </div>
     <div class="hidden">
@@ -165,8 +170,10 @@ include($path."/header_tailwind.php");
 		<?php
 		//print_r($questions);
 		foreach ($questions as $key=>$question) {
+      
 			$questionInfo = getMCQquestionDetails($question);
 			//print_r($questionInfo);
+      $questionsDetails[$question] = $questionInfo;
 			$imgSource = "https://thinkeconomics.co.uk";
 			$imgPath = "";
 			if($questionInfo['path'] == "") {
@@ -289,7 +296,10 @@ include($path."/header_tailwind.php");
 
 
 
+
 <script>
+
+
 
 var question_no = 0;
 const count = <?=count($questions)?>;
@@ -325,14 +335,33 @@ function changeQuestion(button) {
 
 }
 
+attemptedQuestions = [];
+
 function submit2() {
   const alertBox = document.getElementById("alertBox");
   alertBox.classList.remove("hidden");
 
   const alertIncompleteDiv = document.getElementById("alertIncompleteDiv")
 
-  if(attemptedQuestions.count == count) {
+  console.log(attemptedQuestions.length+" "+count);
+
+  if(attemptedQuestions.length != count) {
     alertIncompleteDiv.classList.remove("hidden");
+    const difference = count - attemptedQuestions.length;
+    const incompleteQuestionCount = document.getElementById("incompleteQuestionCount");
+    incompleteQuestionCount.innerHTML = difference;
+    console.log(difference);
+    const isAreQuestionCount = document.getElementById("isAreQuestionCount");
+    console.log(isAreQuestionCount);
+    const questionCountPlural = document.getElementById("questionCountPlural");
+    if(difference > 1) {
+      isAreQuestionCount.innerHTML = "are";
+      questionCountPlural.innerHTML = "s";
+    } else {
+      isAreQuestionCount.innerHTML = "is";
+      questionCountPlural.innerHTML = "";
+    }
+
 
   } else {
     alertIncompleteDiv.classList.add("hidden");
@@ -346,10 +375,10 @@ function goBack() {
  
 }
 
-attemptedQuestions = [];
+
 
 function questionRecord(questionid) {
-  console.log(questionid);
+  //console.log(questionid);
   if(attemptedQuestions.includes(questionid) == false) {
     attemptedQuestions.push(questionid)
   }
