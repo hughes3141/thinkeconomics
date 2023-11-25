@@ -140,14 +140,14 @@ include($path."/header_tailwind.php");
     ?>
 
 	<form method  = "post" action ="" class="p-2">
-    <div id="alertBox" class="fixed top-10 left-1 right-1 bottom-1 border-8 m-3 p-5 border-pink-400 rounded-xl bg-white z-10 hidden ">
+    <div id="alertBox" class="fixed top-10 left-1 right-1 bottom-1 border-8 m-3 p-5 border-pink-400 rounded-xl bg-white z-10 hidden flex  justify-center ">
       <div class="lg:w-3/4">
         <div class="border border-sky-300 rounded bg-sky-200 p-2 text-center mx-auto">
           <p>You are about to submit your answers.</p>
           <p>This will record your score.</p>
         </div>
         <div id="alertIncompleteDiv" class="hidden mt-2 border border-pink-300 rounded bg-pink-400 p-2 text-center">
-          <p>You have incomplete questions!!</p>
+          <p>You have incomplete questions!!!</p>
           <p>There <span id="isAreQuestionCount"></span> <span id="incompleteQuestionCount"></span> question<span id="questionCountPlural">s</span> you have not completed.</p>
           <p>Are you sure you want to submit?</p>
         </div>
