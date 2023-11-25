@@ -100,95 +100,6 @@ $style_input = ".hide {
     echo "<script>window.location.replace('/user/user_mcq_review.php?responseId=".$responseId."')</script>";
 
     }
-    if($_POST['submit_info'] == "submittedForm") {
-
-      $record = json_decode($_POST['record']);
-      $name = $_POST['name'];
-      $quizname = $_POST['quizname'];
-
-
-      $answers = array();
-      $score = 0;
-      $timeStart = $_POST['startTime'];
-      $timeEnd = date("Y-m-d H:i:s");
-
-      $assignid = $_POST['assignid'];
-      $userid = $_POST['userid'];
-      $review = $_POST['reviewQ'];
-      $multi = $_POST['multi'];
-
-      $arrlength = count($record);
-
-
-      for($x = 0; $x < $arrlength; $x++) {
-        
-        $response = array();
-
-        array_push($response, $record[$x][0]);
-        array_push($response, $record[$x][1]);
-        
-        /*!!! Below is the question bank that must be updated to included most recent questions*/
-        
-        $sql = "SELECT * FROM question_bank_3 WHERE No= ?";
-
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $record[$x][0]);
-        $stmt->execute();
-        $result = $stmt->get_result();
-      
-        if($result->num_rows > 0) {
-          while($row = $result->fetch_assoc()) {
-            array_push($response, $row['Answer']);
-          }
-        }
-        if ($response[1]==$response[2]) {              
-          array_push($response, true);
-          $score = $score +1;
-          }
-          else {         
-          array_push($response, false);  
-          }
-        array_push($answers, $response);
-      }
-
-      $percentage = round(($score/$arrlength)*100, 2);
-      $record2 = json_encode($answers);
-
-      echo $record2;
-
-      /*!!!The below command determines where the results are sent to*/
-
-      $sql = "INSERT INTO `responses` (`answers`, `mark`, `percentage`, `quiz_name`, `timeStart`, `datetime`, `assignID`, `userID`, `quizId`) VALUES (?,?,?,?,?,?,?,?,?)";
-
-      $stmt = $conn->prepare($sql);
-      $stmt->bind_param("ssssssiii", $record2, $score, $percentage, $quizname, $timeStart, $timeEnd, $assignid, $userid, $quizid);
-      //$stmt->execute();
-
-      // This element is added to ensure that  the same completed assignment is not submitted twice
-
-      $sql2 = "SELECT * FROM responses WHERE userID= ? AND timeStart= ?";
-
-      $stmt2 = $conn->prepare($sql2);
-      $stmt2->bind_param("is", $userid, $timeStart);
-      $stmt2->execute();
-      $result2 = $stmt2->get_result();
-
-      if($result2->num_rows == 0) {
-        //$stmt->execute();
-      }
-
-      echo "Record entered successfully";
-
-      $responseId= getMCQresponseByUsernameTimestart($userid, $timeStart);
-   
-
-      //echo "<script>window.location.replace('/user/user_mcq_review.php?responseId=".$responseId."')</script>";
-
-
-     
-      
-
-    }
     
   }
 
@@ -203,7 +114,7 @@ include($path."/header_tailwind.php");
     <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
       <?php
       
-        print_r($quizInfo);
+        //print_r($quizInfo);
         //echo "<br>";
         //print_r($_GET);
         //echo "<br>";
@@ -227,16 +138,27 @@ include($path."/header_tailwind.php");
 
     ?>
 
-	<form method  = "post" action ="" class="border border-black p-1">
-		<input type = "text" name ="startTime" value = "<?php echo date("Y-m-d H:i:s") ?>" >
-		<input type = "text" name ="userid" value ="<?=$userId?>" style="display: ;" >
-    <input type = "text" name="quizid" value = "<?=$quizid?>">
-    <input type = "text" name="assignid" value = "<?=$assignid?>">
-    
-    <input type ="hidden" name ="submit_info" value ="submittedForm2">
+	<form method  = "post" action ="" class="p-2">
+    <div id="alertBox" class="fixed top-10 left-1 right-1 bottom-1 border border-4 m-3 p-3 border-pink-300 rounded-xl bg-white z-10 hidden">
+      <p>You are about to confirm your answers. This will record your score.</p>
+      <p>
+        <button type="button" onclick="goBack(this)">Go Back</button>
+      </p>
+      <p>
+        <button type="button" onclick="this.form.submit()">Submit Score</button>
+      </p>
+    </div>
+    <div class="hidden">
+      <input type = "text" name ="startTime" value = "<?php echo date("Y-m-d H:i:s") ?>" >
+      <input type = "text" name ="userid" value ="<?=$userId?>" style="display: ;" >
+      <input type = "text" name="quizid" value = "<?=$quizid?>">
+      <input type = "text" name="assignid" value = "<?=$assignid?>">
+      
+      <input type ="hidden" name ="submit_info" value ="submittedForm2">
+    </div>
 		
 		<?php
-		print_r($questions);
+		//print_r($questions);
 		foreach ($questions as $key=>$question) {
 			$questionInfo = getMCQquestionDetails($question);
 			//print_r($questionInfo);
@@ -257,29 +179,19 @@ include($path."/header_tailwind.php");
 			$options = $questionInfo['options'];
 			$options = json_decode($options, true);
 
-      $navButtons = '
-      <div class="flex flex-row">
-        <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 previous" value ="Previous Question" id="previous2" onclick="changeQuestion(this);">
-        <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit2">
-        <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next2">
-      </div>
-      
-      
-      ';
-
       $questionNo = $key + 1;
       if($originalQuestionNumbers == 1) {
         $questionNo = getOriginalOrder($question) + 1;
       }
 			?>
-			<div class="border border-black p-2 font-sans" id="question_div_<?=$key?>">
+			<div class=" font-sans" id="question_div_<?=$key?>">
 				<h2>Question <?=$questionNo?>/<?=$quesitonsCount?></h2>
 				<p class="text-xs"><em id = "q4"><?=$questionInfo['No']?></em></p>
         <? //echo $navButtons;?>
-        <div class="flex flex-row">
-          <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 previous" value ="Previous Question" id="previous3" onclick="changeQuestion(this);" <?=($key == 0) ? "disabled" : ""?>>
-          <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit3" onclick="this.form.submit();">
-          <input type="button" class="flex-1 px-1 text-sm bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next3" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
+        <div class="flex flex-row gap-x-2 font-mono text-xs md:text-base mt-2">
+          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 previous" value ="Previous Question" id="previous3" onclick="changeQuestion(this);" <?=($key == 0) ? "disabled" : ""?>>
+          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit3" onclick="submit2();">
+          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next3" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
         </div>
 				<?php
 				if($textOnly == 1) {
@@ -288,7 +200,7 @@ include($path."/header_tailwind.php");
 					<?php
 				} else {
 				?>
-				<img src="<?=$img?>" class="lg:w-3/4 mx-auto mt-3" alt = "<?=$questionInfo['No']?>">
+				<img src="<?=$img?>" class="lg:w-3/4 mx-auto my-3" alt = "<?=$questionInfo['No']?>">
 				<?php
 				}
 				?>
@@ -408,6 +320,29 @@ function changeQuestion(button) {
 
 }
 
+function submit2() {
+  const alertBox = document.getElementById("alertBox");
+  alertBox.classList.remove("hidden");
+  
+}
+
+function goBack() {
+  const alertBox = document.getElementById("alertBox");
+  alertBox.classList.add("hidden");
+ 
+}
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////
+
 
 var quizName = "<?=$quizInfo['quizName']?>";
 var index = [<?=$quizInfo['questions']?>];
@@ -418,7 +353,7 @@ var record2 = []
 
 
 var question_no = 0;
-/*
+
 var next_id = document.getElementById("next");
 next_id.onclick=function() {next_q()};
 
@@ -429,7 +364,7 @@ previous_id2.onclick=function() {previous_q()};
 var next_id2 = document.getElementById("next2");
 next_id2.onclick=function() {next_q()};
 
-*/
+
 var submit_id = document.getElementById("submit");
 submit_id.onclick=function() {submit()};
 
