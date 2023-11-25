@@ -546,6 +546,10 @@ textarea, input, select {
   top: 0px;
 }
 
+.top-10 {
+  top: 2.5rem;
+}
+
 .left-1 {
   left: 0.25rem;
 }
@@ -556,26 +560,6 @@ textarea, input, select {
 
 .bottom-1 {
   bottom: 0.25rem;
-}
-
-.top-5 {
-  top: 1.25rem;
-}
-
-.top-1 {
-  top: 0.25rem;
-}
-
-.top-2 {
-  top: 0.5rem;
-}
-
-.top-9 {
-  top: 2.25rem;
-}
-
-.top-10 {
-  top: 2.5rem;
 }
 
 .z-50 {
@@ -668,14 +652,14 @@ textarea, input, select {
   margin-right: -0.25rem;
 }
 
-.-mx-2 {
-  margin-left: -0.5rem;
-  margin-right: -0.5rem;
-}
-
 .my-3 {
   margin-top: 0.75rem;
   margin-bottom: 0.75rem;
+}
+
+.-mx-2 {
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
 }
 
 .mb-8 {
@@ -1115,11 +1099,6 @@ textarea, input, select {
   gap: 1rem;
 }
 
-.gap-x-1 {
-  -moz-column-gap: 0.25rem;
-       column-gap: 0.25rem;
-}
-
 .gap-x-2 {
   -moz-column-gap: 0.5rem;
        column-gap: 0.5rem;
@@ -1228,10 +1207,6 @@ textarea, input, select {
 
 .border-8 {
   border-width: 8px;
-}
-
-.border-0 {
-  border-width: 0px;
 }
 
 .border-b {
@@ -1369,6 +1344,16 @@ textarea, input, select {
 .bg-pink-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(252 231 243 / var(--tw-bg-opacity));
+}
+
+.bg-red-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 202 202 / var(--tw-bg-opacity));
+}
+
+.bg-pink-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(236 72 153 / var(--tw-bg-opacity));
 }
 
 .fill-current {
@@ -2263,16 +2248,6 @@ textarea, input, select {
   .lg\:text-4xl {
     font-size: 2.25rem;
     line-height: 2.5rem;
-  }
-
-  .lg\:text-base {
-    font-size: 1rem;
-    line-height: 1.5rem;
-  }
-
-  .lg\:text-lg {
-    font-size: 1.125rem;
-    line-height: 1.75rem;
   }
 
   .lg\:hover\:bg-inherit:hover {

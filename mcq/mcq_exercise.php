@@ -144,6 +144,9 @@ include($path."/header_tailwind.php");
         <p>You are about to submit your answers.</p>
         <p>This will record your score.</p>
       </div>
+      <div id="alertIncompleteDiv" class="hidden mt-2 border border-pink-300 rounded bg-pink-400 p-2 text-center">
+        <p>You have incomplete questions</p>
+      </div>
 
         <button type="button" class="border border-sky-300 rounded bg-sky-200 w-full mt-2" onclick="goBack(this)">Go Back</button>
 
@@ -325,6 +328,15 @@ function changeQuestion(button) {
 function submit2() {
   const alertBox = document.getElementById("alertBox");
   alertBox.classList.remove("hidden");
+
+  const alertIncompleteDiv = document.getElementById("alertIncompleteDiv")
+
+  if(attemptedQuestions.count == count) {
+    alertIncompleteDiv.classList.remove("hidden");
+
+  } else {
+    alertIncompleteDiv.classList.add("hidden");
+  }
   
 }
 
@@ -341,7 +353,8 @@ function questionRecord(questionid) {
   if(attemptedQuestions.includes(questionid) == false) {
     attemptedQuestions.push(questionid)
   }
-  console.log(attemptedQuestions)
+  console.log(attemptedQuestions);
+  console.log(count);
 }
 
 
