@@ -19,23 +19,6 @@ if (!isset($_SESSION['userid'])) {
 
 
 
-$get_selectors = array(
-  'id' => (isset($_GET['id']) && $_GET['id'] != "") ? $_GET['id'] : null,
-  'topic' => (isset($_GET['topic']) && $_GET['topic'] != "") ? $_GET['topic'] : null,
-  'keyword' => (isset($_GET['keyword']) && $_GET['keyword'] != "") ? $_GET['keyword'] : null,
-  'startDate' => (isset($_GET['startDate']) && $_GET['startDate'] != "") ? $_GET['startDate'] : null,
-  'endDate' => (isset($_GET['endDate']) && $_GET['endDate'] != "") ? $_GET['endDate'] : null,
-  'orderBy' => (isset($_GET['orderBy']) && $_GET['orderBy'] != "") ? $_GET['orderBy'] : null,
-  'limit' => (isset($_GET['limit']) && $_GET['limit'] != "") ? $_GET['limit'] : 100
-
-);
-
-
-$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['endDate'], $get_selectors['endDate'], null, $userId, $get_selectors['limit']);
-
-
-
-
 ?>
 
 
@@ -45,6 +28,10 @@ $newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'],
 GET variables:
 -topic = filter by topic
 -keyword = filter by keyword
+'startDate' 
+  'endDate'
+  'orderBy'
+  'limit' default  100
 
 -->
 
@@ -74,16 +61,13 @@ table {
 
 ";
 
-?>
 
+$updateQuestionBool = 0;
 
-
-
-
-
-<?php //if(($_POST)) {print_r($_POST);}
+//if(($_POST)) {print_r($_POST);}
 
 if($_SERVER['REQUEST_METHOD']=='POST') {
+  $updateQuestionBool = 1;
   $sql = "UPDATE news_data SET headline = ?, link = ?, datePublished = ?, explanation = ?, explanation_long = ?, topic= ?, keyWords = ?, articleAsset = ? WHERE id = ?";
 
   $stmt = $conn->prepare($sql);
@@ -94,6 +78,22 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
   
   //echo "Record ".$_POST['id']." updated successfully.";
 }
+
+
+$get_selectors = array(
+  'id' => (isset($_GET['id']) && $_GET['id'] != "") ? $_GET['id'] : null,
+  'topic' => (isset($_GET['topic']) && $_GET['topic'] != "") ? $_GET['topic'] : null,
+  'keyword' => (isset($_GET['keyword']) && $_GET['keyword'] != "") ? $_GET['keyword'] : null,
+  'startDate' => (isset($_GET['startDate']) && $_GET['startDate'] != "") ? $_GET['startDate'] : null,
+  'endDate' => (isset($_GET['endDate']) && $_GET['endDate'] != "") ? $_GET['endDate'] : null,
+  'orderBy' => (isset($_GET['orderBy']) && $_GET['orderBy'] != "") ? $_GET['orderBy'] : null,
+  'limit' => (isset($_GET['limit']) && $_GET['limit'] != "") ? $_GET['limit'] : 100
+
+);
+
+
+$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['endDate'], $get_selectors['endDate'], null, $userId, $get_selectors['limit']);
+
 
 include($path."/header_tailwind.php");
 
@@ -246,6 +246,16 @@ function createUpdateRow(id) {
   var row = document.getElementById("row_"+id);
   console.log(row.rowIndex);
 }
+
+<?php
+if($updateQuestionBool == 1) {
+    ?>
+      //console.log(document.getElementById('<?=$_POST['id']?>'));
+      document.getElementById('row_<?=$_POST['id']?>').scrollIntoView();
+    <?php
+  
+}
+?>
 
 </script>
 

@@ -92,17 +92,7 @@ $get_selectors = array(
 $newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['startDate'], $get_selectors['endDate'], $get_selectors['orderBy'], null, $get_selectors['limit'], $get_selectors['searchFor'])
 ?>
 
-<?php include "header_tailwind.php"; ?>
-
-
-
-
-
-
-
-
-
-<?php 
+<?php include "header_tailwind.php"; 
 
 //print_r($_POST);
 /*
@@ -118,6 +108,20 @@ if (isset($_SESSION['userid'])==false) {
 //print_r($_SESSION);
 
 ?>
+
+<!--
+
+Get variables:
+  'id'
+  'keyword' 
+  'startDate' 
+  'endDate'
+  'orderBy' 
+  'limit' 
+  'searchFor'
+
+
+-->
 <div class="container mx-auto px-4 pt-20 lg:pt-32 xl:pt-20">
 <h1 class="font-mono text-2xl bg-pink-400 pl-1 mb-2">News List</h1>
 
