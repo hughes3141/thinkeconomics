@@ -44,7 +44,7 @@ include($path."/header_tailwind.php");
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=73">1.2.4 YED Homework Questions</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=75">1.2.4 XED Homework Questions</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=76">1.2.4 PES Homework Questions</a></li>
-            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=115">1.3.1 Wage Determination (2 Questions)</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=132">1.3.1 Wage Determination</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=79">1.7.1 Externalities (No Graphs)</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=80">1.7.1 Externalities (Graphs Only)</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=81">1.7.2 Government Intervention: Types 1</a></li>

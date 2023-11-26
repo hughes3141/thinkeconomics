@@ -40,6 +40,20 @@ $style_input = "
 
 include($path."/header_tailwind.php");
 
+
+
+if(str_contains($permissions, "main_admin")) {
+?>
+
+<!--
+  $_GET[]:
+
+  -testNoDate -> sets $dateBefore to null so that all results are output.
+
+-->
+<?php
+}
+
 if($_SERVER['REQUEST_METHOD']==='POST') {}
 
 $excludedYear = 2023;
@@ -48,6 +62,21 @@ $excludedYear = 2023;
 
 Above variable $excludedYear is the year that will not be returned in any restults.
 This is primarly so that most-recnet exam years will not show up in query purposes.
+
+*/
+
+$dateBefore = "2023-11-20";
+
+if(isset($_GET['testNoDate'])) {
+  $dateBefore = null;
+}
+
+/*
+ Above variable $dateBefore sets a date that all entries must have been made before in order to be output to the user.
+
+ This allows for more entries to be entered and then published all at once by chaning $dateBefore.
+
+ Change $dateBefore after entering a new batch of questions into the database
 
 */
 
@@ -69,7 +98,7 @@ $get_selectors = array(
 
 );
 
-$controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel'], null, $excludedYear);
+$controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel'], null, $excludedYear, $dateBefore);
 
 
 
@@ -92,7 +121,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
   
 
   if($run == 1) {
-    $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionNo'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel'], 1, 1, $excludedYear);
+    $questions = getPastPaperQuestionDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionNo'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['qualLevel'], 1, 1, $excludedYear, $dateBefore);
 
 
   }

@@ -3988,7 +3988,7 @@ function insertPastPaperQuestion($userCreate, $questionCode, $quesitonNo, $examB
 
 }
 
-function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, $examBoard = null, $year = null, $component = null, $qualLevel = null, $caseStudiesFilter = null, $dataFilter = null, $excludedYear=null) {
+function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, $examBoard = null, $year = null, $component = null, $qualLevel = null, $caseStudiesFilter = null, $dataFilter = null, $excludedYear=null, $dateBefore = null) {
   /**
    * This function retrieves information on past paper questions from pastpaper_question_bank
    *
@@ -3996,6 +3996,8 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, 
    * Controls:
    * -$caseStudiesFilter: if set as anything then all values with caseStudyBool are filtered out; if set to '2' then only case studies are returned
    * - $dataFilter: if set as anything then all value with dataBool are filtered out; if set to '2' then only dataBool values are returned.
+   * 
+   * - $dateBefore: sets a date after which no values are returned from database. Allows changes to allow new uploads to be completed before put onto production site
 
 
    * Used in:
@@ -4115,6 +4117,15 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, 
       array_push($bindArray, $excludedYear);
     }
 
+    if($dateBefore) {
+      $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+      $conjoiner = 1;
+      $sql .= $tableAlias;
+      $sql .= "dateCreate < ? ";
+      $params .= "s";
+      array_push($bindArray, $dateBefore);
+    }
+
 
 
   $sql .= " ORDER BY component, qualLevel, year, unitName, questionNo";
@@ -4164,7 +4175,7 @@ function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets
 
 }
 
-function getPastPaperCategoryValues($topic=null, $examBoard = null, $year = null, $component = null, $qualLevel = null, $unitName = null, $excludedYear = null) {
+function getPastPaperCategoryValues($topic=null, $examBoard = null, $year = null, $component = null, $qualLevel = null, $unitName = null, $excludedYear = null, $dateBefore = null) {
   /**
    * This function returns unique category values from pastpaper_question_bank for purposes of updating input drop-downs etc.
    * 
@@ -4290,6 +4301,15 @@ function getPastPaperCategoryValues($topic=null, $examBoard = null, $year = null
           $sql .= "year <>  ? ";
           $params .= "s";
           array_push($bindArray, $excludedYear);
+        }
+
+        if($dateBefore) {
+          $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+          $conjoiner = 1;
+          $sql .= $tableAlias;
+          $sql .= "dateCreate < ? ";
+          $params .= "s";
+          array_push($bindArray, $dateBefore);
         }
 
       //}
