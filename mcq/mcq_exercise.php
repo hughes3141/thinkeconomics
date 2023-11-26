@@ -142,19 +142,19 @@ include($path."/header_tailwind.php");
 	<form method  = "post" action ="" class="p-2">
     <div id="alertBox" class="fixed top-10 left-1 right-1 bottom-1 border-8 m-3 p-5 border-pink-400 rounded-xl bg-white z-10 hidden flex  justify-center ">
       <div class="lg:w-3/4">
-        <div class="border border-sky-300 rounded bg-sky-200 p-2 text-center mx-auto">
+        <div class="  bg-sky-200 p-2 text-center mx-auto">
           <p>You are about to submit your answers.</p>
           <p>This will record your score.</p>
         </div>
-        <div id="alertIncompleteDiv" class="hidden mt-2 border border-pink-300 rounded bg-pink-400 p-2 text-center">
+        <div id="alertIncompleteDiv" class="hidden mt-2  bg-pink-400 p-2 text-center">
           <p>You have incomplete questions!!!</p>
           <p>There <span id="isAreQuestionCount"></span> <span id="incompleteQuestionCount"></span> question<span id="questionCountPlural">s</span> you have not completed.</p>
           <p>Are you sure you want to submit?</p>
         </div>
 
-          <button type="button" class="border border-sky-300 rounded bg-sky-200 w-full mt-2" onclick="goBack(this)">Go Back</button>
+          <button type="button" class="border-4 border-sky-300 rounded bg-sky-200 hover:bg-sky-300 w-full mt-2 h-12" onclick="goBack(this)">Go Back</button>
 
-          <button type="button" class="border border-pink-300 rounded bg-pink-200 w-full mt-2" onclick="this.form.submit()">Submit Score</button>
+          <button type="button" class="border-4 border-pink-300 rounded bg-pink-200 hover:bg-pink-300 w-full mt-2 h-12" onclick="this.form.submit()">Submit Score</button>
       </div>
   
     </div>
@@ -199,12 +199,13 @@ include($path."/header_tailwind.php");
 			<div class=" font-sans" id="question_div_<?=$key?>">
 				<h2>Question <?=$questionNo?>/<?=$quesitonsCount?></h2>
 				<p class="text-xs"><em id = "q4"><?=$questionInfo['No']?></em></p>
-        <? //echo $navButtons;?>
+
         <div class="flex flex-row gap-x-2 font-mono text-xs md:text-base mt-2">
-          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 previous" value ="Previous Question" id="previous3" onclick="changeQuestion(this);" <?=($key == 0) ? "disabled" : ""?>>
-          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit3" onclick="submit2();">
-          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next3" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
+          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 previous" value ="Previous Question" id="previous1" onclick="changeQuestion(this);" <?=($key == 0) ? "disabled" : ""?>>
+          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit1" onclick="submit2();">
+          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next1" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
         </div>
+
 				<?php
 				if($textOnly == 1) {
 					?>
@@ -228,15 +229,20 @@ include($path."/header_tailwind.php");
 							$option = $optKey;
 						}
 						?>
-						<p class="mb-2">
-							<input type="radio" class="" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
+						<p class="mb-2 ml-5">
+							<input type="radio" class="-ml-5 mt-1.5 absolute" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
 						<label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
 						</p>
 						<?php
 					}
 					?>
 				</div>
-        <?php //echo $navButtons;?>
+        
+        <div class="flex flex-row gap-x-2 font-mono text-xs md:text-base mt-2">
+          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 previous" value ="Previous Question" id="previous1" onclick="changeQuestion(this);" <?=($key == 0) ? "disabled" : ""?>>
+          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit1" onclick="submit2();">
+          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next1" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
+        </div>
 
 			</div>
 			<?php
