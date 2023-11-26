@@ -597,7 +597,7 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
           ON a.id = q.assetId";
 
   if($id) {
-    $sql .= "  WHERE id = ?";
+    $sql .= "  WHERE q.id = ?";
   }
   if($questionNo) {
     $sql .= "  WHERE No LIKE ?";
@@ -605,8 +605,6 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
   if($topic) {
     $sql .= "  WHERE topic = ?";
   }
-
-
 
   $stmt=$conn->prepare($sql);
 
@@ -719,6 +717,84 @@ function insertMCQquestion($userCreate, $questionCode, $questionNo, $examBoard, 
   $stmt->bind_param("issssssssssissssi", $userCreate, $questionCode, $questionNo, $examBoard, $level, $unitNo, $unitName, $year, $questionText, $options, $answer, $assetId, $topic, $topics, $keyWords, $datetime, $active);
   $stmt->execute();
 
+
+}
+
+function markMCQs() {
+
+  /*
+  This function will mark an array of MCQs.
+  */
+}
+
+function insertMCQRecord($record, $userid, $startTime, $quizid, $assignid) {
+  /*
+  This function will insert a new record from a completed MCQ quiz
+
+  Used in:
+  - mcq_exercise.php
+  */
+
+  global $conn;
+
+  //print_r($record);
+  $record2 = array();
+  $score = 0;
+
+  $quiz = getMCQquizInfo($quizid);
+  $quizname = $quiz['quizName'];
+
+  $timeStart = $startTime;
+  $timeEnd = date("Y-m-d H:i:s");
+
+  foreach($record as $key => $response) {
+    $questionRecord = array();
+    $question = getMCQquestionDetails($key);
+    //print_r($question);
+    array_push($questionRecord, $question['No']);
+    array_push($questionRecord, $response);
+    array_push($questionRecord, $question['Answer']);
+    $bool = false;
+    if($response == $question['Answer']) {
+      $bool = true;
+      $score ++;
+    }
+    array_push($questionRecord, $bool);
+    array_push($questionRecord, $key);
+    array_push($record2, $questionRecord);
+
+  }
+  $record2 = json_encode($record2);
+  //echo $record2;
+
+  $percentage = round(($score/count($record))*100, 2);
+
+  $sql = "INSERT INTO `responses` (`answers`, `mark`, `percentage`, `quiz_name`, `timeStart`, `datetime`, `assignID`, `userID`, `quizId`) VALUES (?,?,?,?,?,?,?,?,?)";
+
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("ssssssiii", $record2, $score, $percentage, $quizname, $timeStart, $timeEnd, $assignid, $userid, $quizid);
+
+  // This element is added to ensure that  the same completed assignment is not submitted twice
+
+  $sql2 = "SELECT * FROM responses WHERE userID= ? AND timeStart= ?";
+
+  $stmt2 = $conn->prepare($sql2);
+  $stmt2->bind_param("is", $userid, $timeStart);
+  $stmt2->execute();
+  $result2 = $stmt2->get_result();
+
+  if($result2->num_rows == 0) {
+    $stmt->execute();
+  }
+
+  //echo "Record entered successfully";
+
+  $responseId= getMCQresponseByUsernameTimestart($userid, $timeStart);
+
+
+  return $responseId;
+  
+  
 
 }
 
@@ -4267,6 +4343,18 @@ function getPastPaperCategoryValues($topic=null, $examBoard = null, $year = null
     return $categoryResults;
 
   
+}
+
+function shuffle_assoc($list) { 
+  if (!is_array($list)) return $list; 
+
+  $keys = array_keys($list); 
+  shuffle($keys); 
+  $random = array(); 
+  foreach ($keys as $key) { 
+    $random[$key] = $list[$key]; 
+  }
+  return $random; 
 }
 
 

@@ -466,12 +466,12 @@ $_GET controls:
                         </div>
                         <div class="toggleClass_<?=$question['id']?> hidden">
                           <p>
-                            <input id="textOnly_yes" name="textOnly" type="radio" value="1" <?=($question['textOnly']==1) ? "checked" : ""?>>
-                            <label for="textOnly_yes">Text Only</label>
+                            <input id="textOnly_yes_<?=$question['id']?>" name="textOnly" type="radio" value="1" <?=($question['textOnly']==1) ? "checked" : ""?>>
+                            <label for="textOnly_yes_<?=$question['id']?>">Text Only</label>
                           </p>
                           <p>
-                            <input id="textOnly_no" name="textOnly" type="radio" value="0" <?=($question['textOnly']==0) ? "checked" : ""?>>
-                            <label for="textOnly_no">No Text Only</label>
+                            <input id="textOnly_no_<?=$question['id']?>" name="textOnly" type="radio" value="0" <?=($question['textOnly']==0) ? "checked" : ""?>>
+                            <label for="textOnly_no_<?=$question['id']?>">No Text Only</label>
                           </p>
                         </div>
 
