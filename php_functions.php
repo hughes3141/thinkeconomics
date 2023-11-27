@@ -1035,8 +1035,8 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
   if($topic) {
     $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
     $conjoin = 1;
-    $sql .= " topic = ? ";
-    //$keyword = "%".$keyword."%";
+    $sql .= " topic LIKE ? ";
+    $topic = "%".$topic."%";
     array_push($bindArray, $topic);
     $params .= "s";
     $conjoiner = 1;
