@@ -12,22 +12,34 @@ include($path."/php_header.php");
 include($path."/php_functions.php");
 
 
+
+
 if (!isset($_SESSION['userid'])) {
   
   header("location: /login.php");
   
 }
 
+
+
 else {
   $userInfo = getUserInfo($_SESSION['userid']);
   $userId = $_SESSION['userid'];
   $permissions = $userInfo['permissions'];
-  $groupid = json_decode($userInfo['groupid_array']);
+  $groupid = array();
+  if($userInfo['groupid_array'] != "") {
+    $groupid = json_decode($userInfo['groupid_array']);
+  }
 
 
 }
 
-$assignments = getUpcomingAssignmentsArray($groupid);
+
+$assignments = array();
+
+if(count($groupid) > 0) {
+  $assignments = getUpcomingAssignmentsArray($groupid);
+}
 
 $style_input = "
 
