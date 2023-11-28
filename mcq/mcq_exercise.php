@@ -43,9 +43,15 @@ if(isset($_GET['quizid'])) {
 
 
 
-$randomQuestionOrder = 0;
-$randomQuestionOrder = 1;
 
+$randomQuestionOrder = 0;
+
+//The following takes random Question Order parameter from $assignInfo:
+if(isset($assignInfo['randomQuestions'])) {
+  $randomQuestionOrder = $assignInfo['randomQuestions'];
+}
+
+//This allows override via GET variable:
 if(isset($_GET['randomQuestions'])) {
   if($_GET['randomQuestions'] == 1) {
     $randomQuestionOrder = 1;
@@ -76,8 +82,13 @@ if($randomQuestionOrder == 1) {
 }
 
 $randomQuestions = 0;
-$randomQuestions = 1;
 
+//The following takes random Question Order parameter from $assignInfo:
+if(isset($assignInfo['randomOptions'])) {
+  $randomQuestions = $assignInfo['randomOptions'];
+}
+
+//This allows override via GET variable:
 if(isset($_GET['randomOptions'])) {
   if($_GET['randomOptions'] == 1) {
     $randomQuestions = 1;
@@ -89,6 +100,7 @@ if(isset($_GET['randomOptions'])) {
   
 }
 
+//The following variable will toggle to show original question numbers (e.g. 5/10 as first question) when set to 1. Otherwise questions will come in random order but numbered sequentually e.g. 1/10 as first question
 $originalQuestionNumbers = 0;
 
 
@@ -150,6 +162,9 @@ if(str_contains($permissions, "main_admin")) {
     <h1 class="font-mono text-2xl bg-pink-400 pl-1">MCQ Exercise</h1>
     <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
       <?php
+       
+        //print_r($assignInfo);
+        
         //print_r($permissions);
         //print_r($quizInfo);
         //echo "<br>";

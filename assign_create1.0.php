@@ -63,7 +63,7 @@ p {
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
   if(isset($_POST['btnSubmit'])) {
-    createAssignment($userId, $_POST['assignName'], $_POST['exerciseid'], $_POST['notes'], $_POST['dueDate'], $_POST['type'], $_POST['groupId']);
+    createAssignment($userId, $_POST['assignName'], $_POST['exerciseid'], $_POST['notes'], $_POST['dueDate'], $_POST['type'], $_POST['groupId'], 1,1, $_POST['randomQuestions'], $_POST['randomOptions']);
 
   }
 
@@ -87,7 +87,7 @@ include($path."/header_tailwind.php");
   //echo "<br>";
   //print_r($groupsList);
   if($_SERVER['REQUEST_METHOD']==='POST') {
-    //print_r($_POST);
+    print_r($_POST);
   }
 
 
@@ -155,16 +155,20 @@ include($path."/header_tailwind.php");
     <?php
       $exercises = array();
       $exerciseName= "exerciseName";
+      $type = "";
       if(isset($_POST['type'])) {
         if($_POST['type'] == "mcq") {
           $exercises = getMCQquizzesByTopic();
           $exerciseName= "quizName";
+          $type = "mcq";
         }
         if($_POST['type'] == "saq") {
           $exercises = getExercises("saq_exercises");
+          $type ="saq";
         }
         if($_POST['type'] == "nde") {
           $exercises = getExercises("nde_exercises");
+          $type = "nde";
         }      
       //print_r($exercises);
       }
@@ -189,6 +193,28 @@ include($path."/header_tailwind.php");
           </select>
         </div>
     </div>
+
+
+    <div class="<?=($type=="mcq") ? "" : "hidden"?> grid grid-cols-2">
+      <div>
+        <p>Randomise Question Order:<p>
+        <input id ="randomQuestionsYes" type="radio" name="randomQuestions" value="1" checked>
+        <label for="randomQuestionsYes">Yes</label>
+        <input id="randomQuestionsNo" type="radio" name="randomQuestions" value="0">
+        <label for="randomQuestionsNo">No</label>
+      </div>
+      <div>
+        <p>Randomise MCQ Options:</p>
+        <input id ="randomOptionsYes" type="radio" name="randomOptions" value="1" checked>
+        <label for="randomOptionsYes">Yes</label>
+        <input id="randomOptionsNo" type="radio" name="randomOptions" value="0">
+        <label for="randomOptionsNo">No</label>
+      </div>
+      
+    </div>
+
+    
+
 
     <div class="mb-1.5">
     <label for="notes">Notes</label>

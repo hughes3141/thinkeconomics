@@ -36,7 +36,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
   if(isset($_POST['updateValue'])) {
-    $updateMessage = updateAssignment($userId, $_POST['id'], $_POST['assignName'], null, $_POST['notes'], $_POST['dateDue'], null, $_POST['groupid'], $_POST['assignReturn'], $_POST['reviewQs'], $_POST['multiSubmit'], 1);
+    $updateMessage = updateAssignment($userId, $_POST['id'], $_POST['assignName'], null, $_POST['notes'], $_POST['dateDue'], null, $_POST['groupid'], $_POST['assignReturn'], $_POST['reviewQs'], $_POST['multiSubmit'], 1, $_POST['randomQuestions'], $_POST['randomOptions']);
     //Ensure that changevisibility does not happen when directed from this same site:
     unset($_GET['assignid']);
 
@@ -110,7 +110,9 @@ include ($path."/header_tailwind.php");
     }
 
     if($_SERVER['REQUEST_METHOD'] == 'POST') {
-      //print_r($_POST); 
+      if(isset($_GET['test'])) {
+        print_r($_POST); 
+      }
     }
     echo $updateMessage;
     //print_r($_SESSION);
@@ -256,7 +258,13 @@ include ($path."/header_tailwind.php");
             </div>
             <div class="show_<?=$row['id'];?>">
                 <button class="rounded border  px-2 w-1/3  " type="button" name="updateValue" value = "Reuse" onclick="reuseAssignment(<?=$row['id']?>);">Reuse</button>
-              </div>
+            </div>
+            <?php
+            if(isset($_GET['test'])) {
+              print_r($row);
+            }
+            ?>
+
           </td>
           <td>
             <div class="show_<?=$row['id'];?>">
@@ -329,6 +337,8 @@ include ($path."/header_tailwind.php");
             <br>
             Returned:<?=htmlspecialchars($row['assignReturn']);?>
             -->
+            <p><?=($row['randomQuestions'] == 1) ? "Random Q Order" : "Set Q Order"?></p>
+            <p><?=($row['randomOptions'] == 1) ? "Random Options" : "Set Options"?></p>
           </div>
           <div class="hide hide_<?=$row['id'];?>">
             <p>
@@ -344,6 +354,20 @@ include ($path."/header_tailwind.php");
 
 
               Multi:<input type="text" style="width: 60px;" name="multiSubmit" value = "<?=$row['multiSubmit'];?>">
+            </div>
+            <div>
+              <p>Randomise Question Order:<p>
+              <input id ="randomQuestionsYes_<?=$row['id']?>" type="radio" name="randomQuestions" value="1" <?=($row['randomQuestions'] == 1) ? "checked" : ""?>>
+              <label for="randomQuestionsYes_<?=$row['id']?>">Yes</label>
+              <input id="randomQuestionsNo_<?=$row['id']?>" type="radio" name="randomQuestions" value="0" <?=($row['randomQuestions'] == 0) ? "checked" : ""?>>
+              <label for="randomQuestionsNo_<?=$row['id']?>">No</label>
+            </div>
+            <div>
+              <p>Randomise MCQ Options:</p>
+              <input id ="randomOptionsYes_<?=$row['id']?>" type="radio" name="randomOptions" value="1" <?=($row['randomOptions'] == 1) ? "checked" : ""?>>
+              <label for="randomOptionsYes_<?=$row['id']?>">Yes</label>
+              <input id="randomOptionsNo_<?=$row['id']?>" type="radio" name="randomOptions" value="0" <?=($row['randomOptions'] == 0) ? "checked" : ""?>>
+              <label for="randomOptionsNo_<?=$row['id']?>">No</label>
             </div>
 
 
