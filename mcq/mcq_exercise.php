@@ -41,8 +41,21 @@ if(isset($_GET['quizid'])) {
   $quizid = $quizInfo['id'];
 }
 
+
+
 $randomQuestionOrder = 0;
 $randomQuestionOrder = 1;
+
+if(isset($_GET['randomQuestions'])) {
+  if($_GET['randomQuestions'] == 1) {
+    $randomQuestionOrder = 1;
+  }
+
+  if($_GET['randomQuestions'] == 0) {
+    $randomQuestionOrder = 0;
+  }
+  
+}
 
 $questions = explode(",",$quizInfo['questions_id']);
 $questionsDetails = array();
@@ -64,6 +77,17 @@ if($randomQuestionOrder == 1) {
 
 $randomQuestions = 0;
 $randomQuestions = 1;
+
+if(isset($_GET['randomOptions'])) {
+  if($_GET['randomOptions'] == 1) {
+    $randomQuestions = 1;
+  }
+
+  if($_GET['randomOptions'] == 0) {
+    $randomQuestions = 0;
+  }
+  
+}
 
 $originalQuestionNumbers = 0;
 
@@ -106,6 +130,18 @@ $style_input = ".hide {
 
 include($path."/header_tailwind.php");
 
+if(str_contains($permissions, "main_admin")) {
+  ?>
+  <!--
+
+  GET Variables:
+  -randomQuestions
+  -randomOptions
+
+  -->
+  <?php
+}
+
 ?>
 
 
@@ -114,7 +150,7 @@ include($path."/header_tailwind.php");
     <h1 class="font-mono text-2xl bg-pink-400 pl-1">MCQ Exercise</h1>
     <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
       <?php
-      
+        //print_r($permissions);
         //print_r($quizInfo);
         //echo "<br>";
         //print_r($_GET);
