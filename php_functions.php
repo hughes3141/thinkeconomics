@@ -577,7 +577,7 @@ function getMCQquizzesByTopic($topic = null) {
 
 }
 
-function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
+function getMCQquestionDetails($id = null, $questionNo = null, $topic = null, $keyword = null) {
 
   /*
   This function will call details for individual MCQ questions.
@@ -591,32 +591,57 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null) {
   global $conn;
   $results = array();
 
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+
   $sql ="SELECT q.id, q.No, q.Answer, q.Topic, q.topics, q.keywords, q.question, q.options, q.explanation, q.examBoard, q.component, q.assetId, q.unitName, q.qualLevel, q.textOnly, q.topicsAQA, q.topicsEdexcel, q.topicsOCR, q.topicsCIE, a.path
         FROM question_bank_3 q
         LEFT JOIN upload_record a
           ON a.id = q.assetId";
 
+  
+
   if($id) {
-    $sql .= "  WHERE q.id = ?";
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " q.id = ?";
+    $params .= "i";
+    array_push($bindArray, $id);
   }
+
   if($questionNo) {
-    $sql .= "  WHERE No LIKE ?";
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= "  No LIKE ?";
+    $quesitonNo = $questionNo."%";
+    $params .= "s";
+    array_push($bindArray, $quesitonNo);
+
   }
+
   if($topic) {
-    $sql .= "  WHERE topic = ?";
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " topic = ?";
+    $params .= "s";
+    array_push($bindArray, $topic);
   }
+
+  if($keyword) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " keywords LIKE ?";
+    $params .= "s";
+    $keyword = "%".$keyword."%";
+    array_push($bindArray, $keyword);
+  }
+
+
 
   $stmt=$conn->prepare($sql);
-
-  if($id) {
-    $stmt->bind_param("i", $id);
-  }
-  if($questionNo) {
-    $questionNo = $questionNo."%";
-    $stmt->bind_param("s", $questionNo);
-  }
-  if($topic) {
-    $stmt->bind_param("s", $topic);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
   }
   
   $stmt->execute();
