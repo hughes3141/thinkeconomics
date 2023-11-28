@@ -206,8 +206,28 @@ if(isset($_GET['questionNo']) && $_GET['questionNo'] !="") {
 
 
 }
+$keyword = null;
+
+if(isset($_GET['keyword'])) {
+  $keyword = $_GET['keyword'];
+}
 if(isset($_GET['topic']) && $_GET['topic'] !="") {
-  $questions = getMCQquestionDetails(null, null, $_GET['topic']);
+  $questions = getMCQquestionDetails(null, null, $_GET['topic'], $keyword);
+
+
+}
+
+if(isset($_GET['quizid']) && $_GET['quizid'] != "") {
+
+  $quiz = getMCQquizInfo($_GET['quizid']);
+  $quizQuestions = explode(",",$quiz['questions_id']);
+
+  foreach($questions as $key => $question) {
+    if(in_array($question['id'], $quizQuestions) == false) {
+      unset($questions[$key]);
+    }
+  }
+
 }
 
 
@@ -219,6 +239,8 @@ if(isset($_GET['topic']) && $_GET['topic'] !="") {
 
 $_GET controls:
 -test => isset = shows print_r for $_POST variables
+-quizid => quizid to filter results by questions used in a particular quiz (must be used in conjunction with topic)
+-keyword => search by keyword
 
 -->
 
