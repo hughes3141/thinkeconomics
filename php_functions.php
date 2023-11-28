@@ -428,7 +428,8 @@ function getUpcomingAssignmentsArray($groupIdArray) {
     $paramType .= "s";
   }
   
-  $sql .= ") AND dateDue > CURRENT_TIMESTAMP()";
+  $sql .= ") AND dateDue > CURRENT_TIMESTAMP()
+  ORDER BY dateDue ASC";
 
   //echo $sql."<br>".$paramType;
   $stmt = $conn->prepare($sql);
