@@ -22,9 +22,37 @@ else {
   $userInfo = getUserInfo($_SESSION['userid']);
   $userId = $_SESSION['userid'];
   $permissions = $userInfo['permissions'];
+  $groupid = json_decode($userInfo['groupid_array']);
 
 
 }
+
+$assignments = getUpcomingAssignmentsArray($groupid);
+
+$style_input = "
+
+
+
+
+
+th, td {
+  
+  border: 1px solid black;
+  padding: 5px;
+  word-wrap:break-word;
+}
+
+table {
+  
+  border-collapse: collapse;
+  //table-layout: fixed;
+  //width: 100%;
+}
+
+";
+
+
+
 
 include "../header_tailwind.php"; 
 
@@ -47,7 +75,10 @@ include "../header_tailwind.php";
           <p class="pl-1 text-lg bg-sky-100 font-mono my-2">Logged in as <?php echo trim($userInfo['name_first']." ".$userInfo['name_last']);?></p>
         
         <?php
+        
           //print_r($userInfo);
+          //print_r($groupid);
+          //print_r($assignments);
         ?>
 
           <?php if(str_contains($permissions, "teacher")) 
@@ -62,8 +93,51 @@ include "../header_tailwind.php";
         <?php 
       } ?>      
             <div class="m-3 border-pink-300 border-2 p-3">
-              <h2>Upcoming Assignments:</h2>
-              <?php include "upcoming_assignment_embed1.0.php";?>
+              <h2 class="mb-2">Upcoming Assignments:</h2>
+              <?php
+              if(count($assignments) == 0) {
+                ?>
+                <p>You have no upcoming assignments.</p>
+                <?php
+              } else {
+                    ?>
+                    <table class="border border-black mx-auto rounded">
+                      <tr class="border border-black">
+                        <th>Assignment Name</th>
+                        <th>Due Date</th>
+                        <th>Link to Assignment</th>
+                      </tr>
+                    <?php
+                    foreach ($assignments as $value) {
+                  
+                        echo "<tr>";
+                        echo "<td>".$value['assignName']."</td>";
+                        echo "<td>".date_format(date_create($value['dateDue']), "d M y H:ia")."</td>";
+                        
+                        if ($value['type'] == "mcq") {
+                          echo "<td>";
+                  // THIS IS WHERE TO CHANGE THE LINK AFTER MAKING CHANGES TO MCQ PAGE
+                          echo "<a class='underline hover:bg-sky-200' href = '../mcq/mcq_exercise.php?assignid=".$value['id']."'>Link to MCQ</a>";
+                          echo "</td>";
+                        }   
+                        if ($value['type'] == "saq") {
+                          echo "<td>";
+                  // THIS IS WHERE TO CHANGE THE LINK AFTER MAKING CHANGES TO SAQ PAGE
+                          echo "<a href = '../saq/saq1.7.php?assignid=".$value['id']."'>Complete Assignment</a>";
+                          echo "</td>";
+                        }
+                        echo "</tr>";
+
+                    }                
+                    ?> 
+                  </table> 
+                  <?php
+                    
+                  }
+              ?>
+              
+
+
             </div>
             <p class="ml-2 hover:bg-sky-100">
               <a class ="block" href="user_mcq_review.php">MCQ Review</a>
@@ -71,11 +145,14 @@ include "../header_tailwind.php";
             <?php
             // Following line is to filter to ensure that user's school has saq_dashboard enabled in permissions.
             if(str_contains($userInfo['school_permissions'], "saq_dashboard")) 
-            { ?>
+            { 
+              /*
+              ?>
               <p class="ml-2 hover:bg-sky-100">
                 <a class ="block" href="user_saq_review2.0.php">Short Answer Questions Review</a>
               </p>
             <?php 
+            */
             } ?>
             <p class="ml-2 hover:bg-sky-100">
               <a class ="block" href="user_assign_review.php">All Assignments Review</a>

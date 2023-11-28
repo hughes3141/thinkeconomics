@@ -87,7 +87,10 @@ include($path."/header_tailwind.php");
   //echo "<br>";
   //print_r($groupsList);
   if($_SERVER['REQUEST_METHOD']==='POST') {
-    print_r($_POST);
+    if(isset($_GET['test'])) {
+      print_r($_POST);
+    }
+    
   }
 
 
