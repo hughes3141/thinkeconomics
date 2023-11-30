@@ -56,6 +56,8 @@ $get_selectors = array(
 
 $questions = getMCQquestionDetails2($get_selectors['id'], $get_selectors['questionNo'], $get_selectors['topic'], $get_selectors['keyword'], $get_selectors['search'], $get_selectors['orderby'] );
 
+$questionDetails = array();
+
 $imgSource = "https://thinkeconomics.co.uk";
 
 
@@ -127,8 +129,21 @@ $_GET controls:
               $imgPath = $question['path'];
             }
             $img = $imgSource."/mcq/question_img/".$imgPath;
+
+            $questionDetailsInstance = array(
+              'id'=>$question['id'],
+              'No'=>$question['No'],
+              'question'=>preg_replace( "/[^a-zA-Z0-9\s\p{P}]/", '', $question['question']),
+              'path'=>$img
+            );
+            $questionDetails[$question['id']] = $questionDetailsInstance;
+
             ?>
             <div class="border border-black mx-1 mb-1 p-1">
+              <p>
+                <input id="quizSelect_<?=$question['id']?>" type="checkbox" onchange="includeQuestion(<?=$question['id']?>)">
+                <label for="quizSelect_<?=$question['id']?>">Include</label>
+              </p>
               <p class="text-xs"><?=$question['question']?></p>
               <img src="<?=$img?>" class="" alt = "<?=$question['No']?>">
               <p class="text-xs"><?=$question['examBoard']?> <?=$question['qualLevel']?> <?=$question['component']?> <?=$question['series']?> <?=$question['year']?></p>
@@ -151,8 +166,11 @@ $_GET controls:
         </div>
       </div>
       <div class="border border-black relative">
-        <div class="sticky top-20 ml-1">
-          <p>A place to edit things</p>
+        <div  class="sticky top-20 ml-1  h-screen">
+          
+          <p>Quiz Preview</p>
+          <div id="previewDiv" class=" overflow-auto h-5/6">
+          </div>
         </div>
       </div>
     </div>
@@ -160,7 +178,57 @@ $_GET controls:
   </div>
 </div>
 
+<?php
+//print_r($questions);
+//echo json_encode($questionDetails);
+
+?>
+
 <script>
 
-  </script>
+
+  const questions = <?=json_encode($questionDetails)?>;
+  console.log(questions);
+
+  var selectedQuestions = [];
+
+  function removeItem(array, item) {
+    const index = array.indexOf(item);
+    return array.splice(index,1);
+  }
+
+  function previewPopulate() {
+    const div = document.getElementById("previewDiv");
+    div.innerHTML = "";
+    for (var i=0; i<selectedQuestions.length; i++) {
+      var div2 = document.createElement('div');
+      var img = document.createElement('img');
+      var p = document.createElement('p');
+      p.innerHTML = "Q"+(i + 1);
+      img.src = questions[selectedQuestions[i]].path;
+      //console.log(questions[selectedQuestions[i]].path);
+      img.alt= questions[selectedQuestions[i]].No;
+      div2.appendChild(p);
+      div2.appendChild(img);
+      div.appendChild(div2);
+    }
+
+
+  }
+
+  function includeQuestion(id) {
+    //console.log(id);
+    button = document.getElementById("quizSelect_"+id);
+    //console.log(button.checked);
+    if (button.checked == true) {
+      selectedQuestions.push(id)
+    }
+    if (button.checked == false) {
+      removeItem(selectedQuestions, id);
+    }
+    console.log(selectedQuestions);
+    previewPopulate();
+  }
+
+</script>
 <?php   include($path."/footer_tailwind.php");?>
