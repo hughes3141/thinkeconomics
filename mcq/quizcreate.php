@@ -204,9 +204,22 @@ $_GET controls:
       var div2 = document.createElement('div');
       var img = document.createElement('img');
       var p = document.createElement('p');
-      p.innerHTML = "Q"+(i + 1);
+      p.innerHTML = "Q"+(i + 1)+" ";
+      var select = document.createElement('select');
+      for (var j=0; j<selectedQuestions.length; j++) {
+        var option = document.createElement('option');
+        option.value = j;
+        option.innerHTML = j;
+        if (j == i) {
+          option.selected = true;
+        }
+        select.appendChild(option);
+      }
+      select.setAttribute("onchange", "changeOrder("+selectedQuestions[i]+", this.value)")
+      p.appendChild(select);
       img.src = questions[selectedQuestions[i]].path;
       //console.log(questions[selectedQuestions[i]].path);
+      //console.log(selectedQuestions[i]);
       img.alt= questions[selectedQuestions[i]].No;
       div2.appendChild(p);
       div2.appendChild(img);
@@ -216,7 +229,7 @@ $_GET controls:
 
   }
 
-  function includeQuestion(id) {
+  function includeQuestion(id,order) {
     //console.log(id);
     button = document.getElementById("quizSelect_"+id);
     //console.log(button.checked);
@@ -228,6 +241,16 @@ $_GET controls:
     }
     console.log(selectedQuestions);
     previewPopulate();
+  }
+
+  function changeOrder(id, order) {
+    oldPosition = selectedQuestions.indexOf(id);
+    console.log(id+" "+order+" "+oldPosition);
+    newArray = [];
+    if(order < oldPosition) {      
+    }
+
+    console.log(selectedQuestions);
   }
 
 </script>
