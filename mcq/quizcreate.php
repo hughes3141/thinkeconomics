@@ -209,7 +209,7 @@ $_GET controls:
       for (var j=0; j<selectedQuestions.length; j++) {
         var option = document.createElement('option');
         option.value = j;
-        option.innerHTML = j;
+        option.innerHTML = j+1;
         if (j == i) {
           option.selected = true;
         }
@@ -249,12 +249,17 @@ $_GET controls:
     newArray = [];
 
     for(var i=0; i<selectedQuestions.length; i++) {
-      if(i == order) {
+
+      if(i == order && order<oldPosition) {
         newArray.push(id);
       }
       if(selectedQuestions[i] != id) {
         newArray.push(selectedQuestions[i]);
       }
+      if(i == order && order>oldPosition) {
+        newArray.push(id);
+      }
+
     }
     console.log(selectedQuestions);
     console.log(newArray);
