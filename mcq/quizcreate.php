@@ -247,10 +247,18 @@ $_GET controls:
     oldPosition = selectedQuestions.indexOf(id);
     console.log(id+" "+order+" "+oldPosition);
     newArray = [];
-    if(order < oldPosition) {      
-    }
 
+    for(var i=0; i<selectedQuestions.length; i++) {
+      if(i == order) {
+        newArray.push(id);
+      }
+      if(selectedQuestions[i] != id) {
+        newArray.push(selectedQuestions[i]);
+      }
+    }
     console.log(selectedQuestions);
+    console.log(newArray);
+    previewPopulate();
   }
 
 </script>
