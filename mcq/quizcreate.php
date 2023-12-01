@@ -258,6 +258,7 @@ $_GET controls:
     }
     console.log(selectedQuestions);
     console.log(newArray);
+    selectedQuestions= newArray;
     previewPopulate();
   }
 
