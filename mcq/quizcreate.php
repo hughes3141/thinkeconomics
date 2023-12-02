@@ -49,12 +49,27 @@ $get_selectors = array(
   'dataFilter' => (isset($_GET['dataFilter'])&&$_GET['dataFilter'] !="") ? $_GET['dataFilter'] : null,
   'keyword' => (isset($_GET['keyword'])&&$_GET['keyword']!="") ? $_GET['keyword'] : null,
   'search' => (isset($_GET['search'])&&$_GET['search']!="") ? $_GET['search'] : null,
-  'orderby' => (isset($_GET['orderby'])&&$_GET['orderby']!="") ? $_GET['orderby'] : null
+  'orderby' => (isset($_GET['orderby'])&&$_GET['orderby']!="") ? $_GET['orderby'] : null,
+  'selectedQuestions' => (isset($_GET['selectedQuestions'])&&$_GET['selectedQuestions']!="") ? $_GET['selectedQuestions'] : null
 
 
 );
 
-$questions = getMCQquestionDetails2($get_selectors['id'], $get_selectors['questionNo'], $get_selectors['topic'], $get_selectors['keyword'], $get_selectors['search'], $get_selectors['orderby'] );
+$questions = getMCQquestionDetails2($get_selectors['id'], $get_selectors['questionNo'], $get_selectors['topic'], $get_selectors['keyword'], $get_selectors['search'], $get_selectors['orderby'], $get_selectors['examBoard']);
+
+//The following appends to $questions any qusestions that were included in previous quiz-creations and are passed back through $GET['selectedQuestions]
+
+$selectedQuestions = explode(",",$get_selectors['selectedQuestions']);
+$selectedQuestions = array_reverse($selectedQuestions);
+//print_r($selectedQuestions);
+foreach($selectedQuestions as $questionid) {
+  $question = getMCQquestionDetails2($questionid)[0];
+  //print_r($question);
+  if(!in_array($question,$questions)) {
+    array_unshift($questions, $question);
+  }
+
+}
 
 $questionDetails = array();
 
@@ -107,6 +122,8 @@ $_GET controls:
           </select>
           <input type="text" id="orderby_select" name="search" value="<?=isset($_GET['examBoard']) ? $_GET['search'] : "" ?>"</input>
 
+          <input type="hidden" id="selectedQuestionsSelect" name="selectedQuestions" value="<?=$get_selectors['selectedQuestions']?>">
+
           <input type="submit"  value="Select">
         </form>
     </div>
@@ -141,12 +158,15 @@ $_GET controls:
             ?>
             <div class="border border-black mx-1 mb-1 p-1">
               <p>
-                <input id="quizSelect_<?=$question['id']?>" type="checkbox" onchange="includeQuestion(<?=$question['id']?>)">
+                <input id="quizSelect_<?=$question['id']?>" type="checkbox" onchange="includeQuestion(<?=$question['id']?>)" <?=(in_array($question['id'], $selectedQuestions)) ? "checked" :""?>>
                 <label for="quizSelect_<?=$question['id']?>">Include</label>
               </p>
               <p class="text-xs"><?=$question['question']?></p>
               <img src="<?=$img?>" class="" alt = "<?=$question['No']?>">
-              <p class="text-xs"><?=$question['examBoard']?> <?=$question['qualLevel']?> <?=$question['component']?> <?=$question['series']?> <?=$question['year']?></p>
+              <div class="text-xs">
+                <p ><?=$question['examBoard']?> <?=$question['qualLevel']?> <?=$question['component']?> <?=$question['series']?> <?=$question['year']?></p>
+                <p>Answer: <?=$question['Answer']?></p>
+              </div>
               <button class="border border-black rounded bg-pink-200 my-2 p-1"  onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit Details", "Hide Edit", "block");'>Edit Details</button>
               <div class=" toggleClass_<?=$question['id']?> hidden">
               <form method="post">
@@ -187,14 +207,20 @@ $_GET controls:
 <script>
 
 
-  const questions = <?=json_encode($questionDetails)?>;
+  const questions = <?=(count($questionDetails) > 0) ? json_encode($questionDetails) : "[]"?>;
   console.log(questions);
 
-  var selectedQuestions = [];
+  var selectedQuestions = [<?=$get_selectors['selectedQuestions']?>];
+
+  previewPopulate();
 
   function removeItem(array, item) {
     const index = array.indexOf(item);
-    return array.splice(index,1);
+    array.splice(index,1);
+    const checkbox = document.getElementById("quizSelect_"+item);
+    checkbox.checked = false;
+    //console.log(array);
+    //console.log(item);
   }
 
   function previewPopulate() {
@@ -204,6 +230,7 @@ $_GET controls:
       var div2 = document.createElement('div');
       var img = document.createElement('img');
       var p = document.createElement('p');
+      var button = document.createElement('button');
       p.innerHTML = "Q"+(i + 1)+" ";
       var select = document.createElement('select');
       for (var j=0; j<selectedQuestions.length; j++) {
@@ -217,6 +244,10 @@ $_GET controls:
       }
       select.setAttribute("onchange", "changeOrder("+selectedQuestions[i]+", this.value)")
       p.appendChild(select);
+      button.innerHTML = "Remove";
+      button.className = "border border-black mx-1 px-1 bg-pink-200 rounded";
+      button.setAttribute("onclick", "removeItem(selectedQuestions, "+selectedQuestions[i]+"); previewPopulate();")
+      p.appendChild(button);
       img.src = questions[selectedQuestions[i]].path;
       //console.log(questions[selectedQuestions[i]].path);
       //console.log(selectedQuestions[i]);
@@ -225,6 +256,9 @@ $_GET controls:
       div2.appendChild(img);
       div.appendChild(div2);
     }
+
+    const selectedQuestionsInput = document.getElementById("selectedQuestionsSelect");
+    selectedQuestionsInput.value = selectedQuestions;
 
 
   }
@@ -261,8 +295,8 @@ $_GET controls:
       }
 
     }
-    console.log(selectedQuestions);
-    console.log(newArray);
+    //console.log(selectedQuestions);
+    //console.log(newArray);
     selectedQuestions= newArray;
     previewPopulate();
   }
