@@ -50,19 +50,42 @@ $get_selectors = array(
   'keyword' => (isset($_GET['keyword'])&&$_GET['keyword']!="") ? $_GET['keyword'] : null,
   'search' => (isset($_GET['search'])&&$_GET['search']!="") ? $_GET['search'] : null,
   'orderby' => (isset($_GET['orderby'])&&$_GET['orderby']!="") ? $_GET['orderby'] : null,
-  'selectedQuestions' => (isset($_GET['selectedQuestions'])&&$_GET['selectedQuestions']!="") ? $_GET['selectedQuestions'] : null
+  'selectedQuestions' => (isset($_GET['selectedQuestions'])&&$_GET['selectedQuestions']!="") ? $_GET['selectedQuestions'] : null,
+  'quizid' => (isset($_GET['quizid'])&&$_GET['quizid']!="") ? $_GET['quizid'] : null
 
 
 );
 
 $questions = getMCQquestionDetails2($get_selectors['id'], $get_selectors['questionNo'], $get_selectors['topic'], $get_selectors['keyword'], $get_selectors['search'], $get_selectors['orderby'], $get_selectors['examBoard']);
 
+//Controls if questions are brought in from previously-created quiz. If so then the only output is these questions.
+
+$quizid = $get_selectors['quizid'];
+$quiz = null;
+$quizQuestions = array();
+if($quizid) {
+  $quiz = getMCQquizInfo($quizid);
+  $quizQuestions = explode(",",$quiz['questions_id']);
+  $questions = array();
+}
+
 //The following appends to $questions any qusestions that were included in previous quiz-creations and are passed back through $GET['selectedQuestions]
 
-$selectedQuestions = explode(",",$get_selectors['selectedQuestions']);
-$selectedQuestions = array_reverse($selectedQuestions);
+$selectedQuestions = array();
+if($get_selectors['selectedQuestions']) {
+  $selectedQuestions = explode(",",$get_selectors['selectedQuestions']);
+}
+
+if($quiz) {
+  $selectedQuestions = $quizQuestions;
+}
+
 //print_r($selectedQuestions);
-foreach($selectedQuestions as $questionid) {
+
+
+$selectedQuestionsRev = array_reverse($selectedQuestions);
+//print_r($selectedQuestions);
+foreach($selectedQuestionsRev as $questionid) {
   $question = getMCQquestionDetails2($questionid)[0];
   //print_r($question);
   if(!in_array($question,$questions)) {
@@ -210,7 +233,7 @@ $_GET controls:
   const questions = <?=(count($questionDetails) > 0) ? json_encode($questionDetails) : "[]"?>;
   console.log(questions);
 
-  var selectedQuestions = [<?=$get_selectors['selectedQuestions']?>];
+  var selectedQuestions = [<?=implode(",",$selectedQuestions)?>];
 
   previewPopulate();
 
