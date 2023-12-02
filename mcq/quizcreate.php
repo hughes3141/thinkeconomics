@@ -209,10 +209,12 @@ $_GET controls:
         </div>
       </div>
       <div class="border border-black relative">
-        <div  class="sticky top-20 ml-1  h-screen">
+        <div  class="sticky top-20 mx-1  h-screen">
           
-          <p>Quiz Preview</p>
-          <div id="previewDiv" class=" overflow-auto h-5/6">
+          <p>Quiz Preview <a id="previewPageLink" class="border border-black rounded bg-sky-200 px-1 " href="" target="_blank">Export to Preview Page</a></p>
+          <div  class=" overflow-auto h-5/6">
+            
+            <div id="previewDiv"></div>
           </div>
         </div>
       </div>
@@ -282,6 +284,10 @@ $_GET controls:
 
     const selectedQuestionsInput = document.getElementById("selectedQuestionsSelect");
     selectedQuestionsInput.value = selectedQuestions;
+
+    const previewPageLink = document.getElementById("previewPageLink");
+    selectedQuestionsString = selectedQuestions.toString();
+    previewPageLink.href = "/mcq/mcq_preview_simple.php?questions="+selectedQuestionsString;
 
 
   }

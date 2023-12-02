@@ -26,6 +26,13 @@ else {
 
 include ($path."/header_tailwind.php");
 
+$get_selectors = array(
+  'quizid' => (isset($_GET['quizid'])&&$_GET['quizid']!="") ? $_GET['quizid'] : null,
+  'questions' => (isset($_GET['questions'])&&$_GET['questions']!="") ? $_GET['questions'] : null,
+
+
+);
+
 
 $quiz = array();
 $assign = array();
@@ -33,6 +40,8 @@ $questions = array();
 $topic = "";
 $quizzes = array();
 $topicSet = false;
+
+$questionsDetails = array();
 
 if(isset($_GET['quizid'])) {
   $quiz = getMCQquizInfo($_GET['quizid']);
@@ -63,6 +72,16 @@ if(isset($_GET['topic'])) {
     $topicSet = true;
   }
   
+}
+
+if($get_selectors['questions']) {
+  $questionIds = explode(",",$get_selectors['questions']);
+  //print_r($questionIds);
+  foreach($questionIds as $id) {
+    $question = getMCQquestionDetails2($id)[0];
+    //print_r($question);
+    array_push($questionsDetails, $question);
+  }
 }
 
 
@@ -101,7 +120,7 @@ if(isset($_GET['topic'])) {
             <?php
           }
       ?>
-      <br><br><br>
+
 
 
   <?php
@@ -123,8 +142,26 @@ if(isset($_GET['topic'])) {
 
     }
 
+    foreach($questionsDetails as $questionInfo) {
+      //print_r($questionInfo);
+
+      $imgSource = "https://thinkeconomics.co.uk";
+			$imgPath = "";
+			if($questionInfo['path'] == "") {
+				$imgPath = $questionInfo['No'].".JPG";
+			} else {
+				$imgPath = $questionInfo['path'];
+			}
+			$img = $imgSource."/mcq/question_img/".$imgPath;
+      ?>
+      <img src="<?=$img?>" alt="">
+      
+
+      <?php
+    }
+
   ?>
-  <br><br><br>
+
     </div>
 </div>
 
