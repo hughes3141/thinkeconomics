@@ -578,7 +578,45 @@ function getMCQquizzesByTopic($topic = null) {
 
 }
 
-function getMCQquestionDetails($id = null, $questionNo = null, $topic = null, $keyword = null) {
+function createMCQquiz($userCreate, $questions_id, $quizName, $topic, $notes, $description) {
+  /*
+  This function creates new MCQ quiz in table mcq_quizzes
+  Used in:
+  -mcq/quizcreate.php
+  */
+  global $conn;
+
+  $datetime = date("Y-m-d H:i:s");
+  $active = 1;
+  $questions_nos = array();
+  $questions_id = explode(",", $questions_id);
+
+  foreach($questions_id as $question) {
+    $questionNo = getMCQquestionDetails2($question)[0]['No'];
+    array_push($questions_nos, $questionNo);
+  }
+  $questions_nos = implode(", ",$questions_nos);
+
+  $questions_array = json_encode($questions_id);
+
+  $questions_id = implode(",", $questions_id);
+
+
+  $sql = "INSERT INTO mcq_quizzes
+          (userCreate, questions_id, quizName, topic, notes, description, questions, questions_array, dateCreated, active)
+          VALUES (?,?,?,?,?,?,?,?,?,?)";
+  
+   $stmt = $conn->prepare($sql);
+   $stmt->bind_param("issssssssi", $userCreate, $questions_id, $quizName, $topic, $notes, $description, $questions_nos, $questions_array, $datetime, $active);
+   $stmt->execute();
+
+   return "New quiz created successfully";
+   
+
+
+}
+
+function getMCQquestionDetails($id = null, $questionNo = null, $topic = null, $keyword = null, $search = null) {
 
   /*
   This function will call details for individual MCQ questions.
@@ -638,7 +676,27 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null, $k
     array_push($bindArray, $keyword);
   }
 
+  if($search) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $search = "%".$search."%";
+    $sql .= " ( keywords LIKE ?";
+    $params .= "s";
+    array_push($bindArray, $search);
+    $sql .= " OR question LIKE ?";
+    $params .= "s";
+    array_push($bindArray, $search);
+    $sql .= " OR options LIKE ? ) ";
+    $params .= "s";
+    array_push($bindArray, $search);
 
+  }
+
+
+
+  //echo $sql;
+  //echo "<br>";
+  //print_r($bindArray);
 
   $stmt=$conn->prepare($sql);
   if(count($bindArray)>0) {
@@ -660,6 +718,118 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null, $k
   return $results;
 
 
+
+}
+
+function getMCQquestionDetails2($id = null, $questionNo = null, $topic = null, $keyword = null, $search = null, $orderBy = null, $examBoard = null) {
+
+  /*
+  This function will call details for individual MCQ questions.
+
+  This is the improved version, copied from getMCQauestionDetails() on 29.11.2023. This improved version does not replace single-array output as a single array.
+  
+  Used in:
+  -quizcreate.php
+  */
+
+  global $conn;
+  $results = array();
+
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+
+  $sql ="SELECT q.id, q.No, q.Answer, q.Topic, q.topics, q.keywords, q.question, q.options, q.explanation, q.examBoard, q.component, q.assetId, q.unitName, q.qualLevel, q.textOnly, q.topicsAQA, q.topicsEdexcel, q.topicsOCR, q.topicsCIE, q.series, q.year, a.path
+        FROM question_bank_3 q
+        LEFT JOIN upload_record a
+          ON a.id = q.assetId";
+
+  
+
+  if($id) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " q.id = ?";
+    $params .= "i";
+    array_push($bindArray, $id);
+  }
+
+  if($questionNo) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= "  No LIKE ?";
+    $quesitonNo = $questionNo."%";
+    $params .= "s";
+    array_push($bindArray, $quesitonNo);
+
+  }
+
+  if($topic) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " topic = ?";
+    $params .= "s";
+    array_push($bindArray, $topic);
+  }
+
+  if($keyword) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " keywords LIKE ?";
+    $params .= "s";
+    $keyword = "%".$keyword."%";
+    array_push($bindArray, $keyword);
+  }
+
+  if($search) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $search = "%".$search."%";
+    $sql .= " ( keywords LIKE ?";
+    $params .= "s";
+    array_push($bindArray, $search);
+    $sql .= " OR question LIKE ?";
+    $params .= "s";
+    array_push($bindArray, $search);
+    $sql .= " OR options LIKE ? ) ";
+    $params .= "s";
+    array_push($bindArray, $search);
+
+  }
+
+  if($examBoard) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " examBoard = ?";
+    $params .= "s";
+    array_push($bindArray, $examBoard);
+  }
+
+  if($orderBy) {
+    if($orderBy == "question") {
+      $sql .= " ORDER BY TRIM(question) ";
+    }
+  }
+
+  //echo $sql;
+  //echo "<br>";
+  //print_r($bindArray);
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+  
+  
+  return $results;
 
 }
 
