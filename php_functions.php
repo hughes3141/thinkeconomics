@@ -578,6 +578,44 @@ function getMCQquizzesByTopic($topic = null) {
 
 }
 
+function createMCQquiz($userCreate, $questions_id, $quizName, $topic, $notes, $description) {
+  /*
+  This function creates new MCQ quiz in table mcq_quizzes
+  Used in:
+  -mcq/quizcreate.php
+  */
+  global $conn;
+
+  $datetime = date("Y-m-d H:i:s");
+  $active = 1;
+  $questions_nos = array();
+  $questions_id = explode(",", $questions_id);
+
+  foreach($questions_id as $question) {
+    $questionNo = getMCQquestionDetails2($question)[0]['No'];
+    array_push($questions_nos, $questionNo);
+  }
+  $questions_nos = implode(", ",$questions_nos);
+
+  $questions_array = json_encode($questions_id);
+
+  $questions_id = implode(",", $questions_id);
+
+
+  $sql = "INSERT INTO mcq_quizzes
+          (userCreate, questions_id, quizName, topic, notes, description, questions, questions_array, dateCreated, active)
+          VALUES (?,?,?,?,?,?,?,?,?,?)";
+  
+   $stmt = $conn->prepare($sql);
+   $stmt->bind_param("issssssssi", $userCreate, $questions_id, $quizName, $topic, $notes, $description, $questions_nos, $questions_array, $datetime, $active);
+   $stmt->execute();
+
+   return "New quiz created successfully";
+   
+
+
+}
+
 function getMCQquestionDetails($id = null, $questionNo = null, $topic = null, $keyword = null, $search = null) {
 
   /*

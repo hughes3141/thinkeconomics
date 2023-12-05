@@ -35,6 +35,14 @@ $style_input = "
   ";
 
 if($_SERVER['REQUEST_METHOD']==='POST') {
+  if(isset($_GET['test'])) {
+    print_r($_POST);
+  }
+
+  if($_POST['submit'] == "Create New Quiz") {
+    $confirm = createMCQquiz($userId, $_POST['questions_id'], $_POST['quizName'], $_POST['topic'], $_POST['notes'], $_POST['description']);
+  }
+
 }
 
 $get_selectors = array(
@@ -56,7 +64,18 @@ $get_selectors = array(
 
 );
 
-$questions = getMCQquestionDetails2($get_selectors['id'], $get_selectors['questionNo'], $get_selectors['topic'], $get_selectors['keyword'], $get_selectors['search'], $get_selectors['orderby'], $get_selectors['examBoard']);
+$run_questions = 0;
+$questions = array();
+
+foreach ($get_selectors as $element) {
+  if(!is_null($element)) {
+    $run_questions = 1;
+  }
+}
+
+if($run_questions == 1) {
+  $questions = getMCQquestionDetails2($get_selectors['id'], $get_selectors['questionNo'], $get_selectors['topic'], $get_selectors['keyword'], $get_selectors['search'], $get_selectors['orderby'], $get_selectors['examBoard']);
+}
 
 //Controls if questions are brought in from previously-created quiz. If so then the only output is these questions.
 
@@ -117,6 +136,37 @@ $_GET controls:
 <div class=" mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-full">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">MCQ Quiz Creator</h1>
   <div class="  mx-auto p-4 mt-2 bg-white text-black mb-5">
+    <div><?=(isset($confirm)) ? $confirm : ""?></div>
+
+    <div id="createBox" class="fixed top-10 left-1 right-1 bottom-1 border-8 m-3 p-5 border-pink-400 rounded-xl bg-white z-10  flex hidden justify-center ">
+      <div class="w-1/2">
+        <form method = "post" action ="">
+          <p class="mb-1 ">
+            <label for="quizNameInput">Quiz Name:</label>
+            <input class="w-full" id = "quizNameInput" type="text" name="quizName">
+          </p>
+          <p class="mb-1 ">
+            <label for="topicInput">Topic:</label>
+            <input class="w-full" id = "topicInput" type="text" name="topic">
+          </p>
+          <p class="mb-1 ">
+            <label for="descriptionInput">Description:</label>
+            <textarea class="w-full" id = "descriptionInput"  name="description"></textarea>
+          </p>
+          <p class="mb-1 ">
+            <label for="notesInput">Notes:</label>
+            <textarea class="w-full" id = "notesInput"  name="notes"></textarea>
+          </p>
+          <input type="hidden" id="questionsIdInput" name="questions_id">
+          <p class="mb-1 ">
+            <input type="submit" value="Create New Quiz" class="rounded bg-pink-300 border border-black w-full hover:bg-sky-200 py-1" name="submit">
+          </p>
+          <p class="mb-1 ">
+            <button type="button" onclick="toggleForm();" class="rounded bg-sky-300 border border-black w-full hover:bg-pink-200 py-1">Go Back</button
+          </p>
+        </form>
+      </div>
+    </div>
     <div>
       <form method ="get"  action="">
           <label for="id_select">ID:</label>
@@ -136,14 +186,17 @@ $_GET controls:
           <input type="text" id="component_select" name="component" value="<?=isset($_GET['examBoard']) ? $_GET['component'] : "" ?>"</input>
 
           <label for="search_select">Search:</label>
-          <input type="text" id="search_select" name="search" value="<?=isset($_GET['examBoard']) ? $_GET['search'] : "" ?>"</input>
+          <input type="text" id="search_select" name="search" value="<?=isset($_GET['search']) ? $_GET['search'] : "" ?>"</input>
 
           <label for="orderby_select">Order By:</label>
           <select id="orderby_select" name="orderby">
             <option value=""></option>
-            <option value="question">Question Text</option>
+            <option value="question" <?=($get_selectors['orderby'] == "question") ? "selected" : ""?>>Question Text</option>
           </select>
-          <input type="text" id="orderby_select" name="search" value="<?=isset($_GET['examBoard']) ? $_GET['search'] : "" ?>"</input>
+          <!--
+          <label for="search_select">Search:</label>
+          <input type="text" id="search_select" name="search" value="<?=isset($_GET['search']) ? $_GET['search'] : "" ?>"</input>
+            -->
 
           <input type="hidden" id="selectedQuestionsSelect" name="selectedQuestions" value="<?=$get_selectors['selectedQuestions']?>">
 
@@ -211,7 +264,7 @@ $_GET controls:
       <div class="border border-black relative">
         <div  class="sticky top-20 mx-1  h-screen">
           
-          <p>Quiz Preview <a id="previewPageLink" class="border border-black rounded bg-sky-200 px-1 " href="" target="_blank">Export to Preview Page</a></p>
+          <p>Quiz Preview <a id="previewPageLink" class="border border-black rounded bg-sky-200 px-1 " href="" target="_blank">Export to Preview Page</a> <button onclick="toggleForm();"  class="border border-black rounded bg-pink-300 px-1">Create Quiz</button></p>
           <div  class=" overflow-auto h-5/6">
             
             <div id="previewDiv"></div>
@@ -280,6 +333,9 @@ $_GET controls:
       div2.appendChild(p);
       div2.appendChild(img);
       div.appendChild(div2);
+
+      
+
     }
 
     const selectedQuestionsInput = document.getElementById("selectedQuestionsSelect");
@@ -288,6 +344,9 @@ $_GET controls:
     const previewPageLink = document.getElementById("previewPageLink");
     selectedQuestionsString = selectedQuestions.toString();
     previewPageLink.href = "/mcq/mcq_preview_simple.php?questions="+selectedQuestionsString;
+
+    const questionsIdInput = document.getElementById("questionsIdInput");
+    questionsIdInput.value = selectedQuestions;
 
 
   }
@@ -328,6 +387,15 @@ $_GET controls:
     //console.log(newArray);
     selectedQuestions= newArray;
     previewPopulate();
+  }
+
+  function toggleForm() {
+    const form = document.getElementById("createBox");
+    if(form.classList.contains("hidden")) {
+      form.classList.remove("hidden");
+    } else {
+      form.classList.add("hidden");
+    }
   }
 
 </script>
