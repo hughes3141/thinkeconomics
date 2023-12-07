@@ -227,7 +227,13 @@ $_GET controls:
               'id'=>$question['id'],
               'No'=>$question['No'],
               'question'=>preg_replace( "/[^a-zA-Z0-9\s\p{P}]/", '', $question['question']),
-              'path'=>$img
+              'path'=>$img,
+              'Answer' =>$question['Answer'],
+              'examBoard' =>$question['examBoard'],
+              'year'=>$question['year'],
+              'qualLevel'=>$question['qualLevel'],
+              'component'=>$question['component'],
+              'series'=>$question['series']
             );
             $questionDetails[$question['id']] = $questionDetailsInstance;
 
@@ -322,6 +328,9 @@ $_GET controls:
       }
       select.setAttribute("onchange", "changeOrder("+selectedQuestions[i]+", this.value)")
       p.appendChild(select);
+      var p2 = document.createElement('p');
+      p2.innerHTML = questions[selectedQuestions[i]].Answer
+      p2.classList.add("text-xs");
       button.innerHTML = "Remove";
       button.className = "border border-black mx-1 px-1 bg-pink-200 rounded";
       button.setAttribute("onclick", "removeItem(selectedQuestions, "+selectedQuestions[i]+"); previewPopulate();")
@@ -331,6 +340,7 @@ $_GET controls:
       //console.log(selectedQuestions[i]);
       img.alt= questions[selectedQuestions[i]].No;
       div2.appendChild(p);
+      div2.appendChild(p2);
       div2.appendChild(img);
       div.appendChild(div2);
 

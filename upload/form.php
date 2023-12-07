@@ -96,6 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $uploadMessage .=  "Sorry, your file was not uploaded.";
   // if everything is ok, try to upload file
   } else {
+    
     if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $path.$target_file)) {
       $uploadMessage .=  "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded.";
       
@@ -105,6 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
       $uploadMessage .=  "Sorry, there was an error uploading your file.";
     }
+    
   }
 
 }
@@ -132,7 +134,7 @@ include($path."/header_tailwind.php");
         <option value = '/mcq/question_img/' <?=($lastFolder == "/mcq/question_img/") ? "selected": ""?>>MCQ Image</option>
         <option value = '/assets/flashcard_img/' <?=($lastFolder == "/assets/flashcard_img/") ? "selected": ""?>>Flashcard Image</option>
         <option value = '/assets/pastpaper_img/' <?=($lastFolder == "/assets/pastpaper_img/") ? "selected": ""?>>Past Paper Images</option>
-        <option value = '/assets/articles/' <?=($lastFolder == "/assets/pastpaper_img/") ? "selected": ""?>>Articles</option>
+        <option value = '/assets/articles/' <?=($lastFolder == "/assets/articles/") ? "selected": ""?>>Articles</option>
       </select>
     </p>
     <p>
