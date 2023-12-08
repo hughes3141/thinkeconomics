@@ -117,25 +117,26 @@ if($get_selectors['questions']) {
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1 " style="<?=($get_selectors['simple']) ? "display:none" : ""?>">MCQ Preview</h1>
     <div class="container mx-auto px-0 mt-2 bg-white text-black ">
-      <form method="get" action = "">
-        <span style="<?=($get_selectors['simple']) ? "display:none" : ""?>">
-          <label id="quizid_select">quizid: </label>
-          <input type="text" style="width:50px" name="quizid" id="quizid_select" value="<?=$get_selectors['quizid']?>">
+      <form method="get" action = "" id="control_form">
+ 
+        <label id="quizid_select">quizid: </label>
+        <input type="text" style="width:50px" name="quizid" id="quizid_select" value="<?=$get_selectors['quizid']?>">
 
-          <label id="width_select">width(&percnt;): </label>
-          <input type="text" style="width:50px" name="width" id="width_select" value="<?=$get_selectors['width']?>">
+        <label id="width_select">width(&percnt;): </label>
+        <input type="text" style="width:50px" name="width" id="width_select" value="<?=$get_selectors['width']?>">
 
-          <input type="checkbox" name="noDetailShow" value= "1" id="noDetailShow_select" <?=($get_selectors['noDetailShow']==1) ? "checked" : ""?>>
-          <label for="noDetailShow_select">Hide Details</label>
-          <input type="checkbox" name="answerShow" value= "1" id="answerShow_select" <?=($get_selectors['answerShow']==1) ? "checked" : ""?>>
-          <label for="answerShow_select">Show Answers</label>
-        </span>
+        <input type="checkbox" name="noDetailShow" value= "1" id="noDetailShow_select" <?=($get_selectors['noDetailShow']==1) ? "checked" : ""?>>
+        <label for="noDetailShow_select">Hide Details</label>
+        <input type="checkbox" name="answerShow" value= "1" id="answerShow_select" <?=($get_selectors['answerShow']==1) ? "checked" : ""?>>
+        <label for="answerShow_select">Show Answers</label>
+  
         <input type="checkbox" name="simple" value= "1" id="simple_select" <?=($get_selectors['simple']==1) ? "checked" : ""?>>
         <label for="simple_select">Simple Preview</label>
 
         <input type="hidden" name="questions" value="<?=$get_selectors['questions']?>">
         <input type="submit" value="Submit">
       </form>
+      <button onclick="toggleControls();">Toggle Controls</button
 
 
 
@@ -194,6 +195,24 @@ if($get_selectors['questions']) {
 
     </div>
 </div>
+
+<script>
+
+  function toggleControls() {
+    var form = document.getElementById("control_form");
+    console.log(form);
+    var state = window.getComputedStyle(form).display;
+    console.log(state);
+    if(state == "block") {
+      form.style.display = "none";
+    }
+    if (state == "none") {
+      form.style.display = "block";
+    }
+
+
+  }
+</script>
 
 <?php
 if($get_selectors['simple']!=1) {
