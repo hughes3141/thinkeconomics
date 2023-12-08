@@ -353,7 +353,7 @@ $_GET controls:
 
     const previewPageLink = document.getElementById("previewPageLink");
     selectedQuestionsString = selectedQuestions.toString();
-    previewPageLink.href = "/mcq/mcq_preview_simple.php?questions="+selectedQuestionsString;
+    previewPageLink.href = "/mcq/mcq_preview.php?questions="+selectedQuestionsString;
 
     const questionsIdInput = document.getElementById("questionsIdInput");
     questionsIdInput.value = selectedQuestions;
