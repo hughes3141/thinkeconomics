@@ -130,6 +130,12 @@ $style_input = ".hide {
           $response = $_POST['a_'.$question];
         }
         $record[$question] = $response;
+
+        //The following will update mcq_responses_questions table:
+
+        //insertMCQquestionResponses
+
+
       }
     
     $responseId = insertMCQRecord($record, $_POST['userid'], $_POST['startTime'], $_POST['quizid'], $_POST['assignid']);
