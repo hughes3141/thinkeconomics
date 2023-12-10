@@ -122,14 +122,26 @@ $style_input = ".hide {
   if($_SERVER['REQUEST_METHOD']==='POST') {
     
     if($_POST['submit_info'] == "submittedForm2") {
-      //print_r($_POST);
+      if(isset($_GET['test'])) {
+        print_r($_POST);
+      }
       $record = array();
-      foreach ($questionsOriginal as $question) {
+
+      $submitTime = date("Y-m-d H:i:s");
+
+
+      foreach ($questionsOriginal as $key => $question) {
         $response = "";
         if(isset($_POST['a_'.$question])) {
           $response = $_POST['a_'.$question];
         }
         $record[$question] = $response;
+
+        //The following will update mcq_responses_questions table:
+
+        insertMCQquestionResponse($_POST['userid'], $question, $response, null, null, $submitTime, $_POST['quizid'], $_POST['assignid'], $key);
+
+
       }
     
     $responseId = insertMCQRecord($record, $_POST['userid'], $_POST['startTime'], $_POST['quizid'], $_POST['assignid']);

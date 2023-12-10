@@ -916,11 +916,22 @@ function insertMCQquestion($userCreate, $questionCode, $questionNo, $examBoard, 
 
 }
 
-function markMCQs() {
+function markMCQquestion($questionId, $response) {
 
   /*
-  This function will mark an array of MCQs.
+  This function will mark an MCQ question with $questionId and given $response
   */
+
+  $questionDetails=getMCQquestionDetails2($questionId)[0];
+  $correctAnswer = $questionDetails['Answer'];
+  $correctAnswer = strtolower($correctAnswer);
+  $response = strtolower($response);
+
+  if(str_contains($correctAnswer, $response)) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 function insertMCQRecord($record, $userid, $startTime, $quizid, $assignid) {
@@ -991,6 +1002,30 @@ function insertMCQRecord($record, $userid, $startTime, $quizid, $assignid) {
   return $responseId;
   
   
+
+}
+
+function insertMCQquestionResponse($userid, $questionid, $response, $startTime, $endTime, $submitTime, $quizid, $assignid, $instanceOrder = 0) {
+  /*
+  This function will insert individual question responses to mcq_responses_questions table
+  */
+
+  global $conn;
+
+  $recordTime = date("Y-m-d H:i:s");
+
+  if($submitTime == null) {
+    $submitTime = date("Y-m-d H:i:s");
+  }
+
+  $sql = "INSERT INTO mcq_responses_questions (userId, questionId, answer, startTime, endTime, submitTime, correct, quizId, assignId, instance_order, recordTime) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+
+  $correct = markMCQquestion($questionid, $response);
+
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("iissssiiiis", $userid, $questionid, $response, $startTime, $endTime, $submitTime, $correct, $quizid, $assignid, $instanceOrder, $recordTime);
+
+  $stmt->execute();  
 
 }
 
