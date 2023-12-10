@@ -122,7 +122,9 @@ $style_input = ".hide {
   if($_SERVER['REQUEST_METHOD']==='POST') {
     
     if($_POST['submit_info'] == "submittedForm2") {
-      //print_r($_POST);
+      if(isset($_GET['test'])) {
+        print_r($_POST);
+      }
       $record = array();
 
       $submitTime = date("Y-m-d H:i:s");

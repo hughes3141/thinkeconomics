@@ -1012,16 +1012,18 @@ function insertMCQquestionResponse($userid, $questionid, $response, $startTime, 
 
   global $conn;
 
+  $recordTime = date("Y-m-d H:i:s");
+
   if($submitTime == null) {
     $submitTime = date("Y-m-d H:i:s");
   }
 
-  $sql = "INSERT INTO mcq_responses_questions (userId, questionId, answer, startTime, endTime, submitTime, correct, quizId, assignId, instance_order) VALUES (?,?,?,?,?,?,?,?,?,?)";
+  $sql = "INSERT INTO mcq_responses_questions (userId, questionId, answer, startTime, endTime, submitTime, correct, quizId, assignId, instance_order, recordTime) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 
   $correct = markMCQquestion($questionid, $response);
 
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("iissssiiii", $userid, $questionid, $response, $startTime, $endTime, $submitTime, $correct, $quizid, $assignid, $instanceOrder);
+  $stmt->bind_param("iissssiiiis", $userid, $questionid, $response, $startTime, $endTime, $submitTime, $correct, $quizid, $assignid, $instanceOrder, $recordTime);
 
   $stmt->execute();  
 
