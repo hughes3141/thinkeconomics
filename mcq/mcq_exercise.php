@@ -133,7 +133,7 @@ $style_input = ".hide {
 
         //The following will update mcq_responses_questions table:
 
-        //insertMCQquestionResponses
+        insertMCQquestionResponse($_POST['userid'], $question, $response, null, null, $_POST['quizid'], $_POST['assignid']);
 
 
       }

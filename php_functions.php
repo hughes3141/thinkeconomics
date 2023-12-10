@@ -1005,21 +1005,22 @@ function insertMCQRecord($record, $userid, $startTime, $quizid, $assignid) {
 
 }
 
-function insertMCQquestionResponse($userid, $questionid, $response, $startTime, $endTime) {
+function insertMCQquestionResponse($userid, $questionid, $response, $startTime, $endTime, $quizid, $assignid) {
   /*
   This function will insert individual question responses to mcq_responses_questions table
   */
 
   global $conn;
+  $submitTime = date("Y-m-d H:i:s");
 
-  $sql = "INSERT INTO mcq_responses_questions (userId, questionId, answer, startTime, submitTime, correct) VALUES (?,?,?,?,?,?)";
+  $sql = "INSERT INTO mcq_responses_questions (userId, questionId, answer, startTime, endTime, submitTime, correct, quizId, assignId) VALUES (?,?,?,?,?,?,?,?,?)";
 
-  $correct = markMCQquestion($questionId, $response);
+  $correct = markMCQquestion($questionid, $response);
 
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("iisssi", $userid, $questionid, $response, $startTime, $endTime, $correct);
+  $stmt->bind_param("iissssiii", $userid, $questionid, $response, $startTime, $endTime, $submitTime, $correct, $quizid, $assignid);
 
-  
+  $stmt->execute();  
 
 }
 
