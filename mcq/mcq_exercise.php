@@ -124,7 +124,11 @@ $style_input = ".hide {
     if($_POST['submit_info'] == "submittedForm2") {
       //print_r($_POST);
       $record = array();
-      foreach ($questionsOriginal as $question) {
+
+      $submitTime = date("Y-m-d H:i:s");
+
+
+      foreach ($questionsOriginal as $key => $question) {
         $response = "";
         if(isset($_POST['a_'.$question])) {
           $response = $_POST['a_'.$question];
@@ -133,7 +137,7 @@ $style_input = ".hide {
 
         //The following will update mcq_responses_questions table:
 
-        insertMCQquestionResponse($_POST['userid'], $question, $response, null, null, $_POST['quizid'], $_POST['assignid']);
+        insertMCQquestionResponse($_POST['userid'], $question, $response, null, null, $submitTime, $_POST['quizid'], $_POST['assignid'], $key);
 
 
       }
