@@ -721,7 +721,7 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null, $k
 
 }
 
-function getMCQquestionDetails2($id = null, $questionNo = null, $topic = null, $keyword = null, $search = null, $orderBy = null, $examBoard = null) {
+function getMCQquestionDetails2($id = null, $questionNo = null, $topic = null, $keyword = null, $search = null, $orderBy = null, $examBoard = null, $year = null) {
 
   /*
   This function will call details for individual MCQ questions.
@@ -803,6 +803,14 @@ function getMCQquestionDetails2($id = null, $questionNo = null, $topic = null, $
     $sql .= " examBoard = ?";
     $params .= "s";
     array_push($bindArray, $examBoard);
+  }
+
+  if($year) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " year = ?";
+    $params .= "s";
+    array_push($bindArray, $year);
   }
 
   if($orderBy) {

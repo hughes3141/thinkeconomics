@@ -74,7 +74,7 @@ foreach ($get_selectors as $element) {
 }
 
 if($run_questions == 1) {
-  $questions = getMCQquestionDetails2($get_selectors['id'], $get_selectors['questionNo'], $get_selectors['topic'], $get_selectors['keyword'], $get_selectors['search'], $get_selectors['orderby'], $get_selectors['examBoard']);
+  $questions = getMCQquestionDetails2($get_selectors['id'], $get_selectors['questionNo'], $get_selectors['topic'], $get_selectors['keyword'], $get_selectors['search'], $get_selectors['orderby'], $get_selectors['examBoard'], $get_selectors['year']);
 }
 
 //Controls if questions are brought in from previously-created quiz. If so then the only output is these questions.
@@ -239,6 +239,7 @@ $_GET controls:
 
             ?>
             <div class="border border-black mx-1 mb-1 p-1">
+              <h2 class="text-xs" ><?=$question['examBoard']?> <?=$question['qualLevel']?> <?=$question['component']?> <?=$question['series']?> <?=$question['year']?></h2>
               <p>
                 <input id="quizSelect_<?=$question['id']?>" type="checkbox" onchange="includeQuestion(<?=$question['id']?>)" <?=(in_array($question['id'], $selectedQuestions)) ? "checked" :""?>>
                 <label for="quizSelect_<?=$question['id']?>">Include</label>
@@ -246,7 +247,7 @@ $_GET controls:
               <p class="text-xs"><?=$question['question']?></p>
               <img src="<?=$img?>" class="" alt = "<?=$question['No']?>">
               <div class="text-xs">
-                <p ><?=$question['examBoard']?> <?=$question['qualLevel']?> <?=$question['component']?> <?=$question['series']?> <?=$question['year']?></p>
+                
                 <p>Answer: <?=$question['Answer']?></p>
               </div>
               <button class="border border-black rounded bg-pink-200 my-2 p-1"  onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit Details", "Hide Edit", "block");'>Edit Details</button>
@@ -331,6 +332,16 @@ $_GET controls:
       var p2 = document.createElement('p');
       p2.innerHTML = questions[selectedQuestions[i]].Answer
       p2.classList.add("text-xs");
+
+      const questionDetails = questions[selectedQuestions[i]];
+      //console.log(questionDetails);
+      var p3 = document.createElement('p');
+      p3.innerHTML = questionDetails.examBoard;
+      p3.innerHTML += " "+questionDetails.qualLevel;
+      p3.innerHTML += " "+questionDetails.component;
+      p3.innerHTML += " "+questionDetails.series;
+      p3.innerHTML += " "+questionDetails.year;
+      p3.classList.add("text-xs");
       button.innerHTML = "Remove";
       button.className = "border border-black mx-1 px-1 bg-pink-200 rounded";
       button.setAttribute("onclick", "removeItem(selectedQuestions, "+selectedQuestions[i]+"); previewPopulate();")
@@ -340,6 +351,7 @@ $_GET controls:
       //console.log(selectedQuestions[i]);
       img.alt= questions[selectedQuestions[i]].No;
       div2.appendChild(p);
+      div2.appendChild(p3);
       div2.appendChild(p2);
       div2.appendChild(img);
       div.appendChild(div2);
