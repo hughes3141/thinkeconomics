@@ -5,6 +5,10 @@ session_start();
 
 $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
+
 
 if (!isset($_SESSION['userid'])) {
   
@@ -12,9 +16,19 @@ if (!isset($_SESSION['userid'])) {
   
 }
 
-$path = $_SERVER['DOCUMENT_ROOT'];
-include($path."/php_header.php");
-include($path."/php_functions.php");
+else {
+  $userInfo = getUserInfo($_SESSION['userid']);
+  $userId = $_SESSION['userid'];
+  $permissions = $userInfo['permissions'];
+  $groupid = array();
+  if($userInfo['groupid_array'] != "") {
+    $groupid = json_decode($userInfo['groupid_array']);
+  }
+
+
+}
+
+
 
 ?>
 
@@ -69,7 +83,7 @@ h2 {
 
 
 
-<h1>All Assignments Review: <?php echo $_SESSION['name'];?></h1>
+<h1>All Assignments Review: <?=$userInfo['name_first']?> <?=$userInfo['name_last']?></h1>
 <p>This page contains all the assignments that have been given to you or your class.</p>
 <p>You can use this page to ensure you are up to date with your work, or re-submit assignments. This is the same information your teacher sees when processing report data.</p>
 
@@ -99,7 +113,11 @@ $userid = $_SESSION['userid'];
 $user = getUserInfo($userid);
 //print_r($user);
 
-$groupid_array = json_decode($user['groupid_array']);
+$groupid_array = array();
+if($user['groupid_array'] != "") {
+  $groupid_array = json_decode($user['groupid_array']);
+}
+var_dump($groupid_array);
 
 //print_r($groupid_array);
 
@@ -142,7 +160,7 @@ Assignment Link
 
 
 
-$assignments = getAssignmentsArray($groupid_array);
+$assignments = getAssignmentsArray($groupid_array, null, 1);
 //print_r($assignments);
 
 
@@ -458,184 +476,7 @@ echo "</table>";
 
 
 
-function question_review() {
-	
-	var namehead = document.getElementById("nameHeading");
-	namehead.innerHTML = index[0];
-	
-	var quizhead = document.getElementById("quizName");
-	quizhead.innerHTML = index[1];
-	
-	var scorehead = document.getElementById("scoreID");
-	scorehead.innerHTML = index[2]+"/"+index[7].length;
-	
-	var percenthead = document.getElementById("percentID");
-	percenthead.innerHTML = index[3]+"&percnt;";
-	
-	//review_qs.disabled = true;
 
-	var div2 = document.getElementById("summary_div");
-	div2.innerHTML = "";
-
-	for(var i=0; i<index[7].length; i++) {
-	
-		
-		
-		var q_no = document.createElement("h2");
-		q_no.innerHTML = "Question "+(i+1);
-		
-		var p_no = document.createElement("p");
-		p_no.innerHTML = "<em>"+(index[7][i][0])/*.toFixed(6)*/+"</em>";
-
-		
-		var img = document.createElement("img");
-		
-		
-		var bigjpg = (index[7][i][0])/*.toFixed(6)*/+".JPG";
-		var smljpg = (index[7][i][0])/*.toFixed(6)*/+".jpg";
-	
-		if (typeof bigjpg != "undefined") {
-		
-		img.setAttribute("src", "question_img/"+bigjpg);
-		
-		}else if (typeof smljpg != "undefined") {
-		
-		img.setAttribute("src", "question_img/"+smljpg);
-		}
-		
-		/*
-		img.setAttribute("src", "question_img/"+record[i][0]+".jpg");
-		*/
-		var your_ans = document.createElement("P");
-		your_ans.innerHTML = "Your Answer: "+index[7][i][1];
-		
-		if (index[7][i][3]==false) {
-			
-			your_ans.style.backgroundColor = "#ffff00";
-		
-		}
-		
-		
-		
-		var correct_ans = document.createElement("P");
-		correct_ans.innerHTML = "Correct Answer: "+index[7][i][2];
-		correct_ans.setAttribute("class", "correctAnswer");
-		
-		
-		
-		var div = document.createElement("div");
-		div.setAttribute("class", "summaryQuestion")
-		
-		div.appendChild(q_no);
-		div.appendChild(p_no);
-		div.appendChild(img);
-		div.appendChild(your_ans);
-		div.appendChild(correct_ans);
-		
-		div2.appendChild(div);
-	
-	}
-	
-
-
-
-
-
-}
-
-var toggle = 0;
-
-function answerToggle() {
-	
-
-	
-	if (toggle == 0) {
-	
-	var answersClass = document.getElementsByClassName("correctAnswer");
-	for(var j=0; j<answersClass.length; j++) {
-		
-		answersClass[j].style.display = "none";
-		
-		}
-	toggle = 1;
-	document.getElementById("toggleButton").innerHTML = "Show Answers";
-	}	
-	
-	else {
-		
-		var answersClass = document.getElementsByClassName("correctAnswer");
-		for(var j=0; j<answersClass.length; j++) {
-		
-		answersClass[j].style.display = "block";
-		
-		}
-	toggle = 0;
-	document.getElementById("toggleButton").innerHTML = "Hide Answers";
-	}
-	
-	
-}
-
-
-var toggle2 = 0;
-
-function tableToggle() {
-	
-
-	
-	if (toggle2 == 0) {
-	
-	var form = document.getElementById("inputForm");
-		
-	form.style.display = "none";
-	
-	var titleClass = document.getElementsByClassName("title");
-	for(var j=0; j<titleClass.length; j++) {
-		
-		titleClass[j].style.display = "none";
-		
-		}
-		
-	var titledivClass = document.getElementsByClassName("titlediv");
-	for(var j=0; j<titledivClass.length; j++) {
-		
-		titledivClass[j].style.display = "none";
-		
-		}
-		
-		
-	toggle2 = 1;
-	document.getElementById("toggleButton2").innerHTML = "Show";
-	}	
-	
-	else {
-		
-		var form = document.getElementById("inputForm");
-		
-	form.style.display = "block";
-	
-	
-	var titleClass = document.getElementsByClassName("title");
-	for(var j=0; j<titleClass.length; j++) {
-		
-		titleClass[j].style.display = "block";
-		
-		}
-		
-	var titledivClass = document.getElementsByClassName("titlediv");
-	for(var j=0; j<titledivClass.length; j++) {
-		
-		titledivClass[j].style.display = "block";
-		
-		}
-	
-		
-	toggle2 = 0;
-	document.getElementById("toggleButton2").innerHTML = "Hide Input Form";
-	}
-	
-	
-}
 
 </script>
 

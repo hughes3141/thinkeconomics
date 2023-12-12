@@ -475,7 +475,7 @@ function getUpcomingAssignments($groupId) {
 }
 
 
-function getAssignmentsArray($groupIdArray, $startDate = null) {
+function getAssignmentsArray($groupIdArray, $startDate = null, $markBookShow = 1) {
 
   /*
   This function generates an array of assigned work. Input is an array (in JSON form) of the groups that a studnet is listed in.
@@ -489,29 +489,47 @@ function getAssignmentsArray($groupIdArray, $startDate = null) {
   $list = array();
   $paramType = "";
 
-  $sql = "SELECT * FROM assignments WHERE (";
+  $sql = "SELECT * FROM assignments 
+          WHERE true = true ";
 
-  $count = count($groupIdArray);
-  for($x =0; $x< $count; $x++) {
-    $valueSql = '%\"'.$groupIdArray[$x].'\"%';
-    array_push($groupIdSql, $valueSql);
-    $sql .= "groupid_array LIKE ? ";
-    if($x < ($count - 1)) {
-      $sql .= " OR ";
-    }
-    $paramType .= "s";
-  }
+  if(count($groupIdArray) > 0) {
   
-  $sql .= ")";
+  $sql .= " AND (";
+
+    $count = count($groupIdArray);
+    for($x =0; $x< $count; $x++) {
+      $valueSql = '%\"'.$groupIdArray[$x].'\"%';
+      array_push($groupIdSql, $valueSql);
+      $sql .= "groupid_array LIKE ? ";
+      if($x < ($count - 1)) {
+        $sql .= " OR ";
+      }
+      $paramType .= "s";
+    }
+    
+    $sql .= ")";
+  }
+
+  
 
   if($startDate) {
-    $sql .= " AND dateDue > ".$startDate;
+    $sql .= " AND dateDue > ? ";
+    array_push($groupIdSql, $startDate);
+    $paramType .= "s";
   }
+
+  if($markBookShow == 1) {
+    $sql .= " AND markBookShow = 1 ";
+  }
+
+
 
 
   //echo $sql."<br>".$paramType;
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param($paramType, ...$groupIdSql);
+  if(count($groupIdSql) > 0) {
+    $stmt->bind_param($paramType, ...$groupIdSql);
+  }
   $stmt->execute();
   $result = $stmt->get_result();
 
@@ -4005,7 +4023,7 @@ function getMCQindividualQuestionResponse($question, $results_array) {
 }
 
 
-function createAssignment($teacherid, $assignName, $quizID, $notes, $dueDate, $type, $classID, $return = 1, $active = 1, $randomQuestions = 0, $randomOptions = 0) {
+function createAssignment($teacherid, $assignName, $quizID, $notes, $dueDate, $type, $classID, $return = 1, $active = 1, $randomQuestions = 0, $randomOptions = 0, $markBookShow = 1) {
   /*
   Used in:
   -assign_create1.0.php
@@ -4018,10 +4036,10 @@ function createAssignment($teacherid, $assignName, $quizID, $notes, $dueDate, $t
 
   $datetime = date("Y-m-d H:i:s");
 
-  $sql = "INSERT INTO assignments (assignName, quizid, groupid, notes, dateCreated, type, dateDue, groupid_array, userCreate, assignReturn, active, randomQuestions, randomOptions) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  $sql = "INSERT INTO assignments (assignName, quizid, groupid, notes, dateCreated, type, dateDue, groupid_array, userCreate, assignReturn, active, randomQuestions, randomOptions, markBookShow) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("siisssssiiiii", $assignName, $quizID, $classID, $notes, $datetime, $type, $dueDate, $classID_array, $teacherid, $return, $active, $randomQuestions, $randomOptions);
+  $stmt->bind_param("siisssssiiiiii", $assignName, $quizID, $classID, $notes, $datetime, $type, $dueDate, $classID_array, $teacherid, $return, $active, $randomQuestions, $randomOptions, $markBookShow);
 
   $stmt->execute();
 
@@ -4047,16 +4065,16 @@ function getAssignmentData($assignId) {
 
 }
 
-function updateAssignment($userId, $assignId, $assignName, $quizID, $notes, $dueDate, $type, $classID, $return, $review, $multi, $active, $randomQuestions, $randomOptions) {
+function updateAssignment($userId, $assignId, $assignName, $quizID, $notes, $dueDate, $type, $classID, $return, $review, $multi, $active, $randomQuestions, $randomOptions, $markBookShow) {
   global $conn;
 
   $classID_array = array($classID);
   $classID_array = json_encode($classID_array);
 
-  $sql = "UPDATE assignments SET assignReturn = ?, dateDue = ?, notes = ?, assignName =?, groupid_array =?, groupid = ?, reviewQs = ?, multiSubmit = ?, active = ? , randomQuestions = ?, randomOptions = ? WHERE id = ?";
+  $sql = "UPDATE assignments SET assignReturn = ?, dateDue = ?, notes = ?, assignName =?, groupid_array =?, groupid = ?, reviewQs = ?, multiSubmit = ?, active = ? , randomQuestions = ?, randomOptions = ?, markBookShow = ? WHERE id = ?";
   $stmt = $conn->prepare($sql);
 
-  $stmt->bind_param("issssiiiiiii", $return, $dueDate, $notes, $assignName, $classID_array, $classID, $review, $multi, $active, $randomQuestions, $randomOptions, $assignId);
+  $stmt->bind_param("issssiiiiiiii", $return, $dueDate, $notes, $assignName, $classID_array, $classID, $review, $multi, $active, $randomQuestions, $randomOptions, $markBookShow, $assignId);
 
   //The following script validates to ensure that the user updating the assignment is hte assignment author:
 
