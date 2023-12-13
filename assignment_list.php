@@ -36,7 +36,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
   if(isset($_POST['updateValue'])) {
-    $updateMessage = updateAssignment($userId, $_POST['id'], $_POST['assignName'], null, $_POST['notes'], $_POST['dateDue'], null, $_POST['groupid'], $_POST['assignReturn'], $_POST['reviewQs'], $_POST['multiSubmit'], 1, $_POST['randomQuestions'], $_POST['randomOptions']);
+    $updateMessage = updateAssignment($userId, $_POST['id'], $_POST['assignName'], null, $_POST['notes'], $_POST['dateDue'], null, $_POST['groupid'], $_POST['assignReturn'], $_POST['reviewQs'], $_POST['multiSubmit'], 1, $_POST['randomQuestions'], $_POST['randomOptions'], $_POST['markBookShow']);
     //Ensure that changevisibility does not happen when directed from this same site:
     unset($_GET['assignid']);
 
@@ -339,6 +339,7 @@ include ($path."/header_tailwind.php");
             -->
             <p><?=($row['randomQuestions'] == 1) ? "Random Q Order" : "Set Q Order"?></p>
             <p><?=($row['randomOptions'] == 1) ? "Random Options" : "Set Options"?></p>
+            <p><?=($row['markBookShow'] == 1) ? "Markbook" : "No Markbook"?></p>
           </div>
           <div class="hide hide_<?=$row['id'];?>">
             <p>
@@ -368,6 +369,13 @@ include ($path."/header_tailwind.php");
               <label for="randomOptionsYes_<?=$row['id']?>">Yes</label>
               <input id="randomOptionsNo_<?=$row['id']?>" type="radio" name="randomOptions" value="0" <?=($row['randomOptions'] == 0) ? "checked" : ""?>>
               <label for="randomOptionsNo_<?=$row['id']?>">No</label>
+            </div>
+            <div>
+              <p>MarkBook:</p>
+              <input id ="markBookShowYes_<?=$row['id']?>" type="radio" name="markBookShow" value="1" <?=($row['markBookShow'] == 1) ? "checked" : ""?>>
+              <label for="markBookShowYes_<?=$row['id']?>">Yes</label>
+              <input id="markBookShowNo_<?=$row['id']?>" type="radio" name="markBookShow" value="0" <?=($row['markBookShow'] == 0) ? "checked" : ""?>>
+              <label for="markBookShowNo_<?=$row['id']?>">No</label>
             </div>
 
 

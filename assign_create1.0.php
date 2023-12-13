@@ -63,7 +63,7 @@ p {
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
   if(isset($_POST['btnSubmit'])) {
-    createAssignment($userId, $_POST['assignName'], $_POST['exerciseid'], $_POST['notes'], $_POST['dueDate'], $_POST['type'], $_POST['groupId'], 1,1, $_POST['randomQuestions'], $_POST['randomOptions']);
+    createAssignment($userId, $_POST['assignName'], $_POST['exerciseid'], $_POST['notes'], $_POST['dueDate'], $_POST['type'], $_POST['groupId'], 1,1, $_POST['randomQuestions'], $_POST['randomOptions'], 1);
 
   }
 
