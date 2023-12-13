@@ -117,46 +117,49 @@ $groupid_array = array();
 if($user['groupid_array'] != "") {
   $groupid_array = json_decode($user['groupid_array']);
 }
-var_dump($groupid_array);
+//var_dump($groupid_array);
 
 //print_r($groupid_array);
 
 
-?>
 
 
-<table>
-<tr>
-<th>ID
-</th>
-<th>Assignment Name
-</th>
-<!--
-<th>quizid
-</th>
-<th>groupid
-</th>
-<th>notes
-</th>
--->
-<th>Date Assigned
-</th>
+if(count($groupid_array) > 0) {
+  ?>
 
-<th>Due Date
-</th>
-<th>Type
-</th>
-<th>
-Your Score(s)
-</th>
+  <table>
+  <tr>
+  <th>ID
+  </th>
+  <th>Assignment Name
+  </th>
+  <!--
+  <th>quizid
+  </th>
+  <th>groupid
+  </th>
+  <th>notes
+  </th>
+  -->
+  <th>Date Assigned
+  </th>
 
-<th>
-Assignment Link
-</th>
-</tr>
+  <th>Due Date
+  </th>
+  <th>Type
+  </th>
+  <th>
+  Your Score(s)
+  </th>
 
+  <th>
+  Assignment Link
+  </th>
+  </tr>
 
-<?php 
+  <?php
+  }
+
 
 
 
@@ -355,103 +358,17 @@ foreach($assignments as $value) {
 echo "</tr>";
 }
 
-?>
 
-</table>
+if(count($groupid_array) > 0) {
+  ?>
 
-
-<?php
-/*
-$query = "SELECT * FROM saq_saved_work WHERE userID = '".$userid."' AND submit=1";
-
-if ($result = mysqli_query($link, $query)) {	
-	while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-		
-		echo "<tr><td>";
-		echo $row[assignID]."</td><td>";
-		echo $row[exerciseName]."</td><td>";
-		echo $row[mark]."</td><td>";
-		echo $row[percentage]."</td><td>";
-		echo $row[datetime]."</td><td>";
-		echo $row[submit]."</td><td>";
-		echo $row[returned]."</td><td>";
-		echo "<form method = 'post'><input type='hidden' name = 'responseid' value = '".$row[id]."'><input type='hidden' name = 'userid' value = '".$row[userID]."'><input type='submit' value = 'Review'></form>";
-		//print_r($row);
-		echo "</tr>";
-	
-		
-	}
-}
-
-echo "</table>";
-
-if (isset($_POST['responseid'])) {
-
-	$query = "SELECT * FROM saq_saved_work WHERE id = '".$_POST[responseid]."'";
-
-if ($result = mysqli_query($link, $query)) {	
-	$row = mysqli_fetch_array($result, MYSQLI_ASSOC);	
-	echo "<h2>Review: ".$row[exerciseName]."</h2>";
-
-	
-	
-	echo "<table>
-<tr>
-<th>Question No
-</th>
-<th>Question
-</th>
-<th>Your Answer
-</th>
-<th>Marks
-</th>
-<th>Feedback
-</th>
-<th>Guidance
-</th>
-
-</tr>";
-	
-	
-
-	
-		$answers = json_decode($row[answers], true);
-		
-		$feedback = json_decode($row[feedback], true);
-		
-		//print_r($answers);
-		//print_r($feedback);	
-		
-		for ($x=0; $x <count($answers); $x++)	{
-			
-			$query2 = "SELECT * FROM saq_question_bank_3 WHERE id = '".$answers[$x][0]."'";
-			$result2 = mysqli_query($link, $query2);
-			$row2 = mysqli_fetch_array($result2, MYSQLI_ASSOC);
-		
-			echo "<tr><td>";
-			echo ($x+1)."</td><td>";
-			echo $answers[$x][2]."</td><td>";
-			echo $answers[$x][1]."</td><td>";
-			echo $feedback[$x][1]."/".$row2[points]."</td><td>";
-			echo $feedback[$x][2]."</td><td>";
-			echo $row2[model_answer]."</td>";
-			
-		
-			
-		echo "</tr>";
-		}
-		
-	
-}
-	
-	
-echo "</table>";	
-}
-*/
+  </table>
 
 
-?>
+  <?php
+  }
 
+  ?>
 
 
 

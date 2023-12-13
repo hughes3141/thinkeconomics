@@ -538,6 +538,10 @@ function getAssignmentsArray($groupIdArray, $startDate = null, $markBookShow = 1
       array_push($list, $row);
     }
   }
+
+  if(count($groupIdArray) == 0) {
+    $list = array();
+  }
   
   return $list;
 
