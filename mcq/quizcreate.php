@@ -113,6 +113,15 @@ foreach($selectedQuestionsRev as $questionid) {
 
 }
 
+foreach ($questions as $key => $question) {
+  if(in_array($question['id'], $selectedQuestions)) {
+    $questions[$key]['selected'] = 1;
+  } else {
+    $questions[$key]['selected'] = 0;
+  }
+}
+
+
 $questionDetails = array();
 
 $imgSource = "https://thinkeconomics.co.uk";
@@ -233,13 +242,20 @@ $_GET controls:
               'year'=>$question['year'],
               'qualLevel'=>$question['qualLevel'],
               'component'=>$question['component'],
-              'series'=>$question['series']
+              'series'=>$question['series'],
+              'Topic'=>$question['Topic'],
+              'questionNo'=>$question['questionNo']
             );
             $questionDetails[$question['id']] = $questionDetailsInstance;
 
             ?>
-            <div class="border border-black mx-1 mb-1 p-1">
-              <h2 class="text-xs" ><?=$question['examBoard']?> <?=$question['qualLevel']?> <?=$question['component']?> <?=$question['series']?> <?=$question['year']?></h2>
+            <div class="border border-black mx-1 mb-1 p-1 <?=($question['selected'] == 1) ? "bg-sky-100" : ""?>">
+              <?php
+              if(isset($_GET['test'])) {
+                print_r($question);
+              }
+              ?>
+              <h2 class="text-xs" ><?=$question['examBoard']?> <?=$question['qualLevel']?> <?=$question['component']?> <?=$question['series']?> <?=$question['year']?> Q<?=$question['questionNo']?> <?=$question['Topic']?></h2>
               <p>
                 <input id="quizSelect_<?=$question['id']?>" type="checkbox" onchange="includeQuestion(<?=$question['id']?>)" <?=(in_array($question['id'], $selectedQuestions)) ? "checked" :""?>>
                 <label for="quizSelect_<?=$question['id']?>">Include</label>
@@ -341,6 +357,8 @@ $_GET controls:
       p3.innerHTML += " "+questionDetails.component;
       p3.innerHTML += " "+questionDetails.series;
       p3.innerHTML += " "+questionDetails.year;
+      p3.innerHTML += " Q"+questionDetails.questionNo;
+      p3.innerHTML += " "+questionDetails.Topic;
       p3.classList.add("text-xs");
       button.innerHTML = "Remove";
       button.className = "border border-black mx-1 px-1 bg-pink-200 rounded";
