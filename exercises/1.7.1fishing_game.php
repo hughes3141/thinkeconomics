@@ -53,6 +53,7 @@ include($path."/header_tailwind.php");
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">Fishing Game</h1>
   <div class="  mx-auto p-4 mt-2 bg-white text-black mb-5">
     <div id="fishCount"></div>
+    <div id="progressBar"></div>
     <div class="grid grid-cols-2">
       <?php
       for($x=0; $x<4; $x++) {
@@ -69,6 +70,7 @@ include($path."/header_tailwind.php");
 
     </div>
     <button onclick="newRound();">New Round</button>
+    <button onclick="timer()">Timer</button>
     <div>
       <p>Totals:</p>
       <?php
@@ -139,6 +141,32 @@ include($path."/header_tailwind.php");
     round ++;
     update();
     updateRound();
+    timer();
+  }
+
+  var timeleft;
+  var timerStarted = false;
+
+
+  function timer()  {
+    
+
+    if(timerStarted == false) {
+      timerStarted = true;
+      timeleft = 10;
+      document.getElementById("progressBar").innerHTML = timeleft;
+      timeleft -= 1;
+      var downloadTimer = setInterval(function(){
+        if(timeleft <= 0){
+          clearInterval(downloadTimer);
+          timerStarted = false;
+        }
+        document.getElementById("progressBar").innerHTML = timeleft;
+        timeleft -= 1;
+
+      }, 1000);
+    }
+    
   }
 
   
