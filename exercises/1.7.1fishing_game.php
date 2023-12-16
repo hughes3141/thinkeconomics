@@ -107,10 +107,10 @@ include($path."/header_tailwind.php");
 
 
 
-    console.log(fishCount);
-    console.log(fishAllocate);
-    console.log(totals);
-    console.log(round);
+    //console.log(fishCount);
+    //console.log(fishAllocate);
+    //console.log(totals);
+    //console.log(round);
     
   }
 
@@ -144,28 +144,25 @@ include($path."/header_tailwind.php");
     timer();
   }
 
-  var timeleft;
-  var timerStarted = false;
-
 
   function timer()  {
-    
+    //Stop all preivous running timers:
+    for (var i = 1; i < 99999; i++) {
+      window.clearInterval(i);
+    }
 
-    if(timerStarted == false) {
-      timerStarted = true;
-      timeleft = 10;
+    var timeleft = 10;
+    document.getElementById("progressBar").innerHTML = timeleft;
+    timeleft -= 1;
+    var downloadTimer = setInterval(function(){
+      if(timeleft <= 0){
+        clearInterval(downloadTimer);
+      }
       document.getElementById("progressBar").innerHTML = timeleft;
       timeleft -= 1;
-      var downloadTimer = setInterval(function(){
-        if(timeleft <= 0){
-          clearInterval(downloadTimer);
-          timerStarted = false;
-        }
-        document.getElementById("progressBar").innerHTML = timeleft;
-        timeleft -= 1;
 
-      }, 1000);
-    }
+    }, 1000);
+    
     
   }
 
