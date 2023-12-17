@@ -52,16 +52,20 @@ include($path."/header_tailwind.php");
 <div class=" mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-full">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">Fishing Game</h1>
   <div class="  mx-auto p-4 mt-2 bg-white text-black mb-5">
-    <div id="fishCount"></div>
+    <div class="text-center font-mono text-6xl">
+      <p class="rounded-full border border-black inline-block w-20 h-20 mx-auto" id="fishCount"></p>
+    </div>
     <div id="progressBar"></div>
-    <div class="grid grid-cols-2">
+    <div class="grid grid-cols-2 gap-2">
       <?php
+      $bgColours = array("bg-pink-200", "bg-sky-200", "bg-pink-300", "bg-sky-300");
       for($x=0; $x<4; $x++) {
       ?>
-      <div class="text-center">
-        <button class="border border-black rounded w-1/2 m-1 " onclick = "goFish(<?=$x?>)">Go Fish!</button>
-        <div id="fishCount_<?=$x?>" class="fishCountIndDiv">
-
+      <div class="text-center rounded h-full <?=$bgColours[$x]?>" onclick = "goFish(<?=$x?>)">
+        <button class="" >Go Fish!</button>
+        <div >
+          <p>Fish this Round: <span id="fishCount_<?=$x?>" class="fishCountIndDiv"></span></p>
+          <p>Total Fish All Rounds: <span class="totalCount"></span></p>
         </div>
       </div>
       <?php
@@ -76,7 +80,7 @@ include($path."/header_tailwind.php");
       <?php
       for($x=0; $x<4; $x++) {
         ?>
-        <p>Player <?=$x+1?>: <span class="totalCount"></span></p>
+        <p>Player <?=$x+1?>: <span class=""></span></p>
         <?php
       }
       ?>

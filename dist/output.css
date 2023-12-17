@@ -566,10 +566,6 @@ textarea, input, select {
   top: 5rem;
 }
 
-.top-24 {
-  top: 6rem;
-}
-
 .z-50 {
   z-index: 50;
 }
@@ -882,6 +878,10 @@ textarea, input, select {
   height: 0.75rem;
 }
 
+.h-10 {
+  height: 2.5rem;
+}
+
 .h-12 {
   height: 3rem;
 }
@@ -894,6 +894,14 @@ textarea, input, select {
   height: 15rem;
 }
 
+.h-screen {
+  height: 100vh;
+}
+
+.h-5\/6 {
+  height: 83.333333%;
+}
+
 .h-44 {
   height: 11rem;
 }
@@ -902,36 +910,8 @@ textarea, input, select {
   height: 9rem;
 }
 
-.h-1\/2 {
-  height: 50%;
-}
-
-.h-screen {
-  height: 100vh;
-}
-
-.h-5 {
-  height: 1.25rem;
-}
-
 .h-20 {
   height: 5rem;
-}
-
-.h-4\/5 {
-  height: 80%;
-}
-
-.h-2 {
-  height: 0.5rem;
-}
-
-.h-96 {
-  height: 24rem;
-}
-
-.h-5\/6 {
-  height: 83.333333%;
 }
 
 .max-h-80 {
@@ -990,6 +970,10 @@ textarea, input, select {
   width: 20%;
 }
 
+.w-10 {
+  width: 2.5rem;
+}
+
 .w-1\/2 {
   width: 50%;
 }
@@ -1008,10 +992,6 @@ textarea, input, select {
 
 .w-2\/5 {
   width: 40%;
-}
-
-.w-10 {
-  width: 2.5rem;
 }
 
 .max-w-5xl {
@@ -1185,10 +1165,6 @@ textarea, input, select {
   overflow: hidden;
 }
 
-.overflow-y-scroll {
-  overflow-y: scroll;
-}
-
 .truncate {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1353,11 +1329,6 @@ textarea, input, select {
 .border-slate-500 {
   --tw-border-opacity: 1;
   border-color: rgb(100 116 139 / var(--tw-border-opacity));
-}
-
-.border-red-300 {
-  --tw-border-opacity: 1;
-  border-color: rgb(252 165 165 / var(--tw-border-opacity));
 }
 
 .bg-white {
@@ -1679,6 +1650,21 @@ textarea, input, select {
 .text-lg {
   font-size: 1.125rem;
   line-height: 1.75rem;
+}
+
+.text-7xl {
+  font-size: 4.5rem;
+  line-height: 1;
+}
+
+.text-8xl {
+  font-size: 6rem;
+  line-height: 1;
+}
+
+.text-6xl {
+  font-size: 3.75rem;
+  line-height: 1;
 }
 
 .font-bold {
