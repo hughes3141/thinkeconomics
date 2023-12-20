@@ -52,7 +52,9 @@ include($path."/header_tailwind.php");
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.7.1memorygame1.4externalities.php">1.7.1 Externalities Diagrams Matching Game</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.7.1articles.php">1.7.1 Market Failure Extension Articles</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.7.1information_asymmetry_reading.php">1.7.1 Information Asymmetry Reading</a></li>
+        <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.7.1fishing_game.php">1.7.1 Property Rights Fishing Game</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.7.1gini_warmup.php">1.7.1 Inequality Gini Coefficient Comparison Game</a></li>
+        
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.7.2intervention_articles.php">1.7.2 Government Intervention: News Articles</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.7.2rent_control_article.php">1.7.2 Rent Control: Article Summary</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.7.2tpps.php">1.7.2 Tradable Pollution Permits: Class Game</a></li>

@@ -420,8 +420,8 @@ $_GET controls:
                             
 
                           ?>
-                          <button class="border rounded bg-pink-300 border-black mb-1 p-1" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$asset['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
-                          <div class="markSchemeToggle_<?=$asset['id']?> hidden">
+                          <button class="border rounded bg-pink-300 border-black mb-1 p-1" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$question['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
+                          <div class="markSchemeToggle_<?=$question['id']?> hidden">
                           <?php
 
                             

@@ -165,11 +165,7 @@ GET Variables:
 
             <?php
             
-            if($question['img'] != "") {
-              ?>
-                  <img class = "mx-auto object-center " src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['img'])?>" alt = "">
-            <?php
-              }
+
             if($question['q_path'] != "") {
               ?>
               <img class = "mx-auto object-center " src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
@@ -183,10 +179,7 @@ GET Variables:
             <div class="whitespace-pre-line"><?=htmlspecialchars(trim($question['model_answer']));?></div>
             <?php
 
-          if($question['answer_img'] != "") {
-            ?><img class = "object-center " src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['answer_img'])?>" alt = "<?=htmlspecialchars($question['answer_img_alt'])?>">
-            <?php
-          }
+
 
           if($question['a_path'] != "") {
             ?>

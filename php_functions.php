@@ -600,6 +600,64 @@ function getMCQquizzesByTopic($topic = null) {
 
 }
 
+function getMCQquizDetails($id=null, $topic = null, $questionId = null) {
+  /*
+  This function is updated from previous two, used to pull information for MCQ quizzes
+  */
+  
+  global $conn;
+
+  $results = array();
+
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+
+  $sql = " SELECT * 
+          FROM mcq_quizzes ";
+
+  if($id) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " id = ? ";
+    $params .= "i";
+    array_push($bindArray, $id);
+  }
+
+  if($topic) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " topic LIKE ? ";
+    $topic = "%".$topic."%";
+    $params .= "s";
+    array_push($bindArray, $topic);
+  }
+
+  if($questionId) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " questions_array LIKE ? ";
+    $questionId = "%\"".$questionId."\"%";
+    $params .= "s";
+    array_push($bindArray, $questionId);
+  }
+
+  $stmt = $conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+
+  return $results;
+
+}
+
 function createMCQquiz($userCreate, $questions_id, $quizName, $topic, $notes, $description) {
   /*
   This function creates new MCQ quiz in table mcq_quizzes
@@ -1296,8 +1354,8 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
   if($topic) {
     $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
     $conjoin = 1;
-    $sql .= " topic = ? ";
-    //$keyword = "%".$keyword."%";
+    $sql .= " topic LIKE ? ";
+    $topic = "%".$topic."%";
     array_push($bindArray, $topic);
     $params .= "s";
     $conjoiner = 1;
