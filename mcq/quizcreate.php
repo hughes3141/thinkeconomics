@@ -291,12 +291,26 @@ $_GET controls:
               //The following will show quiz detail summaries if showQuizzes is enabled:
               if($get_selectors['showQuizzes']) {
                 $usedQuizzes = getMCQquizDetails(null, null, $question['id']);
-                print_r($usedQuizzes);
-                ?>
-                <div>
+                if(isset($_GET['test'])) {
+                  print_r($usedQuizzes);
+                }
+                if(count($usedQuizzes) > 0) {
+                  ?>
+                  <div>
+                    <h2>Used in:</h2>
+                      <ul>
+                        <?php
+                        foreach ($usedQuizzes as $quiz) {
+                          ?>
+                          <li><a href="mcq_preview.php?quizid=<?=$quiz['id']?>#id_<?=$question['id']?>" target="_blank"><?=$quiz['topic']?> <?=$quiz['quizName']?></a> <a href="quizcreate.php?quizid=<?=$quiz['id']?>" target="_blank" class="bg-pink-200">This Quiz</a></li>
+                          <?php
+                        }
+                        ?>
+                      </ul>
 
-                </div>
-                <?php
+                  </div>
+                  <?php
+                }
               }
               ?>
               <button class="border border-black rounded bg-pink-200 my-2 p-1"  onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit Details", "Hide Edit", "block");'>Edit Details</button>
