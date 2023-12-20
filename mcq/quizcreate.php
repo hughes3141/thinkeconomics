@@ -69,6 +69,7 @@ $get_selectors = array(
 
 $run_questions = 0;
 $questions = array();
+$originalQuestions = array();
 
 foreach ($get_selectors as $key => $element) {
   if($key != "showQuizzes" && $key != "orderby") {
@@ -80,6 +81,9 @@ foreach ($get_selectors as $key => $element) {
 
 if($run_questions == 1) {
   $questions = getMCQquestionDetails2($get_selectors['id'], $get_selectors['questionNo'], $get_selectors['topic'], $get_selectors['keyword'], $get_selectors['search'], $get_selectors['orderby'], $get_selectors['examBoard'], $get_selectors['year']);
+  foreach($questions as $question) {
+    array_push($originalQuestions, $question['id']);
+  }
 }
 
 //Controls if questions are brought in from previously-created quiz. If so then the only output is these questions.
@@ -123,6 +127,11 @@ foreach ($questions as $key => $question) {
     $questions[$key]['selected'] = 1;
   } else {
     $questions[$key]['selected'] = 0;
+  }
+  if(in_array($question['id'], $originalQuestions)) {
+    $questions[$key]['original'] = 1;
+  } else {
+    $questions[$key]['original'] = 0;
   }
 }
 
@@ -225,6 +234,8 @@ $_GET controls:
       echo count($questions);
       echo "<br>";
       //print_r($questions);
+      //print_r($originalQuestions);
+      //print_r($selectedQuestions);
     ?>
     <div class="grid grid-cols-3 relative">
       <div class="col-span-2">
@@ -243,7 +254,7 @@ $_GET controls:
             $questionDetailsInstance = array(
               'id'=>$question['id'],
               'No'=>$question['No'],
-              'question'=>preg_replace( "/[^a-zA-Z0-9\s\p{P}]/", '', $question['question']),
+              'question'=>preg_replace( "/[^a-zA-Z0-9]+/", '', $question['question']),
               'path'=>$img,
               'Answer' =>$question['Answer'],
               'examBoard' =>$question['examBoard'],
@@ -257,10 +268,12 @@ $_GET controls:
             $questionDetails[$question['id']] = $questionDetailsInstance;
 
             ?>
-            <div class="border border-black mx-1 mb-1 p-1 <?=($question['selected'] == 1) ? "bg-sky-100" : ""?>">
+            <div class="border border-black mx-1 mb-1 p-1 <?=($question['selected'] == 1 && $question['original'] == 0) ? " hidden bg-sky-200 " : ""?>">
               <?php
               if(isset($_GET['test'])) {
                 print_r($question);
+                echo "<br>";
+                print_r($questionDetailsInstance);
               }
               ?>
               <h2 class="text-xs" ><?=$question['examBoard']?> <?=$question['qualLevel']?> <?=$question['component']?> <?=$question['series']?> <?=$question['year']?> Q<?=$question['questionNo']?> <?=$question['Topic']?></h2>
