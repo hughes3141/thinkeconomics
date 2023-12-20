@@ -59,7 +59,10 @@ $get_selectors = array(
   'search' => (isset($_GET['search'])&&$_GET['search']!="") ? $_GET['search'] : null,
   'orderby' => (isset($_GET['orderby'])&&$_GET['orderby']!="") ? $_GET['orderby'] : null,
   'selectedQuestions' => (isset($_GET['selectedQuestions'])&&$_GET['selectedQuestions']!="") ? $_GET['selectedQuestions'] : null,
-  'quizid' => (isset($_GET['quizid'])&&$_GET['quizid']!="") ? $_GET['quizid'] : null
+  'quizid' => (isset($_GET['quizid'])&&$_GET['quizid']!="") ? $_GET['quizid'] : null,
+  'showQuizzes' => (isset($_GET['showQuizzes'])&&$_GET['showQuizzes']!="") ? $_GET['showQuizzes'] : null,
+  
+
 
 
 );
@@ -67,9 +70,11 @@ $get_selectors = array(
 $run_questions = 0;
 $questions = array();
 
-foreach ($get_selectors as $element) {
-  if(!is_null($element)) {
-    $run_questions = 1;
+foreach ($get_selectors as $key => $element) {
+  if($key != "showQuizzes" && $key != "orderby") {
+    if(!is_null($element)) {
+      $run_questions = 1;
+    }
   }
 }
 
@@ -209,6 +214,9 @@ $_GET controls:
 
           <input type="hidden" id="selectedQuestionsSelect" name="selectedQuestions" value="<?=$get_selectors['selectedQuestions']?>">
 
+          <label for="showQuizzes_select">Quiz Summary</label>
+          <input id="showQuizzes_select" type="checkbox" name="showQuizzes" value="1" <?=($get_selectors['showQuizzes'] == 1) ? "checked" : ""?>>
+
           <input type="submit"  value="Select">
         </form>
     </div>
@@ -266,6 +274,18 @@ $_GET controls:
                 
                 <p>Answer: <?=$question['Answer']?></p>
               </div>
+              <?php
+              //The following will show quiz detail summaries if showQuizzes is enabled:
+              if($get_selectors['showQuizzes']) {
+                $usedQuizzes = getMCQquizDetails(null, null, $question['id']);
+                print_r($usedQuizzes);
+                ?>
+                <div>
+
+                </div>
+                <?php
+              }
+              ?>
               <button class="border border-black rounded bg-pink-200 my-2 p-1"  onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit Details", "Hide Edit", "block");'>Edit Details</button>
               <div class=" toggleClass_<?=$question['id']?> hidden">
               <form method="post">
