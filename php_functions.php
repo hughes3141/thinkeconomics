@@ -600,7 +600,7 @@ function getMCQquizzesByTopic($topic = null) {
 
 }
 
-function getMCQquizDetails($id=null, $topic = null, $questionId = null) {
+function getMCQquizDetails($id=null, $topic = null, $questionId = null, $userCreate = null, $active = null) {
   /*
   This function is updated from previous two, used to pull information for MCQ quizzes
   */
@@ -640,6 +640,22 @@ function getMCQquizDetails($id=null, $topic = null, $questionId = null) {
     $questionId = "%\"".$questionId."\"%";
     $params .= "s";
     array_push($bindArray, $questionId);
+  }
+
+  if($userCreate) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " userCreate = ? ";
+    $params .= "i";
+    array_push($bindArray, $userCreate);
+  }
+
+  if($active) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " active = ? ";
+    $params .= "i";
+    array_push($bindArray, $active);
   }
 
   $stmt = $conn->prepare($sql);

@@ -45,11 +45,14 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 $get_selectors = array(
   'id' => (isset($_GET['id'])&&$_GET['id']!="") ? $_GET['id'] : null,
   'topic' => (isset($_GET['topic'])&&$_GET['topic']!="") ? $_GET['topic'] : null,
-  'search' => (isset($_GET['search'])&&$_GET['search']!="") ? $_GET['search'] : null
+  'search' => (isset($_GET['search'])&&$_GET['search']!="") ? $_GET['search'] : null,
+  'questionId' => (isset($_GET['questionId'])&&$_GET['questionId']!="") ? $_GET['questionId'] : null,
+  'active' => (isset($_GET['active'])&&$_GET['active']!="") ? $_GET['active'] : null
+
 
 );
 
-$quizzes = getMCQquizDetails();
+$quizzes = getMCQquizDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionId'], $userId, $get_selectors['active']);
 
 include($path."/header_tailwind.php");
 
@@ -71,24 +74,51 @@ include($path."/header_tailwind.php");
         <label for="search_select">Search:</label>
         <input type="text" id="search_select" name="search" value="<?=$get_selectors['search']?>"</input>
 
+        <label for="questionId_select">Question Id:</label>
+        <input type="text" id="questionId_select" name="questionId" value="<?=$get_selectors['questionId']?>"</input>
+
+        <input type="checkbox" name="active" value= "1" id="active_select" <?=($get_selectors['active']==1 ) ? "checked" : ""?>>
+        <label for="active_select">Active Only</label>
+
         <input type="submit"  value="Select">
       </form>
     </div>
       <?php
       //print_r($quizzes);
+      print_r($_POST);
       ?>
-      <table>
+      <table class="w-full table-fixed mb-2 border border-black">
         <?php
         foreach ($quizzes as $quiz) {
           ?>
-          <tr>
-            <td><?=$quiz['id']?></td>
-            <td><?=$quiz['topic']?></td>
-            <td><?=$quiz['quizName']?></td>
-            <td><?=$quiz['questions_id']?></td>
-            <td><?=$quiz['notes']?></td>
-            <td><?=$quiz['active']?></td>
-          </tr>
+          <form method="post" action="">
+            <input type="hidden" name="id" value="<?=$quiz['id']?>"> 
+            <tr>
+              <td>
+                <p class=""><?=$quiz['id']?></p>
+              </td>
+              <td>
+                <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['topic']?></p>
+                <input type="text" class="toggleClass_<?=$quiz['id']?> hidden" value="<?=$quiz['topic']?>" name="topic">
+              </td>
+              <td>
+                <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['quizName']?></p>
+              </td>
+              <td>
+                <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['questions_id']?></p>
+              </td>
+              <td>
+                <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['notes']?></p>
+              </td>
+              <td>
+                <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['active']?></p>
+              </td>
+              <td>
+                <button type="button" class="w-full border border-black rounded bg-pink-200 mb-1 p-1" onclick='toggleHide(this, "toggleClass_<?=$quiz['id']?>", "Edit", "Hide Edit", "block");'>Edit</button>
+                <input type="submit" class="w-full bg-sky-200 rounded border border-black mb-1 toggleClass_<?=$quiz['id']?> hidden" name="submit" value= "Update">
+              </td>
+            </tr>
+          </form>
           <?php
         }
         ?>
