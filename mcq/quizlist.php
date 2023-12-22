@@ -34,9 +34,15 @@ $style_input = "
   
   ";
 
+$updateQuestionBool = 0;
+
 if($_SERVER['REQUEST_METHOD']==='POST') {
-  if(isset($_GET['test'])) {
-    print_r($_POST);
+
+
+  if(isset($_POST['submit']) && $_POST['submit'] == "Update") {
+    updateMCQquizDetails($_POST['id'],$_POST['topic'],$_POST['quizName'],$_POST['notes'],$_POST['description'],$_POST['active']);
+    $updateQuestionBool = 1;
+    
   }
 
 
@@ -84,18 +90,30 @@ include($path."/header_tailwind.php");
       </form>
     </div>
       <?php
-      //print_r($quizzes);
-      print_r($_POST);
+      if(isset($_GET['test'])) {
+        //print_r($quizzes);
+        print_r($_POST);
+      }
       ?>
       <table class="w-full table-fixed mb-2 border border-black">
+        <tr>
+          <th class="w-8">Id</th>
+          <th class="">Topics</th>
+          <th class="">Name</th>
+          <th class="">Questions</th>
+          <th class="">Notes</th>
+          <th class="">Description</th>
+          <th class="">Active</th>
+          <th class="">Edit</th>
+        </tr>
         <?php
         foreach ($quizzes as $quiz) {
           ?>
           <form method="post" action="">
             <input type="hidden" name="id" value="<?=$quiz['id']?>"> 
-            <tr>
+            <tr id="<?=$quiz['id']?>">
               <td>
-                <p class=""><?=$quiz['id']?></p>
+                <p class="text-center"><?=$quiz['id']?></p>
               </td>
               <td>
                 <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['topic']?></p>
@@ -103,15 +121,37 @@ include($path."/header_tailwind.php");
               </td>
               <td>
                 <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['quizName']?></p>
+                <input type="text" class="toggleClass_<?=$quiz['id']?> hidden" value="<?=$quiz['quizName']?>" name="quizName">
               </td>
-              <td>
-                <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['questions_id']?></p>
+              <td class="">
+                <div class="overflow-x-auto">
+                  <?php
+                    $questions = explode(",",$quiz['questions_id']);
+                    foreach ($questions as $key2 => $question) {
+                      echo $question;
+                      echo ($key2 < count($questions)-1) ? ", " : "";
+                    }
+                  ?>
+                  <!--
+                  <p class="toggleClass_<?=$quiz['id']?> "><?=$quiz['questions_id']?></p> -->
+                </div>
               </td>
               <td>
                 <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['notes']?></p>
+                <textarea class="toggleClass_<?=$quiz['id']?> hidden" name="notes"><?=$quiz['notes']?></textarea>
               </td>
               <td>
-                <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['active']?></p>
+                <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['description']?></p>
+                <textarea class="toggleClass_<?=$quiz['id']?> hidden" name="description"><?=$quiz['description']?></textarea>
+              </td>
+              <td>
+                <p class="toggleClass_<?=$quiz['id']?>"><?=($quiz['active']==1) ? "Active" : "Inactive"?></p>
+                <div class="toggleClass_<?=$quiz['id']?> hidden">
+                  <input type="radio" id="active_select_<?=$quiz['id']?>" name="active" value="1" <?=($quiz['active']==1) ? "checked" : ""?>>
+                  <label for="active_select_<?=$quiz['id']?>">Active</label><br>
+                  <input type="radio" id="inactive_select_<?=$quiz['id']?>" name="active" value="0" <?=($quiz['active']==0) ? "checked" : ""?>>
+                  <label for="inactive_select_<?=$quiz['id']?>">Inactive</label>
+                </div>
               </td>
               <td>
                 <button type="button" class="w-full border border-black rounded bg-pink-200 mb-1 p-1" onclick='toggleHide(this, "toggleClass_<?=$quiz['id']?>", "Edit", "Hide Edit", "block");'>Edit</button>
@@ -129,6 +169,16 @@ include($path."/header_tailwind.php");
 </div>
 
 <script>
+
+<?php
+if($updateQuestionBool == 1) {
+    ?>
+      //console.log(document.getElementById('<?=$_POST['id']?>'));
+      document.getElementById('<?=$_POST['id']?>').scrollIntoView();
+    <?php
+  
+}
+?>
 
 </script>
 

@@ -674,6 +674,28 @@ function getMCQquizDetails($id=null, $topic = null, $questionId = null, $userCre
 
 }
 
+function updateMCQquizDetails($id, $topic, $quizName, $notes, $description, $active) {
+  /*
+  A function to update values in mcq_quizzes table
+  Used in:
+  -quizlist.php
+  */
+
+  global $conn;
+
+  $sql = " UPDATE mcq_quizzes 
+          SET topic = ?, quizName = ?, notes = ?, description = ?, active = ?
+          WHERE id = ?";
+          $stmt=$conn->prepare($sql);
+  $stmt->bind_param("ssssii", $topic, $quizName, $notes, $description, $active, $id);
+  $stmt->execute();
+
+
+  
+
+
+}
+
 function createMCQquiz($userCreate, $questions_id, $quizName, $topic, $notes, $description) {
   /*
   This function creates new MCQ quiz in table mcq_quizzes

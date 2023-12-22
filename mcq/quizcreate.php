@@ -290,7 +290,7 @@ $_GET controls:
               <?php
               //The following will show quiz detail summaries if showQuizzes is enabled:
               if($get_selectors['showQuizzes']) {
-                $usedQuizzes = getMCQquizDetails(null, null, $question['id']);
+                $usedQuizzes = getMCQquizDetails(null, null, $question['id'], null, 1);
                 if(isset($_GET['test'])) {
                   print_r($usedQuizzes);
                 }
