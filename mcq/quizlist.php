@@ -96,7 +96,7 @@ include($path."/header_tailwind.php");
       }
       ?>
       <table class="w-full table-fixed mb-2 border border-black">
-        <tr>
+        <tr class="sticky top-16 bg-white">
           <th class="w-8">Id</th>
           <th class="">Topics</th>
           <th class="">Name</th>
@@ -120,7 +120,7 @@ include($path."/header_tailwind.php");
                 <input type="text" class="toggleClass_<?=$quiz['id']?> hidden" value="<?=$quiz['topic']?>" name="topic">
               </td>
               <td>
-                <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['quizName']?></p>
+                <p class="toggleClass_<?=$quiz['id']?>"><a class="underline text-sky-700 hover:bg-sky-100"target="_blank" href="mcq_preview.php?quizid=<?=$quiz['id']?>"><?=$quiz['quizName']?></a></p>
                 <input type="text" class="toggleClass_<?=$quiz['id']?> hidden" value="<?=$quiz['quizName']?>" name="quizName">
               </td>
               <td class="">
