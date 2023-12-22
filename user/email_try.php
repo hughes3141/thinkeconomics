@@ -1,9 +1,13 @@
 <?php
 
-$path = $_SERVER['DOCUMENT_ROOT'];
-
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+//include($path."/php_functions.php");
+
+
 require $path.'/PHPMailer-master/src/Exception.php';
 require $path.'/PHPMailer-master/src/PHPMailer.php';
 require $path.'/PHPMailer-master/src/SMTP.php';
@@ -12,28 +16,35 @@ require $path.'/PHPMailer-master/src/SMTP.php';
 
 echo "This is trying email";
 
+
+
+
 $mail = new PHPMailer(true); // Passing `true` enables exceptions
 try {
+    global $emailPassword;
     //Server settings
     $mail->SMTPDebug = 2; // Enable verbose debug output
     $mail->isSMTP(); // Set mailer to use SMTP
+    //$mail->isMail(); 
     $mail->Host = 'mail.thinkeconomics.co.uk'; // Specify main and backup SMTP servers
     $mail->SMTPAuth = true; // Enable SMTP authentication
+ 
     
     $mail->Username   = 'no_reply@thinkeconomics.co.uk';   // SMTP username
-    $mail->Password   = '';       // SMTP password
+    $mail->Password   = $emailPassword;       // SMTP password
+    //Passsword found in secrets
 
     
 
     $mail->SMTPSecure = 'tls'; // Enable SSL encryption, TLS also accepted with port 465
-    $mail->Port = 465; // TCP port to connect to
+    $mail->Port = 26; // TCP port to connect to
     //Recipients
     $mail->setFrom('no_reply@thinkeconomics.co.uk', 'ThinkEconomics Support'); //This is the email your form sends From
 
     $mail->addAddress('hughes.ryan@gmail.com', 'Ryan Hughes'); // Add a recipient address
     //Content
     $mail->isHTML(true); // Set email format to HTML
-    $mail->Subject = 'Subject line goes here';
+    $mail->Subject = 'Subject line goes here '.date('m/d/Y h:i:s a');
     $mail->Body    = 'Body text goes here';
     $mail->send();
     echo 'Message has been sent';
