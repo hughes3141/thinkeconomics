@@ -1,11 +1,13 @@
 <?php
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+
 
 $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 //include($path."/php_functions.php");
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 
 require $path.'/PHPMailer-master/src/Exception.php';
@@ -21,7 +23,7 @@ echo "This is trying email";
 
 $mail = new PHPMailer(true); // Passing `true` enables exceptions
 try {
-    global $emailPassword;
+
     //Server settings
     $mail->SMTPDebug = 2; // Enable verbose debug output
     $mail->isSMTP(); // Set mailer to use SMTP
@@ -55,6 +57,9 @@ try {
 }
 
 
+// Below is when trying to use mail() function:
+
+/*
 // the message
 $msg = "First line of text\nSecond line of text";
 
@@ -67,5 +72,6 @@ $msg = wordwrap($msg,70);
 //echo $msg;
 
 //phpinfo();
+*/
 
 ?>
