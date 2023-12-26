@@ -95,6 +95,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                                 exit();
                                 */
                               }
+
+                            // prevent session fixation attack
+                            //session_regenerate_id();
                               
                             
                             // Store data in session variables

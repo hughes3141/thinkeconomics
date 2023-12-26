@@ -383,7 +383,7 @@ Returns an array of all information about a user.
 
 function getUserInfo($userId) {
   global $conn;
-  $sql = " SELECT u.id, u.name, u.name_first, u.name_last, u.username, u.usertype, u.permissions, u.userInput_userType, u.email, u.schoolid, u.groupid, u.groupid_array, u.active, s.SCHNAME, s.userAdmin, s.permissions school_permissions, u.userPreferredSubjectId
+  $sql = " SELECT u.id, u.name, u.name_first, u.name_last, u.username, u.usertype, u.permissions, u.userInput_userType, u.email, u.schoolid, u.groupid, u.groupid_array, u.active, s.SCHNAME, s.userAdmin, s.permissions school_permissions, u.userPreferredSubjectId, u.password_hash
           FROM users u
           LEFT JOIN schools_dfe s
           ON u.schoolid = s.id
@@ -397,6 +397,15 @@ function getUserInfo($userId) {
   return $row;   
      
   }
+}
+
+function is_user_active($user) {
+  return (int)$user['active'] === 1;
+}
+
+function generate_activation_code(): string
+{
+    return bin2hex(random_bytes(16));
 }
 
 
@@ -3775,12 +3784,13 @@ function validateEmail($email) {
 
 }
 
-function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $usertype, $email_name, $version, $privacy_bool = 0, $usertype_std = "student", $permissions = "student",  $active = 1, $schoolId = null, $userCreate = null, $groupIdArray = "", $passwordRecord = 0) {
+function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $usertype, $email_name, $version, $privacy_bool = 0, $usertype_std = "student", $permissions = "student",  $active = 1, $schoolId = null, $userCreate = null, $groupIdArray = "", $passwordRecord = 0, $activation_code = null, $expiry = null) {
 
   global $conn;
 
+
   //Enter new user information into users table
-  $sql = "INSERT INTO users (name_first, name_last, username, password_hash, usertype, permissions, userInput_userType, email, active, time_added, privacy_agree, privacy_date, privacy_vers, schoolid, userCreate, groupid_array, password) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  $sql = "INSERT INTO users (name_first, name_last, username, password_hash, usertype, permissions, userInput_userType, email, active, time_added, privacy_agree, privacy_date, privacy_vers, schoolid, userCreate, groupid_array, password, activation_code, activation_expiry) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     
   $stmt = $conn->prepare($sql);
   
@@ -3801,7 +3811,14 @@ function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $us
     $groupIdArray = "";
   }
 
-  $stmt->bind_param("ssssssssisissiiss", $firstName, $lastName, $username, $password_hash, $usertype_std, $permissions, $usertype, $email_name, $active, $datetime, $privacy_bool, $datetime, $version, $schoolId, $userCreate, $groupIdArray, $passwordEntry);
+  //Variables to verify email:
+  $expiry = 1 * 24  * 60 * 60;
+  $expiry = date('Y-m-d H:i:s',  time() + $expiry);
+  $activation_code = password_hash($activation_code, PASSWORD_DEFAULT);
+  
+
+
+  $stmt->bind_param("ssssssssisissiissss", $firstName, $lastName, $username, $password_hash, $usertype_std, $permissions, $usertype, $email_name, $active, $datetime, $privacy_bool, $datetime, $version, $schoolId, $userCreate, $groupIdArray, $passwordEntry, $activation_code, $expiry);
   
   $stmt->execute();
 
