@@ -110,7 +110,10 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     //Enter new user information into users table.
     //Store newly-minted 'username' and 'time_added' to $entry array, which is ['username'=> , 'datetime'=> ]
 
-    $entry = insertNewUserIntoUsers($firstName, $lastName, $username, $password1, $usertype, $email_name, $version, $privacy_bool, $usertype, $permissions);
+    $activation_code = generate_activation_code();
+    echo $activation_code;
+
+    $entry = insertNewUserIntoUsers($firstName, $lastName, $username, $password1, $usertype, $email_name, $version, $privacy_bool, $usertype, $permissions,0,null,null, "", 0, $activation_code);
 
     //Set session userid to newly-minted userid:
     $userid = getUserByUsernameDatetime($entry);

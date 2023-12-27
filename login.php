@@ -60,7 +60,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     // Validate credentials
     if(empty($username_err) && empty($password_err)){
         // Prepare a select statement
-        $sql = "SELECT id, name, password_hash, privacy_agree FROM users WHERE (name = ? OR username = ? OR email = ?) AND active = 1";
+        $sql = "SELECT id, name, password_hash, privacy_agree, active
+         FROM users WHERE (name = ? OR username = ? OR email = ?) ";
         
         if($stmt = $conn->prepare($sql)){
             // Bind variables to the prepared statement as parameters
@@ -68,6 +69,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             
             // Set parameters
             $param_username = $username;
+            
             
             // Attempt to execute the prepared statement
             if($stmt->execute()){
@@ -77,57 +79,65 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 // Check if username exists, if yes then verify password
                 if($stmt->num_rows == 1){                    
                     // Bind result variables
-                    $stmt->bind_result($id, $username, $hashed_password, $privacy_agree);
+                    $stmt->bind_result($id, $username, $hashed_password, $privacy_agree, $active);
                     if($stmt->fetch()){
 
-                        //if(($password2 === $hashed_password)){
-                        //!!Replace previous line with following line once hashed passwords are incorporated into database.
-                        if(password_verify($password2, $hashed_password)){
-                            // Password is correct, so start a new session
-                            //session_start();
+                      
 
-                            //Check to see if privacy agreement has been agreed:
+                      if($active ==1) {
 
-                              if($privacy_agree == 0) {
-                                /*
-                                $_SESSION['temp_userid'] = $id;
-                                echo "<script>window.location='/user/privacy_policy.php?login_redirect'</script>";
-                                exit();
-                                */
-                              }
+                          //if(($password2 === $hashed_password)){
+                          //!!Replace previous line with following line once hashed passwords are incorporated into database.
+                          if(password_verify($password2, $hashed_password)){
+                              // Password is correct, so start a new session
+                              //session_start();
 
-                            // prevent session fixation attack
-                            //session_regenerate_id();
+                              //Check to see if privacy agreement has been agreed:
+
+                                if($privacy_agree == 0) {
+                                  /*
+                                  $_SESSION['temp_userid'] = $id;
+                                  echo "<script>window.location='/user/privacy_policy.php?login_redirect'</script>";
+                                  exit();
+                                  */
+                                }
+
+                              // prevent session fixation attack
+                              //session_regenerate_id();
+                                
                               
-                            
-                            // Store data in session variables
-                            //$_SESSION["loggedin"] = true;
-                            //$_SESSION["id"] = $id;
-                            //$_SESSION["username"] = $username;                            
-                            $_SESSION["userid"] = $id;
-                            //$_SESSION["name"] = $username;
-                            //$_SESSION["usertype"] = $usertype;
-                            //$_SESSION["groupid"] = $groupid;
+                              // Store data in session variables
+                              //$_SESSION["loggedin"] = true;
+                              //$_SESSION["id"] = $id;
+                              //$_SESSION["username"] = $username;                            
+                              $_SESSION["userid"] = $id;
+                              //$_SESSION["name"] = $username;
+                              //$_SESSION["usertype"] = $usertype;
+                              //$_SESSION["groupid"] = $groupid;
 
-                            //Register login at login_log table:
-                            login_log($id);
+                              //Register login at login_log table:
+                              login_log($id);
 
-                            // Redirect user to previous page
-                            if(($previous !="")&&($previous !="/")) {
-                              header("location: ".$previous);
-                            } else if ($previous == "/") {
-                              header("location: ./user/user3.0.php");
-                            } else {
-                              header("location: index.php");
-                            }
-                        } else{
-                            // Password is not valid, display a generic error message
-                            $login_err = "Invalid username or password.";
-                        }
-                    }
+                              // Redirect user to previous page
+                              if(($previous !="")&&($previous !="/")) {
+                                header("location: ".$previous);
+                              } else if ($previous == "/") {
+                                header("location: ./user/user3.0.php");
+                              } else {
+                                header("location: index.php");
+                              }
+                          } else{
+                              // Password is not valid, display a generic error message
+                              $login_err = "Invalid username or password.";
+                          }
+                      }
+                      else {
+                        $login_err .= "Not Activated.";
+                      }
+                  }
                 } else{
                     // Username doesn't exist, display a generic error message
-                    $login_err = "Invalid username or password.";
+                    $login_err .= "Invalid username or password.";
                 }
             } else{
                 echo "Oops! Something went wrong. Please try again later.";

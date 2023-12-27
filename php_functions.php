@@ -399,6 +399,11 @@ function getUserInfo($userId) {
   }
 }
 
+/*
+The following are used for password email verification, taken from:
+  https://www.phptutorial.net/php-tutorial/php-email-verification/
+*/
+
 function is_user_active($user) {
   return (int)$user['active'] === 1;
 }
@@ -420,6 +425,50 @@ function delete_user_by_id(int $id, int $active = 0)
 
     return $statement->execute();
 }
+
+function find_unverified_user(string $activation_code, string $email)
+{
+    global $conn;
+    $sql = 'SELECT id, activation_code, activation_expiry < now() as expired
+            FROM users
+            WHERE active = 0 AND email=:email';
+
+    $statement = db()->prepare($sql);
+
+    $statement->bindValue(':email', $email);
+    $statement->execute();
+
+    $user = $statement->fetch(PDO::FETCH_ASSOC);
+
+    if ($user) {
+        // already expired, delete the in active user with expired activation code
+        if ((int)$user['expired'] === 1) {
+            delete_user_by_id($user['id']);
+            return null;
+        }
+        // verify the password
+        if (password_verify($activation_code, $user['activation_code'])) {
+            return $user;
+        }
+    }
+
+    return null;
+}
+
+function activate_user(int $user_id): bool
+{
+    global $conn;
+    $sql = 'UPDATE users
+            SET active = 1,
+                activated_at = CURRENT_TIMESTAMP
+            WHERE id=:id';
+
+    $statement = db()->prepare($sql);
+    $statement->bindValue(':id', $user_id, PDO::PARAM_INT);
+
+    return $statement->execute();
+}
+
 
 
 function getUpcomingAssignmentsArray($groupIdArray) {
