@@ -408,6 +408,19 @@ function generate_activation_code(): string
     return bin2hex(random_bytes(16));
 }
 
+function delete_user_by_id(int $id, int $active = 0)
+{
+    global $conn;
+    $sql = 'DELETE FROM users
+            WHERE id =:id and active=:active';
+
+    $statement = db()->prepare($sql);
+    $statement->bindValue(':id', $id, PDO::PARAM_INT);
+    $statement->bindValue(':active', $active, PDO::PARAM_INT);
+
+    return $statement->execute();
+}
+
 
 function getUpcomingAssignmentsArray($groupIdArray) {
 

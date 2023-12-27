@@ -28,7 +28,8 @@ function send_activation_email(string $emailAddress, string $name, string $activ
     try {
 
         //Server settings
-        $mail->SMTPDebug = 2; // Enable verbose debug output
+        //$mail->SMTPDebug = 2; // Enable verbose debug output
+        $mail->SMTPDebug = 0; // No debugging; used for production
         $mail->isSMTP(); // Set mailer to use SMTP
         //$mail->isMail(); 
         $mail->Host = 'mail.thinkeconomics.co.uk'; // Specify main and backup SMTP servers
@@ -49,8 +50,12 @@ function send_activation_email(string $emailAddress, string $name, string $activ
         $mail->addAddress($emailAddress, $name); // Add a recipient address
         //Content
         $mail->isHTML(true); // Set email format to HTML
-        $mail->Subject = 'Subject line goes here '.date('m/d/Y h:i:s a');
-        $mail->Body    = 'Body text goes here\n'.$activation_link;
+        $mail->Subject = 'ThinkEconomics: Please activate your account '.date('m/d/Y h:i:s a');
+        $mail->Body    = <<<MESSAGE
+            Hi,
+            <p>Please click the following link to activate your account:</p>
+            <a target = "_blank" href="$activation_link">$activation_link</a>
+            MESSAGE;
         $mail->send();
         echo 'Message has been sent';
         
@@ -59,7 +64,22 @@ function send_activation_email(string $emailAddress, string $name, string $activ
         echo 'Mailer Error: ' . $mail->ErrorInfo;
     }
 
+    /*
 
+    // set email subject & body
+    $subject = 'Please activate your account';
+    $message = <<<MESSAGE
+            Hi,
+            Please click the following link to activate your account:
+            $activation_link
+            MESSAGE;
+    // email header
+    $header = "From:" . SENDER_EMAIL_ADDRESS;
+
+    // send the email
+    mail($email, $subject, nl2br($message), $header);
+
+    */
 
 
 
