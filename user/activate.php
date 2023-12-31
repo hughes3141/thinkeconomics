@@ -29,7 +29,12 @@ if(isset($_GET['email']) && isset($_GET['activation_code'])) {
 
   $user = find_unverified_user($inputs['activation_code'], $inputs['email']);
 
-  print_r($user);
+  //print_r($user);
+
+  if($user && activate_user($user['id'])) {
+    //Send to a new page
+    echo "<script>window.location = '/user/user3.0.php'</script>";
+  }
 
 
 }

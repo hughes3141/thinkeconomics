@@ -470,16 +470,18 @@ function find_unverified_user(string $activation_code, string $email)
 
 function activate_user(int $user_id): bool
 {
+    $datetime = date("Y-m-d H:i:s");
     global $conn;
     $sql = 'UPDATE users
             SET activated = 1,
                 activated_at = CURRENT_TIMESTAMP
-            WHERE id=:id';
+            WHERE id= ? ';
 
-    $statement = db()->prepare($sql);
-    $statement->bindValue(':id', $user_id, PDO::PARAM_INT);
+    $stmt = $conn->prepare($sql);
+    //$stmt->bindValue(':id', $user_id, PDO::PARAM_INT);
+    $stmt->bind_param("i", $user_id);
 
-    return $statement->execute();
+    return $stmt->execute();
 }
 
 
