@@ -113,7 +113,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     $activation_code = generate_activation_code();
     echo $activation_code;
 
-    $entry = insertNewUserIntoUsers($firstName, $lastName, $username, $password1, $usertype, $email_name, $version, $privacy_bool, $usertype, $permissions,0,null,null, "", 0, $activation_code);
+    $entry = insertNewUserIntoUsers($firstName, $lastName, $username, $password1, $usertype, $email_name, $version, $privacy_bool, $usertype, $permissions,1,null,null, "", 0, $activation_code);
 
     //Set session userid to newly-minted userid:
     $userid = getUserByUsernameDatetime($entry);

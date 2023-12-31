@@ -60,8 +60,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     // Validate credentials
     if(empty($username_err) && empty($password_err)){
         // Prepare a select statement
-        $sql = "SELECT id, name, password_hash, privacy_agree, active
-         FROM users WHERE (name = ? OR username = ? OR email = ?) ";
+        $sql = "SELECT id, name, password_hash, privacy_agree, activated
+         FROM users 
+         WHERE (name = ? OR username = ? OR email = ?)
+         AND active = 1";
         
         if($stmt = $conn->prepare($sql)){
             // Bind variables to the prepared statement as parameters
@@ -79,12 +81,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 // Check if username exists, if yes then verify password
                 if($stmt->num_rows == 1){                    
                     // Bind result variables
-                    $stmt->bind_result($id, $username, $hashed_password, $privacy_agree, $active);
+                    $stmt->bind_result($id, $username, $hashed_password, $privacy_agree, $activated);
                     if($stmt->fetch()){
 
                       
 
-                      if($active ==1) {
+                      if($activated ==1) {
 
                           //if(($password2 === $hashed_password)){
                           //!!Replace previous line with following line once hashed passwords are incorporated into database.

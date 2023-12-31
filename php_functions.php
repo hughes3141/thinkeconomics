@@ -405,7 +405,7 @@ The following are used for password email verification, taken from:
 */
 
 function is_user_active($user) {
-  return (int)$user['active'] === 1;
+  return (int)$user['activated'] === 1;
 }
 
 function generate_activation_code(): string
@@ -417,13 +417,17 @@ function delete_user_by_id(int $id, int $active = 0)
 {
     global $conn;
     $sql = 'DELETE FROM users
-            WHERE id =:id and active=:active';
+            WHERE id = ? and activated= ? ';
 
-    $statement = db()->prepare($sql);
-    $statement->bindValue(':id', $id, PDO::PARAM_INT);
-    $statement->bindValue(':active', $active, PDO::PARAM_INT);
+    $stmt = $conn->prepare($sql);
 
-    return $statement->execute();
+    $stmt->bind_param("ii", $id, $active);
+
+
+    //$statement->bindValue(':id', $id, PDO::PARAM_INT);
+    //$statement->bindValue(':active', $active, PDO::PARAM_INT);
+
+    return $stmt->execute();
 }
 
 function find_unverified_user(string $activation_code, string $email)
@@ -431,24 +435,33 @@ function find_unverified_user(string $activation_code, string $email)
     global $conn;
     $sql = 'SELECT id, activation_code, activation_expiry < now() as expired
             FROM users
-            WHERE active = 0 AND email=:email';
+            WHERE activated = 0 AND email= ? ';
 
-    $statement = db()->prepare($sql);
+    $statement = $conn->prepare($sql);
 
-    $statement->bindValue(':email', $email);
+    $statement->bind_param("s", $email);
+
+    //$statement->bindValue(':email', $email);
     $statement->execute();
 
-    $user = $statement->fetch(PDO::FETCH_ASSOC);
+    //$user = $statement->fetch(PDO::FETCH_ASSOC);
+    $result = $statement->get_result();
+    $user = $result->fetch_assoc();
+
+    return $user;
+  
 
     if ($user) {
         // already expired, delete the in active user with expired activation code
         if ((int)$user['expired'] === 1) {
             delete_user_by_id($user['id']);
+            echo "expired user deleted";
             return null;
         }
         // verify the password
         if (password_verify($activation_code, $user['activation_code'])) {
-            return $user;
+          echo "activation code verified";  
+          return $user;
         }
     }
 
@@ -459,7 +472,7 @@ function activate_user(int $user_id): bool
 {
     global $conn;
     $sql = 'UPDATE users
-            SET active = 1,
+            SET activated = 1,
                 activated_at = CURRENT_TIMESTAMP
             WHERE id=:id';
 
@@ -3846,7 +3859,7 @@ function validateEmail($email) {
 
 }
 
-function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $usertype, $email_name, $version, $privacy_bool = 0, $usertype_std = "student", $permissions = "student",  $active = 1, $schoolId = null, $userCreate = null, $groupIdArray = "", $passwordRecord = 0, $activation_code = null, $expiry = null) {
+function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $usertype, $email_name, $version, $privacy_bool = 0, $usertype_std = "student", $permissions = "student",  $active = 1, $schoolId = null, $userCreate = null, $groupIdArray = "", $passwordRecord = 0, $activation_code = null, $activated = 0) {
 
   global $conn;
 

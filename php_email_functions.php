@@ -22,7 +22,7 @@ function send_activation_email(string $emailAddress, string $name, string $activ
 
     global $emailPassword;
     // create the activation link
-    $activation_link = "/activate.php?email=$emailAddress&activation_code=$activation_code";
+    $activation_link = "https://thinkeconomics/user/activate.php?email=$emailAddress&activation_code=$activation_code";
 
     $mail = new PHPMailer(true); // Passing `true` enables exceptions
     try {
