@@ -61,7 +61,7 @@ $get_selectors = array(
   'selectedQuestions' => (isset($_GET['selectedQuestions'])&&$_GET['selectedQuestions']!="") ? $_GET['selectedQuestions'] : null,
   'quizid' => (isset($_GET['quizid'])&&$_GET['quizid']!="") ? $_GET['quizid'] : null,
   'showQuizzes' => (isset($_GET['showQuizzes'])&&$_GET['showQuizzes']!="") ? $_GET['showQuizzes'] : null,
-  
+  'excludedQuizzes' => (isset($_GET['excludedQuizzes'])&&$_GET['excludedQuizzes']!="") ? $_GET['excludedQuizzes'] : null
 
 
 
@@ -135,6 +135,9 @@ foreach ($questions as $key => $question) {
   }
 }
 
+$excludedQuizzes = explode(",", $get_selectors['excludedQuizzes']);
+unset($excludedQuizzes[count($excludedQuizzes)-1]);
+
 
 $questionDetails = array();
 
@@ -191,7 +194,7 @@ $_GET controls:
       </div>
     </div>
     <div>
-      <form method ="get"  action="">
+      <form method ="get"  action="" id="selectForm">
           <label for="id_select">ID:</label>
           <input type="text" name="id" value="<?=isset($_GET['id']) ? $_GET['id'] : "" ?>"</input>
           <label for="_select">Topic:</label>
@@ -223,10 +226,19 @@ $_GET controls:
 
           <input type="hidden" id="selectedQuestionsSelect" name="selectedQuestions" value="<?=$get_selectors['selectedQuestions']?>">
 
+          <input type="hidden" id="excludedQuizzesSelect" name="excludedQuizzes" value="<?=$get_selectors['excludedQuizzes']?>">
+
           <label for="showQuizzes_select">Quiz Summary</label>
           <input id="showQuizzes_select" type="checkbox" name="showQuizzes" value="1" <?=($get_selectors['showQuizzes'] == 1) ? "checked" : ""?>>
 
           <input type="submit"  value="Select">
+          <?php
+          if($get_selectors['excludedQuizzes']) {
+            ?>
+            <button type="button" class="border border-black rounded" onclick="clearExcludedQuizzes();">Clear Excluded Quizzes</button>
+            <?php
+          }
+          ?>
         </form>
     </div>
 
@@ -236,6 +248,7 @@ $_GET controls:
       //print_r($questions);
       //print_r($originalQuestions);
       //print_r($selectedQuestions);
+      //print_r($excludedQuizzes);
     ?>
     <div class="grid grid-cols-3 relative">
       <div class="col-span-2">
@@ -288,15 +301,35 @@ $_GET controls:
                 <p>Answer: <?=$question['Answer']?></p>
               </div>
               <?php
+
               //The following will show quiz detail summaries if showQuizzes is enabled:
               if($get_selectors['showQuizzes']) {
-                $usedQuizzes = getMCQquizDetails(null, null, $question['id']);
-                print_r($usedQuizzes);
-                ?>
-                <div>
+                $usedQuizzes = getMCQquizDetails(null, null, $question['id'], null, 1);
+                foreach($usedQuizzes as $key => $quiz) {
+                  if(in_array($quiz['id'], $excludedQuizzes)) {
+                    unset($usedQuizzes[$key]);
+                  }
+                }
+                if(isset($_GET['test'])) {
+                  print_r($usedQuizzes);
+                }
+                if(count($usedQuizzes) > 0) {
+                  ?>
+                  <div>
+                    <h2>Used in:</h2>
+                      <ul class="text-xs">
+                        <?php
+                        foreach ($usedQuizzes as $quiz) {
+                          ?>
+                          <li><a class="underline text-sky-800 hover:bg-sky-200" href="mcq_preview.php?quizid=<?=$quiz['id']?>#id_<?=$question['id']?>" target="_blank"><?=$quiz['topic']?> <?=$quiz['quizName']?></a> <a href="quizcreate.php?quizid=<?=$quiz['id']?>" target="_blank" class="bg-pink-200">This Quiz</a> <button class="bg-sky-100  rounded" onclick="excludedQuizzes(<?=$quiz['id']?>);">Exclude</button></li>
+                          <?php
+                        }
+                        ?>
+                      </ul>
 
-                </div>
-                <?php
+                  </div>
+                  <?php
+                }
               }
               ?>
               <button class="border border-black rounded bg-pink-200 my-2 p-1"  onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit Details", "Hide Edit", "block");'>Edit Details</button>
@@ -469,6 +502,23 @@ $_GET controls:
     } else {
       form.classList.add("hidden");
     }
+  }
+
+  function excludedQuizzes(quizid) {
+    const excludedQuizzesSelect = document.getElementById("excludedQuizzesSelect");
+    const selectForm = document.getElementById("selectForm");
+    //console.log(excludedQuizzesSelect);
+    //console.log(quizid);
+    excludedQuizzesSelect.value += quizid+",";
+    selectForm.submit();
+
+  }
+
+  function clearExcludedQuizzes() {
+  const excludedQuizzesSelect = document.getElementById("excludedQuizzesSelect");
+  excludedQuizzesSelect.value="";
+  document.getElementById("selectForm").submit();
+  
   }
 
 </script>
