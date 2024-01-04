@@ -259,7 +259,7 @@ include "../header_tailwind.php";
                 
                 
                 
-                <p class="ml-2 font-bold">New resources</p>
+                <p class="ml-2 font-bold hidden">New resources</p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_questions.php">MCQ Question Manager</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/quizcreate.php">MCQ Quiz Creator</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/quizlist.php">MCQ Quiz List</a></p>
