@@ -78,6 +78,8 @@ include($path."/header_tailwind.php");
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=113">1.6.3/1.6.4 Theory of the Firm Exercises</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=69">1.6.5 Monopoly Questions</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=64">1.6.6 Oligopoly</a></li>
+          <h3 class="font-mono text-lg bg-pink-200 pl-1">Global Economics</h3>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=149">3.1.1 Terms of Trade</a></li>
         <h2 class="font-mono text-xl bg-pink-300 pl-1">Eduqas Past Papers</h2>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=98">C1 Spec Paper</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=99">C1 June 2017</a></li>
