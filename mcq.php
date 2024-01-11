@@ -51,7 +51,7 @@ include($path."/header_tailwind.php");
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=82">1.7.2 Government Intervention: Types 2</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=83">1.7.2 Government Intervention: Maximum/Minimum Prices</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=84">1.7.2 Government Intervention: Buffer Stock Schemes</a></li>
-            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=85">1.7.3 Government Failure</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=150">1.7.3 Government Failure</a></li>
           <h3 class="font-mono text-lg bg-pink-200 pl-1">Macro</h3>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=27">2.1.1 Circular Flow of Income (5qs)</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=87">2.1.2 Components of AD: Definitions and Calculations</a></li>
