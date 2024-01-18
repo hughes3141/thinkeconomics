@@ -81,6 +81,7 @@ include($path."/header_tailwind.php");
           <h3 class="font-mono text-lg bg-pink-200 pl-1">Global Economics</h3>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=147">3.1.1 Tariff Diagrams</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=149">3.1.1 Terms of Trade</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=153">3.1.1 Comparative and Absolute Advantage</a></li>
         <h2 class="font-mono text-xl bg-pink-300 pl-1">Eduqas Past Papers</h2>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=98">C1 Spec Paper</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=99">C1 June 2017</a></li>
