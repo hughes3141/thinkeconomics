@@ -51,9 +51,9 @@ include($path."/header_tailwind.php");
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=82">1.7.2 Government Intervention: Types 2</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=83">1.7.2 Government Intervention: Maximum/Minimum Prices</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=84">1.7.2 Government Intervention: Buffer Stock Schemes</a></li>
-            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=85">1.7.3 Government Failure</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=150">1.7.3 Government Failure</a></li>
           <h3 class="font-mono text-lg bg-pink-200 pl-1">Macro</h3>
-            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=27">2.1.1 Circular Flow of Income (5qs)</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=151">2.1.1 Circular Flow of Income</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=87">2.1.2 Components of AD: Definitions and Calculations</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=88">2.1.2 Components of AD: Influences on Components</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=30">2.1.3 AD Questions</a></li>
@@ -78,6 +78,10 @@ include($path."/header_tailwind.php");
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=113">1.6.3/1.6.4 Theory of the Firm Exercises</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=69">1.6.5 Monopoly Questions</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=64">1.6.6 Oligopoly</a></li>
+          <h3 class="font-mono text-lg bg-pink-200 pl-1">Global Economics</h3>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=147">3.1.1 Tariff Diagrams</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=149">3.1.1 Terms of Trade</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=153">3.1.1 Comparative and Absolute Advantage</a></li>
         <h2 class="font-mono text-xl bg-pink-300 pl-1">Eduqas Past Papers</h2>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=98">C1 Spec Paper</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=99">C1 June 2017</a></li>
