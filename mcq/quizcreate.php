@@ -122,6 +122,11 @@ foreach($selectedQuestionsRev as $questionid) {
 
 }
 
+$globalUsedQuizzes = array();
+
+$excludedQuizzes = explode(",", $get_selectors['excludedQuizzes']);
+unset($excludedQuizzes[count($excludedQuizzes)-1]);
+
 foreach ($questions as $key => $question) {
   if(in_array($question['id'], $selectedQuestions)) {
     $questions[$key]['selected'] = 1;
@@ -133,10 +138,28 @@ foreach ($questions as $key => $question) {
   } else {
     $questions[$key]['original'] = 0;
   }
+
+  //Processing quiz details if showQuizzes is enabled:
+  
+  if($get_selectors['showQuizzes']) { 
+    $usedQuizzes = getMCQquizDetails(null, null, $question['id'], null, 1);
+    foreach($usedQuizzes as $key => $quiz) {
+      if(in_array($quiz['id'], $excludedQuizzes)) {
+        unset($usedQuizzes[$key]);
+      }
+
+    }
+    foreach($usedQuizzes as $quiz) {
+      if(!in_array($quiz, $globalUsedQuizzes)) {
+        array_push($globalUsedQuizzes, $quiz);
+      }
+    }
+    
+
+  }
+  
 }
 
-$excludedQuizzes = explode(",", $get_selectors['excludedQuizzes']);
-unset($excludedQuizzes[count($excludedQuizzes)-1]);
 
 
 $questionDetails = array();
@@ -249,6 +272,24 @@ $_GET controls:
       //print_r($originalQuestions);
       //print_r($selectedQuestions);
       //print_r($excludedQuizzes);
+      //print_r($globalUsedQuizzes);
+    ?>
+    <?php
+      if(count($globalUsedQuizzes)>0) {
+        ?>
+        <div>
+          <h2>Used Quizzes</h2>
+          <?php
+          foreach($globalUsedQuizzes as $quiz) {
+            //print_r($quiz);
+            ?>
+              <p><a class="underline text-sky-800 hover:bg-sky-200" href="mcq_preview.php?quizid=<?=$quiz['id']?>#id_<?=$question['id']?>" target="_blank"><?=$quiz['topic']?> <?=$quiz['quizName']?></a> <a href="quizcreate.php?quizid=<?=$quiz['id']?>" target="_blank" class="bg-pink-200">This Quiz</a> <button class="bg-sky-100  rounded" onclick="excludedQuizzes(<?=$quiz['id']?>);">Exclude</button></p>
+            <?php
+          }
+          ?>
+        </div>
+        <?php
+      }
     ?>
     <div class="grid grid-cols-3 relative">
       <div class="col-span-2">
