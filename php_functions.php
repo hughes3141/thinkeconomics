@@ -600,7 +600,7 @@ function getMCQquizzesByTopic($topic = null) {
 
 }
 
-function getMCQquizDetails($id=null, $topic = null, $questionId = null) {
+function getMCQquizDetails($id=null, $topic = null, $questionId = null, $userCreate = null, $active = null) {
   /*
   This function is updated from previous two, used to pull information for MCQ quizzes
   */
@@ -642,6 +642,22 @@ function getMCQquizDetails($id=null, $topic = null, $questionId = null) {
     array_push($bindArray, $questionId);
   }
 
+  if($userCreate) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " userCreate = ? ";
+    $params .= "i";
+    array_push($bindArray, $userCreate);
+  }
+
+  if($active) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " active = ? ";
+    $params .= "i";
+    array_push($bindArray, $active);
+  }
+
   $stmt = $conn->prepare($sql);
   if(count($bindArray)>0) {
     $stmt->bind_param($params, ...$bindArray);
@@ -655,6 +671,28 @@ function getMCQquizDetails($id=null, $topic = null, $questionId = null) {
   }
 
   return $results;
+
+}
+
+function updateMCQquizDetails($id, $topic, $quizName, $notes, $description, $active) {
+  /*
+  A function to update values in mcq_quizzes table
+  Used in:
+  -quizlist.php
+  */
+
+  global $conn;
+
+  $sql = " UPDATE mcq_quizzes 
+          SET topic = ?, quizName = ?, notes = ?, description = ?, active = ?
+          WHERE id = ?";
+          $stmt=$conn->prepare($sql);
+  $stmt->bind_param("ssssii", $topic, $quizName, $notes, $description, $active, $id);
+  $stmt->execute();
+
+
+  
+
 
 }
 

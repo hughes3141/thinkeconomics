@@ -546,6 +546,14 @@ textarea, input, select {
   top: 0px;
 }
 
+.left-5 {
+  left: 1.25rem;
+}
+
+.top-2 {
+  top: 0.5rem;
+}
+
 .top-10 {
   top: 2.5rem;
 }
@@ -566,20 +574,20 @@ textarea, input, select {
   top: 5rem;
 }
 
-.left-0 {
-  left: 0px;
+.top-8 {
+  top: 2rem;
 }
 
-.left-2 {
-  left: 0.5rem;
+.top-\[50px\] {
+  top: 50px;
 }
 
-.top-2 {
-  top: 0.5rem;
+.top-12 {
+  top: 3rem;
 }
 
-.left-5 {
-  left: 1.25rem;
+.top-16 {
+  top: 4rem;
 }
 
 .z-50 {
@@ -894,6 +902,10 @@ textarea, input, select {
   height: 0.75rem;
 }
 
+.h-20 {
+  height: 5rem;
+}
+
 .h-12 {
   height: 3rem;
 }
@@ -920,18 +932,6 @@ textarea, input, select {
 
 .h-36 {
   height: 9rem;
-}
-
-.h-1\/2 {
-  height: 50%;
-}
-
-.h-20 {
-  height: 5rem;
-}
-
-.h-40 {
-  height: 10rem;
 }
 
 .max-h-80 {
@@ -1000,6 +1000,10 @@ textarea, input, select {
 
 .w-3\/5 {
   width: 60%;
+}
+
+.w-8 {
+  width: 2rem;
 }
 
 .w-20 {
@@ -1190,6 +1194,10 @@ textarea, input, select {
 
 .overflow-hidden {
   overflow: hidden;
+}
+
+.overflow-x-auto {
+  overflow-x: auto;
 }
 
 .truncate {
@@ -1793,6 +1801,21 @@ textarea, input, select {
 .text-sky-500 {
   --tw-text-opacity: 1;
   color: rgb(14 165 233 / var(--tw-text-opacity));
+}
+
+.text-sky-400 {
+  --tw-text-opacity: 1;
+  color: rgb(56 189 248 / var(--tw-text-opacity));
+}
+
+.text-sky-700 {
+  --tw-text-opacity: 1;
+  color: rgb(3 105 161 / var(--tw-text-opacity));
+}
+
+.text-sky-800 {
+  --tw-text-opacity: 1;
+  color: rgb(7 89 133 / var(--tw-text-opacity));
 }
 
 .underline {

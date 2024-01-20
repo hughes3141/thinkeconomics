@@ -168,7 +168,7 @@ if($get_selectors['questions']) {
             //print_r($question);
             
             ?>
-            <div>
+            <div id="id_<?=$question['id']?>">
             <!-- <?=$question['id']?>-->
             <?php
             if($get_selectors['noDetailShow']!=1) {
