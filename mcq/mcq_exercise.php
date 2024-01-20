@@ -268,38 +268,40 @@ if(str_contains($permissions, "main_admin")) {
           <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit1" onclick="submit2();">
           <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next1" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
         </div>
-
-				<?php
-				if($textOnly == 1) {
-					?>
-					<p class="my-2"><?=$questionInfo['question']?></p>
-					<?php
-				} else {
-				?>
-				<img src="<?=$img?>" class="lg:w-3/4 mx-auto my-3" alt = "<?=$questionInfo['No']?>">
-				<?php
-				}
-				?>
-				<div class="ml-3">
-					<?php
-
-          if($randomQuestions ==1 && $textOnly == 1) {
-            $options = shuffle_assoc($options);
-
+        <div class="lg:w-3/4 mx-auto">
+				  <?php
+          if($textOnly == 1) {
+            ?>
+            
+            <p class="my-3"><?=$questionInfo['question']?></p>
+            <?php
+          } else {
+          ?>
+          <img src="<?=$img?>" class=" my-3" alt = "<?=$questionInfo['No']?>">
+          <?php
           }
-					foreach($options as $optKey=>$option) {
-						if($textOnly == 0) {
-							$option = $optKey;
-						}
-						?>
-						<p class="mb-2 ml-5">
-							<input type="radio" class="-ml-5 mt-1.5 absolute" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
-						<label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
-						</p>
-						<?php
-					}
-					?>
-				</div>
+          ?>
+          <div class="ml-3">
+            <?php
+
+            if($randomQuestions ==1 && $textOnly == 1) {
+              $options = shuffle_assoc($options);
+
+            }
+            foreach($options as $optKey=>$option) {
+              if($textOnly == 0) {
+                $option = $optKey;
+              }
+              ?>
+              <p class="mb-2 ml-5">
+                <input type="radio" class="-ml-5 mt-1.5 absolute" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
+              <label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
+              </p>
+              <?php
+            }
+            ?>
+          </div>
+        </div>
         
         <div class="flex flex-row gap-x-2 font-mono text-xs md:text-base mt-2">
           <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 previous" value ="Previous Question" id="previous1" onclick="changeQuestion(this);" <?=($key == 0) ? "disabled" : ""?>>
