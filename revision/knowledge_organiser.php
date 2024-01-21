@@ -140,6 +140,18 @@ $questions = getSAQQuestions(null, null, true, $subjectIdSet, $userCreate, null,
 
 $topicList = getTopicList("saq_question_bank_3", "topic", $topics, true, $subjectIdSet, $userCreate);
 
+if($userId) {
+  ?>
+  <!--
+
+  $_GET:
+  -noAnswer: hides all answer boxes from output
+
+
+-->
+  <?php
+}
+
 
 ?>
 
@@ -216,7 +228,7 @@ $topicList = getTopicList("saq_question_bank_3", "topic", $topics, true, $subjec
                 }
                 ?>
 
-            <div class="ml-5 mb-5 bg-pink-100 p-2">
+            <div class="ml-5 mb-5 bg-pink-100 p-2 <?=(isset($_GET['noAnswer'])) ? "hidden" : "" ?>">
               <p class="whitespace-pre-line"><?=$question['model_answer']?></p>
               <?php
                 if(!is_null($question['a_path'])) {
