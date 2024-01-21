@@ -81,7 +81,9 @@ foreach ($get_selectors as $key => $element) {
 
 if($run_questions == 1) {
   $questions = getMCQquestionDetails2($get_selectors['id'], $get_selectors['questionNo'], $get_selectors['topic'], $get_selectors['keyword'], $get_selectors['search'], $get_selectors['orderby'], $get_selectors['examBoard'], $get_selectors['year']);
-  foreach($questions as $question) {
+  foreach($questions as &$question) {
+    //Apend field for used quizzes:
+    $question['usedInQuizzes'] = "";
     array_push($originalQuestions, $question['id']);
   }
 }
@@ -122,12 +124,16 @@ foreach($selectedQuestionsRev as $questionid) {
 
 }
 
+//Looking now at whether questions are elements of a quiz.
+
 $globalUsedQuizzes = array();
 
 $excludedQuizzes = explode(",", $get_selectors['excludedQuizzes']);
 unset($excludedQuizzes[count($excludedQuizzes)-1]);
 
 foreach ($questions as $key => $question) {
+  //Label selected and original questions:
+
   if(in_array($question['id'], $selectedQuestions)) {
     $questions[$key]['selected'] = 1;
   } else {
@@ -143,12 +149,19 @@ foreach ($questions as $key => $question) {
   
   if($get_selectors['showQuizzes']) { 
     $usedQuizzes = getMCQquizDetails(null, null, $question['id'], null, 1);
-    foreach($usedQuizzes as $key => $quiz) {
+    $usedQuizzedIds = array();
+    //print_r($usedQuizzes);
+    
+    foreach($usedQuizzes as $key2 => $quiz) {
+      array_push($usedQuizzedIds, $quiz['id']);
+      
       if(in_array($quiz['id'], $excludedQuizzes)) {
-        unset($usedQuizzes[$key]);
+        unset($usedQuizzes[$key2]);
       }
 
     }
+    //print_r($usedQuizzedIds);
+    $questions[$key]['usedInQuizzes'] = implode(",",$usedQuizzedIds);
     foreach($usedQuizzes as $quiz) {
       if(!in_array($quiz, $globalUsedQuizzes)) {
         array_push($globalUsedQuizzes, $quiz);
