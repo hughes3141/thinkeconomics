@@ -140,7 +140,7 @@ $questions = getSAQQuestions(null, null, true, $subjectIdSet, $userCreate, null,
 
 $topicList = getTopicList("saq_question_bank_3", "topic", $topics, true, $subjectIdSet, $userCreate);
 
-if($userId) {
+if(isset($userId)) {
   ?>
   <!--
 
@@ -213,7 +213,10 @@ if($userId) {
       <h2 class = "bg-pink-300 -ml-4 -mr-4 mb-5 text-xl font-mono pl-1 text-gray-800"><?=$topic['code']?> <?=$topic['name']?></h2>
       <?php
       //print_r($topic);
-      echo "<ol class='list-decimal'>";
+      ?>
+      <ol class='list-decimal'>
+
+      <?php
 
       foreach($question_filter as $question) {
         ?>
@@ -227,7 +230,7 @@ if($userId) {
                   <?php
                 }
                 ?>
-
+          </li>
             <div class="ml-5 mb-5 bg-pink-100 p-2 <?=(isset($_GET['noAnswer'])) ? "hidden" : "" ?>">
               <p class="whitespace-pre-line"><?=$question['model_answer']?></p>
               <?php
@@ -238,11 +241,14 @@ if($userId) {
                 }
                 ?>
             </div>
+          
         </div>
         
         <?php
       }
-      echo "</li>";
+      ?>
+      </ol>
+      <?php
     }
 
     
