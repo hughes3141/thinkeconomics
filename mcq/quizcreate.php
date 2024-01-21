@@ -373,13 +373,19 @@ $_GET controls:
                 }
               }
               ?>
-              <button class="border border-black rounded bg-pink-200 my-2 p-1"  onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit Details", "Hide Edit", "block");'>Edit Details</button>
+              <a href="mcq_questions.php?id=<?=$question['id']?>" target="blank" class="underline text-sky-800 hover:bg-sky-200">Edit</a>
+              <!--
+              <button class="border border-black rounded bg-pink-200 my-2 p-1 "  onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit Details", "Hide Edit", "block");'>Edit Details</button>
               <div class=" toggleClass_<?=$question['id']?> hidden">
+              
               <form method="post">
                 <label for="hide_question_<?=$question['id']?>">Search:</label>
                 <input type="text" id="hide_question_<?=$question['id']?>" name="hideQuestion" value="<?=isset($_GET['examBoard']) ? $_GET['search'] : "" ?>"</input>
               </form>
+              
+              
               </div>
+              -->
 
 
 
