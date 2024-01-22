@@ -81,7 +81,9 @@ foreach ($get_selectors as $key => $element) {
 
 if($run_questions == 1) {
   $questions = getMCQquestionDetails2($get_selectors['id'], $get_selectors['questionNo'], $get_selectors['topic'], $get_selectors['keyword'], $get_selectors['search'], $get_selectors['orderby'], $get_selectors['examBoard'], $get_selectors['year']);
-  foreach($questions as $question) {
+  foreach($questions as &$question) {
+    //Apend field for used quizzes:
+    $question['usedInQuizzes'] = "";
     array_push($originalQuestions, $question['id']);
   }
 }
@@ -122,7 +124,16 @@ foreach($selectedQuestionsRev as $questionid) {
 
 }
 
+//Looking now at whether questions are elements of a quiz.
+
+$globalUsedQuizzes = array();
+
+$excludedQuizzes = explode(",", $get_selectors['excludedQuizzes']);
+unset($excludedQuizzes[count($excludedQuizzes)-1]);
+
 foreach ($questions as $key => $question) {
+  //Label selected and original questions:
+
   if(in_array($question['id'], $selectedQuestions)) {
     $questions[$key]['selected'] = 1;
   } else {
@@ -133,10 +144,31 @@ foreach ($questions as $key => $question) {
   } else {
     $questions[$key]['original'] = 0;
   }
+
+  //Processing quiz details if showQuizzes is enabled:
+  
+  if($get_selectors['showQuizzes']) { 
+    $usedQuizzes = getMCQquizDetails(null, null, $question['id'], null, 1);
+    $usedQuizzedIds = array();
+    //print_r($usedQuizzes);
+    
+    foreach($usedQuizzes as $key2 => $quiz) {
+      array_push($usedQuizzedIds, $quiz['id']);
+      
+      if(in_array($quiz['id'], $excludedQuizzes)) {
+        unset($usedQuizzes[$key2]);
+      }
+      if(!in_array($quiz, $globalUsedQuizzes)) {
+        array_push($globalUsedQuizzes, $quiz);
+      }
+
+    }
+    //print_r($usedQuizzedIds);
+    $questions[$key]['usedInQuizzes'] = implode(",",$usedQuizzedIds);
+  }
+  
 }
 
-$excludedQuizzes = explode(",", $get_selectors['excludedQuizzes']);
-unset($excludedQuizzes[count($excludedQuizzes)-1]);
 
 
 $questionDetails = array();
@@ -249,6 +281,24 @@ $_GET controls:
       //print_r($originalQuestions);
       //print_r($selectedQuestions);
       //print_r($excludedQuizzes);
+      //print_r($globalUsedQuizzes);
+    ?>
+    <?php
+      if(count($globalUsedQuizzes)>0) {
+        ?>
+        <div>
+          <h2>Used Quizzes</h2>
+          <?php
+          foreach($globalUsedQuizzes as $quiz) {
+            //print_r($quiz);
+            ?>
+              <p><a class="underline text-sky-800 hover:bg-sky-200" href="mcq_preview.php?quizid=<?=$quiz['id']?>" target="_blank"><?=$quiz['topic']?> <?=$quiz['quizName']?></a> <a href="quizcreate.php?quizid=<?=$quiz['id']?>" target="_blank" class="bg-pink-200">This Quiz</a> <button class="bg-sky-100  rounded" onclick="excludedQuizzes(<?=$quiz['id']?>);">Exclude</button></p>
+            <?php
+          }
+          ?>
+        </div>
+        <?php
+      }
     ?>
     <div class="grid grid-cols-3 relative">
       <div class="col-span-2">
@@ -303,6 +353,21 @@ $_GET controls:
               <?php
 
               //The following will show quiz detail summaries if showQuizzes is enabled:
+
+              $usedInQuizIds = $question['usedInQuizzes'];
+              $usedInQuizIds = explode(",",$usedInQuizIds);
+              $usedInQuizzes = array();
+              foreach($usedInQuizIds as $key => $quiz) {
+                if(in_array($quiz, $excludedQuizzes)) {
+                  unset($usedInQuizIds[$key]);
+                }
+                array_push($usedInQuizzes, getMCQquizDetails($quiz));
+              }
+              //print_r($usedInQuizIds);
+              //print_r($usedInQuizzes);
+              if(count($usedInQuizIds) > 0) {
+
+              }
               if($get_selectors['showQuizzes']) {
                 $usedQuizzes = getMCQquizDetails(null, null, $question['id'], null, 1);
                 foreach($usedQuizzes as $key => $quiz) {
@@ -332,13 +397,19 @@ $_GET controls:
                 }
               }
               ?>
-              <button class="border border-black rounded bg-pink-200 my-2 p-1"  onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit Details", "Hide Edit", "block");'>Edit Details</button>
+              <a href="mcq_questions.php?id=<?=$question['id']?>" target="blank" class="underline text-sky-800 hover:bg-sky-200">Edit</a>
+              <!--
+              <button class="border border-black rounded bg-pink-200 my-2 p-1 "  onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit Details", "Hide Edit", "block");'>Edit Details</button>
               <div class=" toggleClass_<?=$question['id']?> hidden">
+              
               <form method="post">
                 <label for="hide_question_<?=$question['id']?>">Search:</label>
                 <input type="text" id="hide_question_<?=$question['id']?>" name="hideQuestion" value="<?=isset($_GET['examBoard']) ? $_GET['search'] : "" ?>"</input>
               </form>
+              
+              
               </div>
+              -->
 
 
 

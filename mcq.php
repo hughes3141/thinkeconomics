@@ -61,8 +61,8 @@ include($path."/header_tailwind.php");
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=33">2.1.7 Neoclassical AS/AD (1)</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=34">2.1.7 Neoclassical AS/AD (2)</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=36">2.1.7 Neoclassical AS/AD (3)</a></li>
-            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=94">2.2.4 Inflaton and Deflation Exercises 1(11qs)</a></li>
-            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=94">2.2.4 Inflaton and Deflation Exercises 2(10qs)</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=94">2.2.4 Inflation and Deflation Exercises 1(11qs)</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=95">2.2.4 Inflation and Deflation Exercises 2(10qs)</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=66">2.2.5 Balance of Payments Exercise 1</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=102">2.3.1 Fiscal Policy Exercises 1</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=103">2.3.1 Fiscal Policy Exercises 2</a></li>

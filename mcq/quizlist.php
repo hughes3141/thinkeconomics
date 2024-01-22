@@ -108,6 +108,15 @@ include($path."/header_tailwind.php");
         </tr>
         <?php
         foreach ($quizzes as $quiz) {
+          if(isset($_GET['test'])) {
+            ?>
+            <tr>
+              <td colspan="8"><?php
+                print_r($quiz);
+              ?></td>
+            </tr>
+            <?php
+          }
           ?>
           <form method="post" action="">
             <input type="hidden" name="id" value="<?=$quiz['id']?>"> 
@@ -138,6 +147,7 @@ include($path."/header_tailwind.php");
               </td>
               <td>
                 <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['notes']?></p>
+                <p class="toggleClass_<?=$quiz['id']?>"><?=date('d/m/Y h:ia', strtotime($quiz['dateCreated']))?></p>
                 <textarea class="toggleClass_<?=$quiz['id']?> hidden" name="notes"><?=$quiz['notes']?></textarea>
               </td>
               <td>

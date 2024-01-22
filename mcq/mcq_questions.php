@@ -191,7 +191,50 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
   }
 }
 
+$get_selectors = array(
+  'id' => (isset($_GET['id'])&&$_GET['id']!="") ? $_GET['id'] : null,
+  'topic' => (isset($_GET['topic'])&&$_GET['topic']!="") ? $_GET['topic'] : null,
+  'questionNo' => (isset($_GET['questionNo'])&&$_GET['questionNo']!="") ? $_GET['questionNo'] : null,
+  'examBoard' => (isset($_GET['examBoard'])&&$_GET['examBoard']!="") ? $_GET['examBoard'] : null,
+  'year' => (isset($_GET['year'])&&$_GET['year']!="") ? $_GET['year'] : null,
+  'component' => (isset($_GET['component'])&&$_GET['component']!="") ? $_GET['component'] : null,
+  'qualLevel' => isset($_GET['qualLevel'])&&($_GET['qualLevel'] !="") ? $_GET['qualLevel'] : null,
+  'caseStudiesFilter' => (isset($_GET['caseStudiesFilter'])&&$_GET['caseStudiesFilter'] !="") ? $_GET['caseStudiesFilter'] : null,
+  'dataFilter' => (isset($_GET['dataFilter'])&&$_GET['dataFilter'] !="") ? $_GET['dataFilter'] : null,
+  'keyword' => (isset($_GET['keyword'])&&$_GET['keyword']!="") ? $_GET['keyword'] : null,
+  'search' => (isset($_GET['search'])&&$_GET['search']!="") ? $_GET['search'] : null,
+  'orderby' => (isset($_GET['orderby'])&&$_GET['orderby']!="") ? $_GET['orderby'] : null,
+  'selectedQuestions' => (isset($_GET['selectedQuestions'])&&$_GET['selectedQuestions']!="") ? $_GET['selectedQuestions'] : null,
+  'quizid' => (isset($_GET['quizid'])&&$_GET['quizid']!="") ? $_GET['quizid'] : null,
+  'showQuizzes' => (isset($_GET['showQuizzes'])&&$_GET['showQuizzes']!="") ? $_GET['showQuizzes'] : null,
+  'excludedQuizzes' => (isset($_GET['excludedQuizzes'])&&$_GET['excludedQuizzes']!="") ? $_GET['excludedQuizzes'] : null
+
+
+
+);
+
+$run_questions = 0;
+
 $questions = array();
+
+foreach ($get_selectors as $key => $element) {
+  if($key != "showQuizzes" && $key != "orderby") {
+    if(!is_null($element)) {
+      $run_questions = 1;
+    }
+  }
+}
+
+if($run_questions == 1) {
+  $questions = getMCQquestionDetails2($get_selectors['id'], $get_selectors['questionNo'], $get_selectors['topic'], $get_selectors['keyword'], $get_selectors['search'], $get_selectors['orderby'], $get_selectors['examBoard'], $get_selectors['year']);
+  /*
+  foreach($questions as $question) {
+    array_push($originalQuestions, $question['id']);
+  }
+  */
+}
+
+/*
 if(isset($_GET['questionNo']) && $_GET['questionNo'] !="") {
   
   $result = getMCQquestionDetails(null, $_GET['questionNo']);
@@ -206,16 +249,9 @@ if(isset($_GET['questionNo']) && $_GET['questionNo'] !="") {
 
 
 }
-$keyword = null;
-
-if(isset($_GET['keyword'])) {
-  $keyword = $_GET['keyword'];
-}
-if(isset($_GET['topic']) && $_GET['topic'] !="") {
-  $questions = getMCQquestionDetails(null, null, $_GET['topic'], $keyword);
+*/
 
 
-}
 
 if(isset($_GET['quizid']) && $_GET['quizid'] != "") {
 
@@ -317,7 +353,57 @@ $_GET controls:
           <button name="submit" class= "w-full bg-pink-300 rounded border border-black mb-1" value ="submit">Submit</button>
       </form>
       </div>
+      <!--New selector based on quizcreate.php-->
+      <div>
+        <form method ="get"  action="" id="selectForm">
+            <label for="id_select">ID:</label>
+            <input type="text" name="id" value="<?=isset($_GET['id']) ? $_GET['id'] : "" ?>"</input>
+            <label for="_select">Topic:</label>
+            <input type="text" name="topic" value="<?=isset($_GET['topic']) ? $_GET['topic'] : "" ?>"</input>
+            <label for="questionNo_select">Question Code:</label>
+            <input type="text" name="questionNo" value="<?=isset($_GET['questionNo']) ? $_GET['questionNo'] : "" ?>"</input>
 
+            <label for="examBoard_select">Exam Board:</label>
+            <input type="text" id="examBoard_select" name="examBoard" value="<?=isset($_GET['examBoard']) ? $_GET['examBoard'] : "" ?>"</input>
+
+            <label for="year_select">Year:</label>
+            <input type="text" id="year_select" name="year" value="<?=isset($_GET['year']) ? $_GET['year'] : "" ?>"</input>
+
+            <label for="component_select">Component:</label>
+            <input type="text" id="component_select" name="component" value="<?=isset($_GET['examBoard']) ? $_GET['component'] : "" ?>"</input>
+
+            <label for="search_select">Search:</label>
+            <input type="text" id="search_select" name="search" value="<?=isset($_GET['search']) ? $_GET['search'] : "" ?>"</input>
+
+            <label for="orderby_select">Order By:</label>
+            <select id="orderby_select" name="orderby">
+              <option value=""></option>
+              <option value="question" <?=($get_selectors['orderby'] == "question") ? "selected" : ""?>>Question Text</option>
+            </select>
+            <!--
+            <label for="search_select">Search:</label>
+            <input type="text" id="search_select" name="search" value="<?=isset($_GET['search']) ? $_GET['search'] : "" ?>"</input>
+              -->
+
+            <input type="hidden" id="selectedQuestionsSelect" name="selectedQuestions" value="<?=$get_selectors['selectedQuestions']?>">
+
+            <input type="hidden" id="excludedQuizzesSelect" name="excludedQuizzes" value="<?=$get_selectors['excludedQuizzes']?>">
+
+            <label for="showQuizzes_select">Quiz Summary</label>
+            <input id="showQuizzes_select" type="checkbox" name="showQuizzes" value="1" <?=($get_selectors['showQuizzes'] == 1) ? "checked" : ""?>>
+
+            <input type="submit"  value="Select">
+            <?php
+            if($get_selectors['excludedQuizzes']) {
+              ?>
+              <button type="button" class="border border-black rounded" onclick="clearExcludedQuizzes();">Clear Excluded Quizzes</button>
+              <?php
+            }
+            ?>
+          </form>
+      </div>
+      <!--Old Selector:-->
+      <!--
       <div>
         <form method ="get"  action="">
           <label for="topic_select">Topic:</label>
@@ -328,6 +414,7 @@ $_GET controls:
           <input type="submit"  value="Select">
         </form>
       </div>
+      -->
       
       <div>
         <?php
