@@ -459,8 +459,8 @@ $_GET controls:
 </div>
 
 <?php
-print_r($questions);
-echo json_encode($questionDetails);
+//print_r($questions);
+//echo json_encode($questionDetails);
 
 ?>
 
