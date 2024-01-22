@@ -149,7 +149,7 @@ unset($excludedQuizzes[count($excludedQuizzes)-1]);
 
 //Processing quiz details if showQuizzes is enabled:  
 if($get_selectors['showQuizzes']) {  
-  foreach($questions as $question) {
+  foreach($questions as $key => $question) {
     $usedQuizzes = getMCQquizDetails(null, null, $question['id'], null, 1);
     $usedQuizzedIds = array();
     //print_r($usedQuizzes);
@@ -364,30 +364,19 @@ $_GET controls:
 
               $usedInQuizIds = $question['usedInQuizzes'];
               $usedInQuizIds = explode(",",$usedInQuizIds);
-              $usedInQuizzes = array();
+              $usedQuizzes = array();
               foreach($usedInQuizIds as $key => $quiz) {
-                if(in_array($quiz, $excludedQuizzes)) {
-                  unset($usedInQuizIds[$key]);
+                if($quiz!="") {
+                  array_push($usedQuizzes, getMCQquizDetails($quiz)[0]);
                 }
-                array_push($usedInQuizzes, getMCQquizDetails($quiz));
               }
               //print_r($usedInQuizIds);
-              //print_r($usedInQuizzes);
+              //print_r($usedQuizzes);
               if(count($usedInQuizIds) > 0) {
-
-              }
-              if($get_selectors['showQuizzes']) {
-                $usedQuizzes = getMCQquizDetails(null, null, $question['id'], null, 1);
-                foreach($usedQuizzes as $key => $quiz) {
-                  if(in_array($quiz['id'], $excludedQuizzes)) {
-                    unset($usedQuizzes[$key]);
-                  }
-                }
                 if(isset($_GET['test'])) {
-                  print_r($usedQuizzes);
+                  //print_r($usedQuizzes);
                 }
-                if(count($usedQuizzes) > 0) {
-                  ?>
+                ?>
                   <div>
                     <h2>Used in:</h2>
                       <ul class="text-xs">
@@ -399,10 +388,8 @@ $_GET controls:
                         }
                         ?>
                       </ul>
-
                   </div>
-                  <?php
-                }
+                <?php
               }
               ?>
               <a href="mcq_questions.php?id=<?=$question['id']?>" target="blank" class="underline text-sky-800 hover:bg-sky-200">Edit</a>
