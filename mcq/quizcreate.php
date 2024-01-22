@@ -158,17 +158,13 @@ foreach ($questions as $key => $question) {
       if(in_array($quiz['id'], $excludedQuizzes)) {
         unset($usedQuizzes[$key2]);
       }
+      if(!in_array($quiz, $globalUsedQuizzes)) {
+        array_push($globalUsedQuizzes, $quiz);
+      }
 
     }
     //print_r($usedQuizzedIds);
     $questions[$key]['usedInQuizzes'] = implode(",",$usedQuizzedIds);
-    foreach($usedQuizzes as $quiz) {
-      if(!in_array($quiz, $globalUsedQuizzes)) {
-        array_push($globalUsedQuizzes, $quiz);
-      }
-    }
-    
-
   }
   
 }
