@@ -124,12 +124,6 @@ foreach($selectedQuestionsRev as $questionid) {
 
 }
 
-//Looking now at whether questions are elements of a quiz.
-
-$globalUsedQuizzes = array();
-
-$excludedQuizzes = explode(",", $get_selectors['excludedQuizzes']);
-unset($excludedQuizzes[count($excludedQuizzes)-1]);
 
 foreach ($questions as $key => $question) {
   //Label selected and original questions:
@@ -144,32 +138,40 @@ foreach ($questions as $key => $question) {
   } else {
     $questions[$key]['original'] = 0;
   }
+}
 
-  //Processing quiz details if showQuizzes is enabled:
-  
-  if($get_selectors['showQuizzes']) { 
+//Looking now at whether questions are elements of a quiz.
+
+$globalUsedQuizzes = array();
+
+$excludedQuizzes = explode(",", $get_selectors['excludedQuizzes']);
+unset($excludedQuizzes[count($excludedQuizzes)-1]);
+
+//Processing quiz details if showQuizzes is enabled:  
+if($get_selectors['showQuizzes']) {  
+  foreach($questions as $question) {
     $usedQuizzes = getMCQquizDetails(null, null, $question['id'], null, 1);
     $usedQuizzedIds = array();
     //print_r($usedQuizzes);
     
     foreach($usedQuizzes as $key2 => $quiz) {
-      array_push($usedQuizzedIds, $quiz['id']);
       
       if(in_array($quiz['id'], $excludedQuizzes)) {
         unset($usedQuizzes[$key2]);
+      } else {
+        array_push($usedQuizzedIds, $quiz['id']);
+        if(!in_array($quiz, $globalUsedQuizzes)) {
+          array_push($globalUsedQuizzes, $quiz);
+        }
       }
-      if(!in_array($quiz, $globalUsedQuizzes)) {
-        array_push($globalUsedQuizzes, $quiz);
-      }
+      //print_r($usedQuizzedIds);
+      $questions[$key]['usedInQuizzes'] = implode(",",$usedQuizzedIds);
 
     }
-    //print_r($usedQuizzedIds);
-    $questions[$key]['usedInQuizzes'] = implode(",",$usedQuizzedIds);
   }
-  
+
 }
-
-
+  
 
 $questionDetails = array();
 
@@ -282,6 +284,12 @@ $_GET controls:
       //print_r($selectedQuestions);
       //print_r($excludedQuizzes);
       //print_r($globalUsedQuizzes);
+      /*
+      foreach($globalUsedQuizzes as $quiz) {
+        echo $quiz['id']." ";
+      }
+      */
+      
     ?>
     <?php
       if(count($globalUsedQuizzes)>0) {
