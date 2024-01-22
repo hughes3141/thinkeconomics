@@ -353,6 +353,21 @@ $_GET controls:
               <?php
 
               //The following will show quiz detail summaries if showQuizzes is enabled:
+
+              $usedInQuizIds = $question['usedInQuizzes'];
+              $usedInQuizIds = explode(",",$usedInQuizIds);
+              $usedInQuizzes = array();
+              foreach($usedInQuizIds as $key => $quiz) {
+                if(in_array($quiz, $excludedQuizzes)) {
+                  unset($usedInQuizIds[$key]);
+                }
+                array_push($usedInQuizzes, getMCQquizDetails($quiz));
+              }
+              //print_r($usedInQuizIds);
+              //print_r($usedInQuizzes);
+              if(count($usedInQuizIds) > 0) {
+
+              }
               if($get_selectors['showQuizzes']) {
                 $usedQuizzes = getMCQquizDetails(null, null, $question['id'], null, 1);
                 foreach($usedQuizzes as $key => $quiz) {
