@@ -81,9 +81,7 @@ foreach ($get_selectors as $key => $element) {
 
 if($run_questions == 1) {
   $questions = getMCQquestionDetails2($get_selectors['id'], $get_selectors['questionNo'], $get_selectors['topic'], $get_selectors['keyword'], $get_selectors['search'], $get_selectors['orderby'], $get_selectors['examBoard'], $get_selectors['year']);
-  foreach($questions as &$question) {
-    //Apend field for used quizzes:
-    $question['usedInQuizzes'] = "";
+  foreach($questions as $question) {
     array_push($originalQuestions, $question['id']);
   }
 }
@@ -124,7 +122,6 @@ foreach($selectedQuestionsRev as $questionid) {
 
 }
 
-
 foreach ($questions as $key => $question) {
   //Label selected and original questions:
 
@@ -140,12 +137,20 @@ foreach ($questions as $key => $question) {
   }
 }
 
+
+foreach($questions as $key => $question) {
+  //Apend field for used quizzes:
+  $questions[$key]['usedInQuizzes'] = "";
+  }
+
+
 //Looking now at whether questions are elements of a quiz.
 
 $globalUsedQuizzes = array();
 
 $excludedQuizzes = explode(",", $get_selectors['excludedQuizzes']);
 unset($excludedQuizzes[count($excludedQuizzes)-1]);
+
 
 //Processing quiz details if showQuizzes is enabled:  
 if($get_selectors['showQuizzes']) {  
@@ -171,7 +176,24 @@ if($get_selectors['showQuizzes']) {
   }
 
 }
+
+//Change $quesitons to be ordered by $globalusedquizzes
+if($get_selectors['orderby'] == "usedQuizzes") {
+  $questions_filter = array();
+  foreach($globalUsedQuizzes as $usedQuiz) {
+    foreach($questions as $key => $question) {
+      $usedInQuizIds = explode(",",$question['usedInQuizzes']);
+      if(in_array($usedQuiz['id'], $usedInQuizIds)) {
+        array_push($questions_filter, $question);
+        unset($questions[$key]);
+      }
+
+    }
+  }
+  $questions = array_merge($questions_filter, $questions);
   
+
+}
 
 $questionDetails = array();
 
@@ -252,6 +274,7 @@ $_GET controls:
           <select id="orderby_select" name="orderby">
             <option value=""></option>
             <option value="question" <?=($get_selectors['orderby'] == "question") ? "selected" : ""?>>Question Text</option>
+            <option value="usedQuizzes" <?=($get_selectors['orderby'] == "usedQuizzes") ? "selected" : ""?>>Used Quizzes</option>
           </select>
           <!--
           <label for="search_select">Search:</label>
@@ -279,7 +302,9 @@ $_GET controls:
     <?php
       echo count($questions);
       echo "<br>";
+      //print_r($get_selectors);
       //print_r($questions);
+      //print_r($questions_filter);
       //print_r($originalQuestions);
       //print_r($selectedQuestions);
       //print_r($excludedQuizzes);
@@ -289,6 +314,7 @@ $_GET controls:
         echo $quiz['id']." ";
       }
       */
+      
       
     ?>
     <?php
@@ -314,6 +340,7 @@ $_GET controls:
           <?php
 
           foreach($questions as $question) {
+            //echo $question['id'];
             $imgPath = "";
             if($question['path'] == "") {
               $imgPath = $question['No'].".JPG";
@@ -432,8 +459,8 @@ $_GET controls:
 </div>
 
 <?php
-//print_r($questions);
-//echo json_encode($questionDetails);
+print_r($questions);
+echo json_encode($questionDetails);
 
 ?>
 
