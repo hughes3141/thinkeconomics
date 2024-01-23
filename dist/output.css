@@ -574,18 +574,6 @@ textarea, input, select {
   top: 5rem;
 }
 
-.top-8 {
-  top: 2rem;
-}
-
-.top-\[50px\] {
-  top: 50px;
-}
-
-.top-12 {
-  top: 3rem;
-}
-
 .top-16 {
   top: 4rem;
 }
@@ -1798,14 +1786,9 @@ textarea, input, select {
   color: rgb(226 232 240 / var(--tw-text-opacity));
 }
 
-.text-sky-500 {
+.text-sky-800 {
   --tw-text-opacity: 1;
-  color: rgb(14 165 233 / var(--tw-text-opacity));
-}
-
-.text-sky-400 {
-  --tw-text-opacity: 1;
-  color: rgb(56 189 248 / var(--tw-text-opacity));
+  color: rgb(7 89 133 / var(--tw-text-opacity));
 }
 
 .text-sky-700 {
@@ -1813,9 +1796,9 @@ textarea, input, select {
   color: rgb(3 105 161 / var(--tw-text-opacity));
 }
 
-.text-sky-800 {
+.text-sky-500 {
   --tw-text-opacity: 1;
-  color: rgb(7 89 133 / var(--tw-text-opacity));
+  color: rgb(14 165 233 / var(--tw-text-opacity));
 }
 
 .underline {
@@ -1963,6 +1946,16 @@ textarea, input, select {
 .hover\:text-pink-500:hover {
   --tw-text-opacity: 1;
   color: rgb(236 72 153 / var(--tw-text-opacity));
+}
+
+.hover\:text-sky-300:hover {
+  --tw-text-opacity: 1;
+  color: rgb(125 211 252 / var(--tw-text-opacity));
+}
+
+.hover\:text-sky-700:hover {
+  --tw-text-opacity: 1;
+  color: rgb(3 105 161 / var(--tw-text-opacity));
 }
 
 .hover\:underline:hover {
