@@ -40,7 +40,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
 
   if(isset($_POST['submit']) && $_POST['submit'] == "Update") {
-    updateMCQquizDetails($_POST['id'],$_POST['topic'],$_POST['quizName'],$_POST['notes'],$_POST['description'],$_POST['active']);
+    updateMCQquizDetails($_POST['id'],$_POST['topic'],$_POST['quizName'],$_POST['notes'],$_POST['description'],$_POST['active'], $_POST['topicQuiz']);
     $updateQuestionBool = 1;
     
   }
@@ -156,12 +156,18 @@ include($path."/header_tailwind.php");
                 <textarea class="toggleClass_<?=$quiz['id']?> hidden" name="description"><?=$quiz['description']?></textarea>
               </td>
               <td>
-                <p class="toggleClass_<?=$quiz['id']?>"><?=($quiz['active']==1) ? "Active" : "Inactive"?></p>
+                <p class="toggleClass_<?=$quiz['id']?> <?=($quiz['active']==0) ? "bg-pink-200" : ""?>"><?=($quiz['active']==1) ? "Active" : "Inactive"?></p>
+                <p class="toggleClass_<?=$quiz['id']?> <?=($quiz['topicQuiz']==0) ? "bg-sky-200" : ""?>"><?=($quiz['topicQuiz']==1) ? "Topic Quiz" : "Not Topic Quiz"?></p>
                 <div class="toggleClass_<?=$quiz['id']?> hidden">
                   <input type="radio" id="active_select_<?=$quiz['id']?>" name="active" value="1" <?=($quiz['active']==1) ? "checked" : ""?>>
                   <label for="active_select_<?=$quiz['id']?>">Active</label><br>
                   <input type="radio" id="inactive_select_<?=$quiz['id']?>" name="active" value="0" <?=($quiz['active']==0) ? "checked" : ""?>>
-                  <label for="inactive_select_<?=$quiz['id']?>">Inactive</label>
+                  <label for="inactive_select_<?=$quiz['id']?>">Inactive</label><br>
+
+                  <input type="radio" id="topicQuiz_select_<?=$quiz['id']?>" name="topicQuiz" value="1" <?=($quiz['topicQuiz']==1) ? "checked" : ""?>>
+                  <label for="topicQuiz_select_<?=$quiz['id']?>">Topic Quiz</label><br>
+                  <input type="radio" id="notopicQuiz_select_<?=$quiz['id']?>" name="topicQuiz" value="0" <?=($quiz['topicQuiz']==0) ? "checked" : ""?>>
+                  <label for="notopicQuiz_select_<?=$quiz['id']?>">Not Topic Quiz</label>
                 </div>
               </td>
               <td>
