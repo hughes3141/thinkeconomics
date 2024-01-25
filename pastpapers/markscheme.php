@@ -71,6 +71,7 @@ include($path."/header_tailwind.php");
   <!DOCTYPE html>
   <html lang="en">
     <head>
+      <title>Mark Scheme</title>
       <style>
         img {width: 100%}
         
