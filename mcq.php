@@ -56,7 +56,7 @@ include($path."/header_tailwind.php");
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=151">2.1.1 Circular Flow of Income</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=87">2.1.2 Components of AD: Definitions and Calculations</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=88">2.1.2 Components of AD: Influences on Components</a></li>
-            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=30">2.1.3 AD Questions</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=157">2.1.3 Shifts in AD Curve</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=32">2.1.5/2.1.6 SRAS and LRAS Shifts</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=33">2.1.7 Neoclassical AS/AD (1)</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=34">2.1.7 Neoclassical AS/AD (2)</a></li>
