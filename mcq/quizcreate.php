@@ -392,6 +392,7 @@ $_GET controls:
               }
               ?>
               <h2 class="text-xs" ><?=$question['examBoard']?> <?=$question['qualLevel']?> <?=$question['component']?> <?=$question['series']?> <?=$question['year']?> Q<?=$question['questionNo']?> <?=$question['Topic']?></h2>
+              <p class="text-xs"><?=$question['id']?></p>
               <p>
                 <input id="quizSelect_<?=$question['id']?>" type="checkbox" onchange="includeQuestion(<?=$question['id']?>)" <?=(in_array($question['id'], $selectedQuestions)) ? "checked" :""?>>
                 <label for="quizSelect_<?=$question['id']?>">Include</label>
