@@ -310,6 +310,7 @@ include($path."/header_tailwind.php");
   function select() {
 
     var select = document.getElementById("selectCountry");
+    console.log(select);
     
     var i;
     for (i=0; i<index.length; i++) {
@@ -333,6 +334,8 @@ include($path."/header_tailwind.php");
     }
     
   }
+
+  select();
 
 
 
@@ -421,6 +424,8 @@ include($path."/header_tailwind.php");
 
   }
 
+  fill();
+
 
 
   function show(i) {
@@ -454,4 +459,5 @@ include($path."/header_tailwind.php");
 </script>
 
 
-<?php   //include($path."/footer_tailwind.php");?>
+
+<?php   include($path."/footer_tailwind.php");?>
