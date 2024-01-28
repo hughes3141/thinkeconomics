@@ -53,7 +53,8 @@ $get_selectors = array(
   'topic' => (isset($_GET['topic'])&&$_GET['topic']!="") ? $_GET['topic'] : null,
   'search' => (isset($_GET['search'])&&$_GET['search']!="") ? $_GET['search'] : null,
   'questionId' => (isset($_GET['questionId'])&&$_GET['questionId']!="") ? $_GET['questionId'] : null,
-  'active' => (isset($_GET['active'])&&$_GET['active']!="") ? $_GET['active'] : null
+  'active' => (isset($_GET['inactive'])&&$_GET['inactive']=="1") ? 0 : 1,
+  'inactive' => (isset($_GET['inactive'])&&$_GET['inactive']!="") ? $_GET['inactive'] : null,
 
 
 );
@@ -83,8 +84,8 @@ include($path."/header_tailwind.php");
         <label for="questionId_select">Question Id:</label>
         <input type="text" id="questionId_select" name="questionId" value="<?=$get_selectors['questionId']?>"</input>
 
-        <input type="checkbox" name="active" value= "1" id="active_select" <?=($get_selectors['active']==1 ) ? "checked" : ""?>>
-        <label for="active_select">Active Only</label>
+        <input type="checkbox" name="inactive" value= "1" id="active_select" <?=($get_selectors['inactive']==1 ) ? "checked" : ""?>>
+        <label for="active_select">Show Inactive</label>
 
         <input type="submit"  value="Select">
       </form>

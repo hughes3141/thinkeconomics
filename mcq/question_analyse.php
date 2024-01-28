@@ -325,9 +325,21 @@ $_GET controls:
           </tr>
           <?php
           foreach($questions as $question) {
+            $relevant = $question['relevant'];
+            $similar = array();
+            if($question['similar'] !="") {
+              $similar = explode(",", $question['similar']);
+            }
+            $background = "";
+            if(count($similar)>0) {
+              $background = " bg-sky-200 ";
+            }
+            if($relevant !=1) {
+              $background = " bg-pink-200 ";
+            }
             ?>
-            <tr>
-              <td><?=$question['id']?></td>
+            <tr >
+              <td class="<?=$background?>"><a class="underline text-sky-700" target="blank" href="mcq_preview.php?questions=<?=$question['id']?>&answerShow=1"><?=$question['id']?></a></td>
               <?php
               foreach($globalUsedQuizzes as $quiz) {
                 $usedInQuizIds = explode(",",$question['usedInQuizzes'])

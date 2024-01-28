@@ -184,7 +184,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       }
       $optionsArray = json_encode($optionsArray);
       
-      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['topicsAQA'], $_POST['topicsEdexcel'], $_POST['topicsOCR'], $_POST['topicsCIE']);
+      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar']);
       ?>
       <?php
     }
@@ -466,25 +466,7 @@ $_GET controls:
                           <label>Secondary Topics:</label>
                             <p><input type="text" name = "topics" value = "<?=$question['topics']?>"></p>
 
-                          <label for="topicsAQA_input">AQA Topics:</label>
-                          <p>
-                            <input type ="text" id="topicsAQA_input" name="topicsAQA" value = "<?=$question['topicsAQA']?>">
-                        </p>
-
-                        <label for="topicsEdexcel_input">Edexcel Topics:</label>
-                          <p>
-                            <input type ="text" id="topicsEdexcel_input" name="topicsEdexcel" value = "<?=$question['topicsEdexcel']?>">
-                        </p>
-
-                        <label for="topicsOCR_input">OCR Topics:</label>
-                          <p>
-                            <input type ="text" id="topicsOCR_input" name="topicsOCR" value = "<?=$question['topicsOCR']?>">
-                        </p>
-
-                        <label for="topicsCIE_input">CIE Topics:</label>
-                          <p>
-                            <input type ="text" id="topicsCIE_input" name="topicsCIE" value = "<?=$question['topicsEdexcel']?>">
-                        </p>
+                
 
                         </div>
                       </div>
@@ -583,6 +565,44 @@ $_GET controls:
                             <label for="textOnly_no_<?=$question['id']?>">No Text Only</label>
                           </p>
                         </div>
+
+                      </div>
+                      <!-- Question Relevance and Duplication Inputs-->
+                      <div class="toggleClass_<?=$question['id']?> ">
+                        <p><span class="<?=($question['relevant'] == 0 ) ? "bg-pink-200" : ""?>"><?=($question['relevant'] == 1) ? "Relevant" : "Not Relevant"?></span></p>
+                        <?php
+                        if($question['similar'] != "") {
+                          ?>
+                          <p class="bg-pink-200">Question similar to:
+                            <?php
+                            $similar = explode(",", $question['similar']);
+                            foreach ($similar as $quizid) {
+                              ?>
+                              <a class="underline text-sky-700" target="blank" href="mcq_preview.php?questions=<?=$quizid?>"><?=$quizid?> </a>
+                              <?php
+                            }
+                            ?>
+                          </p>
+                          <?php
+                        }
+                        ?>
+                      </div>
+                      <div class="toggleClass_<?=$question['id']?> hidden">
+                      <!--  Relevance inputs:-->
+                        <p>
+                          <input id="relevant_yes_<?=$question['id']?>" name="relevant" type="radio" value="1" <?=($question['relevant']==1) ? "checked" : ""?>>
+                          <label for="relevant_yes_<?=$question['id']?>">Relevant</label>
+                        </p>
+                        <p>
+                          <input id="relevant_no_<?=$question['id']?>" name="relevant" type="radio" value="0" <?=($question['relevant']==0) ? "checked" : ""?>>
+                          <label for="relevant_no_<?=$question['id']?>">Not Relevant</label>
+                        </p>
+
+                        <!-- Similar Input-->
+                        <p>
+                          <label for="similar_<?=$question['id']?>">Similar to:</label>
+                          <input id="similar_<?=$question['id']?>" type="text" name="similar" value="<?=$question['similar']?>">
+                        </p>
 
                       </div>
                         <p>

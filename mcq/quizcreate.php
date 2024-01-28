@@ -365,8 +365,25 @@ $_GET controls:
             );
             $questionDetails[$question['id']] = $questionDetailsInstance;
 
+            $hideQuestion = 0;
+            if(
+              $question['selected'] == 1 && $question['original'] == 0
+              
+              ) {
+              $hideQuestion = 1;
+            }
+
+            $highlightQuestion = 0;
+            if(
+              $question['similar'] != ""
+              || $question['relevant'] == 0
+              
+            ) {
+              $highlightQuestion = 1;
+            }
+
             ?>
-            <div class="border border-black mx-1 mb-1 p-1 <?=($question['selected'] == 1 && $question['original'] == 0) ? " hidden bg-sky-200 " : ""?>">
+            <div class="border border-black mx-1 mb-1 p-1 <?=($hideQuestion == 1) ? "  hidden " : ""?> <?=($highlightQuestion == 1) ? "  bg-sky-200 " : ""?>">
               <?php
               if(isset($_GET['test'])) {
                 print_r($question);
@@ -375,6 +392,7 @@ $_GET controls:
               }
               ?>
               <h2 class="text-xs" ><?=$question['examBoard']?> <?=$question['qualLevel']?> <?=$question['component']?> <?=$question['series']?> <?=$question['year']?> Q<?=$question['questionNo']?> <?=$question['Topic']?></h2>
+              <p class="text-xs"><?=$question['id']?></p>
               <p>
                 <input id="quizSelect_<?=$question['id']?>" type="checkbox" onchange="includeQuestion(<?=$question['id']?>)" <?=(in_array($question['id'], $selectedQuestions)) ? "checked" :""?>>
                 <label for="quizSelect_<?=$question['id']?>">Include</label>
