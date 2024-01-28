@@ -50,6 +50,13 @@ include($path."/header_tailwind.php");
 
 ?>
 
+<!-- 
+
+$_GET:
+
+  -allCountries => Shows a list of all country values at end of page to be copied and pasted to word"
+-->
+
 <div class=" mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">Big Mac Index and Purchasing Power Parity</h1>
   <div class="  mx-auto p-4 mt-2 bg-white text-black mb-5">
@@ -61,9 +68,9 @@ include($path."/header_tailwind.php");
     <p class="mb-3"><u>Task</u>: Select some countries that you think would be interesting. Look at the figures. See if you can work out whether the country&rsquo;s currency is overvalued or undervalued against the pound.</p>
     <p class="mb-3">Country: <select id="selectCountry">
     </select>
-    <p class="mb-3"><button id="button" onclick="fill()">Click to Select</button></p>
+    <p class="mb-3"><button class="border border-black rounded bg-pink-200 w-full" id="button" onclick="fill()">Click to Select</button></p>
 
-    <div style="border: 1pt solid black; padding: 1pt;">
+    <div  class="border border-black rounded p-3">
     <h2>Country Facts:</h1>
     <p class="mb-3">Name of Country: <strong><span class="country"></span></strong></p>
     <p class="mb-3">Price of Big Mac in UK: <strong><span class="uk_bigmac_price"></span> GBP</strong></p>
@@ -73,9 +80,9 @@ include($path."/header_tailwind.php");
 
     </div>
 
-    <p class="mb-3"><strong>What is the price of Big Macs in <span class="country"></span> in pounds?</strong></p>
+    <p class="mb-3 mt-3"><strong>What is the price of Big Macs in <span class="country"></span> in pounds?</strong></p>
 
-    <button onclick="show(10)">Click for answer</button>
+    <button class="border border-black rounded bg-sky-200 w-full mb-3" onclick="show(10)">Click for answer</button>
 
     <div id = "10" style="display:none;">
     <p class="mb-3">1 Big Mac in  <span class="country"></span> costs <span class="local_bigmac_price"></span> <span class="currency_name"></span>.<p>
@@ -84,38 +91,42 @@ include($path."/header_tailwind.php");
 
     </div>
 
-    <p class="mb-3"><strong>How many big macs could I buy in <span class="country"></span> if I got off the plane with the money I would expect to pay for a big mac in the UK?</strong></p>
+    <p class="mb-3 mt-3"><strong>How many big macs could I buy in <span class="country"></span> if I got off the plane with the money I would expect to pay for a big mac in the UK?</strong></p>
     <p class="mb-3"><a href="#" style="display: none">Click for hint</a></p>
     <div id="01" ></div>
-    <button onclick="show02()">Click for answer</button>
+    <button class="border border-black rounded bg-sky-200 w-full mb-3" onclick="show02()">Click for answer</button>
 
     <div id ="02" style="display: none">
     <p class="mb-3">1 Big Mac in the UK will purchase (<span class="uk_bigmac_price"></span> x <span class="gbp_x"></span>) / <span class="local_bigmac_price"></span> = <span id="gbp_real_x"></span> Big Macs in <span class="country"></span></p>
     </div>
 
 
-    <p class="mb-3"><strong>What should the Purchasing Power Parity exchange rate be for this country?</strong></p>
+    <p class="mb-3 mt-3"><strong>What should the Purchasing Power Parity exchange rate be for this country?</strong></p>
     <p class="mb-3"><a href="#" style="display: none">Click for hint</a></p>
-    <button onclick="show04()">Click for answer</button>
+    <button class="border border-black rounded bg-sky-200 w-full mb-3" onclick="show04()">Click for answer</button>
 
     <div id ="04" style="display: none">
     <p class="mb-3">PPP = <span class="local_bigmac_price"></span>/<span class="uk_bigmac_price"></span> = <span id="gbp_ppp"></span> <span class="currency_name"></span> per GBP</p>
     </div>
-    <p class="mb-3"><strong>How does this PPP exchange rate compare to the actual (nominal) exchange rate?</strong></p>
-    <button onclick="show06()">Click for answer</button>
+    <p class="mb-3 mt-3"><strong>How does this PPP exchange rate compare to the actual (nominal) exchange rate?</strong></p>
+    <button class="border border-black rounded bg-sky-200 w-full mb-3" onclick="show06()">Click for answer</button>
 
     <div id ="06" style="display: none">
     <p class="mb-3">The Purchasing Power Parity is <span id="high_low"></span> than the nominal exchange rate.</p>
     </div>
-    <p class="mb-3"><strong>Is this currency overvalued or undervalued? </strong><em>Extension: what percentage of the exchange rate is the PPP over-valued or under-valued by?</em></p>
+    <p class="mb-3 mt-3"><strong>Is this currency overvalued or undervalued? </strong><em>Extension: what percentage of the exchange rate is the PPP over-valued or under-valued by?</em></p>
     <p class="mb-3"><a href="#" style="display: none">Click for hint</a></p>
-    <button onclick="show08()">Click for answer</button>
+    <button class="border border-black rounded bg-sky-200 w-full mb-3" onclick="show08()">Click for answer</button>
 
     <div id ="08" style="display: none">
     <p class="mb-3">This currency is <span class="valuation"></span> against GDP.</p>
     <p class="mb-3">The currency is <span class="valuation"></span> by <span id ="gbp_valuation"></span>%.</p>
 
+    
+
     </div>
+
+    <div id="all_countries"></div>
   </div>
 </div>
 
@@ -125,8 +136,8 @@ include($path."/header_tailwind.php");
 <script>
 
 
-  var usd_gbp = 0.83108;
-  var uk_bigmac_price = 3.69;
+  var usd_gbp = 0.77721;
+  var uk_bigmac_price = 4.19;
 
   var countries = [];
 
@@ -425,6 +436,49 @@ include($path."/header_tailwind.php");
   }
 
   fill();
+
+  function fillCountryInfo(i) {
+
+    var div = document.createElement('div');
+    var h1 = document.createElement('h3');
+    h1.innerHTML = "Country Facts";
+    var p1 = document.createElement('p');
+    p1.innerHTML = "Name of Country: "+index[i][0];
+
+    var p2 = document.createElement('p');
+    p2.innerHTML = "Price of Big Mac in UK: "+uk_bigmac_price+" GBP";
+
+    var p3 = document.createElement('p');
+    p3.innerHTML = "Price of Big Mac in "+index[i][0]+": "+index[i][3].toFixed(2)+" "+index[i][2];
+
+    var p4 = document.createElement('p');
+    p4.innerHTML = "Nominal Exchange Rate: "+(index[i][4]/usd_gbp).toFixed(2)+" "+index[i][2]+" per GBP";
+
+    div.appendChild(h1);
+    div.appendChild(p1);
+    div.appendChild(p2);
+    div.appendChild(p3);
+    div.appendChild(p4);
+
+    document.getElementById("all_countries").appendChild(div);
+  
+
+  }
+
+  <?php
+  if(isset($_GET['allCountries'])) {
+
+
+    ?>
+
+    for(var i=0; i<index.length; i++) {
+      fillCountryInfo(i);
+    }
+
+    <?php
+  }
+  ?>
+  
 
 
 
