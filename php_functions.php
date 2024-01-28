@@ -983,7 +983,7 @@ function updateMCQquestionExplanation($id, $explanation) {
 
 }
 
-function updateMCQquestion($id, $userId, $explanation, $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $topicsAQA, $topicsEdexcel, $toipcsOCR, $topicsCIE) {
+function updateMCQquestion($id, $userId, $explanation, $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $relevant, $similar) {
   /*
   Used to update MCQ question information with id = $id
 
@@ -1017,13 +1017,17 @@ function updateMCQquestion($id, $userId, $explanation, $question, $optionsJSON, 
   //print_r($currentExplanation);
   $currentExplanation = json_encode($currentExplanation);
   updateMCQquestionExplanation($id, $currentExplanation);
+
+  $similar_array = explode(",",$similar);
+  $similar_array = json_encode($similar_array);
+
   
   //Update other values that are not explanation:
   $sql = "UPDATE question_bank_3
-          SET question = ?, options = ?, Topic = ?, topics = ?, Answer = ?, keywords = ?, textOnly = ?, topicsAQA = ?, topicsEdexcel = ?, topicsOCR = ?, topicsCIE = ?
+          SET question = ?, options = ?, Topic = ?, topics = ?, Answer = ?, keywords = ?, textOnly = ?, relevant = ?, similar = ?, similar_array = ?
           WHERE id = ?";
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("ssssssissssi", $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $topicsAQA, $topicsEdexcel, $toipcsOCR, $topicsCIE, $id);
+  $stmt->bind_param("ssssssiissi", $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $relevant, $similar, $similar_array, $id);
   $stmt->execute();
 
 }

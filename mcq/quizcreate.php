@@ -368,14 +368,22 @@ $_GET controls:
             $hideQuestion = 0;
             if(
               $question['selected'] == 1 && $question['original'] == 0
-              || $question['similar'] != ""
-              || $question['relevant'] == 0
+              
               ) {
               $hideQuestion = 1;
             }
 
+            $highlightQuestion = 0;
+            if(
+              $question['similar'] != ""
+              || $question['relevant'] == 0
+              
+            ) {
+              $highlightQuestion = 1;
+            }
+
             ?>
-            <div class="border border-black mx-1 mb-1 p-1 <?=($hideQuestion == 1) ? " hidden bg-sky-200 " : ""?>">
+            <div class="border border-black mx-1 mb-1 p-1 <?=($hideQuestion == 1) ? "  hidden " : ""?> <?=($highlightQuestion == 1) ? "  bg-sky-200 " : ""?>">
               <?php
               if(isset($_GET['test'])) {
                 print_r($question);
