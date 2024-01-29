@@ -53,6 +53,10 @@
 	//width: 99%;
 	margin-left: auto;
   margin-right: auto;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: stretch;
 	
 	
 
@@ -60,18 +64,25 @@
 
 .float-child {
 	
-    float: left;
+    //float: left;
     padding: 0px;
     border: 2px solid red;
-	width:42%;
+	//width:42%;
 	margin: 10px;
-	height: 93%;
+	//height: 93%;
 	text-align: center;
 	overflow: hidden;
+  flex-grow: 1;
+  width: 30%;
+  
 	
 	
 	
 	}
+
+  .float-child h1{
+    background: inherit;
+  }
 	
 .col_1 {
 	float: left;
@@ -125,7 +136,7 @@ border-collapse: collapse;
 <h1>3.3.1 Human Development Index Game</h1>
 
 <h2>Instructions:</h2>
-<p style="display: none;">Click “Start Game” to begin.</p>
+<p style="display: none;">Click ï¿½Start Gameï¿½ to begin.</p>
 <p>The two cards below will show the names of two countries and some of their development indicators.</p>
 <p>Guess which country is more developed. This is measured by the United Nations Human Development Index. </span></p>
 <p>You can find the data here: <a href="http://hdr.undp.org/en/composite/HDI">http://hdr.undp.org/en/composite/HDI</a>.</p>
@@ -145,26 +156,26 @@ border-collapse: collapse;
 
 <div class="float-container noselect">
 
-<div class="float-child col1" id="grid_1" onclick="test(1); myClear()" style="background-color: white;">
-	<h1 id="c1" class="country_name"></h1>
-	<div>
-	<p>Life Expectancy at Birth: <span id= "f1"></span></p>
-	<p>Expected Years of Schooling: <span id= "g1"span></p>
-	<p>Mean Years of Schooling: <span id= "h1"></span></p>
-	<p>Gross national income (GNI) per capita: <span id ="j1"></span></p>
-	</div>
-	<p id="e1" style="display:none;">Human Development Index: <span id="d1">33</span></p>
-	</div>
-<div class="float-child col2" id="grid_2" onclick="test(2); myClear()" style="background-color: white;">
-	<h1 id="c2" class="country_name"></h1>
-	<div>
-	<p>Life Expectancy at Birth: <span id= "f2"></span></p>
-	<p>Expected Years of Schooling: <span id= "g2"span></p>
-	<p>Mean Years of Schooling: <span id= "h2"></span></p>
-	<p>Gross national income (GNI) per capita: <span id ="j2"></span></p>
-	</div>
-	<p id="e2" style="display:none;">Human Development Index: <span id="d2">12</span></p>
-	</div>
+  <div class="float-child col1" id="grid_1" onclick="test(1); myClear()" style="background-color: white;">
+    <h1 id="c1" class="country_name"></h1>
+    <div>
+      <p>Life Expectancy at Birth: <span id= "f1"></span></p>
+      <p>Expected Years of Schooling: <span id= "g1"span></p>
+      <p>Mean Years of Schooling: <span id= "h1"></span></p>
+      <p>Gross national income (GNI) per capita: <span id ="j1"></span></p>
+    </div>
+    <p id="e1" style="display:none;">Human Development Index: <span id="d1">33</span></p>
+  </div>
+  <div class="float-child col2" id="grid_2" onclick="test(2); myClear()" style="background-color: white;">
+    <h1 id="c2" class="country_name"></h1>
+    <div>
+      <p>Life Expectancy at Birth: <span id= "f2"></span></p>
+      <p>Expected Years of Schooling: <span id= "g2"span></p>
+      <p>Mean Years of Schooling: <span id= "h2"></span></p>
+      <p>Gross national income (GNI) per capita: <span id ="j2"></span></p>
+    </div>
+    <p id="e2" style="display:none;">Human Development Index: <span id="d2">12</span></p>
+  </div>
 </div>
 <p>Score: <span id="score">0</span>/<span id="roundcount">0</span></p>
 
@@ -356,7 +367,7 @@ var index = [
   [159,"Uganda",0.544,63.4,11.4,6.2,2.123,15,160],
   [160,"Rwanda",0.543,69.0,11.2,4.4,2.155,12,159],
   [161,"Nigeria",0.539,54.7,10.0,6.7,4.910,-19,161],
-  [162,"Côte d'Ivoire",0.538,57.8,10.0,5.3,5.069,-25,161],
+  [162,"Cote d'Ivoire",0.538,57.8,10.0,5.3,5.069,-25,161],
   [163,"Tanzania (United Republic of)",0.529,65.5,8.1,6.1,2.600,2,164],
   [164,"Madagascar",0.528,67.0,10.2,6.1,1.596,16,163],
   [165,"Lesotho",0.527,54.3,11.3,6.5,3.151,-6,165],
