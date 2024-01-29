@@ -20,9 +20,11 @@ else {
   $userInfo = getUserInfo($_SESSION['userid']);
   $userId = $_SESSION['userid'];
   $permissions = $userInfo['permissions'];
+  /*
   if (!(str_contains($permissions, 'main_admin'))) {
     header("location: /index.php");
   }
+  */
 
 }
 

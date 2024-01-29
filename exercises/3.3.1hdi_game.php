@@ -1,12 +1,34 @@
+<?php
 
-<html>
+// Initialize the session
+session_start();
 
-<head>
+$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
-<?php include "../header.php"; ?>
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
 
-<style>
 
+if (!isset($_SESSION['userid'])) {
+  
+  //header("location: /login.php");
+  
+}
+
+else {
+  $userInfo = getUserInfo($_SESSION['userid']);
+  $userId = $_SESSION['userid'];
+  $permissions = $userInfo['permissions'];
+  /*
+  if (!(str_contains($permissions, 'main_admin'))) {
+    header("location: /index.php");
+  }
+  */
+
+}
+
+$style_input = "
 /*
 
 .container {
@@ -53,6 +75,10 @@
 	//width: 99%;
 	margin-left: auto;
   margin-right: auto;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: stretch;
 	
 	
 
@@ -60,18 +86,25 @@
 
 .float-child {
 	
-    float: left;
-    padding: 0px;
+    //float: left;
+    //padding: 0px;
     border: 2px solid red;
-	width:42%;
+	//width:42%;
 	margin: 10px;
-	height: 93%;
+	//height: 93%;
 	text-align: center;
 	overflow: hidden;
+  flex-grow: 1;
+  width: 30%;
+  
 	
 	
 	
 	}
+
+  .float-child h1{
+    background: inherit;
+  }
 	
 .col_1 {
 	float: left;
@@ -111,81 +144,104 @@ table {
 border-collapse: collapse;
 }
 
-</style>
+p {
+  @apply mb-3;
+}
+
+  
+  ";
+
+if($_SERVER['REQUEST_METHOD']==='POST') {
 
 
-</head>
+}
 
 
-<body onload="populate(), setup()">
-
-<?php include "../navbar.php"; ?>
 
 
-<h1>3.3.1 Human Development Index Game</h1>
-
-<h2>Instructions:</h2>
-<p style="display: none;">Click “Start Game” to begin.</p>
-<p>The two cards below will show the names of two countries and some of their development indicators.</p>
-<p>Guess which country is more developed. This is measured by the United Nations Human Development Index. </span></p>
-<p>You can find the data here: <a href="http://hdr.undp.org/en/composite/HDI">http://hdr.undp.org/en/composite/HDI</a>.</p>
-<p>Once you guess the answer is shown. If the card shows&nbsp;<span ><span id="right_sign">green</span></span>&nbsp;you guessed right;&nbsp;<span ><span id="wrong_sign">red</span></span>&nbsp;means you guessed wrong. Click either card to play again with two new countries.</p>
-<p>Have a go and see if you can get a high score!</p>
-<p>Difficulty Level: 
-<select name="difficulty" id="difficulty" onchange = "difficulty()">
-   <option value="Ridiculous">Ridiculous</option>
-  <option value="Hard">Hard</option>
-  <option value="Medium" selected="selected">Medium</option>
-  <option value="Easy">Easy</option>
-
-</select></p>
-
-<p><button id="start" onclick="setup()" style="display: none">Start Game</button></p>
+include($path."/header_tailwind.php");
 
 
-<div class="float-container noselect">
 
-<div class="float-child col1" id="grid_1" onclick="test(1); myClear()" style="background-color: white;">
-	<h1 id="c1" class="country_name"></h1>
-	<div>
-	<p>Life Expectancy at Birth: <span id= "f1"></span></p>
-	<p>Expected Years of Schooling: <span id= "g1"span></p>
-	<p>Mean Years of Schooling: <span id= "h1"></span></p>
-	<p>Gross national income (GNI) per capita: <span id ="j1"></span></p>
-	</div>
-	<p id="e1" style="display:none;">Human Development Index: <span id="d1">33</span></p>
-	</div>
-<div class="float-child col2" id="grid_2" onclick="test(2); myClear()" style="background-color: white;">
-	<h1 id="c2" class="country_name"></h1>
-	<div>
-	<p>Life Expectancy at Birth: <span id= "f2"></span></p>
-	<p>Expected Years of Schooling: <span id= "g2"span></p>
-	<p>Mean Years of Schooling: <span id= "h2"></span></p>
-	<p>Gross national income (GNI) per capita: <span id ="j2"></span></p>
-	</div>
-	<p id="e2" style="display:none;">Human Development Index: <span id="d2">12</span></p>
-	</div>
+
+
+?>
+
+
+
+<div class=" mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+  <h1 class="font-mono text-2xl bg-pink-400 pl-1">Human Development Index Game</h1>
+  <div class="  mx-auto p-4 mt-2 bg-white text-black mb-5">
+
+
+
+
+      <h2 class="text-xl bg-sky-200 mb-1">Instructions:</h2>
+      <p style="display: none;" class="mb-1">Click ï¿½Start Gameï¿½ to begin.</p>
+      <p class="mb-1">The two cards below will show the names of two countries and some of their development indicators.</p>
+      <p class="mb-1">Guess which country is more developed. This is measured by the United Nations Human Development Index. </span></p>
+      <p class="mb-1">You can find the data here: <a class="underline text-sky-700" href="http://hdr.undp.org/en/composite/HDI">http://hdr.undp.org/en/composite/HDI</a>.</p>
+      <p class="mb-1">Once you guess the answer is shown. If the card shows&nbsp;<span ><span id="right_sign" class="px-2 rounded">green</span></span>&nbsp;you guessed right;&nbsp;<span ><span id="wrong_sign" class="px-2 rounded">red</span></span>&nbsp;means you guessed wrong. Click either card to play again with two new countries.</p>
+      <p class="mb-1">Have a go and see if you can get a high score!</p>
+      <p class="mb-1">Difficulty Level: 
+      <select name="difficulty" id="difficulty" onchange = "difficulty()">
+        <option value="Ridiculous">Ridiculous</option>
+        <option value="Hard">Hard</option>
+        <option value="Medium" selected="selected">Medium</option>
+        <option value="Easy">Easy</option>
+
+      </select></p>
+
+      <p><button id="start" onclick="setup()" style="display: none">Start Game</button></p>
+
+
+      <div class="float-container noselect rounded">
+
+        <div class="float-child col1 rounded p-1" id="grid_1" onclick="test(1); myClear()" style="background-color: white;">
+          <h1 id="c1" class="country_name text-lg font-mono"></h1>
+          <div>
+            <p class="mb-1" >Life Expectancy at Birth: <span id= "f1"></span></p>
+            <p class="mb-1" >Expected Years of Schooling: <span id= "g1"span></p>
+            <p class="mb-1" >Mean Years of Schooling: <span id= "h1"></span></p>
+            <p class="mb-1" >Gross national income (GNI) per capita: <span id ="j1"></span></p>
+          </div>
+          <p  class="mb-1" id="e1" style="display:none;">Human Development Index: <span id="d1">33</span></p>
+        </div>
+        <div class="float-child col2 rounded p-1" id="grid_2" onclick="test(2); myClear()" style="background-color: white;">
+          <h1 id="c2" class="country_name text-lg font-mono"></h1>
+          <div>
+            <p class="mb-1">Life Expectancy at Birth: <span id= "f2"></span></p>
+            <p class="mb-1">Expected Years of Schooling: <span id= "g2"span></p>
+            <p class="mb-1">Mean Years of Schooling: <span id= "h2"></span></p>
+            <p class="mb-1">Gross national income (GNI) per capita: <span id ="j2"></span></p>
+          </div>
+          <p class="mb-1" id="e2" style="display:none;">Human Development Index: <span id="d2">12</span></p>
+        </div>
+      </div>
+      <p>Score: <span id="score">0</span>/<span id="roundcount">0</span></p>
+
+      <p><button class="border border-black rounded bg-pink-200 w-full" id="show_table" onclick="show_table()">Click here to show the values of all countries</button></p>
+
+      <table id="all_table" style="table-layout: auto; width: ; display: none;">
+      <tbody><tr>
+        <th>Rank</th>
+        <th>Country</th>
+        <th>Human Development Index (HDI)</th>
+        <th>Life expectancy at birth</th><th>Expected years of schooling</th><th>Mean years of schooling</th><th>Gross national income (GNI) per capita</th><th>GNI per capita rank minus HDI rank	HDI rank</th>
+
+        
+      </tr>
+      </tbody>
+      </table>
+
+  </div>
 </div>
-<p>Score: <span id="score">0</span>/<span id="roundcount">0</span></p>
-
-<p><button id="show_table" onclick="show_table()">Click here to show the values of all countries</button></p>
-
-<table id="all_table" style="table-layout: auto; width: ; display: none;">
-<tbody><tr>
-	<th>Rank</th>
-	<th>Country</th>
-	<th>Human Development Index (HDI)</th>
-	<th>Life expectancy at birth</th><th>Expected years of schooling</th><th>Mean years of schooling</th><th>Gross national income (GNI) per capita</th><th>GNI per capita rank minus HDI rank	HDI rank</th>
-
-	
-</tr>
-</tbody>
-</table>
 
 
 
-<?php include "../footer.php"; ?>
 <script>
+
+ 
 
 /* 
 Source material taken from: http://hdr.undp.org/en/composite/HDI
@@ -356,7 +412,7 @@ var index = [
   [159,"Uganda",0.544,63.4,11.4,6.2,2.123,15,160],
   [160,"Rwanda",0.543,69.0,11.2,4.4,2.155,12,159],
   [161,"Nigeria",0.539,54.7,10.0,6.7,4.910,-19,161],
-  [162,"Côte d'Ivoire",0.538,57.8,10.0,5.3,5.069,-25,161],
+  [162,"Cote d'Ivoire",0.538,57.8,10.0,5.3,5.069,-25,161],
   [163,"Tanzania (United Republic of)",0.529,65.5,8.1,6.1,2.600,2,164],
   [164,"Madagascar",0.528,67.0,10.2,6.1,1.596,16,163],
   [165,"Lesotho",0.527,54.3,11.3,6.5,3.151,-6,165],
@@ -543,6 +599,8 @@ console.log(num2);
 
 
 
+populate();
+setup();
 
 var clickcount = 0;
 
@@ -625,5 +683,4 @@ if (count>1) {
 
 
 
-
-</div></body></html>
+<?php   include($path."/footer_tailwind.php");?>
