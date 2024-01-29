@@ -87,7 +87,7 @@ $style_input = "
 .float-child {
 	
     //float: left;
-    padding: 0px;
+    //padding: 0px;
     border: 2px solid red;
 	//width:42%;
 	margin: 10px;
@@ -197,7 +197,7 @@ include($path."/header_tailwind.php");
 
       <div class="float-container noselect rounded">
 
-        <div class="float-child col1 rounded" id="grid_1" onclick="test(1); myClear()" style="background-color: white;">
+        <div class="float-child col1 rounded p-1" id="grid_1" onclick="test(1); myClear()" style="background-color: white;">
           <h1 id="c1" class="country_name text-lg font-mono"></h1>
           <div>
             <p class="mb-1" >Life Expectancy at Birth: <span id= "f1"></span></p>
@@ -207,7 +207,7 @@ include($path."/header_tailwind.php");
           </div>
           <p  class="mb-1" id="e1" style="display:none;">Human Development Index: <span id="d1">33</span></p>
         </div>
-        <div class="float-child col2 rounded" id="grid_2" onclick="test(2); myClear()" style="background-color: white;">
+        <div class="float-child col2 rounded p-1" id="grid_2" onclick="test(2); myClear()" style="background-color: white;">
           <h1 id="c2" class="country_name text-lg font-mono"></h1>
           <div>
             <p class="mb-1">Life Expectancy at Birth: <span id= "f2"></span></p>
