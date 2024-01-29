@@ -180,7 +180,7 @@ include($path."/header_tailwind.php");
       <p style="display: none;" class="mb-1">Click �Start Game� to begin.</p>
       <p class="mb-1">The two cards below will show the names of two countries and some of their development indicators.</p>
       <p class="mb-1">Guess which country is more developed. This is measured by the United Nations Human Development Index. </span></p>
-      <p class="mb-1">You can find the data here: <a href="http://hdr.undp.org/en/composite/HDI">http://hdr.undp.org/en/composite/HDI</a>.</p>
+      <p class="mb-1">You can find the data here: <a class="underline text-sky-700" href="http://hdr.undp.org/en/composite/HDI">http://hdr.undp.org/en/composite/HDI</a>.</p>
       <p class="mb-1">Once you guess the answer is shown. If the card shows&nbsp;<span ><span id="right_sign" class="px-2 rounded">green</span></span>&nbsp;you guessed right;&nbsp;<span ><span id="wrong_sign" class="px-2 rounded">red</span></span>&nbsp;means you guessed wrong. Click either card to play again with two new countries.</p>
       <p class="mb-1">Have a go and see if you can get a high score!</p>
       <p class="mb-1">Difficulty Level: 
