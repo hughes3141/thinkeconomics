@@ -578,6 +578,26 @@ textarea, input, select {
   top: 4rem;
 }
 
+.top-4 {
+  top: 1rem;
+}
+
+.top-5 {
+  top: 1.25rem;
+}
+
+.top-7 {
+  top: 1.75rem;
+}
+
+.top-8 {
+  top: 2rem;
+}
+
+.top-14 {
+  top: 3.5rem;
+}
+
 .z-50 {
   z-index: 50;
 }
@@ -1407,6 +1427,10 @@ textarea, input, select {
 .bg-pink-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(252 231 243 / var(--tw-bg-opacity));
+}
+
+.bg-inherit {
+  background-color: inherit;
 }
 
 .fill-current {
