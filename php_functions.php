@@ -2280,7 +2280,7 @@ function insertSAQQuestion($topic, $question, $points, $type, $image, $model_ans
 
 }
 
-function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $type, $img, $model_answer, $questionAsset, $answerAsset, $flashCard=0, $topicId) {
+function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $type, $model_answer, $questionAsset, $answerAsset, $flashCard=0, $topicId) {
   /**
    * This function updates entries in saq_question_bank_3
    * 
@@ -2291,7 +2291,7 @@ function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $ty
    global $conn;
 
    $sql = " UPDATE saq_question_bank_3 
-            SET question = ?, topic = ?, points = ?, type = ?, img = ?, model_answer= ?, questionAssetId =?, answerAssetId = ?, flashCard = ?, topicId = ?
+            SET question = ?, topic = ?, points = ?, type = ?, model_answer= ?, questionAssetId =?, answerAssetId = ?, flashCard = ?, topicId = ?
             WHERE id = ?";
 
   //Set values to null if left blank:
@@ -2303,7 +2303,7 @@ function updateSAQQuestion($questionId, $userId, $question, $topic, $points, $ty
   }
 
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("ssssssiiiii", $question, $topic, $points, $type, $img, $model_answer, $questionAsset, $answerAsset, $flashCard, $topicId, $questionId);
+  $stmt->bind_param("sssssiiiii", $question, $topic, $points, $type, $model_answer, $questionAsset, $answerAsset, $flashCard, $topicId, $questionId);
 
   $questionUserCreator = getSAQQuestions($questionId)[0]['userCreate'];
   
