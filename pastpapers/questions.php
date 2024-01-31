@@ -419,7 +419,18 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   if($question2['markSchemeAssets']!="") {
                     ?>
                   <div id="second_part_<?=$question['id']?>" class="px-2 pb-2">
+                    <div class="flex justify-between">
                     <button class="border rounded bg-pink-200 border-black mb-1 px-1 ml-9" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$question2['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
+                    <?php
+                    if($userId) {
+                      ?>
+                      
+                        <a class="ml-2 underline hover:bg-pink-200 text-sky-700" target ="blank" href="markscheme.php?ids=<?=$question2['id']?>">Mark Scheme Link</a>
+                      
+                      <?php
+                    }
+                    ?>
+                    </div>
 
                     <div class="markSchemeToggle_<?=$question2['id']?> hidden">
                     <?php
