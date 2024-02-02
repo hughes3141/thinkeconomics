@@ -5,43 +5,61 @@ session_start();
 
 $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
+
+
 
 if (!isset($_SESSION['userid'])) {
   
   header("location: /login.php");
   
 }
+else {
+  $userInfo = getUserInfo($_SESSION['userid']);
+  $userId = $_SESSION['userid'];
+  $permissions = $userInfo['permissions'];
+  /*
+  if (!(str_contains($permissions, 'main_admin'))) {
+    header("location: /index.php");
+  }
+  */
 
-$path = $_SERVER['DOCUMENT_ROOT'];
-include($path."/php_header.php");
-include($path."/php_functions.php");
-//include ($path."/header_tailwind.php");
-
-
-
-$userId = $_SESSION['userid'];
-
-$userInfo = getUserInfo($userId);
-
-print_r($_POST);
-
-$userid_selected = 1;
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $userid_selected = $_POST['user_select'];
 }
 
-//($userInfo);
 
-echo "<br>";
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
+}
 
+$style_input = "
+
+    td, th { 
+      border: 1px solid black;
+      padding: 5px;
+    }
+
+    table {
+      border-collapse: collapse;
+    }
+
+    h2 {
+      //border-top: 1px solid black;
+    }
+
+    .noReturn	{  
+      background-color: #FFFF00;
+    }
+
+    .noComplete {
+      color: red;
+    }
+ ";
 
 $groupList = getGroupsList($userId);
 
-echo "<pre>";
-//print_r($groupList);
-echo "</pre>";
+
 
 foreach($groupList as $array) {
   $classId = $array['id'];
@@ -140,31 +158,7 @@ foreach($groupList as $array) {
 
               <style>
 
-              td, th {
-                
-                border: 1px solid black;
-                padding: 5px;
-              }
-
-              table {
-                
-                border-collapse: collapse;
-              }
-
-              h2 {
-                //border-top: 1px solid black;
-              }
-
-              .noReturn	{
-                
-                
-                background-color: #FFFF00;
-              }
-
-              .noComplete {
-                
-                color: red;
-              }
+             
 
               </style>
 
