@@ -93,6 +93,15 @@ include($path."/header_tailwind.php");
 
 ?>
 
+<!--
+
+$_GET variables:
+  startDate: set in 20221203 format; sets date that assignment list starts. Otherwise default as below
+
+  <?=$get_selectors['startDate']?>
+
+-->
+
 
 <div class=" mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">User Work Review</h1>
@@ -105,6 +114,7 @@ include($path."/header_tailwind.php");
         //print_r($studentsSelect);
         print_r($students);
       }
+      print_r(getMCQquizResults2(1));
       
       ?>
     </pre>
@@ -154,7 +164,16 @@ include($path."/header_tailwind.php");
       foreach ($students as $studentid) {
         $student = getUserInfo($studentid);
         print_r($student);
-        $assignments = 
+
+        $groupid_array = array();
+        if($student['groupid_array'] != "") {
+          $groupid_array = json_decode($student['groupid_array']);
+        }
+
+        $assignments = getAssignmentsArray($groupid_array, $get_selectors['startDate'], 1);
+        echo "<pre>";
+        print_r($assignments);
+        echo "</pre>";
         ?>
         <h3><?=$student['name_first']?> <?=$student['name_last']?></h3>
         <table>
@@ -165,6 +184,27 @@ include($path."/header_tailwind.php");
             <td>Scores</td>
             <td>Link</td>
           </tr>
+          <?php
+          foreach ($assignments as $assignment) {
+            ?>
+            <tr>
+              <td><?=$assignment['assignName']?></td>
+              <td><?=date("j M y",strtotime($assignment['dateDue']))?></td>
+              <td><?php
+                if($assignment['type'] == 'mcq') {
+                  echo "MCQ";
+                }
+              ?></td>
+              <td><?php
+                if($assignment['type'] == "mcq") {
+                  $responses = getMCQquizResultsByAssignment($assignment['id']);
+                  print_r($responses);
+                }
+              ?></td
+            </tr>
+            <?php
+          }
+          ?>
         </table>
         
         <?php
