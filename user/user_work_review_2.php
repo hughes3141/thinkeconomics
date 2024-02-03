@@ -114,7 +114,7 @@ $_GET variables:
         //print_r($studentsSelect);
         print_r($students);
       }
-      print_r(getMCQquizResults2(1));
+      //print_r(getMCQquizResults2(1));
       
       ?>
     </pre>
@@ -197,7 +197,7 @@ $_GET variables:
               ?></td>
               <td><?php
                 if($assignment['type'] == "mcq") {
-                  $responses = getMCQquizResultsByAssignment($assignment['id']);
+                  $responses = getMCQquizResults2($student['id'],$assignment['id']);
                   print_r($responses);
                 }
               ?></td

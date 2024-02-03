@@ -4060,7 +4060,7 @@ function getMCQquizResults($userId, $responseId = null) {
 
 }
 
-function getMCQquizResults2($userId = null) {
+function getMCQquizResults2($userId = null, $assignId = null) {
   /*
   Updated version of getMCQquizResults() to use up-to-date standard with bindArray etc.
 
@@ -4094,6 +4094,16 @@ function getMCQquizResults2($userId = null) {
     $sql .= "userID = ? ";
     $params .= "i";
     array_push($bindArray, $userId);
+    $conjoiner = 1;
+  }
+
+  if($assignId) {
+    $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
+    $sql .= $conjoin;
+    $sql .= $tableAlias;
+    $sql .= "assignId = ? ";
+    $params .= "i";
+    array_push($bindArray, $assignId);
     $conjoiner = 1;
   }
 
