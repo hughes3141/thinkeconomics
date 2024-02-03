@@ -31,7 +31,7 @@ else {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
-$startDate = "20220901";
+$startDate = "20230901";
 
 $get_selectors = array(
   'groupid' => (isset($_GET['groupid']) && $_GET['groupid']!="") ? $_GET['groupid'] : null,
@@ -113,8 +113,10 @@ $_GET variables:
         //print_r($get_selectors);
         //print_r($studentsSelect);
         print_r($students);
+    
       }
       //print_r(getMCQquizResults2(1));
+      //print_r($get_selectors);
       
       ?>
     </pre>
@@ -150,6 +152,7 @@ $_GET variables:
         <?php
       }
       ?>
+      <input type="date" name="startDate" value="<?=date("Y-m-d", strtotime($get_selectors['startDate']))?>">
     <button>Select</button>
 
     </form>
@@ -189,7 +192,21 @@ $_GET variables:
           foreach ($assignments as $assignment) {
             ?>
             <tr>
-              <td><?=$assignment['assignName']?></td>
+              <td><?=$assignment['assignName']?>
+              <?php
+                //print_r($assignment);
+                if(count($groupid_array)>1) {
+                  $group = getGroupInfoById($assignment['groupid']);
+                  ?>
+                  <br>
+                  <?php
+                    //print_r($group);
+                    echo $group['name'];
+                    ?>
+                  <?php
+                }
+              ?>
+              </td>
               <td><?=date("j M y",strtotime($assignment['dateDue']))?></td>
               <td><?php
                 if($assignment['type'] == 'mcq') {
@@ -226,6 +243,62 @@ $_GET variables:
         </table>
 
         <h4>FlashCard Summary</h4>
+        <?php
+          $userid_selected = $studentid;
+          $flashcards = flashCardSummary($userid_selected, "count");
+          //print_r($flashcards);
+          echo "Total Completed: ".$flashcards[0]['count'];
+
+          $flashcards = flashCardSummary($userid_selected, "count_category");
+          //print_r($flashcards);
+          echo "<br>";
+          echo "Categories: <br>";
+          foreach($flashcards as $array) {
+            //print_r($array);
+            if ($array['gotRight']==0) {
+              echo "Didn't Know: ";
+            } elseif ($array['gotRight']==1) {
+              echo "Incorrect : ";
+            } elseif ($array['gotRight']==2) {
+              echo "Correct: ";
+            }
+            echo $array['count'];
+            echo "<br>";
+            
+          }
+
+
+            $flashcards = flashCardSummary($userid_selected, "average");
+            //print_r($flashcards);
+            echo "Average time taken: ".$flashcards[0]['avg']." seconds<br>";
+
+            $flashcards = flashCardSummary($userid_selected, "count_by_date");
+            //print_r($flashcards);
+            echo "Dates Completed: ";
+            foreach($flashcards as $array) {
+              echo $array['date'].": ".$array['count']." || ";
+            }
+
+        ?>
+
+        <h4>MCQ Summary</h4>
+        <?php
+          $results = getMCQquizResults2($studentid,0);
+          echo count($results);
+          //print_r($results);
+          if(count($results)>0) {
+            echo "<br>Instances: ";
+            foreach($results as $key => $result) {
+              echo ($result['topic'] != "") ? $result['topic']." " : "";
+              echo $result['quiz_name'];
+              echo " ".date("d.m.y",strtotime($result['datetime']));
+              if($key < count($results)-1) {
+                echo " || ";
+              }
+            }
+          }
+        ?>
+
         
         <?php
       }

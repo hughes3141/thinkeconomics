@@ -4075,7 +4075,7 @@ function getMCQquizResults2($userId = null, $assignId = null) {
   $conjoiner = 0;
   $tableAlias = "";
 
-  $sql = "SELECT r.*, ROUND(TIMESTAMPDIFF(SECOND, r.timeStart, r.datetime)/60,2) duration, u.name_first, u.name_last, q.quizName quizNamefromDB, a.assignName, a.id assignId, a.dateDue
+  $sql = "SELECT r.*, ROUND(TIMESTAMPDIFF(SECOND, r.timeStart, r.datetime)/60,2) duration, u.name_first, u.name_last, q.quizName quizNamefromDB, q.topic, a.assignName, a.id assignId, a.dateDue
     FROM responses r
     
     LEFT JOIN users u
@@ -4097,7 +4097,7 @@ function getMCQquizResults2($userId = null, $assignId = null) {
     $conjoiner = 1;
   }
 
-  if($assignId) {
+  if(!is_null($assignId)) {
     $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
     $sql .= $conjoin;
     $sql .= $tableAlias;
