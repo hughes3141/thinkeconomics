@@ -31,11 +31,19 @@ else {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
+$startDate = "20220901";
+
 $get_selectors = array(
   'groupid' => (isset($_GET['groupid']) && $_GET['groupid']!="") ? $_GET['groupid'] : null,
-  'studentid' => (isset($_GET['studentid']) && $_GET['studentid']!="") ? $_GET['studentid'] : null
+  'studentid' => (isset($_GET['studentid']) && $_GET['studentid']!="") ? $_GET['studentid'] : null,
+  'allstudents' => (isset($_GET['allstudents']) && $_GET['allstudents']!="") ? $_GET['allstudents'] : null,
+  'startDate' => (isset($_GET['startDate']) && $_GET['startDate']!="") ? $_GET['startDate'] : $startDate
 
 );
+
+if(is_null($get_selectors['groupid'])) {
+  $get_selectors['studentid'] = null;
+}
 
 $style_input = "
 
@@ -62,10 +70,23 @@ $style_input = "
  ";
 
 $groupList = getGroupsList($userId);
-$students = array();
+$studentsSelect = array();
 
 if($get_selectors['groupid']) {
-  $students = getGroupUsers($get_selectors['groupid']);
+  $studentsSelect = getGroupUsers($get_selectors['groupid']);
+}
+
+$students = array();
+
+if($get_selectors['studentid']) {
+  array_push($students, $get_selectors['studentid']);
+}
+
+if($get_selectors['allstudents']) {
+  $students = array();
+  foreach($studentsSelect as $student) {
+    array_push($students, $student['id']);
+  }
 }
 
 include($path."/header_tailwind.php");
@@ -81,6 +102,7 @@ include($path."/header_tailwind.php");
       if(isset($_GET['test'])) {
         //print_r($groupList);
         //print_r($get_selectors);
+        //print_r($studentsSelect);
         print_r($students);
       }
       
@@ -106,20 +128,49 @@ include($path."/header_tailwind.php");
         <select name="studentid">
           <option value=""></option>
           <?php
-          foreach($students as $student) {
+          foreach($studentsSelect as $student) {
             ?>
             <option value="<?=$student['id']?>" <?=($get_selectors['studentid'] == $student['id']) ? "selected" : ""?>><?=$student['name_first']?> <?=$student['name_last']?></option>
             <?php
           }
           ?>
         </select>
-        <input type="checkbox" name="allstudnets" value="1">
+        <input id="allstudents_select" type="checkbox" name="allstudents" value="1" <?=($get_selectors['allstudents']) ? "checked" : ""?>>
+        <label for="allstudents_select">Select All</label>
         <?php
       }
       ?>
     <button>Select</button>
 
     </form>
+
+    <?php
+    //echo count($students);
+    //print_r($students);
+    if(count($students)>0) {
+      ?>
+      <h2>Class Summary</h2>
+      <?php
+      foreach ($students as $studentid) {
+        $student = getUserInfo($studentid);
+        print_r($student);
+        $assignments = 
+        ?>
+        <h3><?=$student['name_first']?> <?=$student['name_last']?></h3>
+        <table>
+          <tr>
+            <td>Assignment</td>
+            <td>Due Date</td>
+            <td>Type</td>
+            <td>Scores</td>
+            <td>Link</td>
+          </tr>
+        </table>
+        
+        <?php
+      }
+    }
+    ?>
   </div>
 </div>
 
