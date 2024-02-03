@@ -163,7 +163,7 @@ $_GET variables:
       <?php
       foreach ($students as $studentid) {
         $student = getUserInfo($studentid);
-        print_r($student);
+        //print_r($student);
 
         $groupid_array = array();
         if($student['groupid_array'] != "") {
@@ -172,10 +172,11 @@ $_GET variables:
 
         $assignments = getAssignmentsArray($groupid_array, $get_selectors['startDate'], 1);
         echo "<pre>";
-        print_r($assignments);
+        //print_r($assignments);
         echo "</pre>";
         ?>
         <h3><?=$student['name_first']?> <?=$student['name_last']?></h3>
+        <h4>Assignment Summary</h4>
         <table>
           <tr>
             <td>Assignment</td>
@@ -198,14 +199,33 @@ $_GET variables:
               <td><?php
                 if($assignment['type'] == "mcq") {
                   $responses = getMCQquizResults2($student['id'],$assignment['id']);
-                  print_r($responses);
+                  //print_r($responses);
+                  foreach($responses as $response) {
+                    ?>
+                    <b><?=$response['percentage']?>&percnt;</b><br>
+                    (<?=date("d.m.y",strtotime($response['datetime']))?>)<br>
+                    <?=$response['duration']?><br>
+                    <?php
+                  }
                 }
-              ?></td
+              ?></td>
+              <td>
+                <?php
+                if($assignment['type'] == 'mcq') {
+                  ?>
+                  <a target="blank" href="../mcq/mcq_exercise.php?assignid=<?=$assignment['id']?>">Link to MCQ</a>
+                  <?php
+                }
+                ?>
+                
+              </td>
             </tr>
             <?php
           }
           ?>
         </table>
+
+        <h4>FlashCard Summary</h4>
         
         <?php
       }
