@@ -31,6 +31,10 @@ $style_input = "
     border: 1px solid black;
   }
 
+  textarea {
+    padding: 0.25rem;
+  }
+
   
   ";
 
@@ -244,7 +248,7 @@ $_GET controls:
         }
         //print_r($questionsCollect);
         //echo "<br>"; print_r($optionsArray);
-        print_r($_POST);
+      
 
 
       }
@@ -443,11 +447,24 @@ $_GET controls:
                           <?php
                           }
 
-                          if($question['modelAnswer'] != "") {
+                          if($question['modelAnswer'] != "" || $question['guide'] != "") {
                             ?>
-                            <button class="border rounded bg-sky-300 border-black mb-1 p-1" type="button" onclick="toggleHide(this, 'modelAnswerToggle_<?=$question['id']?>', 'Show Model Answer', 'Hide Model Answer', 'block')">Show Model Answer</button>
+                            <button class="border rounded bg-sky-300 border-black mb-1 p-1" type="button" onclick="toggleHide(this, 'modelAnswerToggle_<?=$question['id']?>', 'Show Guidance and Model', 'Hide Guidance and Model', 'block')">Show Guidance and Model</button>
                             <div class="modelAnswerToggle_<?=$question['id']?> hidden">
-                              <p><?=$question['modelAnswer']?></p>
+                              <?php
+                              if($question['guide'] != "") {
+                                ?>
+                                <p class="whitespace-pre-line"><?=$question['guide']?></p>
+                                <?php
+                              }
+                              ?>
+                              <?php
+                              if($question['modelAnswer'] != "") {
+                                ?>
+                                <p class="whitespace-pre-line"><?=$question['modelAnswer']?></p>
+                                <?php
+                              }
+                              ?>
                             </div>
                             
                             <?php
