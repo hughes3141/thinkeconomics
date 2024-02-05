@@ -193,7 +193,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       $caseId = ($_POST['caseId'] != "") ? $_POST['caseId'] : null;
       
       
-      updatePastPaperQuestionDetails($_POST['id'], $_POST['question'], $_POST['answer'], $_POST['questionAssets'], $_POST['markSchemeAssets'], $_POST['examreportAssets'], $_POST['topic'], $_POST['keywords'], $_POST['explanation'], $_POST['marks'], $caseId, $caseBool, $_POST['examPaperLink'], $_POST['markSchemeLink'], $_POST['examReportLink']);
+      updatePastPaperQuestionDetails($_POST['id'], $_POST['question'], $_POST['answer'], $_POST['questionAssets'], $_POST['markSchemeAssets'], $_POST['examreportAssets'], $_POST['topic'], $_POST['keywords'], $_POST['explanation'], $_POST['marks'], $caseId, $caseBool, $_POST['examPaperLink'], $_POST['markSchemeLink'], $_POST['examReportLink'], $_POST['guide'], $_POST['modelAnswer'], $_POST['modelAnswerAssets']);
       ?>
       <?php
     }
@@ -244,6 +244,7 @@ $_GET controls:
         }
         //print_r($questionsCollect);
         //echo "<br>"; print_r($optionsArray);
+        print_r($_POST);
 
 
       }
@@ -441,6 +442,16 @@ $_GET controls:
                           </div>
                           <?php
                           }
+
+                          if($question['modelAnswer'] != "") {
+                            ?>
+                            <button class="border rounded bg-sky-300 border-black mb-1 p-1" type="button" onclick="toggleHide(this, 'modelAnswerToggle_<?=$question['id']?>', 'Show Model Answer', 'Hide Model Answer', 'block')">Show Model Answer</button>
+                            <div class="modelAnswerToggle_<?=$question['id']?> hidden">
+                              <p><?=$question['modelAnswer']?></p>
+                            </div>
+                            
+                            <?php
+                          }
                           
                           ?>
                         </div>
@@ -525,6 +536,18 @@ $_GET controls:
                           </div>
                         </div>
                         <div class="toggleClass_<?=$question['id']?> hidden">
+                            <label for="guide_<?=$question['id']?>">Guidance:</label>
+                            <p>
+                              <textarea class="resize w-full" spellcheck="true" name = "guide" id="guide_<?=$question['id']?>"><?=$question['guide']?></textarea>
+                            </p>
+                            <label for="modelAnswer<?=$question['id']?>">Model Answer:</label>
+                            <p>
+                              <textarea class="resize w-full" spellcheck="true" name = "modelAnswer" id="modelAnswer<?=$question['id']?>"><?=$question['modelAnswer']?></textarea>
+                            </p>
+
+                            <label for="modelAnswerAssets_<?=$question['id']?>">Model Answer Assets: </label>
+                            <p><input id="modelAnswerAssets_<?=$question['id']?>" type="text" name= "modelAnswerAssets" value="<?=$question['modelAnswerAssets']?>"><p>
+
                             <label for="caseId_<?=$question['id']?>">Case Id: </label>
                             <p><input id="caseId_<?=$question['id']?>" type="number" name= "caseId" value="<?=$question['caseId']?>"><p>
                             <label for="caseBool_<?=$question['id']?>">Case Study</label>
