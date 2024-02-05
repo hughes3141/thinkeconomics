@@ -4060,6 +4060,75 @@ function getMCQquizResults($userId, $responseId = null) {
 
 }
 
+function getMCQquizResults2($userId = null, $assignId = null) {
+  /*
+  Updated version of getMCQquizResults() to use up-to-date standard with bindArray etc.
+
+  used in:
+  -user_work_review.php
+  */
+  global $conn;
+  $results = array();
+
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+  $tableAlias = "";
+
+  $sql = "SELECT r.*, ROUND(TIMESTAMPDIFF(SECOND, r.timeStart, r.datetime)/60,2) duration, u.name_first, u.name_last, q.quizName quizNamefromDB, q.topic, a.assignName, a.id assignId, a.dateDue
+    FROM responses r
+    
+    LEFT JOIN users u
+    ON r.userID = u.id
+
+    LEFT JOIN mcq_quizzes q
+    ON r.quizID = q.id
+    
+    LEFT JOIN assignments a
+    ON r.assignID = a.id ";
+
+  if($userId) {
+    $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
+    $sql .= $conjoin;
+    $sql .= $tableAlias;
+    $sql .= "userID = ? ";
+    $params .= "i";
+    array_push($bindArray, $userId);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($assignId)) {
+    $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
+    $sql .= $conjoin;
+    $sql .= $tableAlias;
+    $sql .= "assignId = ? ";
+    $params .= "i";
+    array_push($bindArray, $assignId);
+    $conjoiner = 1;
+  }
+
+   // WHERE userID = ?
+  
+  
+  $sql .=  "ORDER BY r.id";
+
+  $stmt = $conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+
+  return $results;
+
+
+}
+
 function getMCQresponseByUsernameTimestart($userId, $timeStart) {
   //returns $responseId: the id of the entry in the response table
   global $conn;
@@ -4117,6 +4186,8 @@ function getMCQquizResultsByAssignment($assignId) {
   return $data;
 
 }
+
+
 
 function getMCQindividualQuestionResponse($question, $results_array) {
   /*
