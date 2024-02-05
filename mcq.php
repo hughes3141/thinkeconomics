@@ -44,25 +44,25 @@ include($path."/header_tailwind.php");
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=73">1.2.4 YED Homework Questions</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=75">1.2.4 XED Homework Questions</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=76">1.2.4 PES Homework Questions</a></li>
-            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=115">1.3.1 Wage Determination (2 Questions)</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=132">1.3.1 Wage Determination</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=79">1.7.1 Externalities (No Graphs)</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=80">1.7.1 Externalities (Graphs Only)</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=81">1.7.2 Government Intervention: Types 1</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=82">1.7.2 Government Intervention: Types 2</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=83">1.7.2 Government Intervention: Maximum/Minimum Prices</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=84">1.7.2 Government Intervention: Buffer Stock Schemes</a></li>
-            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=85">1.7.3 Government Failure</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=150">1.7.3 Government Failure</a></li>
           <h3 class="font-mono text-lg bg-pink-200 pl-1">Macro</h3>
-            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=27">2.1.1 Circular Flow of Income (5qs)</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=151">2.1.1 Circular Flow of Income</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=87">2.1.2 Components of AD: Definitions and Calculations</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=88">2.1.2 Components of AD: Influences on Components</a></li>
-            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=30">2.1.3 AD Questions</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=157">2.1.3 Shifts in AD Curve</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=32">2.1.5/2.1.6 SRAS and LRAS Shifts</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=33">2.1.7 Neoclassical AS/AD (1)</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=34">2.1.7 Neoclassical AS/AD (2)</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=36">2.1.7 Neoclassical AS/AD (3)</a></li>
-            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=94">2.2.4 Inflaton and Deflation Exercises 1(11qs)</a></li>
-            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=94">2.2.4 Inflaton and Deflation Exercises 2(10qs)</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=94">2.2.4 Inflation and Deflation Exercises 1(11qs)</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=95">2.2.4 Inflation and Deflation Exercises 2(10qs)</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=66">2.2.5 Balance of Payments Exercise 1</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=102">2.3.1 Fiscal Policy Exercises 1</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=103">2.3.1 Fiscal Policy Exercises 2</a></li>
@@ -78,6 +78,10 @@ include($path."/header_tailwind.php");
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=113">1.6.3/1.6.4 Theory of the Firm Exercises</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=69">1.6.5 Monopoly Questions</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=64">1.6.6 Oligopoly</a></li>
+          <h3 class="font-mono text-lg bg-pink-200 pl-1">Global Economics</h3>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=147">3.1.1 Tariff Diagrams</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=149">3.1.1 Terms of Trade</a></li>
+            <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=153">3.1.1 Comparative and Absolute Advantage</a></li>
         <h2 class="font-mono text-xl bg-pink-300 pl-1">Eduqas Past Papers</h2>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=98">C1 Spec Paper</a></li>
             <li class="ml-2 hover:bg-sky-100" ><a href="mcq/mcq_exercise.php?quizid=99">C1 June 2017</a></li>

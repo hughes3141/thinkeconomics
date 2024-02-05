@@ -12,6 +12,7 @@ module.exports = {
     "../login.php",
     "../assign_create1.0.php",
     "../assignment_list.php",
+    "../revision.php",
   
 
     "../user/**/*.{html,js,php}",

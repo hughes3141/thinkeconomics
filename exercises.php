@@ -52,7 +52,9 @@ include($path."/header_tailwind.php");
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.7.1memorygame1.4externalities.php">1.7.1 Externalities Diagrams Matching Game</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.7.1articles.php">1.7.1 Market Failure Extension Articles</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.7.1information_asymmetry_reading.php">1.7.1 Information Asymmetry Reading</a></li>
+        <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.7.1fishing_game.php">1.7.1 Property Rights Fishing Game</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.7.1gini_warmup.php">1.7.1 Inequality Gini Coefficient Comparison Game</a></li>
+        
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.7.2intervention_articles.php">1.7.2 Government Intervention: News Articles</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.7.2rent_control_article.php">1.7.2 Rent Control: Article Summary</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.7.2tpps.php">1.7.2 Tradable Pollution Permits: Class Game</a></li>
@@ -97,7 +99,7 @@ include($path."/header_tailwind.php");
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.6.2objectives.php">1.6.2 Objectives of Firms: Graph Questions</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.6.2friedman.php">1.6.2 Milton Friedman's View of Profit</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.6.4memorygame1.5imperfect_market.php">1.6.4 Imperfect Markets Matching Game</a></li>
-        <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.6.6oligopoly_cases.php">1.6.6 Oligopoly Case Studies</a></li>
+        <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.6.6_oligopoly_cases_2.php">1.6.6 Oligopoly Case Studies</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.6.7competition_policy.php">1.6.7 Competition Policy</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.6.8railways.php">1.6.8 British Railway Information</a></li>
       <h3 class="font-mono text-lg bg-pink-200 pl-1 ">Macro</h3>

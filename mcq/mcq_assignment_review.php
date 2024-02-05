@@ -70,10 +70,21 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
   //print_r($quizInfo);
   ////echo "<br>";
 
-  $questions = explode(",",$quizInfo['questions']);
+  $questions = explode(",",$quizInfo['questions_id']);
   //print_r($questions);
   //echo "<br>";
   //sort($questions);
+
+  $questions_no = array();
+  foreach ($questions as $question) {
+    array_push($questions_no, getMCQquestionDetails($question)['No']);
+  }
+
+  //print_r($questions_no);
+
+  $questions = $questions_no;
+
+
 
   $excluded = array();
   if(isset($_GET['excluded'])) {
@@ -104,14 +115,18 @@ if(isset($_GET['assignid'])&&$_GET['assignid']!="") {
       unset($results[$key]);
     }
   }
-  //print_r($results[0]);
+  //print_r($results[4]);
   //print_r($results);
 
   //echo "<br>";
   
   foreach ($questions as $key=>$question) {
     $questionSummaryInstance = array('question' => trim($question), 'correctCount'=>0, 'summary'=>array(), 'correct'=>"", 'question_no' => ($key + 1), 'summary_by_user'=>array());
+    //print_r($questionSummaryInstance);
     foreach($results as $result) {
+      //echo "<br>";
+      //print_r($result);
+
       for ($x=0; $x<count($result['answers']); $x++) {
         if($result['answers'][$x][0]==$question) {
           $questionSummaryInstance['correctCount'] += $result['answers'][$x][3];
