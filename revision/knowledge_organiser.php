@@ -210,44 +210,46 @@ if(isset($userId)) {
         }
       }
       ?>
-      <h2 class = "bg-pink-300 -ml-4 -mr-4 mb-5 text-xl font-mono pl-1 text-gray-800 sticky top-16"><?=$topic['code']?> <?=$topic['name']?></h2>
-      <?php
-      //print_r($topic);
-      ?>
-      <ol class='list-decimal'>
-
-      <?php
-
-      foreach($question_filter as $question) {
-        ?>
-        
-        <div class="">
-          <li class="whitespace-pre-line  mb-1 text-lg  ml-5"><?=$question['question']?></li>
-              <?php
-                if(!is_null($question['q_path'])) {
-                  ?>
-                  <img class = "mx-auto my-1 max-h-80" src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
-                  <?php
-                }
-                ?>
-          </li>
-            <div class="ml-5 mb-5 bg-pink-100 p-2 <?=(isset($_GET['noAnswer'])) ? "hidden" : "" ?>">
-              <p class="whitespace-pre-line"><?=$question['model_answer']?></p>
-              <?php
-                if(!is_null($question['a_path'])) {
-                  ?>
-                  <img class = "mx-auto my-1 max-h-80" src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
-                  <?php
-                }
-                ?>
-            </div>
-          
-        </div>
-        
+      <div>
+        <h2 class = "bg-pink-300  -ml-4 -mr-4 mb-5 text-xl font-mono pl-1 text-gray-600 sticky top-12 lg:top-20"><?=$topic['code']?> <?=$topic['name']?></h2>
         <?php
-      }
-      ?>
-      </ol>
+        //print_r($topic);
+        ?>
+        <ol class='list-decimal'>
+
+        <?php
+
+        foreach($question_filter as $question) {
+          ?>
+          
+          <div class="">
+            <li class="whitespace-pre-line  mb-1 text-lg  ml-5"><?=$question['question']?></li>
+                <?php
+                  if(!is_null($question['q_path'])) {
+                    ?>
+                    <img class = "mx-auto my-1 max-h-80" src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
+                    <?php
+                  }
+                  ?>
+            </li>
+              <div class="ml-5 mb-5 bg-pink-100 p-2 <?=(isset($_GET['noAnswer'])) ? "hidden" : "" ?>">
+                <p class="whitespace-pre-line"><?=$question['model_answer']?></p>
+                <?php
+                  if(!is_null($question['a_path'])) {
+                    ?>
+                    <img class = "mx-auto my-1 max-h-80" src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
+                    <?php
+                  }
+                  ?>
+              </div>
+            
+          </div>
+          
+          <?php
+        }
+        ?>
+        </ol>
+      </div>
       <?php
     }
 

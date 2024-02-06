@@ -546,16 +546,16 @@ textarea, input, select {
   top: 0px;
 }
 
+.top-20 {
+  top: 5rem;
+}
+
 .left-5 {
   left: 1.25rem;
 }
 
 .top-2 {
   top: 0.5rem;
-}
-
-.top-20 {
-  top: 5rem;
 }
 
 .top-10 {
@@ -576,6 +576,10 @@ textarea, input, select {
 
 .top-16 {
   top: 4rem;
+}
+
+.top-14 {
+  top: 3.5rem;
 }
 
 .top-12 {
@@ -794,16 +798,16 @@ textarea, input, select {
   margin-left: 1.5rem;
 }
 
+.ml-5 {
+  margin-left: 1.25rem;
+}
+
 .-ml-4 {
   margin-left: -1rem;
 }
 
 .-mr-4 {
   margin-right: -1rem;
-}
-
-.ml-5 {
-  margin-left: 1.25rem;
 }
 
 .-mt-1 {
@@ -828,10 +832,6 @@ textarea, input, select {
 
 .ml-9 {
   margin-left: 2.25rem;
-}
-
-.ml-4 {
-  margin-left: 1rem;
 }
 
 .block {
@@ -1114,6 +1114,14 @@ textarea, input, select {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.grid-cols-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.grid-rows-5 {
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+}
+
 .flex-row {
   flex-direction: row;
 }
@@ -1263,19 +1271,14 @@ textarea, input, select {
   border-top-right-radius: 0.75rem;
 }
 
-.rounded-b-xl {
-  border-bottom-right-radius: 0.75rem;
-  border-bottom-left-radius: 0.75rem;
-}
-
-.rounded-r-full {
-  border-top-right-radius: 9999px;
-  border-bottom-right-radius: 9999px;
-}
-
 .rounded-r-lg {
   border-top-right-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
+}
+
+.rounded-b-xl {
+  border-bottom-right-radius: 0.75rem;
+  border-bottom-left-radius: 0.75rem;
 }
 
 .border {
@@ -1798,14 +1801,14 @@ textarea, input, select {
   color: rgb(236 72 153 / var(--tw-text-opacity));
 }
 
-.text-blue-600 {
-  --tw-text-opacity: 1;
-  color: rgb(37 99 235 / var(--tw-text-opacity));
-}
-
 .text-sky-700 {
   --tw-text-opacity: 1;
   color: rgb(3 105 161 / var(--tw-text-opacity));
+}
+
+.text-blue-600 {
+  --tw-text-opacity: 1;
+  color: rgb(37 99 235 / var(--tw-text-opacity));
 }
 
 .text-slate-200 {
@@ -2265,6 +2268,10 @@ textarea, input, select {
 }
 
 @media (min-width: 1024px) {
+  .lg\:top-20 {
+    top: 5rem;
+  }
+
   .lg\:mx-0 {
     margin-left: 0px;
     margin-right: 0px;
@@ -2356,6 +2363,15 @@ textarea, input, select {
   .lg\:text-4xl {
     font-size: 2.25rem;
     line-height: 2.5rem;
+  }
+
+  .lg\:text-base {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .lg\:text-inherit {
+    color: inherit;
   }
 
   .lg\:hover\:bg-inherit:hover {

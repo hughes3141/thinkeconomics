@@ -178,134 +178,144 @@ $_GET variables:
         //print_r($assignments);
         echo "</pre>";
         ?>
-        <h3 class="text-lg bg-pink-300 text-sky-700 pl-1 rounded-r-lg mt-1 sticky top-20"><?=$student['name_first']?> <?=$student['name_last']?></h3>
-        <h4 class="bg-sky-200 pl-1 my-2 rounded-r-lg">Assignment Summary</h4>
-        <table class="">
-          <tr>
-            <td>Assignment</td>
-            <td>Due Date</td>
-            <td>Type</td>
-            <td>Scores</td>
-            <td>Link</td>
-          </tr>
-          <?php
-          foreach ($assignments as $assignment) {
-            ?>
+        <div>
+          <h3 class="text-lg bg-pink-300 text-sky-700 pl-1 rounded-r-lg mt-1 sticky top-12 lg:top-20"><?=$student['name_first']?> <?=$student['name_last']?></h3>
+          <h4 class="bg-sky-200 pl-1 my-2 rounded-r-lg">Assignment Summary</h4>
+          <table class=" text-xs lg:text-base">
             <tr>
-              <td><?=$assignment['assignName']?>
-              <?php
-                //print_r($assignment);
-                if(count($groupid_array)>1) {
-                  $group = getGroupInfoById($assignment['groupid']);
-                  ?>
-                  <br>
-                  <?php
-                    //print_r($group);
-                    echo $group['name'];
-                    ?>
-                  <?php
-                }
-              ?>
-              </td>
-              <td><?=date("j M y",strtotime($assignment['dateDue']))?></td>
-              <td><?php
-                if($assignment['type'] == 'mcq') {
-                  echo "MCQ";
-                }
-              ?></td>
-              <td><?php
-                if($assignment['type'] == "mcq") {
-                  $responses = getMCQquizResults2($student['id'],$assignment['id']);
-                  //print_r($responses);
-                  foreach($responses as $response) {
-                    ?>
-                    <b><?=$response['percentage']?>&percnt;</b><br>
-                    (<?=date("d.m.y",strtotime($response['datetime']))?>)<br>
-                    <?=$response['duration']?><br>
-                    <?php
-                  }
-                }
-              ?></td>
-              <td>
-                <?php
-                if($assignment['type'] == 'mcq') {
-                  ?>
-                  <a class="underline text-sky-700" target="blank" href="../mcq/mcq_exercise.php?assignid=<?=$assignment['id']?>">Link to MCQ</a>
-                  <?php
-                }
-                ?>
-                
-              </td>
+              <td>Assignment</td>
+              <td>Due Date</td>
+              <td>Type</td>
+              <td>Scores</td>
+              <td>Link</td>
             </tr>
             <?php
-          }
-          ?>
-        </table>
-
-        <h4 class="bg-sky-200 pl-1 my-2 rounded-r-lg">FlashCard Summary</h4>
-        <?php
-          $userid_selected = $studentid;
-          $flashcards = flashCardSummary($userid_selected, "count");
-          //print_r($flashcards);
-          echo "<p>Total Completed: ".$flashcards[0]['count']."</p>";
-
-          $flashcards = flashCardSummary($userid_selected, "count_category");
-          //print_r($flashcards);
-          //echo "<br>";
-          echo "<p>Categories: </p>";
-          echo "<ul class='list-disc'>";
-          foreach($flashcards as $array) {
-            //print_r($array);
-            echo "<li class='ml-5'>";
-            if ($array['gotRight']==0) {
-              echo "Didn't Know: ";
-            } elseif ($array['gotRight']==1) {
-              echo "Incorrect : ";
-            } elseif ($array['gotRight']==2) {
-              echo "Correct: ";
+            foreach ($assignments as $assignment) {
+              ?>
+              <tr>
+                <td><?=$assignment['assignName']?>
+                <?php
+                  //print_r($assignment);
+                  if(count($groupid_array)>1) {
+                    $group = getGroupInfoById($assignment['groupid']);
+                    ?>
+                    <br>
+                    <?php
+                      //print_r($group);
+                      echo $group['name'];
+                      ?>
+                    <?php
+                  }
+                ?>
+                </td>
+                <td><?=date("j M y",strtotime($assignment['dateDue']))?></td>
+                <td><?php
+                  if($assignment['type'] == 'mcq') {
+                    echo "MCQ";
+                  }
+                ?></td>
+                <td><?php
+                  if($assignment['type'] == "mcq") {
+                    $responses = getMCQquizResults2($student['id'],$assignment['id']);
+                    //print_r($responses);
+                    foreach($responses as $response) {
+                      ?>
+                      <b><?=$response['percentage']?>&percnt;</b><br>
+                      (<?=date("d.m.y",strtotime($response['datetime']))?>)<br>
+                      <?=$response['duration']?><br>
+                      <?php
+                    }
+                  }
+                ?></td>
+                <td>
+                  <?php
+                  if($assignment['type'] == 'mcq') {
+                    ?>
+                    <a class="underline text-sky-700" target="blank" href="../mcq/mcq_exercise.php?assignid=<?=$assignment['id']?>">Link to MCQ</a>
+                    <?php
+                  }
+                  ?>
+                  
+                </td>
+              </tr>
+              <?php
             }
-            echo $array['count'];
-            echo "</li>";
-            
-          }
+            ?>
+          </table>
 
-
-            $flashcards = flashCardSummary($userid_selected, "average");
-            //print_r($flashcards);
-            echo "Average time taken: ".$flashcards[0]['avg']." seconds<br>";
-
-            $flashcards = flashCardSummary($userid_selected, "count_by_date");
-            //print_r($flashcards);
-            echo "Dates Completed: ";
-            foreach($flashcards as $array) {
-              echo $array['date'].": ".$array['count']." || ";
-            }
-
-        ?>
-
-        <h4 class="bg-sky-200 pl-1 my-2 rounded-r-lg">MCQ Summary</h4>
-        
-        <?php
-          $results = getMCQquizResults2($studentid,0);
-          ?>
-          <p>Completed: <?=count($results)?></p>
+          <h4 class="bg-sky-200 pl-1 my-2 rounded-r-lg">FlashCard Summary</h4>
           <?php
+            $userid_selected = $studentid;
+            $flashcards = flashCardSummary($userid_selected, "count");
+            //print_r($flashcards);
+            echo "<p>Total Completed: ".$flashcards[0]['count']."</p>";
 
-          //print_r($results);
-          if(count($results)>0) {
-            echo "Instances: ";
-            foreach($results as $key => $result) {
-              echo ($result['topic'] != "") ? $result['topic']." " : "";
-              echo $result['quiz_name'];
-              echo " ".date("d.m.y",strtotime($result['datetime']));
-              if($key < count($results)-1) {
-                echo " || ";
+            $flashcards = flashCardSummary($userid_selected, "count_category");
+            //print_r($flashcards);
+            //echo "<br>";
+            echo "<p>Categories: </p>";
+            echo "<ul class='list-disc'>";
+            foreach($flashcards as $array) {
+              //print_r($array);
+              echo "<li class='ml-5'>";
+              if ($array['gotRight']==0) {
+                echo "Didn't Know: ";
+              } elseif ($array['gotRight']==1) {
+                echo "Incorrect : ";
+              } elseif ($array['gotRight']==2) {
+                echo "Correct: ";
               }
+              echo $array['count'];
+              echo "</li>";
+              
             }
-          }
-        ?>
 
-        
+
+              $flashcards = flashCardSummary($userid_selected, "average");
+              //print_r($flashcards);
+              echo "Average time taken: ".$flashcards[0]['avg']." seconds<br>";
+
+              $flashcards = flashCardSummary($userid_selected, "count_by_date");
+              //print_r($flashcards);
+              echo "Dates Completed: ";
+              foreach($flashcards as $array) {
+                echo $array['date'].": ".$array['count']." || ";
+              }
+
+          ?>
+
+          <h4 class="bg-sky-200 pl-1 my-2 rounded-r-lg">MCQ Summary</h4>
+          
+          <?php
+            $results = getMCQquizResults2($studentid,0);
+            ?>
+            <p>Completed: <?=count($results)?></p>
+            <?php
+
+            //print_r($results);
+            if(count($results)>0) {
+              echo "Instances: ";
+              ?>
+              <div class="">
+                <?php
+                foreach($results as $key => $result) {
+                  //echo "<div class='border border-black'>";
+                  echo ($result['topic'] != "") ? $result['topic']." " : "";
+                  echo $result['quiz_name'];
+                  echo " ".date("d.M.y",strtotime($result['datetime']));
+                  if($key < count($results)-1) {
+                    echo " || ";
+                  }
+                  //echo "</div>";
+                }
+                ?>
+              </div>
+              <?php
+            }
+            ?>
+            
+
+        </div>
         <?php
       }
     }
