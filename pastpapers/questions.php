@@ -446,9 +446,6 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                       <?php
                       }
                       if($showModel) {
-
-                      
-
                       ?>
 
                       <button class="border rounded bg-sky-300 border-black mb-1 px-1 ml-9" type="button" onclick="toggleHide(this, 'modelAnswerToggle_<?=$question2['id']?>', 'Show Model Answer', 'Hide Model Answer', 'block')">Show Model Answer</button>
@@ -457,12 +454,22 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                       }
 
                       
-                      if($userId && $showMarkScheme) {
+                      if($userId) {
+                        if($showMarkScheme) {
                         ?>
                         
                           <a class="ml-2 underline hover:bg-pink-200 text-sky-700" target ="blank" href="markscheme.php?ids=<?=$question2['id']?>">Mark Scheme Link</a>
+
+                          <?php
+                        }
+
+                        if($showGuide) {
+                          ?>
+
+                          <a class="ml-2 underline hover:bg-pink-200 text-sky-700" target ="blank" href="guide.php?ids=<?=$question2['id']?>">Guide Link</a>
                         
                         <?php
+                        }
                       }
                       ?>
                     </div>
