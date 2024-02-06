@@ -210,7 +210,7 @@ if(isset($userId)) {
         }
       }
       ?>
-      <h2 class = "bg-pink-300 -ml-4 -mr-4 mb-5 text-xl font-mono pl-1 text-gray-800"><?=$topic['code']?> <?=$topic['name']?></h2>
+      <h2 class = "bg-pink-300 -ml-4 -mr-4 mb-5 text-xl font-mono pl-1 text-gray-800 sticky top-16"><?=$topic['code']?> <?=$topic['name']?></h2>
       <?php
       //print_r($topic);
       ?>
