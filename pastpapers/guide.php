@@ -101,7 +101,7 @@ if(str_contains($permissions, "main_admin")) {
 
 <?php if(!$simple) {
   ?>
-<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
   <?php
 }
   ?>
