@@ -416,37 +416,118 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   $markSchemeAssets = explode(",",$question2['markSchemeAssets']);
                   //print_r($questionAssets);
 
+                  //Define what types of assets will be shown:
+                  $showMarkScheme = $showGuide = $showModel = null;
                   if($question2['markSchemeAssets']!="") {
-                    ?>
+                    $showMarkScheme = 1;
+                  }
+                  if($question2['guide']!="") {
+                    $showGuide = 1;
+                  }
+                  if($question2['modelAnswer']!="") {
+                    $showModel = 1;
+                  }
+                  ?>
+
                   <div id="second_part_<?=$question['id']?>" class="px-2 pb-2">
-                    <div class="flex justify-between">
-                    <button class="border rounded bg-pink-200 border-black mb-1 px-1 ml-9" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$question2['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
-                    <?php
-                    if($userId) {
+                    <div class="flex justify-between mb-2">
+                      <?php
+                      if($showMarkScheme) {
                       ?>
+                      <button class="border rounded bg-pink-200 border-black mb-1 px-1 ml-9" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$question2['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
+                      <?php
+                      }
+
+                      if($showGuide) {
+                      ?>
+
+                      <button class="border rounded bg-sky-200 border-black mb-1 px-1 ml-9" type="button" onclick="toggleHide(this, 'guideToggle_<?=$question2['id']?>', 'Show Guide', 'Hide Guide', 'block')">Show Guide</button>
+
+                      <?php
+                      }
+                      if($showModel) {
+                      ?>
+
+                      <button class="border rounded bg-sky-300 border-black mb-1 px-1 ml-9" type="button" onclick="toggleHide(this, 'modelAnswerToggle_<?=$question2['id']?>', 'Show Model Answer', 'Hide Model Answer', 'block')">Show Model Answer</button>
+
+                      <?php
+                      }
+
                       
-                        <a class="ml-2 underline hover:bg-pink-200 text-sky-700" target ="blank" href="markscheme.php?ids=<?=$question2['id']?>">Mark Scheme Link</a>
-                      
+                      if($userId) {
+                        if($showMarkScheme) {
+                        ?>
+                        
+                          <a class="ml-2 underline hover:bg-pink-200 text-sky-700" target ="blank" href="markscheme.php?ids=<?=$question2['id']?>">Mark Scheme Link</a>
+
+                          <?php
+                        }
+
+                        if($showGuide) {
+                          ?>
+
+                          <a class="ml-2 underline hover:bg-pink-200 text-sky-700" target ="blank" href="guide.php?ids=<?=$question2['id']?>">Guide Link</a>
+                        
+                        <?php
+                        }
+                      }
+                      ?>
+                    </div>
+
+                    <?php
+                    if($showMarkScheme) {
+                    ?>
+                      <div class="markSchemeToggle_<?=$question2['id']?> hidden">
+                        <?php
+                          //Mark Scheme:
+                          foreach($markSchemeAssets as $asset) {
+                          $asset = getUploadsInfo($asset)[0];
+                          //print_r($asset);
+                          ?>
+                          <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                          <?php
+                          }
+                        ?>
+                      </div>
+                    <?php
+                    }
+                    if($showGuide) {
+                      ?>
+                      <div class="guideToggle_<?=$question2['id']?> hidden mb-2 border-2 border-sky-200 rounded px-1">
+                        <h3 class="text-lg bg-sky-200 -mx-1">Question Guidance</h3>
+                        <?php
+                        $guide = $question2['guide'];
+                        $guide = explode("\n", $guide);
+                        foreach($guide as $p) {
+                          ?>
+                          <p class="mb-1"><?=$p?></p>
+                          <?php
+                        }
+                        ?>
+                      </div>
+                      <?php
+                    }
+
+                    if($showModel) {
+                      ?>
+                      <div class="modelAnswerToggle_<?=$question2['id']?> hidden mb-2 border-2 border-sky-300 rounded px-1">
+                        <h3 class="text-lg bg-sky-300 -mx-1">Model Answer</h3>
+                        <?php
+                        $modelAnswer = $question2['modelAnswer'];
+                        $modelAnswer = explode("\n", $modelAnswer);
+                        foreach($modelAnswer as $p) {
+                          ?>
+                          <p class="mb-1"><?=$p?></p>
+                          <?php
+                        }
+                        ?>
+                      </div>
                       <?php
                     }
                     ?>
-                    </div>
-
-                    <div class="markSchemeToggle_<?=$question2['id']?> hidden">
-                    <?php
-                      //Mark Scheme:
-                      foreach($markSchemeAssets as $asset) {
-                      $asset = getUploadsInfo($asset)[0];
-                      //print_r($asset);
-                      ?>
-                      <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
-                      <?php
-                      }
-                    ?>
-                    </div>
                   </div>
                   <?php
-                  }
+                  //}
 
                 }
                 ?>
