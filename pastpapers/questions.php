@@ -301,7 +301,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
 
               if(!in_array($examInstance, $usedExamInstance)) {
                 ?>
-                <h2 class="text-xl bg-sky-200 mb-2 p-1 rounded"><a class="hover:bg-pink-300 hover:text-sky-700" target="blank" href="questions.php?examBoard=<?=$question['examBoard']?>&qualLevel=<?=$question['qualLevel']?>&component=<?=$question['component']?>&year=<?=$question['year']?>&topic="><?=$examInstance?></a></h2>
+                <h2 class="text-xl bg-sky-200 mb-2 p-1 rounded sticky top-12 lg:top-20 z-10"><a class="hover:bg-pink-300 hover:text-sky-700 " target="blank" href="questions.php?examBoard=<?=$question['examBoard']?>&qualLevel=<?=$question['qualLevel']?>&component=<?=$question['component']?>&year=<?=$question['year']?>&topic="><?=$examInstance?></a></h2>
                 <?php
                 array_push($usedExamInstance, $examInstance);
 
