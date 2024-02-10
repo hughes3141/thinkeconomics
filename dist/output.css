@@ -546,8 +546,8 @@ textarea, input, select {
   top: 0px;
 }
 
-.top-20 {
-  top: 5rem;
+.top-12 {
+  top: 3rem;
 }
 
 .left-5 {
@@ -574,16 +574,12 @@ textarea, input, select {
   bottom: 0.25rem;
 }
 
+.top-20 {
+  top: 5rem;
+}
+
 .top-16 {
   top: 4rem;
-}
-
-.top-14 {
-  top: 3.5rem;
-}
-
-.top-12 {
-  top: 3rem;
 }
 
 .z-50 {
@@ -1022,10 +1018,6 @@ textarea, input, select {
   max-width: 64rem;
 }
 
-.max-w-full {
-  max-width: 100%;
-}
-
 .flex-1 {
   flex: 1 1 0%;
 }
@@ -1116,14 +1108,6 @@ textarea, input, select {
 
 .grid-cols-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.grid-cols-5 {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-}
-
-.grid-rows-5 {
-  grid-template-rows: repeat(5, minmax(0, 1fr));
 }
 
 .flex-row {
@@ -2301,6 +2285,10 @@ textarea, input, select {
     display: flex;
   }
 
+  .lg\:table-cell {
+    display: table-cell;
+  }
+
   .lg\:hidden {
     display: none;
   }
@@ -2372,10 +2360,6 @@ textarea, input, select {
   .lg\:text-base {
     font-size: 1rem;
     line-height: 1.5rem;
-  }
-
-  .lg\:text-inherit {
-    color: inherit;
   }
 
   .lg\:hover\:bg-inherit:hover {
