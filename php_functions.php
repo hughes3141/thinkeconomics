@@ -2407,6 +2407,8 @@ function getSAQTopics($topicId = null, $subjectId=null, $flashCard = null, $exam
 
 }
 
+
+
 function getSAQExamBoards($subjectId = null) {
   /**
    * Returns a distinct list of topics in saq_question_bank_3 given parameters

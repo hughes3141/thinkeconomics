@@ -181,67 +181,10 @@ $_GET variables:
         <div>
           <h3 class="text-lg bg-pink-300 text-sky-700 pl-1 rounded-r-lg mt-1 sticky top-12 lg:top-20"><?=$student['name_first']?> <?=$student['name_last']?></h3>
           <h4 class="bg-sky-200 pl-1 my-2 rounded-r-lg">Assignment Summary</h4>
-          <table class=" text-xs lg:text-base">
-            <tr>
-              <td>Assignment</td>
-              <td>Due Date</td>
-              <td>Type</td>
-              <td>Scores</td>
-              <td>Link</td>
-            </tr>
-            <?php
-            foreach ($assignments as $assignment) {
-              ?>
-              <tr>
-                <td><?=$assignment['assignName']?>
-                <?php
-                  //print_r($assignment);
-                  if(count($groupid_array)>1) {
-                    $group = getGroupInfoById($assignment['groupid']);
-                    ?>
-                    <br>
-                    <?php
-                      //print_r($group);
-                      echo $group['name'];
-                      ?>
-                    <?php
-                  }
-                ?>
-                </td>
-                <td><?=date("j M y",strtotime($assignment['dateDue']))?></td>
-                <td><?php
-                  if($assignment['type'] == 'mcq') {
-                    echo "MCQ";
-                  }
-                ?></td>
-                <td><?php
-                  if($assignment['type'] == "mcq") {
-                    $responses = getMCQquizResults2($student['id'],$assignment['id']);
-                    //print_r($responses);
-                    foreach($responses as $response) {
-                      ?>
-                      <b><?=$response['percentage']?>&percnt;</b><br>
-                      (<?=date("d.m.y",strtotime($response['datetime']))?>)<br>
-                      <?=$response['duration']?><br>
-                      <?php
-                    }
-                  }
-                ?></td>
-                <td>
-                  <?php
-                  if($assignment['type'] == 'mcq') {
-                    ?>
-                    <a class="underline text-sky-700" target="blank" href="../mcq/mcq_exercise.php?assignid=<?=$assignment['id']?>">Link to MCQ</a>
-                    <?php
-                  }
-                  ?>
-                  
-                </td>
-              </tr>
-              <?php
-            }
-            ?>
-          </table>
+
+          <?php
+            include("user_assignment_list_embed.php");
+          ?>
 
           <h4 class="bg-sky-200 pl-1 my-2 rounded-r-lg">FlashCard Summary</h4>
           <?php
