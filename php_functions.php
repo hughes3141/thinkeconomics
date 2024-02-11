@@ -522,6 +522,8 @@ function getAssignmentsArray($groupIdArray, $startDate = null, $markBookShow = 1
     $sql .= " AND markBookShow = 1 ";
   }
 
+  $sql .= " ORDER BY dateDue ";
+
 
 
 
