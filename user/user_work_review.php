@@ -245,9 +245,10 @@ $_GET variables:
                   //echo "<div class='border border-black'>";
                   echo ($result['topic'] != "") ? $result['topic']." " : "";
                   echo $result['quiz_name'];
-                  echo " ".date("d.M.y",strtotime($result['datetime']));
+                  echo " ".date("d.m.y",strtotime($result['datetime']));
                   if($key < count($results)-1) {
-                    echo " || ";
+                    //echo " || ";
+                    echo "<br>";
                   }
                   //echo "</div>";
                 }

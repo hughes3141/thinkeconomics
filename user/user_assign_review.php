@@ -91,7 +91,7 @@ include($path."/header_tailwind.php");
     <p>This page contains all the assignments that have been given to you or your class.</p>
     <p>You can use this page to ensure you are up to date with your work, or re-submit assignments. This is the same information your teacher sees when processing report data.</p>
 
-    <h2>Assignment List</h2>
+
 
 
     <?php
@@ -99,7 +99,7 @@ include($path."/header_tailwind.php");
     $assignments = getAssignmentsArray($groupid_array, $get_selectors['startDate'], 1);
 
     //Use below to negate $startDate variable:
-    $assignments = getAssignmentsArray($groupid_array, null, ['startDate'], 1);
+    $assignments = getAssignmentsArray($groupid_array, null, 1);
 
     if(isset($_GET['test'])) {
       echo "<pre>";
@@ -117,7 +117,7 @@ include($path."/header_tailwind.php");
     ?>
 
     
-      <h4 class="bg-sky-200 pl-1 my-2 rounded-r-lg">Assignment Summary</h4>
+      <h2 class="bg-sky-200 pl-1 my-2 rounded-r-lg">Assignment Summary</h2>
 
       <?php
         include("user_assignment_list_embed.php");
@@ -130,8 +130,8 @@ include($path."/header_tailwind.php");
     $userid = $userId;
     if(count($groupid_array) > 0) {
       ?>
-
-      <table>
+      
+      <table style="display:none">
         <tr>
         <th>ID
         </th>
@@ -367,7 +367,7 @@ include($path."/header_tailwind.php");
           ?>
 
       </table>
-
+      
 
         <?php
         }

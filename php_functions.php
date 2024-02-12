@@ -2407,7 +2407,66 @@ function getSAQTopics($topicId = null, $subjectId=null, $flashCard = null, $exam
 
 }
 
+function getSAQresults($userId = null, $assignId = null, $submit = null) {
+  /*
 
+  Retrieves result from saq_saved_work
+
+  Used in:
+  -user_assignment_list_embed.php
+
+  */
+
+  global $conn;
+  $results = array();
+
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+  $tableAlias = "";
+
+  $sql = " SELECT * FROM saq_saved_work ";
+
+  if($userId) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $sql .= $tableAlias;
+    $sql .= " userID = ? ";
+    $params .= "i";
+    array_push($bindArray, $userId);
+    $conjoiner = 1;
+  }
+
+  if($assignId) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $sql .= $tableAlias;
+    $sql .= " assignID = ? ";
+    $params .= "i";
+    array_push($bindArray, $assignId);
+    $conjoiner = 1;
+  }
+
+  if($submit) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $sql .= $tableAlias;
+    $sql .= " submit = 1 ";
+    $conjoiner = 1;
+  }
+
+  $stmt = $conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+
+  return $results;
+
+}
 
 function getSAQExamBoards($subjectId = null) {
   /**

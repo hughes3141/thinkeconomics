@@ -2281,6 +2281,10 @@ textarea, input, select {
     display: inline-block;
   }
 
+  .lg\:inline {
+    display: inline;
+  }
+
   .lg\:flex {
     display: flex;
   }
