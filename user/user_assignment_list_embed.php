@@ -41,7 +41,7 @@ Used in:
             <?php
             foreach ($assignments as $assignment) {
               //if($assignment['type'] == 'mcq')
-              if(/*$assignment['type'] == 'mcq' || */$assignment['type'] == 'saq')
+              if($assignment['type'] == 'mcq' || $assignment['type'] == 'saq')
               //if($assignment['type'] == 'mcq' || $assignment['type'] == 'saq'  || $assignment['type'] == "exercise") 
             {
                 ?>
