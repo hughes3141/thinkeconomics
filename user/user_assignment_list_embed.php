@@ -40,8 +40,9 @@ Used in:
             </tr>
             <?php
             foreach ($assignments as $assignment) {
-              if($assignment['type'] == 'mcq')
-              //if($assignment['type'] == 'mcq' || $assignment['type'] == 'saq') 
+              //if($assignment['type'] == 'mcq')
+              if(/*$assignment['type'] == 'mcq' || */$assignment['type'] == 'saq')
+              //if($assignment['type'] == 'mcq' || $assignment['type'] == 'saq'  || $assignment['type'] == "exercise") 
             {
                 ?>
                 <tr>
@@ -102,11 +103,6 @@ Used in:
                   if($assignment['type'] == "saq") {
                     $responses = getSAQresults($student['id'],$assignment['id'],1);
 
-                    $late = null;
-                    if($response['datetime'] > $assignment['dateDue']) {
-                      $late = 1;
-                    }
-
                     ?>
                     <td><span class="hidden lg:inline">Short Answer</span><span class="lg:hidden">SA</span></td>
                     <td>
@@ -116,7 +112,11 @@ Used in:
                         <span class = 'noComplete'>Not yet submitted</span>
                         <?php
                       } else {
-                        foreach ($responses as $response) {
+                        foreach ($responses as $key => $response) {
+                          $late = null;
+                          if($response['datetime'] > $assignment['dateDue'] && $key==0) {
+                            $late = 1;
+                          }
                           ?>
                           <div class="<?=$late ? "bg-pink-200": ""?>">Submit: <?=date("d.m.y",strtotime($response['datetime']))?></div>
                           <?php
@@ -148,6 +148,14 @@ Used in:
                     </td>
                     <?php
 
+                  }
+
+                  if($assignment['type'] == "exercise") {
+                    ?>
+                      <td><span class="hidden lg:inline">Exercise</span><span class="lg:hidden">Ex</span></td>
+                      <td><em>Not yet entered</em></td>
+                      <td></td>
+                    <?php
                   }
                   ?>
                   
