@@ -246,6 +246,7 @@ $_GET variables:
                   echo ($result['topic'] != "") ? $result['topic']." " : "";
                   echo $result['quiz_name'];
                   echo " ".date("d.m.y",strtotime($result['datetime']));
+                  echo " ".$result['duration']."m";
                   if($key < count($results)-1) {
                     //echo " || ";
                     echo "<br>";
