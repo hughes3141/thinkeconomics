@@ -89,6 +89,7 @@ $get_selectors = array(
   'searchFor' => (isset($_GET['searchFor']) && $_GET['searchFor'] != "") ? $_GET['searchFor'] : "",
   'noSearch' => (isset($_GET['noSearch']) ) ? 1 : null,
   'link' => (isset($_GET['link']) && $_GET['link'] != "") ? $_GET['link'] : "",
+  'searchBar' => (isset($_GET['searchBar']) ) ? 1 : null
 );
 
 $newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['startDate'], $get_selectors['endDate'], $get_selectors['orderBy'], null, $get_selectors['limit'], $get_selectors['searchFor'], $get_selectors['link']);
@@ -121,6 +122,9 @@ Get variables:
   'orderBy' 
   'limit' 
   'searchFor'
+  'noSearch' => if this is set then the extended search bar does not come up
+  'link'
+  'searchBar' => if this is set then extended search bar will be open on load
 
 
 -->
@@ -141,7 +145,7 @@ Get variables:
     <?php
     if(is_null($get_selectors['noSearch']))
     {
-      $showSearch = ($get_selectors['searchFor'] || $get_selectors['keyword'] || $get_selectors['startDate'] || $get_selectors['endDate'] || $get_selectors['link']) ? 1 : null;
+      $showSearch = ($get_selectors['searchFor'] || $get_selectors['keyword'] || $get_selectors['startDate'] || $get_selectors['endDate'] || $get_selectors['link'] || $get_selectors['searchBar']) ? 1 : null;
       ?>
       <div id="accordion-collapse" data-accordion="collapse">
         <h2 id="accordion-collapse-heading-1">
