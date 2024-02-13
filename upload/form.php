@@ -135,6 +135,7 @@ include($path."/header_tailwind.php");
         <option value = '/assets/flashcard_img/' <?=($lastFolder == "/assets/flashcard_img/") ? "selected": ""?>>Flashcard Image</option>
         <option value = '/assets/pastpaper_img/' <?=($lastFolder == "/assets/pastpaper_img/") ? "selected": ""?>>Past Paper Images</option>
         <option value = '/assets/articles/' <?=($lastFolder == "/assets/articles/") ? "selected": ""?>>Articles</option>
+        <option value = '/assets/modelanswer_img/' <?=($lastFolder == "/assets/modelanswer_img/") ? "selected": ""?>>Model Answer Images</option>
       </select>
     </p>
     <p>
