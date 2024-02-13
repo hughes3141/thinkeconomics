@@ -132,7 +132,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
 
 ?>
 
-<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
     <h1 class="font-mono text-2xl bg-pink-400 pl-1">Past Paper Questions Database</h1>
     <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
           <?php
@@ -520,6 +520,17 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                           <p class="mb-1"><?=$p?></p>
                           <?php
                         }
+                        $modelAnswerAssets = explode(",",$question2['modelAnswerAssets']);
+
+                        foreach($modelAnswerAssets as $asset) {
+                          $asset = getUploadsInfo($asset)[0];
+                            //print_r($asset);
+                            ?>
+                            <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                            <?php
+                          }
+
+
                         ?>
                       </div>
                       <?php
