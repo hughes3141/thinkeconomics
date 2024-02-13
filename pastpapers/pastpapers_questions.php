@@ -464,6 +464,17 @@ $_GET controls:
                                 <p class="whitespace-pre-line"><?=$question['modelAnswer']?></p>
                                 <?php
                               }
+                              if($question['modelAnswerAssets'] != "") {
+                                $modelAnswerAssets = explode(",",$question['modelAnswerAssets']);
+                                //print_r($modelAnswerAssets);
+                                foreach($modelAnswerAssets as $asset) {
+                                  $asset = getUploadsInfo($asset)[0];
+                                    //print_r($asset);
+                                    ?>
+                                    <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                                    <?php
+                                  }
+                              }
                               ?>
                             </div>
                             

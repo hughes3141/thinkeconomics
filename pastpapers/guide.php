@@ -198,6 +198,18 @@ if(str_contains($permissions, "main_admin")) {
               <p class="mb-2"><?=$p?></p>
               <?php
             }
+
+            $modelAnswerAssets = explode(",",$question['modelAnswerAssets']);
+
+            foreach($modelAnswerAssets as $asset) {
+              $asset = getUploadsInfo($asset)[0];
+                //print_r($asset);
+                ?>
+                <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                <?php
+              }
+
+
             ?>
           </div>
         <?php

@@ -4667,13 +4667,14 @@ function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets
   $questionAssets_array = jsonEncoder($questionAssets);
   $markSchemeAssets_array = jsonEncoder($markSchemeAssets);
   $examReportAssets_array = jsonEncoder($examReportAssets);
+  $modelAnswerAssets_array = jsonEncoder($modelAnswerAssets);
 
    global $conn;
    $sql = " UPDATE pastpaper_question_bank
-            SET question = ?, answer = ?,  questionAssets = ?, markSchemeAssets = ?, examReportAssets =?, topic = ?, keywords = ?, explanation = ?, marks = ?, questionAssets_array = ?, markSchemeAssets_array = ?, examReportAssets_array = ?, caseId = ?, caseBool = ?, examPaperLink=?, markSchemeLink=?, examReportLink = ?, guide = ?, modelAnswer = ?, modelAnswerAssets =?
+            SET question = ?, answer = ?,  questionAssets = ?, markSchemeAssets = ?, examReportAssets =?, topic = ?, keywords = ?, explanation = ?, marks = ?, questionAssets_array = ?, markSchemeAssets_array = ?, examReportAssets_array = ?, caseId = ?, caseBool = ?, examPaperLink=?, markSchemeLink=?, examReportLink = ?, guide = ?, modelAnswer = ?, modelAnswerAssets =?, modelAnswerAssets_array = ?
    WHERE id = ?";
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("ssssssssisssiissssssi", $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks, $questionAssets_array, $markSchemeAssets_array, $examReportAssets_array, $caseId, $caseBool, $examPaperLink, $markSchemeLink, $examReportLink, $guide, $modelAnswer, $modelAnswerAssets, $id);
+  $stmt->bind_param("ssssssssisssiisssssssi", $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks, $questionAssets_array, $markSchemeAssets_array, $examReportAssets_array, $caseId, $caseBool, $examPaperLink, $markSchemeLink, $examReportLink, $guide, $modelAnswer, $modelAnswerAssets, $modelAnswerAssets_array, $id);
   $stmt->execute();
 
 }
