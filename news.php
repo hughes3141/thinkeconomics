@@ -86,10 +86,12 @@ $get_selectors = array(
   'endDate' => (isset($_GET['endDate']) && $_GET['endDate'] != "") ? $_GET['endDate'] : null,
   'orderBy' => (isset($_GET['orderBy']) && $_GET['orderBy'] != "") ? $_GET['orderBy'] : null,
   'limit' => (isset($_GET['limit']) && $_GET['limit'] != "") ? $_GET['limit'] : 100,
-  'searchFor' => (isset($_GET['searchFor']) && $_GET['searchFor'] != "") ? $_GET['searchFor'] : ""
+  'searchFor' => (isset($_GET['searchFor']) && $_GET['searchFor'] != "") ? $_GET['searchFor'] : "",
+  'noSearch' => (isset($_GET['noSearch']) ) ? 1 : null,
+  'link' => (isset($_GET['link']) && $_GET['link'] != "") ? $_GET['link'] : "",
 );
 
-$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['startDate'], $get_selectors['endDate'], $get_selectors['orderBy'], null, $get_selectors['limit'], $get_selectors['searchFor'])
+$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['startDate'], $get_selectors['endDate'], $get_selectors['orderBy'], null, $get_selectors['limit'], $get_selectors['searchFor'], $get_selectors['link']);
 ?>
 
 <?php include "header_tailwind.php"; 
@@ -133,102 +135,130 @@ Get variables:
 //var_dump($permissions);
 //print_r($userInfo);
 
+?>
 
-echo <<<END
+  <div class="container mx-auto px-0 mt-2 bg-white text-black">
+    <?php
+    if(is_null($get_selectors['noSearch']))
+    {
+      $showSearch = ($get_selectors['searchFor'] || $get_selectors['keyword'] || $get_selectors['startDate'] || $get_selectors['endDate'] || $get_selectors['link']) ? 1 : null;
+      ?>
+      <div id="accordion-collapse" data-accordion="collapse">
+        <h2 id="accordion-collapse-heading-1">
+          <button type="button" class="flex items-center justify-between w-full p-2 font-medium text-gray-500 border border-gray-200 hover:bg-gray-100  gap-3s font-mono" data-accordion-target="#accordion-collapse-body-1" aria-expanded="<?=($showSearch) ? "true" : "false"?>" aria-controls="accordion-collapse-body-1">
+            <span>Search Controls</span>
+            <svg data-accordion-icon class="w-3 h-3  shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+            </svg>
+          </button>
+        </h2>
+        <div id="accordion-collapse-body-1" class="hidden" aria-labelledby="accordion-collapse-heading-1">
+          <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+            <form type="get" action="">
+              <p class="mb-2 text-gray-500">
+                <label for="searchForInput">Headline, Keywords, Explanation:</label>
+                <input class="px-1 w-full" id="searchForInput" name="searchFor" value="<?=$get_selectors['searchFor']?>" type="text">
+              </p>
+              <p class="mb-2 text-gray-500">
+                <label for="keyWordInput">Keyword:</label>
+                <input class="px-1 w-full" id="keyWordInput" name="keyword" value="<?=$get_selectors['keyword']?>" type="text">
+              </p>
+              <p class="mb-2 text-gray-500">
+                <label for="linkInput">Link:</label>
+                <input class="px-1 w-full" id="linkInput" name="link" value="<?=$get_selectors['link']?>" type="text">
+              </p>
+              <div class="mb-2 text-gray-500 grid grid-cols-2 gap-2">
+                <div>
+                  <label for="startDateInput">Start Date:</label>
+                  <input class="px-1 w-full" id="startDateInput" name="startDate" value="<?=$get_selectors['startDate']?>" type="date">
+                </div>
+
+                <div>
+                  <label for="endDateInput">End Date:</label>
+                  <input class="px-1 w-full" id="endDateInput" name="endDate" value="<?=$get_selectors['endDate']?>" type="date">
+                </div>
+
+              </div>
+              <input class="w-full bg-pink-300" type="submit" value="Submit"</input>
+              <input type="hidden" value="<?=$get_selectors['topic']?>">
+            </form>
+          </div>
+        </div>   
+      </div> 
+      <?php
+    }
+    ?>
     <table class="bg-white text-black">
       <tr>
         <th class='col1'>
           <form method = "get">
             <select class="text-black"style="width: 100%;" onchange="this.form.submit()" name="topic">
               <option value="">Topic</option>
-END;
-
-$sql = "SELECT * FROM topics";
-$result = $conn->query($sql);
-if($result) {
-  while ($row = $result->fetch_assoc()) {
-    echo "<option value = '".$row['topicCode']."'";
-    if($_GET['topic']==$row['topicCode']) {
-      echo " selected ";
-    }
-    echo ">";
-    echo "(".$row['topicCode'].") ".$row['topicName'];
-    
-    echo "</option>"; 
-  }
-}
-
-echo <<<END
+                <?php
+                $sql = "SELECT * FROM topics";
+                $result = $conn->query($sql);
+                if($result) {
+                  while ($row = $result->fetch_assoc()) {
+                    echo "<option value = '".$row['topicCode']."'";
+                    if($_GET['topic']==$row['topicCode']) {
+                      echo " selected ";
+                    }
+                    echo ">";
+                    echo "(".$row['topicCode'].") ".$row['topicName'];
+                    ?>
+                  
+              </option>
+                      <?php
+                    }
+                  }
+                ?>
             </select>
           </form>
         </th>
         <th class='col2'>Article</th><th class='col3'>Date Published</th>
       </tr>
-END;
-
-
-$imgSource = "https://www.thinkeconomics.co.uk";
-
-foreach ($newsArticles as $row) {
-    echo "<tr>";
-  
-    //print_r($row);
-    //echo "<td>".$row['id']."</td>";
-    echo "<td>".$row['topic']."</td>";
-    echo "<td><p><strong>Headline: </strong>".$row['headline'];
-    
-    echo "</p><p><strong>Link: </strong><a class = 'hover:bg-sky-100' target ='_blank' href='".$row['link']."'>".$row['link']."</a>";
-
-    if($row['path'] != "" && $downloadPermissions) {
-      ?>
-      <a class="bg-sky-100 hover:bg-sky-200  rounded whitespace-nowrap" target="_blank" href="<?=$imgSource.$row['path']?>">Download PDF</a>
       <?php
-    }
-    echo "</p>";
-
-    if ($row['explanation']!="") {
-      echo "<p><strong>Explanation: </strong>".$row['explanation']."</p";
-    }
-
-    
-
-    echo "</td>";
-
-    $date = strtotime($row['datePublished']);
-    $formatDate = date( 'd M Y', $date );
-    echo "<td>".$formatDate."</td>";
-    
-
-  }
 
 
+      $imgSource = "https://www.thinkeconomics.co.uk";
 
-  
+      foreach ($newsArticles as $row) {
+          echo "<tr>";
+        
+          //print_r($row);
+          //echo "<td>".$row['id']."</td>";
+          echo "<td>".$row['topic']."</td>";
+          echo "<td><p><strong>Headline: </strong>".$row['headline'];
+          
+          echo "</p><p><strong>Link: </strong><a class = 'hover:bg-sky-100 underline text-sky-700' target ='_blank' href='".$row['link']."'>".$row['link']."</a>";
 
-  
-  
-  
-      
+          if($row['path'] != "" && $downloadPermissions) {
+            ?>
+            <a class="bg-sky-100 hover:bg-sky-200  rounded whitespace-nowrap" target="_blank" href="<?=$imgSource.$row['path']?>">Download PDF</a>
+            <?php
+          }
+          echo "</p>";
 
+          if ($row['explanation']!="") {
+            echo "<p><strong>Explanation: </strong>".$row['explanation']."</p";
+          }
 
+          
 
+          echo "</td>";
 
+          $date = strtotime($row['datePublished']);
+          $formatDate = date( 'd M Y', $date );
+          echo "<td class='text-center'>".$formatDate."</td>";
+          
 
-echo "</table>";
+        }
 
-
-?>
+      ?>
+    </table>
+  </div>
 </div>
+
 <?php
-
-
-include "footer_tailwind.php";
-
-
+  include "footer_tailwind.php";
 ?>
-
-
-
-</body>
-
-</html>
