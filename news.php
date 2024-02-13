@@ -121,6 +121,8 @@ Get variables:
   'orderBy' 
   'limit' 
   'searchFor'
+  'noSearch' => if this is set then the extended search bar does not come up
+  'link'
 
 
 -->
