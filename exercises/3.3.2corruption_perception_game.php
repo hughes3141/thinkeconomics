@@ -1,12 +1,36 @@
-<html>
+<?php
 
-<head>
+// Initialize the session
+session_start();
 
-<?php include "../header.php"; ?>
+$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
-<style>
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+include($path."/php_functions.php");
 
+
+if (!isset($_SESSION['userid'])) {
+  
+  //header("location: /login.php");
+  
+}
+
+else {
+  $userInfo = getUserInfo($_SESSION['userid']);
+  $userId = $_SESSION['userid'];
+  $permissions = $userInfo['permissions'];
+  /*
+  if (!(str_contains($permissions, 'main_admin'))) {
+    header("location: /index.php");
+  }
+  */
+
+}
+
+$style_input = "
 /*
+
 
 .container {
 	border: 3px solid black;
@@ -18,7 +42,6 @@
 	
 
 }
-*/
 
 .floater {
 	border: 3px solid red;
@@ -27,8 +50,9 @@
 
 	height: 50px;
 	width: 50px;
-
 }
+
+
 
 .n1 {
 
@@ -40,32 +64,53 @@
 
 	left: 140;
 	top: 10;
+
 }
+*/
 
 .float-container {
     border: 3px solid black;
     padding: 0px;
 	overflow: auto;
-	height: 200px;
-	//width: 90%;
+	height: 350px;
+	//width: 99%;
+	margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: stretch;
+	
+	
 
 }
 
 .float-child {
 	
-    float: left;
-    padding: 0px;
+    //float: left;
+    //padding: 0px;
     border: 2px solid red;
-	width:42%;
+	//width:42%;
 	margin: 10px;
-	height: 85%;
+	//height: 93%;
 	text-align: center;
+	overflow: hidden;
+  flex-grow: 1;
+  width: 30%;
+  
+	
+	
 	
 	}
+
+  .float-child h1{
+    background: inherit;
+  }
 	
 .col_1 {
 	float: left;
-	width: 48%;}
+	width: 48%;
+	}
 
 .col_2 {
 	float: right;
@@ -90,6 +135,7 @@
 tr, th, td {
 
 	border: 1px solid black;
+	text-align: center;
 	}
 
 th {
@@ -99,249 +145,297 @@ table {
 border-collapse: collapse;
 }
 
-</style>
+p {
+  margin-bottom: 1em;
+}
+
+  
+  ";
+
+if($_SERVER['REQUEST_METHOD']==='POST') {
 
 
-</head>
+}
 
 
-<body onload="populate(), setup()">
-
-<?php include "../navbar.php"; ?>
 
 
-<h1>3.3.2 Corruption Perceptions Index Game</h1>
-
-<h2>Instructions:</h2>
-<p style="display: none;">Click &ldquo;Start Game&rdquo; to begin.</p>
-<p>The two cards below will show the names of two countries.</p>
-<p>Guess which one is the <em>less corrupt</em>. This is measured by Transparency International&rsquo;s Corruption Perception Index. A less corrupt country will have a higher score in the index.</p>
-<p>You can find the data here: <a href="https://www.transparency.org/en/cpi/2020/index/">https://www.transparency.org/en/cpi/2020/index/</a> (but don&rsquo;t use this for the game or you&rsquo;ll spoil it!)</p>
-<p>Once you guess the answer is shown, along with the corruption perception index score for each country. If the card shows <span id="right_sign">green</span> you guessed right; <span id="wrong_sign">red</span> means you guessed wrong. Click either card to play again with two new countries.</p>
-<p>Have a go and see if you can get a high score!</p>
-
-<p><button id="start" onclick="setup()" style="display: none">Start Game</button></p>
+include($path."/header_tailwind.php");
 
 
-<div class="float-container noselect">
 
-<div class="float-child col1" id = "grid_1" onclick="test(1); myClear()">
-	<p id="c1" class="country_name"></p>
-	<p id="e1" style="display:none;">Corruption Perception Index: <span id="d1"></span>/100</p>
-	</div>
-<div class="float-child col2" id = "grid_2" onclick="test(2); myClear()">
-	<p id="c2" class="country_name"></p>
-	<p id="e2" style="display:none;">Corruption Perception Index: <span id="d2"></span>/100</p>
-	</div>
+
+
+?>
+
+
+
+<div class=" mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+  <h1 class="font-mono text-2xl bg-pink-400 pl-1">Corruption Perceptions Index Game</h1>
+  <div class="  mx-auto p-4 mt-2 bg-white text-black mb-5">
+      
+      <p>The two cards below will show the names of two countries.</p>
+      <p>Guess which one is the <em>less corrupt</em>. This is measured by Transparency International&rsquo;s Corruption Perception Index. A less corrupt country will have a higher score in the index.</p>
+      <p>You can find the data here: <a class="underline text-sky-700" target ="_blank" href="https://www.transparency.org/en/cpi/">Corruptions Perception Index (Transparency International)</a> (but don&rsquo;t use this for the game or you&rsquo;ll spoil it!)</p>
+      <p>Once you guess the answer is shown, along with the corruption perception index score for each country. If the card shows <span id="right_sign" class="px-2 rounded">green</span> you guessed right; <span id="wrong_sign" class="px-2 rounded">red</span> means you guessed wrong. Click either card to play again with two new countries.</p>
+      <p>Have a go and see if you can get a high score!</p>
+
+      
+
+
+      <p class="mb-1 hidden">Difficulty Level: 
+      <select name="difficulty" id="difficulty" onchange = "difficulty()">
+        <option value="Ridiculous">Ridiculous</option>
+        <option value="Hard">Hard</option>
+        <option value="Medium" selected="selected">Medium</option>
+        <option value="Easy">Easy</option>
+
+      </select></p>
+
+      <p><button id="start" onclick="setup()" style="display: none">Start Game</button></p>
+
+
+      <div class="float-container noselect rounded  lg:text-base">
+
+        <div class="float-child col1 rounded p-1" id="grid_1" onclick="test(1); myClear()" style="background-color: white;">
+          <p id="c1" class="country_name text-xl"></p>
+          <p id="e1" style="display:none;">Corruption Perception Index: <span id="d1"></span>/100</p>
+        </div>
+        <div class="float-child col2 rounded p-1" id="grid_2" onclick="test(2); myClear()" style="background-color: white;">
+          <p id="c2" class="country_name text-xl"></p>
+          <p id="e2" style="display:none;">Corruption Perception Index: <span id="d2"></span>/100</p>
+        </div>
+      </div>
+      <p>Score: <span id="score">0</span>/<span id="roundcount">0</span></p>
+
+      <p><button class="border border-black rounded bg-pink-200 w-full mb-2" id="show_table" onclick="show_table()">Click here to show the values of all countries</button></p>
+
+      <table id="all_table" style="display:none" class=" text-sm lg:text-base table-auto w-full lg:w-1/2 mx-auto  ">
+      <tbody><tr class="sticky top-12 lg:top-20 bg-white ">
+        <th class="">Rank</th>
+        <th class="">Country</th>
+        <th class="">Corruption Perception Index</th>
+
+        
+      </tr>
+      </tbody>
+      </table>
+
+  </div>
 </div>
-<p>Score: <span id ="score">0</span>/<span id="roundcount">0</span></p>
-
-<p><button id="show_table" onclick ="show_table()">Click here to show the values of all countries</button></p>
-
-<table id="all_table" style="table-layout: auto; width: ; display: none;" >
-<tr>
-	<th>Rank</th>
-	<th>Country</th>
-	<th>Corruption Perception Index <br>/100</th>
-	
-</tr>
 
 
-</table>
-
-<?php include "../footer.php"; ?>
 
 <script>
 
+ 
+
 /* 
-Source material taken from: https://www.transparency.org/en/cpi/2020/index/nzl 
+10 February 2024:
+
+Data from Transparency international: 
+
+https://www.transparency.org/en/cpi/2023
+
+Go to 'CPI 2023 Global Results Trends"
+
+This downloads xls file: https://images.transparencycdn.org/images/CPI2023_Global_Results__Trends.xlsx
+
+Then take first 5 columns of the table and convert to JSON row arrays.
+
 Used Mr Data Converter to put into array. https://shancarter.github.io/mr-data-converter/
 */
 
 var index = [
-  ["New Zealand","NZL","AP",88,1],
-  ["Finland","FIN","WE/EU",85,3],
-  ["Singapore","SGP","AP",85,3],
-  ["Sweden","SWE","WE/EU",85,3],
-  ["Switzerland","CHE","WE/EU",85,3],
-  ["Norway","NOR","WE/EU",84,7],
-  ["Netherlands","NLD","WE/EU",82,8],
-  ["Germany","DEU","WE/EU",80,9],
-  ["Luxembourg","LUX","WE/EU",80,9],
-  ["Australia","AUS","AP",77,11],
-  ["Canada","CAN","AME",77,11],
-  ["Hong Kong","HKG","AP",77,11],
-  ["United Kingdom","GBR","WE/EU",77,11],
-  ["Austria","AUT","WE/EU",76,15],
-  ["Belgium","BEL","WE/EU",76,15],
-  ["Estonia","EST","WE/EU",75,17],
-  ["Iceland","ISL","WE/EU",75,17],
-  ["Japan","JPN","AP",74,19],
-  ["Ireland","IRL","WE/EU",72,20],
-  ["United Arab Emirates","ARE","MENA",71,21],
-  ["Uruguay","URY","AME",71,21],
-  ["France","FRA","WE/EU",69,23],
-  ["Bhutan","BTN","AP",68,24],
-  ["Chile","CHL","AME",67,25],
-  ["United States of America","USA","AME",67,25],
-  ["Seychelles","SYC","SSA",66,27],
-  ["Taiwan","TWN","AP",65,28],
-  ["Barbados","BRB","AME",64,29],
-  ["Bahamas","BHS","AME",63,30],
-  ["Qatar","QAT","MENA",63,30],
-  ["Spain","ESP","WE/EU",62,32],
-  ["Korea, South","KOR","AP",61,33],
-  ["Portugal","PRT","WE/EU",61,33],
-  ["Botswana","BWA","SSA",60,35],
-  ["Brunei Darussalam","BRN","AP",60,35],
-  ["Israel","ISR","MENA",60,35],
-  ["Lithuania","LTU","WE/EU",60,35],
-  ["Slovenia","SVN","WE/EU",60,35],
-  ["Saint Vincent and the Grenadines","VCT","AME",59,40],
-  ["Cabo Verde","CPV","SSA",58,41],
-  ["Costa Rica","CRI","AME",57,42],
-  ["Cyprus","CYP","WE/EU",57,42],
-  ["Latvia","LVA","WE/EU",57,42],
-  ["Georgia","GEO","ECA",56,45],
-  ["Poland","POL","WE/EU",56,45],
-  ["Saint Lucia","LCA","AME",56,45],
-  ["Dominica","DMA","AME",55,48],
-  ["Czechia","CZE","WE/EU",54,49],
-  ["Oman","OMN","MENA",54,49],
-  ["Rwanda","RWA","SSA",54,49],
-  ["Grenada","GRD","AME",53,52],
-  ["Italy","ITA","WE/EU",53,52],
-  ["Malta","MLT","WE/EU",53,52],
-  ["Mauritius","MUS","SSA",53,52],
-  ["Saudi Arabia","SAU","MENA",53,52],
-  ["Malaysia","MYS","AP",51,57],
-  ["Namibia","NAM","SSA",51,57],
-  ["Greece","GRC","WE/EU",50,59],
-  ["Armenia","ARM","ECA",49,60],
-  ["Jordan","JOR","MENA",49,60],
-  ["Slovakia","SVK","WE/EU",49,60],
-  ["Belarus","BLR","ECA",47,63],
-  ["Croatia","HRV","WE/EU",47,63],
-  ["Cuba","CUB","AME",47,63],
-  ["Sao Tome and Principe","STP","SSA",47,63],
-  ["Montenegro","MNE","ECA",45,67],
-  ["Senegal","SEN","SSA",45,67],
-  ["Bulgaria","BGR","WE/EU",44,69],
-  ["Hungary","HUN","WE/EU",44,69],
+  ["Denmark","DNK","WE/EU",90,1],
+  ["Finland","FIN","WE/EU",87,2],
+  ["New Zealand","NZL","AP",85,3],
+  ["Norway","NOR","WE/EU",84,4],
+  ["Singapore","SGP","AP",83,5],
+  ["Sweden","SWE","WE/EU",82,6],
+  ["Switzerland","CHE","WE/EU",82,6],
+  ["Netherlands","NLD","WE/EU",79,8],
+  ["Germany","DEU","WE/EU",78,9],
+  ["Luxembourg","LUX","WE/EU",78,9],
+  ["Ireland","IRL","WE/EU",77,11],
+  ["Canada","CAN","AME",76,12],
+  ["Estonia","EST","WE/EU",76,12],
+  ["Australia","AUS","AP",75,14],
+  ["Hong Kong","HKG","AP",75,14],
+  ["Belgium","BEL","WE/EU",73,16],
+  ["Japan","JPN","AP",73,16],
+  ["Uruguay","URY","AME",73,16],
+  ["Iceland","ISL","WE/EU",72,19],
+  ["Austria","AUT","WE/EU",71,20],
+  ["France","FRA","WE/EU",71,20],
+  ["Seychelles","SYC","SSA",71,20],
+  ["United Kingdom","GBR","WE/EU",71,20],
+  ["Barbados","BRB","AME",69,24],
+  ["United States","USA","AME",69,24],
+  ["Bhutan","BTN","AP",68,26],
+  ["United Arab Emirates","ARE","MENA",68,26],
+  ["Taiwan","TWN","AP",67,28],
+  ["Chile","CHL","AME",66,29],
+  ["Bahamas","BHS","AME",64,30],
+  ["Cabo Verde","CPV","SSA",64,30],
+  ["Korea, South","KOR","AP",63,32],
+  ["Israel","ISR","MENA",62,33],
+  ["Lithuania","LTU","WE/EU",61,34],
+  ["Portugal","PRT","WE/EU",61,34],
+  ["Latvia","LVA","WE/EU",60,36],
+  ["Saint Vincent and the Grenadines","VCT","AME",60,36],
+  ["Spain","ESP","WE/EU",60,36],
+  ["Botswana","BWA","SSA",59,39],
+  ["Qatar","QAT","MENA",58,40],
+  ["Czechia","CZE","WE/EU",57,41],
+  ["Dominica","DMA","AME",56,42],
+  ["Italy","ITA","WE/EU",56,42],
+  ["Slovenia","SVN","WE/EU",56,42],
+  ["Costa Rica","CRI","AME",55,45],
+  ["Saint Lucia","LCA","AME",55,45],
+  ["Poland","POL","WE/EU",54,47],
+  ["Slovakia","SVK","WE/EU",54,47],
+  ["Cyprus","CYP","WE/EU",53,49],
+  ["Georgia","GEO","ECA",53,49],
+  ["Grenada","GRD","AME",53,49],
+  ["Rwanda","RWA","SSA",53,49],
+  ["Fiji","FJI","AP",52,53],
+  ["Saudi Arabia","SAU","MENA",52,53],
+  ["Malta","MLT","WE/EU",51,55],
+  ["Mauritius","MUS","SSA",51,55],
+  ["Croatia","HRV","WE/EU",50,57],
+  ["Malaysia","MYS","AP",50,57],
+  ["Greece","GRC","WE/EU",49,59],
+  ["Namibia","NAM","SSA",49,59],
+  ["Vanuatu","VUT","AP",48,61],
+  ["Armenia","ARM","ECA",47,62],
+  ["Jordan","JOR","MENA",46,63],
+  ["Kuwait","KWT","MENA",46,63],
+  ["Montenegro","MNE","ECA",46,63],
+  ["Romania","ROU","WE/EU",46,63],
+  ["Bulgaria","BGR","WE/EU",45,67],
+  ["Sao Tome and Principe","STP","SSA",45,67],
   ["Jamaica","JAM","AME",44,69],
-  ["Romania","ROU","WE/EU",44,69],
-  ["South Africa","ZAF","SSA",44,69],
-  ["Tunisia","TUN","MENA",44,69],
-  ["Ghana","GHA","SSA",43,75],
-  ["Maldives","MDV","AP",43,75],
-  ["Vanuatu","VUT","AP",43,75],
-  ["Argentina","ARG","AME",42,78],
-  ["Bahrain","BHR","MENA",42,78],
-  ["China","CHN","AP",42,78],
-  ["Kuwait","KWT","MENA",42,78],
-  ["Solomon Islands","SLB","AP",42,78],
-  ["Benin","BEN","SSA",41,83],
-  ["Guyana","GUY","AME",41,83],
-  ["Lesotho","LSO","SSA",41,83],
-  ["Burkina Faso","BFA","SSA",40,86],
-  ["India","IND","AP",40,86],
-  ["Morocco","MAR","MENA",40,86],
-  ["Timor-Leste","TLS","AP",40,86],
-  ["Trinidad and Tobago","TTO","AME",40,86],
-  ["Turkey","TUR","ECA",40,86],
-  ["Colombia","COL","AME",39,92],
-  ["Ecuador","ECU","AME",39,92],
-  ["Brazil","BRA","AME",38,94],
-  ["Ethiopia","ETH","SSA",38,94],
-  ["Kazakhstan","KAZ","ECA",38,94],
-  ["Peru","PER","AME",38,94],
-  ["Serbia","SRB","ECA",38,94],
-  ["Sri Lanka","LKA","AP",38,94],
-  ["Suriname","SUR","AME",38,94],
-  ["Tanzania","TZA","SSA",38,94],
-  ["Gambia","GMB","SSA",37,102],
-  ["Indonesia","IDN","AP",37,102],
-  ["Albania","ALB","ECA",36,104],
+  ["Benin","BEN","SSA",43,70],
+  ["Ghana","GHA","SSA",43,70],
+  ["Oman","OMN","MENA",43,70],
+  ["Senegal","SEN","SSA",43,70],
+  ["Solomon Islands","SLB","AP",43,70],
+  ["Timor-Leste","TLS","AP",43,70],
+  ["Bahrain","BHR","MENA",42,76],
+  ["China","CHN","AP",42,76],
+  ["Cuba","CUB","AME",42,76],
+  ["Hungary","HUN","WE/EU",42,76],
+  ["Moldova","MDA","ECA",42,76],
+  ["North Macedonia","MKD","ECA",42,76],
+  ["Trinidad and Tobago","TTO","AME",42,76],
+  ["Burkina Faso","BFA","SSA",41,83],
+  ["Kosovo","KSV","ECA",41,83],
+  ["South Africa","ZAF","SSA",41,83],
+  ["Vietnam","VNM","AP",41,83],
+  ["Colombia","COL","AME",40,87],
+  ["Côte d'Ivoire","CIV","SSA",40,87],
+  ["Guyana","GUY","AME",40,87],
+  ["Suriname","SUR","AME",40,87],
+  ["Tanzania","TZA","SSA",40,87],
+  ["Tunisia","TUN","MENA",40,87],
+  ["India","IND","AP",39,93],
+  ["Kazakhstan","KAZ","ECA",39,93],
+  ["Lesotho","LSO","SSA",39,93],
+  ["Maldives","MDV","AP",39,93],
+  ["Morocco","MAR","MENA",38,97],
+  ["Albania","ALB","ECA",37,98],
+  ["Argentina","ARG","AME",37,98],
+  ["Belarus","BLR","ECA",37,98],
+  ["Ethiopia","ETH","SSA",37,98],
+  ["Gambia","GMB","SSA",37,98],
+  ["Zambia","ZMB","SSA",37,98],
   ["Algeria","DZA","MENA",36,104],
-  ["Cote d'Ivoire","CIV","SSA",36,104],
-  ["El Salvador","SLV","AME",36,104],
-  ["Kosovo","KSV","ECA",36,104],
-  ["Thailand","THA","AP",36,104],
-  ["Vietnam","VNM","AP",36,104],
-  ["Bosnia and Herzegovina","BIH","ECA",35,111],
-  ["Mongolia","MNG","AP",35,111],
-  ["North Macedonia","MKD","ECA",35,111],
-  ["Panama","PAN","AME",35,111],
-  ["Moldova","MDA","ECA",34,115],
+  ["Brazil","BRA","AME",36,104],
+  ["Serbia","SRB","ECA",36,104],
+  ["Ukraine","UKR","ECA",36,104],
+  ["Bosnia and Herzegovina","BIH","ECA",35,108],
+  ["Dominican Republic","DOM","AME",35,108],
+  ["Egypt","EGY","MENA",35,108],
+  ["Nepal","NPL","AP",35,108],
+  ["Panama","PAN","AME",35,108],
+  ["Sierra Leone","SLE","SSA",35,108],
+  ["Thailand","THA","AP",35,108],
+  ["Ecuador","ECU","AME",34,115],
+  ["Indonesia","IDN","AP",34,115],
+  ["Malawi","MWI","SSA",34,115],
   ["Philippines","PHL","AP",34,115],
-  ["Egypt","EGY","MENA",33,117],
-  ["Eswatini","SWZ","SSA",33,117],
-  ["Nepal","NPL","AP",33,117],
-  ["Sierra Leone","SLE","SSA",33,117],
-  ["Ukraine","UKR","ECA",33,117],
-  ["Zambia","ZMB","SSA",33,117],
-  ["Niger","NER","SSA",32,123],
-  ["Bolivia","BOL","AME",31,124],
-  ["Kenya","KEN","SSA",31,124],
-  ["Kyrgyzstan","KGZ","ECA",31,124],
-  ["Mexico","MEX","AME",31,124],
-  ["Pakistan","PAK","AP",31,124],
-  ["Azerbaijan","AZE","ECA",30,129],
-  ["Gabon","GAB","SSA",30,129],
-  ["Malawi","MWI","SSA",30,129],
-  ["Mali","MLI","SSA",30,129],
-  ["Russia","RUS","ECA",30,129],
-  ["Laos","LAO","AP",29,134],
-  ["Mauritania","MRT","SSA",29,134],
-  ["Togo","TGO","SSA",29,134],
-  ["Dominican Republic","DOM","AME",28,137],
-  ["Guinea","GIN","SSA",28,137],
-  ["Liberia","LBR","SSA",28,137],
-  ["Myanmar","MMR","AP",28,137],
-  ["Paraguay","PRY","AME",28,137],
-  ["Angola","AGO","SSA",27,142],
-  ["Djibouti","DJI","SSA",27,142],
-  ["Papua New Guinea","PNG","AP",27,142],
-  ["Uganda","UGA","SSA",27,142],
-  ["Bangladesh","BGD","AP",26,146],
-  ["Central African Republic","CAF","SSA",26,146],
-  ["Uzbekistan","UZB","ECA",26,146],
-  ["Cameroon","CMR","SSA",25,149],
-  ["Guatemala","GTM","AME",25,149],
-  ["Iran","IRN","MENA",25,149],
-  ["Lebanon","LBN","MENA",25,149],
-  ["Madagascar","MDG","SSA",25,149],
-  ["Mozambique","MOZ","SSA",25,149],
-  ["Nigeria","NGA","SSA",25,149],
-  ["Tajikistan","TJK","ECA",25,149],
-  ["Honduras","HND","AME",24,157],
-  ["Zimbabwe","ZWE","SSA",24,157],
-  ["Nicaragua","NIC","AME",22,159],
-  ["Cambodia","KHM","AP",21,160],
-  ["Chad","TCD","SSA",21,160],
-  ["Comoros","COM","SSA",21,160],
-  ["Eritrea","ERI","SSA",21,160],
-  ["Iraq","IRQ","MENA",21,160],
-  ["Afghanistan","AFG","AP",19,165],
-  ["Burundi","BDI","SSA",19,165],
-  ["Congo","COG","SSA",19,165],
-  ["Guinea Bissau","GNB","SSA",19,165],
-  ["Turkmenistan","TKM","ECA",19,165],
-  ["Democratic Republic of the Congo","COD","SSA",18,170],
-  ["Haiti","HTI","AME",18,170],
-  ["Korea, North","PRK","AP",18,170],
-  ["Libya","LBY","MENA",17,173],
-  ["Equatorial Guinea","GNQ","SSA",16,174],
-  ["Sudan","SDN","SSA",16,174],
-  ["Venezuela","VEN","AME",15,176],
-  ["Yemen","YEM","MENA",15,176],
-  ["Syria","SYR","MENA",14,178],
-  ["Somalia","SOM","SSA",12,179],
-  ["South Sudan","SSD","SSA",12,179]
+  ["Sri Lanka","LKA","AP",34,115],
+  ["Turkey","TUR","ECA",34,115],
+  ["Angola","AGO","SSA",33,121],
+  ["Mongolia","MNG","AP",33,121],
+  ["Peru","PER","AME",33,121],
+  ["Uzbekistan","UZB","ECA",33,121],
+  ["Niger","NER","SSA",32,125],
+  ["El Salvador","SLV","AME",31,126],
+  ["Kenya","KEN","SSA",31,126],
+  ["Mexico","MEX","AME",31,126],
+  ["Togo","TGO","SSA",31,126],
+  ["Djibouti","DJI","SSA",30,130],
+  ["Eswatini","SWZ","SSA",30,130],
+  ["Mauritania","MRT","SSA",30,130],
+  ["Bolivia","BOL","AME",29,133],
+  ["Pakistan","PAK","AP",29,133],
+  ["Papua New Guinea","PNG","AP",29,133],
+  ["Gabon","GAB","SSA",28,136],
+  ["Laos","LAO","AP",28,136],
+  ["Mali","MLI","SSA",28,136],
+  ["Paraguay","PRY","AME",28,136],
+  ["Cameroon","CMR","SSA",27,140],
+  ["Guinea","GIN","SSA",26,141],
+  ["Kyrgyzstan","KGZ","ECA",26,141],
+  ["Russia","RUS","ECA",26,141],
+  ["Uganda","UGA","SSA",26,141],
+  ["Liberia","LBR","SSA",25,145],
+  ["Madagascar","MDG","SSA",25,145],
+  ["Mozambique","MOZ","SSA",25,145],
+  ["Nigeria","NGA","SSA",25,145],
+  ["Bangladesh","BGD","AP",24,149],
+  ["Central African Republic","CAF","SSA",24,149],
+  ["Iran","IRN","MENA",24,149],
+  ["Lebanon","LBN","MENA",24,149],
+  ["Zimbabwe","ZWE","SSA",24,149],
+  ["Azerbaijan","AZE","ECA",23,154],
+  ["Guatemala","GTM","AME",23,154],
+  ["Honduras","HND","AME",23,154],
+  ["Iraq","IRQ","MENA",23,154],
+  ["Cambodia","KHM","AP",22,158],
+  ["Congo","COG","SSA",22,158],
+  ["Guinea-Bissau","GNB","SSA",22,158],
+  ["Eritrea","ERI","SSA",21,161],
+  ["Afghanistan","AFG","AP",20,162],
+  ["Burundi","BDI","SSA",20,162],
+  ["Chad","TCD","SSA",20,162],
+  ["Comoros","COM","SSA",20,162],
+  ["Democratic Republic of the Congo","COD","SSA",20,162],
+  ["Myanmar","MMR","AP",20,162],
+  ["Sudan","SDN","SSA",20,162],
+  ["Tajikistan","TJK","ECA",20,162],
+  ["Libya","LBY","MENA",18,170],
+  ["Turkmenistan","TKM","ECA",18,170],
+  ["Equatorial Guinea","GNQ","SSA",17,172],
+  ["Haiti","HTI","AME",17,172],
+  ["Korea, North","PRK","AP",17,172],
+  ["Nicaragua","NIC","AME",17,172],
+  ["Yemen","YEM","MENA",16,176],
+  ["South Sudan","SSD","SSA",13,177],
+  ["Syria","SYR","MENA",13,177],
+  ["Venezuela","VEN","AME",13,177],
+  ["Somalia","SOM","SSA",11,180]
 ]
 
+
+
+
+
 var diff = index.length;
-var part = 20;
+
+var part = 0;
 
 var num1;
 var num2;
@@ -358,7 +452,41 @@ var key_2 = document.getElementById("e2");
 
 var colour_right = "#9fff8a";
 var colour_wrong = "#ff8a8a";
+/*
 
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function difficulty() {
+
+
+	var difficultLevel = [ [index.length, 0.2],[20, 0],[10,0],[4,0]  ]
+	
+	var a = document.getElementById("difficulty").value;
+	
+	if (a == "Easy") {
+		diff = difficultLevel[0][0];
+		minpart = difficultLevel[0][1];
+		}
+	else if (a == "Medium") {
+		diff = difficultLevel[1][0];
+		minpart = difficultLevel[1][1];
+		}
+	else if (a == "Hard") {
+		diff = difficultLevel[2][0];
+		minpart = difficultLevel[2][1];
+		}
+	else {
+		diff = difficultLevel[3][0];
+		minpart = difficultLevel[3][1];
+		}
+		
+  console.log(diff+" "+minpart);
+	setup();
+	count=0;
+}
+*/
 
 function populate() {
 
@@ -370,9 +498,51 @@ function populate() {
 		var cell1 = row.insertCell(0);
 		var cell2 = row.insertCell(1);
 		var cell3 = row.insertCell(2);
+    /*
+		var cell4 = row.insertCell(3);
+		var cell5 = row.insertCell(4);
+		var cell6 = row.insertCell(5);
+		var cell7 = row.insertCell(6);
+		var cell8 = row.insertCell(7);
+    */
+
+    /*
+
+    cell4.classList.add("hidden");
+    cell4.classList.add('lg:table-cell');
+    cell5.classList.add("hidden");
+    cell5.classList.add('lg:table-cell');
+    cell6.classList.add("hidden");
+    cell6.classList.add('lg:table-cell');
+    cell7.classList.add("hidden");
+    cell7.classList.add('lg:table-cell');
+
+    */
+    
 		cell1.innerHTML = index[i][4];
 		cell2.innerHTML = index[i][0];
 		cell3.innerHTML = index[i][3];
+
+    /*
+		cell4.innerHTML = index[i][3];
+		cell5.innerHTML = index[i][4];
+		cell6.innerHTML = index[i][5];
+		cell7.innerHTML = "$"+numberWithCommas(parseInt(index[i][6]*1000));
+		cell8.innerHTML = index[i][7];
+    if(index[i][7] >= 20) {
+      row.classList.add("bg-sky-200");
+    } else if(index[i][7] >= 10) {
+      row.classList.add("bg-sky-100");
+    }
+    if(index[i][7] <= -30) {
+      row.classList.add("bg-pink-300");
+    } else if(index[i][7] <= -20) {
+      row.classList.add("bg-pink-200");
+    } else if(index[i][7] <= -10) {
+      row.classList.add("bg-pink-100");
+    }
+    */
+    
 	}
 	
 	document.getElementById("right_sign").style.backgroundColor = colour_right;
@@ -403,6 +573,9 @@ function show_table() {
 
 function setup() {
 
+//var a = document.getElementById("difficulty");
+
+
 num1= Math.floor(Math.random()*index.length);
 
 
@@ -410,9 +583,36 @@ num1= Math.floor(Math.random()*index.length);
 	do {
 		var a= Math.floor((Math.random()-0.5)*diff);
 		num2 = num1 + a;
+		console.log("a: "+a);
 	}
 	
 	while ((num2 < 0)||(num2 > (index.length-1))||(num2==num1)||(Math.abs(index[num2][3]-index[num1][3])<part));
+/*
+var count1= index[num1][1];
+document.getElementById("c1").innerHTML = count1;
+
+var hdi1= index[num1][0];
+document.getElementById("d1").innerHTML = hdi1;
+key_1.style.display = "none";
+
+var count2= index[num2][1];
+document.getElementById("c2").innerHTML = count2;
+
+var hdi2= index[num2][2];
+document.getElementById("d2").innerHTML = hdi2;
+key_2.style.display = "none";
+
+document.getElementById("f1").innerHTML = index[num1][3];
+document.getElementById("g1").innerHTML = index[num1][4];
+document.getElementById("h1").innerHTML = index[num1][5];
+document.getElementById("j1").innerHTML = "$"+numberWithCommas(parseInt(index[num1][6]*1000));
+
+document.getElementById("f2").innerHTML = index[num2][3];
+document.getElementById("g2").innerHTML = index[num2][4];
+document.getElementById("h2").innerHTML = index[num2][5];
+document.getElementById("j2").innerHTML = "$"+numberWithCommas(parseInt(index[num2][6]*1000));
+
+*/
 
 var count1= index[num1][0];
 document.getElementById("c1").innerHTML = count1;
@@ -425,7 +625,6 @@ var cpi2= index[num2][3];
 document.getElementById("d2").innerHTML = cpi2;
 key_2.style.display = "none";
 
-
 grid_2.style.backgroundColor="white";
 grid_1.style.backgroundColor="white";
 
@@ -436,10 +635,12 @@ console.log(num2);
 
 }
 
-
-
-
 var clickcount = 0;
+
+populate();
+setup();
+
+
 
 function test(i) {
 
@@ -517,8 +718,7 @@ if (count>1) {
 
 
 
-</body>
 
 
 
-</html>
+<?php   include($path."/footer_tailwind.php");?>
