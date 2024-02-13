@@ -124,6 +124,7 @@ Get variables:
   'searchFor'
   'noSearch' => if this is set then the extended search bar does not come up
   'link'
+  'searchBar' => if this is set then extended search bar will be open on load
 
 
 -->
