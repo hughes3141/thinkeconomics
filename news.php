@@ -183,7 +183,7 @@ Get variables:
                 </div>
 
               </div>
-              <input class="w-full bg-pink-300" type="submit" value="Submit"</input>
+              <input class="w-full bg-pink-300" type="submit" value="Search"</input>
               <input type="hidden" value="<?=$get_selectors['topic']?>">
             </form>
           </div>
