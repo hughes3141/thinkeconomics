@@ -1513,7 +1513,7 @@ function insertNewsArticle($headline, $hyperlink, $datePublished, $explanation, 
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("ssssssssii", $headline, $hyperlink, $datePublished, $explanation, $explanation_long, $topic, $keyWords, $datetime, $userid, $active);
   $stmt->execute();
-  return "New records created successfully";
+  return "New record created successfully";
 
 
 

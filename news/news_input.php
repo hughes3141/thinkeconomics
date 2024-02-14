@@ -42,11 +42,10 @@ $style_input = "
   ";
 
 $confirmArticleEntry = "";
+$previousLinkStatus = 0;
 
 if($_SERVER['REQUEST_METHOD']==='POST') {
   $insertRecord = 0;
-
-  $insertRecord = 1;
 
   $headline = $_POST['headline'];
   $hyperlink =  $_POST['link'];
@@ -59,6 +58,19 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
   $keyWords = $_POST['keyWords'];
   $userid = $userId;
   $active = $_POST['active'];
+
+  $previousLink = getNewsArticles(null, null, null, null, null, null, null, null, null, $hyperlink);
+
+  //print_r($previousLink);
+
+  if(count($previousLink)==0) {
+    $insertRecord = 1;
+  } else {
+    $confirmArticleEntry = "Not entered- article previously exists in database";
+    $previousLinkStatus = 1;
+  }
+
+
 
   if($insertRecord == 1) {
     $confirmArticleEntry = insertNewsArticle($headline, $hyperlink, $datePublished, $explanation, $explanation_long, $topic, $datetime, $keyWords, $userid, $active);
@@ -79,6 +91,13 @@ include($path."/header_tailwind.php");
       }
     ?>
     <p><?=$confirmArticleEntry?></p>
+    <?php
+      if($previousLinkStatus==1) {
+        echo "<p>";
+        print_r($previousLink);
+        echo "</p>";
+      }
+    ?>
     <div id="phone_entry_div">
       <label for="phone_entry_input">Phone Optimised Entry:</label><br>
       <input class="w-full" type = "text" id ="phone_entry_input" onchange="phone_fill();"></input><br>

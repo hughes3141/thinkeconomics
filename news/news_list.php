@@ -41,6 +41,10 @@ table {
   width: 100%;
 }
 
+textarea, input {
+  padding: 0.25rem
+}
+
 ";
 
 
@@ -196,8 +200,9 @@ GET variables:
             </td>
             <td class='col4'>
               <div class="show_<?=$row['id'];?>">
-                <?=$row['datePublished'];?>
+                <?=date("d/m/Y",strtotime($row['datePublished']))?>
               </div>
+              
               <input class="w-full hide hide_<?=$row['id'];?>" type = "date" value = "<?=$row['datePublished']?>" name="datePublished"></input>
             </td>
             <td>
