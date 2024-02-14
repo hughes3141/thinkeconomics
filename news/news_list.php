@@ -19,24 +19,6 @@ if (!isset($_SESSION['userid'])) {
 
 
 
-?>
-
-
-
-<!--
-
-GET variables:
--topic = filter by topic
--keyword = filter by keyword
-'startDate' 
-  'endDate'
-  'orderBy'
-  'limit' default  100
-
--->
-
-<?php
-
 $style_input = "
 
 
@@ -87,21 +69,91 @@ $get_selectors = array(
   'startDate' => (isset($_GET['startDate']) && $_GET['startDate'] != "") ? $_GET['startDate'] : null,
   'endDate' => (isset($_GET['endDate']) && $_GET['endDate'] != "") ? $_GET['endDate'] : null,
   'orderBy' => (isset($_GET['orderBy']) && $_GET['orderBy'] != "") ? $_GET['orderBy'] : null,
-  'limit' => (isset($_GET['limit']) && $_GET['limit'] != "") ? $_GET['limit'] : 100
-
+  'limit' => (isset($_GET['limit']) && $_GET['limit'] != "") ? $_GET['limit'] : 100,
+  'searchFor' => (isset($_GET['searchFor']) && $_GET['searchFor'] != "") ? $_GET['searchFor'] : "",
+  'noSearch' => (isset($_GET['noSearch']) ) ? 1 : null,
+  'link' => (isset($_GET['link']) && $_GET['link'] != "") ? $_GET['link'] : "",
+  'searchBar' => (isset($_GET['searchBar']) ) ? 1 : null
 );
 
 
-$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['endDate'], $get_selectors['endDate'], null, $userId, $get_selectors['limit']);
+$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['startDate'], $get_selectors['endDate'], $get_selectors['orderBy'], $userId, $get_selectors['limit'], $get_selectors['searchFor'], $get_selectors['link']);
 
 
 include($path."/header_tailwind.php");
 
 ?>
 
+<!--
+
+GET variables:
+  'id'
+  'topic'
+  'keyword' 
+  'startDate' 
+  'endDate'
+  'orderBy' 
+  'limit' => default 100
+  'searchFor'
+  'noSearch' => if this is set then the extended search bar does not come up
+  'link'
+  'searchBar' => if this is set then extended search bar will be open on load
+
+-->
+
 <div class="container mx-auto px-4 pt-20 lg:pt-32 xl:pt-20">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1 mb-2">News List</h1>
   <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
+  <?php
+    $showSearch = ($get_selectors['searchFor'] || $get_selectors['keyword'] || $get_selectors['startDate'] || $get_selectors['endDate'] || $get_selectors['link'] || $get_selectors['searchBar']) ? 1 : null;
+  ?>
+
+      <div id="accordion-collapse" data-accordion="collapse">
+        <h2 id="accordion-collapse-heading-1">
+          <button type="button" class="flex items-center justify-between w-full p-2 font-medium text-gray-500 border border-gray-200 hover:bg-gray-100  gap-3s font-mono" data-accordion-target="#accordion-collapse-body-1" aria-expanded="<?=($showSearch) ? "true" : "false"?>" aria-controls="accordion-collapse-body-1">
+            <span>Search Controls</span>
+            <svg data-accordion-icon class="w-3 h-3  shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+            </svg>
+          </button>
+        </h2>
+        <div id="accordion-collapse-body-1" class="hidden" aria-labelledby="accordion-collapse-heading-1">
+          <div class="p-3 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+            <form type="get" action="">
+              <p class="mb-2 text-gray-500">
+                <label for="searchForInput">Headline, Keywords, Explanation:</label>
+                <input class="px-1 w-full" id="searchForInput" name="searchFor" value="<?=$get_selectors['searchFor']?>" type="text">
+              </p>
+              <p class="mb-2 text-gray-500">
+                <label for="keyWordInput">Keyword:</label>
+                <input class="px-1 w-full" id="keyWordInput" name="keyword" value="<?=$get_selectors['keyword']?>" type="text">
+              </p>
+              <p class="mb-2 text-gray-500">
+                <label for="linkInput">Link:</label>
+                <input class="px-1 w-full" id="linkInput" name="link" value="<?=$get_selectors['link']?>" type="text">
+              </p>
+              <p class="mb-2 text-gray-500">
+                <label for="topicInput">Topic:</label>
+                <input class="px-1 w-full" id="topicInput" name="topic" value="<?=$get_selectors['topic']?>" type="text">
+              </p>
+              <div class="mb-2 text-gray-500 grid grid-cols-2 gap-2">
+                <div>
+                  <label for="startDateInput">Start Date:</label>
+                  <input class="px-1 w-full" id="startDateInput" name="startDate" value="<?=$get_selectors['startDate']?>" type="date">
+                </div>
+
+                <div>
+                  <label for="endDateInput">End Date:</label>
+                  <input class="px-1 w-full" id="endDateInput" name="endDate" value="<?=$get_selectors['endDate']?>" type="date">
+                </div>
+
+              </div>
+              <input class="w-full bg-pink-300" type="submit" value="Search"</input>
+              <input type="hidden" value="<?=$get_selectors['topic']?>">
+            </form>
+          </div>
+        </div>   
+      </div> 
 
 
   <table>

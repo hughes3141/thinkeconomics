@@ -114,13 +114,14 @@ if (isset($_SESSION['userid'])==false) {
 
 <!--
 
-Get variables:
+GET variables:
   'id'
+  'topic'
   'keyword' 
   'startDate' 
   'endDate'
   'orderBy' 
-  'limit' 
+  'limit' => default 100
   'searchFor'
   'noSearch' => if this is set then the extended search bar does not come up
   'link'
@@ -170,6 +171,10 @@ Get variables:
               <p class="mb-2 text-gray-500">
                 <label for="linkInput">Link:</label>
                 <input class="px-1 w-full" id="linkInput" name="link" value="<?=$get_selectors['link']?>" type="text">
+              </p>
+              <p class="mb-2 text-gray-500">
+                <label for="topicInput">Topic:</label>
+                <input class="px-1 w-full" id="topicInput" name="topic" value="<?=$get_selectors['topic']?>" type="text">
               </p>
               <div class="mb-2 text-gray-500 grid grid-cols-2 gap-2">
                 <div>
