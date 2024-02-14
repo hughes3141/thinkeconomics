@@ -1388,7 +1388,7 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
     $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
     $conjoin = 1;
     $sql .= $tableAlias;
-    $sql .= "id = ? ";
+    $sql .= "d.id = ? ";
     array_push($bindArray, $id);
     $params .= "i";
     $conjoiner = 1;
@@ -1514,6 +1514,77 @@ function insertNewsArticle($headline, $hyperlink, $datePublished, $explanation, 
   $stmt->bind_param("ssssssssii", $headline, $hyperlink, $datePublished, $explanation, $explanation_long, $topic, $keyWords, $datetime, $userid, $active);
   $stmt->execute();
   return "New record created successfully";
+
+}
+
+function updateNewsArticle($id, $headline = null, $datePublished = null, $explanation = null, $explanation_long = null, $keyWords = null) {
+  /*
+  Function to update news_data with new values for given id
+  Used in:
+  -news_input.php
+  */
+
+  global $conn;
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+
+  $sql = "UPDATE news_data
+          SET ";
+
+  if($headline) {
+    $sql .= " headline = ? ";
+    $params .= "s";
+    array_push($bindArray, $headline);
+    $conjoiner = 1;
+  }
+
+  if($datePublished) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " datePublished = ? ";
+    $params .= "s";
+    array_push($bindArray, $datePublished);
+    $conjoiner = 1;
+  }
+
+  if($explanation) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " explanation = ? ";
+    $params .= "s";
+    array_push($bindArray, $explanation);
+    $conjoiner = 1;
+  }
+
+  if($explanation_long) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " explanation_long = ? ";
+    $params .= "s";
+    array_push($bindArray, $explanation_long);
+    $conjoiner = 1;
+  }
+
+  if($keyWords) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " keyWords = ? ";
+    $params .= "s";
+    array_push($bindArray, $keyWords);
+    $conjoiner = 1;
+  }
+
+  $sql .= " WHERE id = ? ";
+  $params .= "i";
+  array_push($bindArray, $id);
+
+  echo $sql;
+  echo $params;
+  print_r($bindArray);
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray)>1) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+
+  //$stmt->execute();
 
 
 

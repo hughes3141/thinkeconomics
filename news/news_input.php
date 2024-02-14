@@ -45,35 +45,56 @@ $confirmArticleEntry = "";
 $previousLinkStatus = 0;
 
 if($_SERVER['REQUEST_METHOD']==='POST') {
-  $insertRecord = 0;
+  if(isset($_POST['submit']) && $_POST['submit'] == "Click to Submit") {
+    $insertRecord = 0;
 
-  $headline = $_POST['headline'];
-  $hyperlink =  $_POST['link'];
-  $datePublished = $_POST['datePublished'];
-  $explanation =  $_POST['explanation'];
-  $explanation_long = $_POST['explanation_long'];
-  $topic =  $_POST['topic'];
+    $headline = $_POST['headline'];
+    $hyperlink =  $_POST['link'];
+    $datePublished = $_POST['datePublished'];
+    $explanation =  $_POST['explanation'];
+    $explanation_long = $_POST['explanation_long'];
+    $topic =  $_POST['topic'];
 
-  $datetime = date("Y-m-d H:i:s");
-  $keyWords = $_POST['keyWords'];
-  $userid = $userId;
-  $active = $_POST['active'];
+    $datetime = date("Y-m-d H:i:s");
+    $keyWords = $_POST['keyWords'];
+    $userid = $userId;
+    $active = $_POST['active'];
 
-  $previousLink = getNewsArticles(null, null, null, null, null, null, null, null, null, $hyperlink);
+    $previousLink = getNewsArticles(null, null, null, null, null, null, null, null, null, $hyperlink);
 
-  //print_r($previousLink);
+    //print_r($previousLink);
 
-  if(count($previousLink)==0) {
-    $insertRecord = 1;
-  } else {
-    $confirmArticleEntry = "Not entered- article previously exists in database";
-    $previousLinkStatus = 1;
+    if(count($previousLink)==0) {
+      $insertRecord = 1;
+    } else {
+      $confirmArticleEntry = "Not entered- article previously exists in database";
+      $previousLinkStatus = 1;
+    }
+
+
+
+    if($insertRecord == 1) {
+      $confirmArticleEntry = insertNewsArticle($headline, $hyperlink, $datePublished, $explanation, $explanation_long, $topic, $datetime, $keyWords, $userid, $active);
+    }
   }
+  if(isset($_POST['submit']) && $_POST['submit'] == "Click to Update") {
+    $previousLinkStatus = 1;
+    $previousLink = getNewsArticles($_POST['id']);
 
+    $selectors = array(
+    'headline' => ($_POST['headlineSelect']==1) ? $_POST['headline'] : null,
+    'datePublished' => ($_POST['datePublishedSelect']==1) ? $_POST['datePublished'] : null,
+    'explanation' => ($_POST['explanationSelect']==1) ? $_POST['explanation'] : null,
+    'explanation_long' => ($_POST['explanation_longSelect']==1) ? $_POST['explanation_long'] : null,
+    'keyWords' => ($_POST['keyWordsSelect']==1) ? $_POST['keyWords'] : null
+    );
 
+    var_dump($selectors);
 
-  if($insertRecord == 1) {
-    $confirmArticleEntry = insertNewsArticle($headline, $hyperlink, $datePublished, $explanation, $explanation_long, $topic, $datetime, $keyWords, $userid, $active);
+    echo "<br><br><br><br>";
+
+    updateNewsArticle($_POST['id'], $selectors['headline'], $selectors['datePublished'], $selectors['explanation'], $selectors['explanation_long'], $selectors['keyWords']);
+
   }
 }
 
@@ -86,25 +107,20 @@ include($path."/header_tailwind.php");
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">News Input</h1>
   <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
     <?php
-      if(isset($_GET['test'])) {
+      //if(isset($_GET['test'])) {
         print_r($_POST);
-      }
+      //}
     ?>
     <p><?=$confirmArticleEntry?></p>
     <?php
-      if($previousLinkStatus==1) {
-        echo "<p>";
-        print_r($previousLink);
-        echo "</p>";
-      }
+      if($previousLinkStatus==0) {
     ?>
+    
     <div id="phone_entry_div">
       <label for="phone_entry_input">Phone Optimised Entry:</label><br>
       <input class="w-full" type = "text" id ="phone_entry_input" onchange="phone_fill();"></input><br>
     
     </div>
-
-
     <form method="post">
       <div class="grid lg:grid-cols-2 gap-2 mb-2">
         <div>
@@ -149,6 +165,91 @@ include($path."/header_tailwind.php");
 
 
     </form>
+
+    <?php
+    } else {
+      $originalArticle = $previousLink[0];
+      echo "<p>";
+      print_r($previousLink);
+      echo "</p>";
+
+      ?>
+      <div>
+        <p>Your entry already has a match in the database. Do you want to update it?</p>
+        <form method="post" action = "">
+          <div>
+            <h3 class="underline">Headlne:</h3>
+            <p>
+              <input id="headlineSelect_0" type='radio' name='headlineSelect' value="0" checked> <label for="headlineSelect_0" >Original:</label>
+            </p>
+            <div class="border border-black rounded p-1 bg-sky-100"><?=$originalArticle['headline']?></div>
+            <p>
+              <input id="headlineSelect_1" type='radio' name='headlineSelect' value="1"> <label for="headlineSelect_1">New:</label>
+            </p>
+            <textarea class="w-full" name="headline"> <?=($_POST['headline']) ? $_POST['headline'] : ""?></textarea>
+          </div>
+
+          <div>
+            <h3 class="underline">Date Published:</h3>
+            <p>
+              <input id="datePublishedSelect_0" type='radio' name='datePublishedSelect' value="0" checked> <label for="datePublishedSelect_0" >Original:</label>
+            </p>
+            <div class="border border-black rounded p-1 bg-sky-100"><?=date("d/m/Y",strtotime($originalArticle['datePublished']))?></div>
+            <p>
+              <input id="datePublishedSelect_1" type='radio' name='datePublishedSelect' value="1"> <label for="datePublishedSelect_1">New:</label>
+            </p>
+            <input class="w-full "type="date" name="datePublished" value="<?=($_POST['datePublished']) ? $_POST['datePublished'] : ""?>">
+          </div>
+
+          <div>
+            <h3 class="underline">Explanation:</h3>
+            <p>
+              <input id="explanationSelect_0" type='radio' name='explanationSelect' value="0" checked> <label for="datePublishedSelect_0" >Original:</label>
+            </p>
+            <div class="border border-black rounded p-1 bg-sky-100"><?=$originalArticle['explanation']?></div>
+            <p>
+              <input id="explanationSelect_1" type='radio' name='explanationSelect' value="1"> <label for="explanationSelect_1">New:</label>
+            </p>
+            <textarea class="w-full" name="explanation"><?=($_POST['explanation']) ? $_POST['explanation'] : ""?></textarea>
+          </div>
+
+          <div>
+            <h3 class="underline">Long Explanation:</h3>
+            <p>
+              <input id="explanation_longSelect_0" type='radio' name='explanation_longSelect' value="0" checked> <label for="datePublished_longSelect_0" >Original:</label>
+            </p>
+            <div class="border border-black rounded p-1 bg-sky-100"><?=$originalArticle['explanation']?></div>
+            <p>
+              <input id="explanation_longSelect_1" type='radio' name='explanation_longSelect' value="1"> <label for="explanation_longSelect_1">New:</label>
+            </p>
+            <textarea class="w-full" name="explanation_long"><?=($_POST['explanation_long']) ? $_POST['explanation_long'] : ""?></textarea>
+          </div>
+
+          <div>
+            <h3 class="underline">Key Words:</h3>
+            <p>
+              <input id="keyWordsSelect_0" type='radio' name='keyWordsSelect' value="0" checked> <label for="keyWordsSelect_0" >Original:</label>
+            </p>
+            <div class="border border-black rounded p-1 bg-sky-100"><?=$originalArticle['keyWords']?></div>
+            <p>
+              <input id="keyWordsSelect_1" type='radio' name='keyWordsSelect' value="1"> <label for="keyWordsSelect_1">New:</label>
+            </p>
+            <input class="w-full "type="text" name="keyWords" value="<?=($_POST['keyWords']) ? $_POST['keyWords'] : ""?>">
+          </div>
+
+          <input class="w-full bg-sky-100" type="submit" value="Click to Update" name="submit">
+          <input class="w-full bg-pink-100" type="submit" value = "Click to Create New Entry">
+
+          <input type="text" name="link" value="<?=($_POST['link']) ? $_POST['link'] : ""?>">
+          <input type="text" name="topic" value="<?=($_POST['topic']) ? $_POST['topic'] : ""?>">
+          <input type="text" name="active" value="<?=($_POST['active']) ? $_POST['active'] : ""?>">
+          <input type="text" name="id" value="<?=$originalArticle['id']?>">
+
+        </form>
+      </div>
+      <?php
+    } 
+    ?>
 
 
   </div>
