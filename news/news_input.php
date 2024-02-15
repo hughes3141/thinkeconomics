@@ -37,6 +37,10 @@ $style_input = "
     }
   }
 
+  textarea, input {
+    padding: 0.25rem
+  }
+
 
   
   ";
@@ -78,7 +82,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
     }
   }
   if(isset($_POST['submit']) && $_POST['submit'] == "Click to Update") {
-    $previousLinkStatus = 1;
+    //$previousLinkStatus = 1;
     $previousLink = getNewsArticles($_POST['id']);
 
     $selectors = array(
@@ -89,11 +93,13 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
     'keyWords' => ($_POST['keyWordsSelect']==1) ? $_POST['keyWords'] : null
     );
 
-    var_dump($selectors);
+    //var_dump($selectors);
 
-    echo "<br><br><br><br>";
+    //echo "<br><br><br><br>";
 
-    updateNewsArticle($_POST['id'], $selectors['headline'], $selectors['datePublished'], $selectors['explanation'], $selectors['explanation_long'], $selectors['keyWords']);
+    $updateSQL = updateNewsArticle($_POST['id'], $selectors['headline'], $selectors['datePublished'], $selectors['explanation'], $selectors['explanation_long'], $selectors['keyWords']);
+
+    $confirmArticleEntry = "Record ".$_POST['id']." updated successfully";
 
   }
 }
@@ -107,9 +113,9 @@ include($path."/header_tailwind.php");
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">News Input</h1>
   <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
     <?php
-      //if(isset($_GET['test'])) {
+      if(isset($_GET['test'])) {
         print_r($_POST);
-      //}
+      }
     ?>
     <p><?=$confirmArticleEntry?></p>
     <?php
@@ -186,7 +192,7 @@ include($path."/header_tailwind.php");
             <p>
               <input id="headlineSelect_1" type='radio' name='headlineSelect' value="1"> <label for="headlineSelect_1">New:</label>
             </p>
-            <textarea class="w-full" name="headline"> <?=($_POST['headline']) ? $_POST['headline'] : ""?></textarea>
+            <textarea class="w-full" name="headline"><?=($_POST['headline']) ? $_POST['headline'] : ""?></textarea>
           </div>
 
           <div>
@@ -238,12 +244,12 @@ include($path."/header_tailwind.php");
           </div>
 
           <input class="w-full bg-sky-100" type="submit" value="Click to Update" name="submit">
-          <input class="w-full bg-pink-100" type="submit" value = "Click to Create New Entry">
+          <input class="w-full bg-pink-100 hidden" type="submit" value = "Click to Create New Entry">
 
-          <input type="text" name="link" value="<?=($_POST['link']) ? $_POST['link'] : ""?>">
-          <input type="text" name="topic" value="<?=($_POST['topic']) ? $_POST['topic'] : ""?>">
-          <input type="text" name="active" value="<?=($_POST['active']) ? $_POST['active'] : ""?>">
-          <input type="text" name="id" value="<?=$originalArticle['id']?>">
+          <input type="hidden" name="link" value="<?=($_POST['link']) ? $_POST['link'] : ""?>">
+          <input type="hidden" name="topic" value="<?=($_POST['topic']) ? $_POST['topic'] : ""?>">
+          <input type="hidden" name="active" value="<?=($_POST['active']) ? $_POST['active'] : ""?>">
+          <input type="hidden" name="id" value="<?=$originalArticle['id']?>">
 
         </form>
       </div>

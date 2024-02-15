@@ -1532,14 +1532,14 @@ function updateNewsArticle($id, $headline = null, $datePublished = null, $explan
   $sql = "UPDATE news_data
           SET ";
 
-  if($headline) {
+  if(!is_null($headline)) {
     $sql .= " headline = ? ";
     $params .= "s";
     array_push($bindArray, $headline);
     $conjoiner = 1;
   }
 
-  if($datePublished) {
+  if(!is_null($datePublished)) {
     $sql .= ($conjoiner ==1) ? ", " : "";
     $sql .= " datePublished = ? ";
     $params .= "s";
@@ -1547,7 +1547,7 @@ function updateNewsArticle($id, $headline = null, $datePublished = null, $explan
     $conjoiner = 1;
   }
 
-  if($explanation) {
+  if(!is_null($explanation)) {
     $sql .= ($conjoiner ==1) ? ", " : "";
     $sql .= " explanation = ? ";
     $params .= "s";
@@ -1555,7 +1555,7 @@ function updateNewsArticle($id, $headline = null, $datePublished = null, $explan
     $conjoiner = 1;
   }
 
-  if($explanation_long) {
+  if(!is_null($explanation_long)) {
     $sql .= ($conjoiner ==1) ? ", " : "";
     $sql .= " explanation_long = ? ";
     $params .= "s";
@@ -1563,7 +1563,7 @@ function updateNewsArticle($id, $headline = null, $datePublished = null, $explan
     $conjoiner = 1;
   }
 
-  if($keyWords) {
+  if(!is_null($keyWords)) {
     $sql .= ($conjoiner ==1) ? ", " : "";
     $sql .= " keyWords = ? ";
     $params .= "s";
@@ -1575,16 +1575,20 @@ function updateNewsArticle($id, $headline = null, $datePublished = null, $explan
   $params .= "i";
   array_push($bindArray, $id);
 
-  echo $sql;
-  echo $params;
-  print_r($bindArray);
+  //echo $sql;
+  //echo $params;
+  //print_r($bindArray);
 
   $stmt=$conn->prepare($sql);
+  //Note that this only runs if $bindArray is greater than 1 because 'WHERE id = ?' is not dependent on input. Usually '  if(count($bindArray)>0) '
   if(count($bindArray)>1) {
     $stmt->bind_param($params, ...$bindArray);
+    $stmt->execute();
   }
 
-  //$stmt->execute();
+  
+
+  return $sql;
 
 
 
