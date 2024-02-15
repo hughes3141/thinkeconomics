@@ -228,7 +228,7 @@ include "../header_tailwind.php";
       <?php if(str_contains($permissions, "main_admin")) { 
         ?>
             <h2 class="font-mono text-lg bg-pink-200 pl-1">News Management</h2>
-              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/news_input2.1.php">News Input</a></p>
+              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/news_input.php">News Input</a></p>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/news_list.php">News List</a></p>
 
             <h2 class="font-mono text-lg bg-pink-200 pl-1">Notes Management</h2>

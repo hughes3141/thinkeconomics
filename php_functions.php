@@ -1368,7 +1368,7 @@ function getNewsArticlesByTopic($topic) {
   return $articles;
 }
 
-function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null, $userCreate = null, $limit = null, $searchFor = null, $link = null) {
+function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null, $userCreate = null, $limit = null, $searchFor = null, $link = null, $bbcPerennial = null) {
   global $conn;
   $articles = array();
 
@@ -1388,7 +1388,7 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
     $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
     $conjoin = 1;
     $sql .= $tableAlias;
-    $sql .= "id = ? ";
+    $sql .= "d.id = ? ";
     array_push($bindArray, $id);
     $params .= "i";
     $conjoiner = 1;
@@ -1465,6 +1465,15 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
     $conjoiner = 1;
   }
 
+  if($bbcPerennial) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoin = 1;
+    $sql .= " bbcPerennial LIKE ? ";
+    array_push($bindArray, $bbcPerennial);
+    $params .= "i";
+    $conjoiner = 1;
+  }
+
 
 
   if(is_null($orderBy)) {
@@ -1502,6 +1511,135 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
   
 
   return $articles;
+
+
+}
+
+function insertNewsArticle($headline, $hyperlink, $datePublished, $explanation, $explanation_long, $topic, $datetime, $keyWords, $userid, $active) {
+  global $conn;
+
+  $sql = "INSERT INTO news_data (headline, link, datePublished, explanation, explanation_long, topic, keyWords, dateCreated, user, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("ssssssssii", $headline, $hyperlink, $datePublished, $explanation, $explanation_long, $topic, $keyWords, $datetime, $userid, $active);
+  $stmt->execute();
+  return "New record created successfully";
+
+}
+
+function updateNewsArticle($id, $headline = null, $datePublished = null, $explanation = null, $explanation_long = null, $keyWords = null, $link = null, $articleAsset =null, $active = null, $bbcPerennial = null, $photoAssets = null) {
+  /*
+  Function to update news_data with new values for given id
+  Used in:
+  -news_input.php
+  */
+
+  global $conn;
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+
+  $sql = "UPDATE news_data
+          SET ";
+
+  if(!is_null($headline)) {
+    $sql .= " headline = ? ";
+    $params .= "s";
+    array_push($bindArray, $headline);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($datePublished)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " datePublished = ? ";
+    $params .= "s";
+    array_push($bindArray, $datePublished);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($explanation)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " explanation = ? ";
+    $params .= "s";
+    array_push($bindArray, $explanation);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($explanation_long)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " explanation_long = ? ";
+    $params .= "s";
+    array_push($bindArray, $explanation_long);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($keyWords)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " keyWords = ? ";
+    $params .= "s";
+    array_push($bindArray, $keyWords);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($link)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " link = ? ";
+    $params .= "s";
+    array_push($bindArray, $link);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($articleAsset)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " articleAsset = ? ";
+    $params .= "i";
+    array_push($bindArray, $articleAsset);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($active)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " active = ? ";
+    $params .= "i";
+    array_push($bindArray, $active);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($bbcPerennial)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " bbcPerennial = ? ";
+    $params .= "i";
+    array_push($bindArray, $bbcPerennial);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($photoAssets)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " photoAssets = ? ";
+    $params .= "s";
+    array_push($bindArray, $photoAssets);
+    $conjoiner = 1;
+  }
+
+  $sql .= " WHERE id = ? ";
+  $params .= "i";
+  array_push($bindArray, $id);
+
+  //echo $sql;
+  //echo $params;
+  //print_r($bindArray);
+
+  $stmt=$conn->prepare($sql);
+  //Note that this only runs if $bindArray is greater than 1 because 'WHERE id = ?' is not dependent on input. Usually '  if(count($bindArray)>0) '
+  if(count($bindArray)>1) {
+    $stmt->bind_param($params, ...$bindArray);
+    $stmt->execute();
+  }
+
+  
+
+  return $sql;
+
+
 
 
 }
