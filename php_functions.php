@@ -1517,7 +1517,7 @@ function insertNewsArticle($headline, $hyperlink, $datePublished, $explanation, 
 
 }
 
-function updateNewsArticle($id, $headline = null, $datePublished = null, $explanation = null, $explanation_long = null, $keyWords = null) {
+function updateNewsArticle($id, $headline = null, $datePublished = null, $explanation = null, $explanation_long = null, $keyWords = null, $link = null, $articleAsset =null, $active = null, $bbcPerennial = null, $photoAssets = null) {
   /*
   Function to update news_data with new values for given id
   Used in:
@@ -1568,6 +1568,46 @@ function updateNewsArticle($id, $headline = null, $datePublished = null, $explan
     $sql .= " keyWords = ? ";
     $params .= "s";
     array_push($bindArray, $keyWords);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($link)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " link = ? ";
+    $params .= "s";
+    array_push($bindArray, $link);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($articleAsset)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " articleAsset = ? ";
+    $params .= "i";
+    array_push($bindArray, $articleAsset);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($active)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " active = ? ";
+    $params .= "i";
+    array_push($bindArray, $active);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($bbcPerennial)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " bbcPerennial = ? ";
+    $params .= "i";
+    array_push($bindArray, $bbcPerennial);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($photoAssets)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " photoAssets = ? ";
+    $params .= "s";
+    array_push($bindArray, $photoAssets);
     $conjoiner = 1;
   }
 

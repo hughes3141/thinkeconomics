@@ -90,14 +90,15 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
     'datePublished' => ($_POST['datePublishedSelect']==1) ? $_POST['datePublished'] : null,
     'explanation' => ($_POST['explanationSelect']==1) ? $_POST['explanation'] : null,
     'explanation_long' => ($_POST['explanation_longSelect']==1) ? $_POST['explanation_long'] : null,
-    'keyWords' => ($_POST['keyWordsSelect']==1) ? $_POST['keyWords'] : null
+    'keyWords' => ($_POST['keyWordsSelect']==1) ? $_POST['keyWords'] : null,
+    'bbcPerennial' => (isset($_POST['bbcPerennial']) && $_POST['bbcPerennial'] != "") ? $_POST['bbcPerennial'] : null
     );
 
     //var_dump($selectors);
 
     //echo "<br><br><br><br>";
 
-    $updateSQL = updateNewsArticle($_POST['id'], $selectors['headline'], $selectors['datePublished'], $selectors['explanation'], $selectors['explanation_long'], $selectors['keyWords']);
+    $updateSQL = updateNewsArticle($_POST['id'], $selectors['headline'], $selectors['datePublished'], $selectors['explanation'], $selectors['explanation_long'], $selectors['keyWords'], null, null, null, $selectors['bbcPerennial']);
 
     $confirmArticleEntry = "Record ".$_POST['id']." updated successfully";
 
@@ -129,7 +130,7 @@ include($path."/header_tailwind.php");
     </div>
     <form method="post">
       <div class="grid lg:grid-cols-2 gap-2 mb-2">
-        <div>
+        <div class="lg:col-span-2">
           <label for="headline">Headline:</label><br>
           <input class="w-full" type="text" name="headline" id="headline" required>
         </div>
@@ -137,7 +138,7 @@ include($path."/header_tailwind.php");
           <label for="link">Link:</label><br>
           <input class="w-full" type ="text" name="link" id="link" required><br>
         </div>
-        <div class="lg:col-span-2">
+        <div >
           <label for="datePublished">Date Published:</label><br>
           <input class="w-full" type ="date" name="datePublished" id="datePublished" required value="<?= date('Y-m-d'); ?>" ><br>
         </div>
@@ -176,7 +177,7 @@ include($path."/header_tailwind.php");
     } else {
       $originalArticle = $previousLink[0];
       echo "<p>";
-      print_r($previousLink);
+      //print_r($previousLink);
       echo "</p>";
 
       ?>
@@ -241,6 +242,16 @@ include($path."/header_tailwind.php");
               <input id="keyWordsSelect_1" type='radio' name='keyWordsSelect' value="1"> <label for="keyWordsSelect_1">New:</label>
             </p>
             <input class="w-full "type="text" name="keyWords" value="<?=($_POST['keyWords']) ? $_POST['keyWords'] : ""?>">
+          </div>
+
+          <div class="flex justify-normal gap-3">
+            <div>
+            
+              <input type="radio" name="bbcPerennial" id="bbcPerennial_0" value="0" <?=($originalArticle['bbcPerennial']==0) ? "checked" : ""?>><label for="bbcPerennial_0"> Not BBC Explainer</label>
+            </div>
+            <div>
+              <input type="radio" name="bbcPerennial" id="bbcPerennial_1" value="1" <?=($originalArticle['bbcPerennial']==1) ? "checked" : ""?>><label for="bbcPerennial_1"> BBC Explainer</label>
+            </div>
           </div>
 
           <input class="w-full bg-sky-100" type="submit" value="Click to Update" name="submit">
