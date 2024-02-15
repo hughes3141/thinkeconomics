@@ -1368,7 +1368,7 @@ function getNewsArticlesByTopic($topic) {
   return $articles;
 }
 
-function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null, $userCreate = null, $limit = null, $searchFor = null, $link = null) {
+function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null, $userCreate = null, $limit = null, $searchFor = null, $link = null, $bbcPerennial = null) {
   global $conn;
   $articles = array();
 
@@ -1462,6 +1462,15 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
     $link = "%".$link."%";
     array_push($bindArray, $link);
     $params .= "s";
+    $conjoiner = 1;
+  }
+
+  if($bbcPerennial) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoin = 1;
+    $sql .= " bbcPerennial LIKE ? ";
+    array_push($bindArray, $bbcPerennial);
+    $params .= "i";
     $conjoiner = 1;
   }
 

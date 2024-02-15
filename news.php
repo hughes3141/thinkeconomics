@@ -89,10 +89,11 @@ $get_selectors = array(
   'searchFor' => (isset($_GET['searchFor']) && $_GET['searchFor'] != "") ? $_GET['searchFor'] : "",
   'noSearch' => (isset($_GET['noSearch']) ) ? 1 : null,
   'link' => (isset($_GET['link']) && $_GET['link'] != "") ? $_GET['link'] : "",
-  'searchBar' => (isset($_GET['searchBar']) ) ? 1 : null
+  'searchBar' => (isset($_GET['searchBar']) ) ? 1 : null,
+  'bbcPerennial' => (isset($_GET['bbcPerennial']) ) ? 1 : null
 );
 
-$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['startDate'], $get_selectors['endDate'], $get_selectors['orderBy'], null, $get_selectors['limit'], $get_selectors['searchFor'], $get_selectors['link']);
+$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['startDate'], $get_selectors['endDate'], $get_selectors['orderBy'], null, $get_selectors['limit'], $get_selectors['searchFor'], $get_selectors['link'], $get_selectors['bbcPerennial']);
 ?>
 
 <?php include "header_tailwind.php"; 
@@ -187,6 +188,9 @@ GET variables:
                   <input class="px-1 w-full" id="endDateInput" name="endDate" value="<?=$get_selectors['endDate']?>" type="date">
                 </div>
 
+              </div>
+              <div>
+                <p class="mb-2 text-gray-500"><input type="checkbox" name="bbcPerennial" id="bbcPerennialInput" value="1" <?=(!is_null($get_selectors['bbcPerennial'])) ? "checked" : ""?>><label for="bbcPerennialInput"> BBC Explainer</label></p>
               </div>
               <input class="w-full bg-pink-300" type="submit" value="Search"</input>
               <input type="hidden" value="<?=$get_selectors['topic']?>">
