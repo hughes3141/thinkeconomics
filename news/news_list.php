@@ -245,6 +245,14 @@ GET variables:
               </div>
               <input type="text" id="photoAssets<?=$row['id']?>" class="w-full hide hide_<?=$row['id'];?>" name="photoAssets" value= "<?=$row['photoAssets']?>"></input>
 
+              <div>
+                <div class="hide hide_<?=$row['id'];?>">
+                  <input type="radio" name="active" id="activeSelect_<?=$row['id']?>_1" value="1" <?=($row['active'] == 1) ? "checked" : ""?>><label for="activeSelect_<?=$row['id']?>_1" > Active</label>
+                  <input type="radio" name="active" id="activeSelect_<?=$row['id']?>_0" value="0" <?=($row['active'] == 0) ? "checked" : ""?>><label for="activeSelect_<?=$row['id']?>_0"> Inactive</label>
+                </div>
+                
+              </div>
+
 
             </td>
             <td>
