@@ -254,7 +254,8 @@ include($path."/header_tailwind.php");
             </div>
           </div>
 
-          <input class="w-full bg-sky-100" type="submit" value="Click to Update" name="submit">
+          <input class="w-full bg-sky-100 mb-2" type="submit" value="Click to Update" name="submit">
+          <button type="button" onclick="window.location.href= 'news_input.php'" class="w-full bg-pink-100 border border-black rounded mb-2 p-1">Click to Return to Form</button>
           <input class="w-full bg-pink-100 hidden" type="submit" value = "Click to Create New Entry">
 
           <input type="hidden" name="link" value="<?=($_POST['link']) ? $_POST['link'] : ""?>">

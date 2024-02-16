@@ -1368,7 +1368,7 @@ function getNewsArticlesByTopic($topic) {
   return $articles;
 }
 
-function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null, $userCreate = null, $limit = null, $searchFor = null, $link = null, $bbcPerennial = null) {
+function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null, $userCreate = null, $limit = null, $searchFor = null, $link = null, $bbcPerennial = null, $active = null, $withImages = null) {
   global $conn;
   $articles = array();
 
@@ -1472,6 +1472,18 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
     array_push($bindArray, $bbcPerennial);
     $params .= "i";
     $conjoiner = 1;
+  }
+
+  if($active) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " active = 1 ";
+  }
+
+  if($withImages) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " photoAssets <> '' ";
   }
 
 

@@ -54,7 +54,6 @@ $updateQuestionBool = 0;
 
 if($_SERVER['REQUEST_METHOD']=='POST') {
   $updateQuestionBool = 1;
-  $_POST['bbcPerennial'] = $_POST['active'] = null;
   updateNewsArticle($_POST['id'], $_POST['headline'], $_POST['datePublished'], $_POST['explanation'], $_POST['explanation_long'], $_POST['keyWords'], $_POST['link'], $_POST['articleAsset'], $_POST['active'], $_POST['bbcPerennial'], $_POST['photoAssets'], $_POST['topic']);
 
 
@@ -246,9 +245,17 @@ GET variables:
               <input type="text" id="photoAssets<?=$row['id']?>" class="w-full hide hide_<?=$row['id'];?>" name="photoAssets" value= "<?=$row['photoAssets']?>"></input>
 
               <div>
+                <p class="show_<?=$row['id'];?>"> <?=($row['active'] == 1) ? "Active" : "<span class='bg-pink-100'>Inactive</span>"?></p>
                 <div class="hide hide_<?=$row['id'];?>">
                   <input type="radio" name="active" id="activeSelect_<?=$row['id']?>_1" value="1" <?=($row['active'] == 1) ? "checked" : ""?>><label for="activeSelect_<?=$row['id']?>_1" > Active</label>
                   <input type="radio" name="active" id="activeSelect_<?=$row['id']?>_0" value="0" <?=($row['active'] == 0) ? "checked" : ""?>><label for="activeSelect_<?=$row['id']?>_0"> Inactive</label>
+                </div>
+
+                <div>
+                <p class="show_<?=$row['id'];?>"> <?=($row['bbcPerennial'] == 1) ? "BBC Explainer" : ""?></p>
+                <div class="hide hide_<?=$row['id'];?>">
+                  <input type="radio" name="bbcPerennial" id="bbcPerennialSelect_<?=$row['id']?>_1" value="1" <?=($row['bbcPerennial'] == 1) ? "checked" : ""?>><label for="bbcPerennialSelect_<?=$row['id']?>_1" > BBC Explainer</label> <br>
+                  <input type="radio" name="bbcPerennial" id="bbcPerennialSelect_<?=$row['id']?>_0" value="0" <?=($row['bbcPerennial'] == 0) ? "checked" : ""?>><label for="bbcPerennialSelect_<?=$row['id']?>_0"> Not Explainer</label>
                 </div>
                 
               </div>
