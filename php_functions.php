@@ -1526,7 +1526,7 @@ function insertNewsArticle($headline, $hyperlink, $datePublished, $explanation, 
 
 }
 
-function updateNewsArticle($id, $headline = null, $datePublished = null, $explanation = null, $explanation_long = null, $keyWords = null, $link = null, $articleAsset =null, $active = null, $bbcPerennial = null, $photoAssets = null) {
+function updateNewsArticle($id, $headline = null, $datePublished = null, $explanation = null, $explanation_long = null, $keyWords = null, $link = null, $articleAsset =null, $active = null, $bbcPerennial = null, $photoAssets = null, $topic = null) {
   /*
   Function to update news_data with new values for given id
   Used in:
@@ -1617,6 +1617,14 @@ function updateNewsArticle($id, $headline = null, $datePublished = null, $explan
     $sql .= " photoAssets = ? ";
     $params .= "s";
     array_push($bindArray, $photoAssets);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($topic)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " topic = ? ";
+    $params .= "s";
+    array_push($bindArray, $topic);
     $conjoiner = 1;
   }
 
