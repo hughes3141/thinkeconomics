@@ -54,12 +54,17 @@ $updateQuestionBool = 0;
 
 if($_SERVER['REQUEST_METHOD']=='POST') {
   $updateQuestionBool = 1;
+  updateNewsArticle($_POST['id'], $_POST['headline'], $_POST['datePublished'], $_POST['explanation'], $_POST['explanation_long'], $_POST['keyWords'], $_POST['link'], $_POST['articleAsset'], $_POST['active'], $_POST['bbcPerennial'], $_POST['photoAssets'], $_POST['topic']);
+
+
+  /*
   $sql = "UPDATE news_data SET headline = ?, link = ?, datePublished = ?, explanation = ?, explanation_long = ?, topic= ?, keyWords = ?, articleAsset = ? WHERE id = ?";
 
   $stmt = $conn->prepare($sql);
   //print_r($_POST);
   $stmt->bind_param("sssssssii", $_POST['headline'], $_POST['link'], $_POST['datePublished'], $_POST['explanation'], $_POST['explanation_long'], $_POST['topic'], $_POST['keyWords'],$_POST['articleAsset'],$_POST['id']);
   $stmt->execute();
+  */
   //header("Refresh:0");
   
   //echo "Record ".$_POST['id']." updated successfully.";
@@ -109,6 +114,9 @@ GET variables:
   <h1 class="font-mono text-2xl bg-pink-400 pl-1 mb-2">News List</h1>
   <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
   <?php
+    if(isset($_GET['test'])) {
+      print_r($_POST);
+    }
     $showSearch = ($get_selectors['searchFor'] || $get_selectors['keyword'] || $get_selectors['startDate'] || $get_selectors['endDate'] || $get_selectors['link'] || $get_selectors['searchBar']) ? 1 : null;
   ?>
 
@@ -168,7 +176,7 @@ GET variables:
           <th class='col4'>Date Published</th>
           <th>Short Explanation</th>
           <th>Long Explanation</th>
-          <th>Key Words</th>
+          <th>Details</th>
           <th>Edit</th>
         </tr>
 
@@ -229,6 +237,29 @@ GET variables:
                 <?=($row['articleAsset'] != "") ? $row['articleAsset'] : ""?>
               </div>
               <input type="text" id="articleAsset<?=$row['id']?>" class="w-full hide hide_<?=$row['id'];?>" name="articleAsset" value= "<?=$row['articleAsset']?>"></input>
+
+              <label class="font-bold" for="photoAssets<?=$row['id']?>">Photo Assets:</label>
+              <div class="show_<?=$row['id'];?>">
+                <?=($row['photoAssets'] != "") ? $row['photoAssets'] : ""?>
+              </div>
+              <input type="text" id="photoAssets<?=$row['id']?>" class="w-full hide hide_<?=$row['id'];?>" name="photoAssets" value= "<?=$row['photoAssets']?>"></input>
+
+              <div>
+                <p class="show_<?=$row['id'];?>"> <?=($row['active'] == 1) ? "Active" : "<span class='bg-pink-100'>Inactive</span>"?></p>
+                <div class="hide hide_<?=$row['id'];?>">
+                  <input type="radio" name="active" id="activeSelect_<?=$row['id']?>_1" value="1" <?=($row['active'] == 1) ? "checked" : ""?>><label for="activeSelect_<?=$row['id']?>_1" > Active</label>
+                  <input type="radio" name="active" id="activeSelect_<?=$row['id']?>_0" value="0" <?=($row['active'] == 0) ? "checked" : ""?>><label for="activeSelect_<?=$row['id']?>_0"> Inactive</label>
+                </div>
+
+                <div>
+                <p class="show_<?=$row['id'];?>"> <?=($row['bbcPerennial'] == 1) ? "BBC Explainer" : ""?></p>
+                <div class="hide hide_<?=$row['id'];?>">
+                  <input type="radio" name="bbcPerennial" id="bbcPerennialSelect_<?=$row['id']?>_1" value="1" <?=($row['bbcPerennial'] == 1) ? "checked" : ""?>><label for="bbcPerennialSelect_<?=$row['id']?>_1" > BBC Explainer</label> <br>
+                  <input type="radio" name="bbcPerennial" id="bbcPerennialSelect_<?=$row['id']?>_0" value="0" <?=($row['bbcPerennial'] == 0) ? "checked" : ""?>><label for="bbcPerennialSelect_<?=$row['id']?>_0"> Not Explainer</label>
+                </div>
+                
+              </div>
+
 
             </td>
             <td>

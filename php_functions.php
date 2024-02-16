@@ -1368,7 +1368,7 @@ function getNewsArticlesByTopic($topic) {
   return $articles;
 }
 
-function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null, $userCreate = null, $limit = null, $searchFor = null, $link = null, $bbcPerennial = null) {
+function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null, $userCreate = null, $limit = null, $searchFor = null, $link = null, $bbcPerennial = null, $active = null, $withImages = null) {
   global $conn;
   $articles = array();
 
@@ -1474,6 +1474,18 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
     $conjoiner = 1;
   }
 
+  if($active) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " active = 1 ";
+  }
+
+  if($withImages) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " photoAssets <> '' ";
+  }
+
 
 
   if(is_null($orderBy)) {
@@ -1526,7 +1538,7 @@ function insertNewsArticle($headline, $hyperlink, $datePublished, $explanation, 
 
 }
 
-function updateNewsArticle($id, $headline = null, $datePublished = null, $explanation = null, $explanation_long = null, $keyWords = null, $link = null, $articleAsset =null, $active = null, $bbcPerennial = null, $photoAssets = null) {
+function updateNewsArticle($id, $headline = null, $datePublished = null, $explanation = null, $explanation_long = null, $keyWords = null, $link = null, $articleAsset =null, $active = null, $bbcPerennial = null, $photoAssets = null, $topic = null) {
   /*
   Function to update news_data with new values for given id
   Used in:
@@ -1617,6 +1629,14 @@ function updateNewsArticle($id, $headline = null, $datePublished = null, $explan
     $sql .= " photoAssets = ? ";
     $params .= "s";
     array_push($bindArray, $photoAssets);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($topic)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " topic = ? ";
+    $params .= "s";
+    array_push($bindArray, $topic);
     $conjoiner = 1;
   }
 

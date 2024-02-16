@@ -90,10 +90,11 @@ $get_selectors = array(
   'noSearch' => (isset($_GET['noSearch']) ) ? 1 : null,
   'link' => (isset($_GET['link']) && $_GET['link'] != "") ? $_GET['link'] : "",
   'searchBar' => (isset($_GET['searchBar']) ) ? 1 : null,
-  'bbcPerennial' => (isset($_GET['bbcPerennial']) ) ? 1 : null
+  'bbcPerennial' => (isset($_GET['bbcPerennial']) ) ? 1 : null,
+  'withImages' => (isset($_GET['withImages']) ) ? 1 : null
 );
 
-$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['startDate'], $get_selectors['endDate'], $get_selectors['orderBy'], null, $get_selectors['limit'], $get_selectors['searchFor'], $get_selectors['link'], $get_selectors['bbcPerennial']);
+$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['startDate'], $get_selectors['endDate'], $get_selectors['orderBy'], null, $get_selectors['limit'], $get_selectors['searchFor'], $get_selectors['link'], $get_selectors['bbcPerennial'], 1, $get_selectors['withImages']);
 ?>
 
 <?php include "header_tailwind.php"; 
@@ -189,8 +190,14 @@ GET variables:
                 </div>
 
               </div>
-              <div>
-                <p class="mb-2 text-gray-500"><input type="checkbox" name="bbcPerennial" id="bbcPerennialInput" value="1" <?=(!is_null($get_selectors['bbcPerennial'])) ? "checked" : ""?>><label for="bbcPerennialInput"> BBC Explainer</label></p>
+              <div class="mb-2 text-gray-500 flex gap-1 justify-around">
+                <div class="">
+                  <input type="checkbox" name="bbcPerennial" id="bbcPerennialInput" value="1" <?=(!is_null($get_selectors['bbcPerennial'])) ? "checked" : ""?>><label for="bbcPerennialInput"> BBC Explainer</label>
+                </div>
+                <div class="">
+                  <input type="checkbox" name="withImages" id="withImagesInput" value="1" <?=(!is_null($get_selectors['withImages'])) ? "checked" : ""?>><label for="withImagesInput"> Articles with Images</label>
+                </div>
+
               </div>
               <input class="w-full bg-pink-300" type="submit" value="Search"</input>
               <input type="hidden" value="<?=$get_selectors['topic']?>">
@@ -253,8 +260,42 @@ GET variables:
           echo "</p>";
 
           if ($row['explanation']!="") {
-            echo "<p><strong>Explanation: </strong>".$row['explanation']."</p";
+            echo "<p><strong>Explanation: </strong>".$row['explanation']."</p>";
           }
+
+          if($row['explanation_long']!="") {
+            ?>
+            <button class="underline text-sky-700" type="button" onclick="toggleHide(this, 'longExplanationToggle_<?=$row['id']?>','Show Long Explanation', 'Hide Long Explanation')">Show Long Explanation</button>
+            <div class="longExplanationToggle_<?=$row['id']?> hidden">
+              <p><strong>Long Explanation: </strong></p>
+              <p class="whitespace-pre-wrap"><?=$row['explanation_long']?></p>
+
+            </div>
+            <?php
+          }
+
+          if($row['photoAssets']!="") {
+            ?>
+            <button class="underline text-sky-700" type="button" onclick="toggleHide(this, 'photoAssetsToggle_<?=$row['id']?>','Show Images', 'Hide Images')">Show Images</button>
+            <div class="photoAssetsToggle_<?=$row['id']?> hidden">
+              <?php
+                $photoAssets = explode(",", $row['photoAssets']);
+                //print_r($photoAssets);
+                foreach ($photoAssets as $asset) {
+                  $asset = getUploadsInfo($asset)[0];
+                  //print_r($asset);
+                  ?>
+                  <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                  <?php
+                  }
+                
+              ?>
+
+            </div>
+            <?php
+          }
+
+          
 
           
 
