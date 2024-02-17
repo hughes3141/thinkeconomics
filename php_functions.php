@@ -4589,6 +4589,8 @@ function getUploadsInfo($assetId = null) {
 
   }
 
+  $sql .= " ORDER BY id DESC ";
+
   $stmt=$conn->prepare($sql);
   if(count($bindArray)>0) {
     $stmt->bind_param($params, ...$bindArray);
