@@ -1386,12 +1386,11 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
 
   if($id) {
     $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
-    $conjoin = 1;
+    $conjoiner = 1;
     $sql .= $tableAlias;
     $sql .= "d.id = ? ";
     array_push($bindArray, $id);
     $params .= "i";
-    $conjoiner = 1;
   }
 
   if($keyword) {
@@ -1405,22 +1404,20 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
 
   if($topic) {
     $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
-    $conjoin = 1;
+    $conjoiner = 1;
     $sql .= " topic LIKE ? ";
     $topic = "%".$topic."%";
     array_push($bindArray, $topic);
     $params .= "s";
-    $conjoiner = 1;
   }
 
   if($startDate) {
     $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
-    $conjoin = 1;
+    $conjoiner = 1;
     $sql .= " datePublished > ? ";
     //$keyword = "%".$keyword."%";
     array_push($bindArray, $startDate);
     $params .= "s";
-    $conjoiner = 1;
   }
 
   if($endDate) {

@@ -295,6 +295,14 @@ GET variables:
             <?php
           }
 
+          if($row['user'] == $userId) {
+            ?>
+            <p>
+              <a class="underline text-pink-900" target="_blank" href="news/news_list.php?id=<?=$row['id']?>">Edit Details</a>
+            </p>
+            <?php
+          }
+
           
 
           
