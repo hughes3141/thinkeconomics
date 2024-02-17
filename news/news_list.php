@@ -240,7 +240,27 @@ GET variables:
 
               <label class="font-bold" for="photoAssets<?=$row['id']?>">Photo Assets:</label>
               <div class="show_<?=$row['id'];?>">
-                <?=($row['photoAssets'] != "") ? $row['photoAssets'] : ""?>
+                
+                <?php
+                if($row['photoAssets'] != "") {
+                  $photoAssets = explode(",", $row['photoAssets']);
+                  //print_r($photoAssets);
+                  foreach ($photoAssets as $asset) {
+                    $asset = getUploadsInfo($asset)[0];
+                    //print_r($asset);
+                    ?>
+                    <a target="_blank" href="<?=$asset['path']?>"><?=$asset['id']?> </a>
+
+                    <?php
+                    /*
+                    <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                    */
+                    ?>
+
+                    <?php
+                    }
+                  }
+                ?>
               </div>
               <input type="text" id="photoAssets<?=$row['id']?>" class="w-full hide hide_<?=$row['id'];?>" name="photoAssets" value= "<?=$row['photoAssets']?>"></input>
 
