@@ -409,13 +409,15 @@ $_GET controls:
                           $questionAssets = explode(",",$question['questionAssets']);
                           //print_r($questionAssets);
 
-                          foreach($questionAssets as $asset) {
-                            $asset = getUploadsInfo($asset)[0];
-                            //print_r($asset);
-                            
-                            ?>
-                            <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
-                            <?php
+                          if($question['questionAssets'] != "") {
+                            foreach($questionAssets as $asset) {
+                              $asset = getUploadsInfo($asset)[0];
+                              //print_r($asset);
+                              
+                              ?>
+                              <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                              <?php
+                            }
                           }
 
                           $markSchemeAssets = explode(",",$question['markSchemeAssets']);
