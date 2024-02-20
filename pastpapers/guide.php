@@ -127,7 +127,7 @@ if(str_contains($permissions, "main_admin")) {
       }
 
       //Define what types of assets will be shown:
-      $showMarkScheme = $showGuide = $showModel = null;
+      $showMarkScheme = $showGuide = $showModel = $showModelAssets = null;
       if($question['markSchemeAssets']!="") {
         $showMarkScheme = 1;
       }
@@ -137,6 +137,12 @@ if(str_contains($permissions, "main_admin")) {
       if($question['modelAnswer']!="") {
         $showModel = 1;
       }
+
+      if($question['modelAnswerAssets']!="") {
+        $showModelAssets = 1;
+      }
+
+      
 
       if($showGuide) {
         ?>
@@ -199,14 +205,16 @@ if(str_contains($permissions, "main_admin")) {
               <?php
             }
 
-            $modelAnswerAssets = explode(",",$question['modelAnswerAssets']);
+            if($showModelAssets) {
 
-            foreach($modelAnswerAssets as $asset) {
-              $asset = getUploadsInfo($asset)[0];
-                //print_r($asset);
-                ?>
-                <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
-                <?php
+              $modelAnswerAssets = explode(",",$question['modelAnswerAssets']);
+              foreach($modelAnswerAssets as $asset) {
+                $asset = getUploadsInfo($asset)[0];
+                  //print_r($asset);
+                  ?>
+                  <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                  <?php
+                }
               }
 
 
