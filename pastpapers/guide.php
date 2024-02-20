@@ -120,7 +120,8 @@ if(str_contains($permissions, "main_admin")) {
 
     foreach($questions as $key => $question) {
       ?>
-      <h2 class="text-lg <?=($key>0) ? "border-t-2 border-pink-300 mt-5" : ""?>"><?=$question['examBoard']?> <?=$question['qualLevel']?> Unit <?=$question['component']?> <?=$question['series']?> <?=$question['year']?> Q<?=$question['questionNo']?></h2>
+      <h2 class="text-lg underline <?=($key>0) ? "border-t-2 border-pink-300 mt-5" : ""?>"><?=$question['examBoard']?> <?=$question['qualLevel']?> Unit <?=$question['component']?> <?=$question['series']?> <?=$question['year']?> Q<?=$question['questionNo']?></h2>
+      <p><?=$question['question']?></p>
       <?php
       if(isset($_GET['test'])) {
         print_r($question);
