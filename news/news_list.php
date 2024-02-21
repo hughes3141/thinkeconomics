@@ -54,7 +54,7 @@ $updateQuestionBool = 0;
 
 if($_SERVER['REQUEST_METHOD']=='POST') {
   $updateQuestionBool = 1;
-  updateNewsArticle($_POST['id'], $_POST['headline'], $_POST['datePublished'], $_POST['explanation'], $_POST['explanation_long'], $_POST['keyWords'], $_POST['link'], $_POST['articleAsset'], $_POST['active'], $_POST['bbcPerennial'], $_POST['photoAssets'], $_POST['topic']);
+  updateNewsArticle($_POST['id'], $_POST['headline'], $_POST['datePublished'], $_POST['explanation'], $_POST['explanation_long'], $_POST['keyWords'], $_POST['link'], $_POST['articleAsset'], $_POST['active'], $_POST['bbcPerennial'], $_POST['photoAssets'], $_POST['topic'], $_POST['video'], $_POST['audio']);
 
 
   /*
@@ -82,11 +82,14 @@ $get_selectors = array(
   'searchFor' => (isset($_GET['searchFor']) && $_GET['searchFor'] != "") ? $_GET['searchFor'] : "",
   'noSearch' => (isset($_GET['noSearch']) ) ? 1 : null,
   'link' => (isset($_GET['link']) && $_GET['link'] != "") ? $_GET['link'] : "",
-  'searchBar' => (isset($_GET['searchBar']) ) ? 1 : null
+  'searchBar' => (isset($_GET['searchBar']) ) ? 1 : null,
+  'video' => (isset($_GET['video'])) ? 1 : null,
+  'audio' => (isset($_GET['audio'])) ? 1 : null
+
 );
 
 
-$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['startDate'], $get_selectors['endDate'], $get_selectors['orderBy'], $userId, $get_selectors['limit'], $get_selectors['searchFor'], $get_selectors['link']);
+$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['startDate'], $get_selectors['endDate'], $get_selectors['orderBy'], $userId, $get_selectors['limit'], $get_selectors['searchFor'], $get_selectors['link'], null, null, null, $get_selectors['video'], $get_selectors['audio']);
 
 
 include($path."/header_tailwind.php");
@@ -107,6 +110,8 @@ GET variables:
   'noSearch' => if this is set then the extended search bar does not come up
   'link'
   'searchBar' => if this is set then extended search bar will be open on load
+  'video'
+  'audio'
 
 -->
 
@@ -277,6 +282,22 @@ GET variables:
                   <input type="radio" name="bbcPerennial" id="bbcPerennialSelect_<?=$row['id']?>_1" value="1" <?=($row['bbcPerennial'] == 1) ? "checked" : ""?>><label for="bbcPerennialSelect_<?=$row['id']?>_1" > BBC Explainer</label> <br>
                   <input type="radio" name="bbcPerennial" id="bbcPerennialSelect_<?=$row['id']?>_0" value="0" <?=($row['bbcPerennial'] == 0) ? "checked" : ""?>><label for="bbcPerennialSelect_<?=$row['id']?>_0"> Not Explainer</label>
                 </div>
+
+                <p class="show_<?=$row['id'];?>"> <?=($row['video'] == 1) ? "Video" : ""?></p>
+                <div class="hide hide_<?=$row['id'];?>">
+                  <input type="radio" name="video" id="videoSelect_<?=$row['id']?>_1" value="1" <?=($row['video'] == 1) ? "checked" : ""?>><label for="videoSelect_<?=$row['id']?>_1" > Video</label> <br>
+                  <input type="radio" name="video" id="videoSelect_<?=$row['id']?>_0" value="0" <?=($row['video'] == 0) ? "checked" : ""?>><label for="videoSelect_<?=$row['id']?>_0"> Not Video</label>
+                </div>
+
+                <p class="show_<?=$row['id'];?>"> <?=($row['audio'] == 1) ? "Audio" : ""?></p>
+                <div class="hide hide_<?=$row['id'];?>">
+                  <input type="radio" name="audio" id="audioSelect_<?=$row['id']?>_1" value="1" <?=($row['audio'] == 1) ? "checked" : ""?>><label for="audioSelect_<?=$row['id']?>_1" > Audio</label> <br>
+                  <input type="radio" name="audio" id="audioSelect_<?=$row['id']?>_0" value="0" <?=($row['audio'] == 0) ? "checked" : ""?>><label for="audioSelect_<?=$row['id']?>_0"> Not Audio</label>
+                </div>
+
+                
+
+                
                 
               </div>
 

@@ -91,10 +91,12 @@ $get_selectors = array(
   'link' => (isset($_GET['link']) && $_GET['link'] != "") ? $_GET['link'] : "",
   'searchBar' => (isset($_GET['searchBar']) ) ? 1 : null,
   'bbcPerennial' => (isset($_GET['bbcPerennial']) ) ? 1 : null,
-  'withImages' => (isset($_GET['withImages']) ) ? 1 : null
+  'withImages' => (isset($_GET['withImages']) ) ? 1 : null,
+  'video' => (isset($_GET['video'])) ? 1 : null,
+  'audio' => (isset($_GET['audio'])) ? 1 : null
 );
 
-$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['startDate'], $get_selectors['endDate'], $get_selectors['orderBy'], null, $get_selectors['limit'], $get_selectors['searchFor'], $get_selectors['link'], $get_selectors['bbcPerennial'], 1, $get_selectors['withImages']);
+$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['startDate'], $get_selectors['endDate'], $get_selectors['orderBy'], null, $get_selectors['limit'], $get_selectors['searchFor'], $get_selectors['link'], $get_selectors['bbcPerennial'], 1, $get_selectors['withImages'], $get_selectors['video'], $get_selectors['audio']);
 ?>
 
 <?php include "header_tailwind.php"; 
@@ -197,6 +199,12 @@ GET variables:
                 <div class="">
                   <input type="checkbox" name="withImages" id="withImagesInput" value="1" <?=(!is_null($get_selectors['withImages'])) ? "checked" : ""?>><label for="withImagesInput"> Articles with Images</label>
                 </div>
+                <div class="">
+                  <input type="checkbox" name="video" id="videoInput" value="1" <?=(!is_null($get_selectors['video'])) ? "checked" : ""?>><label for="videoInput"> Articles with Video</label>
+                </div>
+                <div class="">
+                  <input type="checkbox" name="audio" id="audioInput" value="1" <?=(!is_null($get_selectors['audio'])) ? "checked" : ""?>><label for="audioInput"> Articles with Audio</label>
+                </div>
 
               </div>
               <input class="w-full bg-pink-300" type="submit" value="Search"</input>
@@ -249,6 +257,7 @@ GET variables:
           //echo "<td>".$row['id']."</td>";
           echo "<td>".$row['topic']."</td>";
           echo "<td><p><strong>Headline: </strong>".$row['headline'];
+          echo ($row['video'] == 1) ? " (Video)" : "";
           
           echo "</p><p><strong>Link: </strong><a class = 'hover:bg-sky-100 underline text-sky-700' target ='_blank' href='".$row['link']."'>".$row['link']."</a>";
 
