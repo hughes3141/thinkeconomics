@@ -1368,7 +1368,7 @@ function getNewsArticlesByTopic($topic) {
   return $articles;
 }
 
-function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null, $userCreate = null, $limit = null, $searchFor = null, $link = null, $bbcPerennial = null, $active = null, $withImages = null) {
+function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null, $userCreate = null, $limit = null, $searchFor = null, $link = null, $bbcPerennial = null, $active = null, $withImages = null, $video = null, $audio = null) {
   global $conn;
   $articles = array();
 
@@ -1483,6 +1483,20 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
     $sql .= " photoAssets <> '' ";
   }
 
+  if($video) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " video = 1 ";
+  }
+
+  if($audio) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " audio = 1 ";
+  }
+
+  
+
 
 
   if(is_null($orderBy)) {
@@ -1535,7 +1549,7 @@ function insertNewsArticle($headline, $hyperlink, $datePublished, $explanation, 
 
 }
 
-function updateNewsArticle($id, $headline = null, $datePublished = null, $explanation = null, $explanation_long = null, $keyWords = null, $link = null, $articleAsset =null, $active = null, $bbcPerennial = null, $photoAssets = null, $topic = null) {
+function updateNewsArticle($id, $headline = null, $datePublished = null, $explanation = null, $explanation_long = null, $keyWords = null, $link = null, $articleAsset =null, $active = null, $bbcPerennial = null, $photoAssets = null, $topic = null, $video = null, $audio = null) {
   /*
   Function to update news_data with new values for given id
   Used in:
@@ -1634,6 +1648,22 @@ function updateNewsArticle($id, $headline = null, $datePublished = null, $explan
     $sql .= " topic = ? ";
     $params .= "s";
     array_push($bindArray, $topic);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($video)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " video = ? ";
+    $params .= "i";
+    array_push($bindArray, $video);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($audio)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " audio = ? ";
+    $params .= "i";
+    array_push($bindArray, $audio);
     $conjoiner = 1;
   }
 
