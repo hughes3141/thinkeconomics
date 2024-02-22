@@ -10,6 +10,7 @@ include($path."/php_header.php");
 include($path."/php_functions.php");
 
 $userId = null;
+$permissions = "";
 
 if (!isset($_SESSION['userid'])) {
   
@@ -540,6 +541,14 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   <?php
                   //}
 
+                }
+
+                if($question['userCreate'] == $userId) {
+                  ?>
+                  <div>
+                    <a class="underline text-sky-700 hover:bg-pink-300" target="_blank" href="pastpapers_questions.php?id=<?=$question['id']?>&topic=&questionNo=&examBoard=&year=&component=">Edit Details</a>
+                  </div>
+                  <?php
                 }
                 ?>
                 <div class="px-2 py-2 bg-pink-200 grid lg:grid-cols-2">       
