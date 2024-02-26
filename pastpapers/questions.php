@@ -430,52 +430,46 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   }
                   ?>
 
-                  <div id="second_part_<?=$question['id']?>" class="px-2 pb-2">
-                    <div class="flex justify-between mb-2">
+                  <div id="second_part_<?=$question['id']?>" class="px-2 pb-2 mt-2">
+                    <div class="flex justify-between mb-2 text-xs md:text-base">
                       <?php
                       if($showMarkScheme) {
-                      ?>
-                      <button class="border rounded bg-pink-200 border-black mb-1 px-1 ml-9" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$question2['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
-                      <?php
+                        ?>
+                        <button class="border rounded bg-pink-200 border-black mb-1 px-1 md:ml-9" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$question2['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
+                        <?php
                       }
-
                       if($showGuide) {
-                      ?>
-
-                      <button class="border rounded bg-sky-200 border-black mb-1 px-1 ml-9" type="button" onclick="toggleHide(this, 'guideToggle_<?=$question2['id']?>', 'Show Guide', 'Hide Guide', 'block')">Show Guide</button>
-
-                      <?php
+                        ?>
+                        <button class="border rounded bg-sky-200 border-black mb-1 px-1 " type="button" onclick="toggleHide(this, 'guideToggle_<?=$question2['id']?>', 'Show Guide', 'Hide Guide', 'block')">Show Guide</button>
+                        <?php
                       }
                       if($showModel) {
-                      ?>
-
-                      <button class="border rounded bg-sky-300 border-black mb-1 px-1 ml-9" type="button" onclick="toggleHide(this, 'modelAnswerToggle_<?=$question2['id']?>', 'Show Model Answer', 'Hide Model Answer', 'block')">Show Model Answer</button>
-
-                      <?php
-                      }
-
-                      
-                      if($userId) {
-                        if($showMarkScheme) {
                         ?>
-                        
-                          <a class="ml-2 underline hover:bg-pink-200 text-sky-700" target ="blank" href="markscheme.php?ids=<?=$question2['id']?>">Mark Scheme Link</a>
-
-                          <?php
-                        }
-
-                        if($showGuide) {
-                          ?>
-
-                          <a class="ml-2 underline hover:bg-pink-200 text-sky-700" target ="blank" href="guide.php?ids=<?=$question2['id']?>">Guide Link</a>
-                        
+                        <button class="border rounded bg-sky-300 border-black mb-1 px-1 " type="button" onclick="toggleHide(this, 'modelAnswerToggle_<?=$question2['id']?>', 'Show Model Answer', 'Hide Model Answer', 'block')">Show Model Answer</button>
                         <?php
-                        }
                       }
                       ?>
                     </div>
+                      <?php
+                      if($userId) {
+                        ?>
+                        <div class="flex justify-between mb-2 text-xs md:text-base">
+                          <?php
+                          if($showMarkScheme) {
+                            ?>                       
+                            <a class="md:ml-9 underline hover:bg-pink-200 text-sky-700" target ="blank" href="markscheme.php?ids=<?=$question2['id']?>">Mark Scheme Link</a>
+                            <?php
+                          }
+                          if($showGuide) {
+                            ?>
+                            <a class=" underline hover:bg-pink-200 text-sky-700" target ="blank" href="guide.php?ids=<?=$question2['id']?>">Guide Link</a>
+                            <?php
+                          }
+                          ?>
+                        </div>
+                        <?php
+                      }
 
-                    <?php
                     if($showMarkScheme) {
                     ?>
                       <div class="markSchemeToggle_<?=$question2['id']?> hidden">
