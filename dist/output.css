@@ -1218,10 +1218,6 @@ textarea, input, select {
   white-space: nowrap;
 }
 
-.whitespace-pre {
-  white-space: pre;
-}
-
 .whitespace-pre-line {
   white-space: pre-line;
 }
@@ -1789,6 +1785,11 @@ textarea, input, select {
   color: rgb(3 105 161 / var(--tw-text-opacity));
 }
 
+.text-pink-900 {
+  --tw-text-opacity: 1;
+  color: rgb(131 24 67 / var(--tw-text-opacity));
+}
+
 .text-pink-300 {
   --tw-text-opacity: 1;
   color: rgb(249 168 212 / var(--tw-text-opacity));
@@ -1832,21 +1833,6 @@ textarea, input, select {
 .text-sky-500 {
   --tw-text-opacity: 1;
   color: rgb(14 165 233 / var(--tw-text-opacity));
-}
-
-.text-pink-700 {
-  --tw-text-opacity: 1;
-  color: rgb(190 24 93 / var(--tw-text-opacity));
-}
-
-.text-pink-600 {
-  --tw-text-opacity: 1;
-  color: rgb(219 39 119 / var(--tw-text-opacity));
-}
-
-.text-pink-900 {
-  --tw-text-opacity: 1;
-  color: rgb(131 24 67 / var(--tw-text-opacity));
 }
 
 .underline {
@@ -2184,6 +2170,10 @@ textarea, input, select {
     margin-right: 0px;
   }
 
+  .md\:ml-9 {
+    margin-left: 2.25rem;
+  }
+
   .md\:block {
     display: block;
   }
@@ -2314,6 +2304,10 @@ textarea, input, select {
 
   .lg\:mt-32 {
     margin-top: 8rem;
+  }
+
+  .lg\:ml-9 {
+    margin-left: 2.25rem;
   }
 
   .lg\:inline-block {
