@@ -521,15 +521,16 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                           <p class="mb-1"><?=$p?></p>
                           <?php
                         }
-                        $modelAnswerAssets = explode(",",$question2['modelAnswerAssets']);
-
-                        foreach($modelAnswerAssets as $asset) {
-                          $asset = getUploadsInfo($asset)[0];
-                            //print_r($asset);
-                            ?>
-                            <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
-                            <?php
-                          }
+                        if($question2['modelAnswerAssets'] != "") {
+                          $modelAnswerAssets = explode(",",$question2['modelAnswerAssets']);
+                          foreach($modelAnswerAssets as $asset) {
+                            $asset = getUploadsInfo($asset)[0];
+                              //print_r($asset);
+                              ?>
+                              <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                              <?php
+                            }
+                        }
 
 
                         ?>
