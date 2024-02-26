@@ -44,6 +44,10 @@ $style_input = "
     width: 100%;
     
   }
+
+  textarea, input {
+    padding: 0.25rem;
+  }
 ";
 
 //Controls to remove elements e.g. flashCard controls:
