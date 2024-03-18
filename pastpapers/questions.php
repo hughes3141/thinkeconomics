@@ -411,9 +411,9 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   echo "</div>";
 
                 }
-                ?>
-                
-                <?php
+                  ?>
+                  
+                  <?php
                   $markSchemeAssets = explode(",",$question2['markSchemeAssets']);
                   //print_r($questionAssets);
 
@@ -535,16 +535,17 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   </div>
                   <?php
                   //}
+                  if($question2['userCreate'] == $userId) {
+                    ?>
+                    <div>
+                      <a class="underline text-sky-700 hover:bg-pink-300" target="_blank" href="pastpapers_questions.php?id=<?=$question2['id']?>&topic=&questionNo=&examBoard=&year=&component=">Edit Details</a>
+                    </div>
+                    <?php
+                  }
 
                 }
 
-                if($question['userCreate'] == $userId) {
-                  ?>
-                  <div>
-                    <a class="underline text-sky-700 hover:bg-pink-300" target="_blank" href="pastpapers_questions.php?id=<?=$question['id']?>&topic=&questionNo=&examBoard=&year=&component=">Edit Details</a>
-                  </div>
-                  <?php
-                }
+
                 ?>
                 <div class="px-2 py-2 bg-pink-200 grid lg:grid-cols-2">       
                   <?php
