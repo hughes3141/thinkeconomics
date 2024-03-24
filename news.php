@@ -258,6 +258,7 @@ GET variables:
           echo "<td>".$row['topic']."</td>";
           echo "<td><p><strong>Headline: </strong>".$row['headline'];
           echo ($row['video'] == 1) ? " (Video)" : "";
+          echo ($row['audio'] == 1) ? " (Audio)" : "";
           
           echo "</p><p><strong>Link: </strong><a class = 'hover:bg-sky-100 underline text-sky-700' target ='_blank' href='".$row['link']."'>".$row['link']."</a>";
 
