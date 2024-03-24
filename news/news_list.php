@@ -54,7 +54,7 @@ $updateQuestionBool = 0;
 
 if($_SERVER['REQUEST_METHOD']=='POST') {
   $updateQuestionBool = 1;
-  updateNewsArticle($_POST['id'], $_POST['headline'], $_POST['datePublished'], $_POST['explanation'], $_POST['explanation_long'], $_POST['keyWords'], $_POST['link'], $_POST['articleAsset'], $_POST['active'], $_POST['bbcPerennial'], $_POST['photoAssets'], $_POST['topic'], $_POST['video'], $_POST['audio']);
+  updateNewsArticle($_POST['id'], $_POST['headline'], $_POST['datePublished'], $_POST['explanation'], $_POST['explanation_long'], $_POST['keyWords'], $_POST['link'], $_POST['articleAsset'], $_POST['active'], $_POST['bbcPerennial'], $_POST['photoAssets'], $_POST['topic'], $_POST['video'], $_POST['audio'], $_POST['photoLinks']);
 
 
   /*
@@ -268,6 +268,31 @@ GET variables:
                 ?>
               </div>
               <input type="text" id="photoAssets<?=$row['id']?>" class="w-full hide hide_<?=$row['id'];?>" name="photoAssets" value= "<?=$row['photoAssets']?>"></input>
+
+              <div>
+                <label for="photoLinks<?=$row['id']?>" class= "font-bold ">Linked Photos:</label>
+                <textarea id="photoLinks<?=$row['id']?>" class="w-full hide hide_<?=$row['id'];?>" name="photoLinks" value=""><?=$row['photoLinks']?></textarea>
+
+                <?php
+                  $photoLinks = $row['photoLinks'];
+                  $photoLinks = explode(", ", $photoLinks);
+                  //print_r($photoLinks);
+                  if(count($photoLinks) > 0) {
+                    ?>
+                    <div class="show_<?=$row['id'];?>">
+                      <?php
+                      foreach($photoLinks as $link) {
+                        $link = trim($link);
+                        ?>
+                        <img alt="<?=$link?>" src="<?=$link?>">
+                        <?php
+                      }
+                      ?>
+                    </div>
+                    <?php
+                  }
+                ?>
+              </div>
 
               <div>
                 <p class="show_<?=$row['id'];?>"> <?=($row['active'] == 1) ? "Active" : "<span class='bg-pink-100'>Inactive</span>"?></p>
