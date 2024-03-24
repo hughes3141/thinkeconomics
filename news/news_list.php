@@ -282,6 +282,7 @@ GET variables:
                     <div class="show_<?=$row['id'];?>">
                       <?php
                       foreach($photoLinks as $link) {
+                        $link = trim($link);
                         ?>
                         <img alt="<?=$link?>" src="<?=$link?>">
                         <?php

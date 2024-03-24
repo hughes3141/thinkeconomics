@@ -1480,7 +1480,7 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
   if($withImages) {
     $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
     $conjoiner = 1;
-    $sql .= " photoAssets <> '' ";
+    $sql .= " photoAssets <> '' OR photoLinks <> '' ";
   }
 
   if($video) {
