@@ -155,17 +155,15 @@ index = [
         ["2.1.3 The AD Curve","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/EaF6Xq8f5lREt6jvri14WTEB9z9vt7j55Q9ZSxAhCguo5w?e=PK691e"],
         ["2.1.4 Keynesian Aggregate Supply","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/Eb0QfYoiWX1Ij1p3ESjEmYQBlbxG_IKuGQoqBE4giv91IQ?e=hs5ftL"],
         ["2.1.5 AS/AD Revision","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/ETQbDOqaPORGnxSMn0N3aeQBNHg4eXg8NfqEjjHOmrY0DA?e=U7vNuK"],
-       ["2.1.5 Neoclassical AS/AD","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/EUrws2xO0WxNt0gYbOhyE8EBDxxvGazQt6hYYa2rzxL-UQ?e=ydjYAL"],
+       	["2.1.5 Neoclassical AS/AD","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/EUrws2xO0WxNt0gYbOhyE8EBDxxvGazQt6hYYa2rzxL-UQ?e=ydjYAL"],
 	["2.1.7 Keynes vs Hayek","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/EcyJYPdTSGpDhra6yyMWTUgBO-KTHCnOtGCzWWGJG2FdaQ?e=tDfZVa"],
-      
-      
-			["2.1.8 Phillips Curve",
-			"https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/ESvmmI2JRHxKtweZilcnNTsBwLQuxLQLYLKhw8uw3UjE4A?e=K0evpr"],
+	["2.1.8 Phillips Curve","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/ESvmmI2JRHxKtweZilcnNTsBwLQuxLQLYLKhw8uw3UjE4A?e=K0evpr"],
 		["2.2.2 Economic Growth","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/Ef3Ed7xBRk5Hjatn0TKePV4Bya8-S-8acki0HV2zaf4fhg?e=HFGgcs"],
   		
 		["2.2.3 Unemployment","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/EW64qZif6ZJCtsqvaC5AZd0B7v4CE3P1aZvY3NdlGCH7pw?e=ZXiF00"],
   		["2.2.4 Inflation","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/EZip31N6CVFBkQafmpGAuHoBvOb5j2LTyO0yyyMfZOLdcw?e=zSaNbv"],
   		["2.2.5 Balance of Payments","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/EVApZOwf-fNAttCAP_un44sBhTXac7TEDWu103IyfSUfeA?e=CRThgG"],
+		["2.2.6 Public Sector Debt","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/EWoL2wCkfQZEk1Js__L5e48BpfVmfU5e_ix87kn6sbjFgA?e=g65Fii"],
   		["2.3.1 Fiscal Policy","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/Ec-LrMmi3KtBqzb33xZHDLMBkmmt3RyGKa-XiuVDNPiIlg?e=miKpfj"],
   		["2.3.2 Monetary Policy","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/EfmhvhWpHilIiDJGiQp6LHQBV7qCq0WdBguDwkD0qova5A?e=Hr58hc"],
   		["2.3.3 Financial Stability","https://truropenwith-my.sharepoint.com/:p:/g/personal/ryanhughes_callywith_ac_uk/ETSKQcMKX2VGpixo2CK7oZ8BGzfMMOmjiY4HfEokWqlR3g?e=BQ5pxK"],
