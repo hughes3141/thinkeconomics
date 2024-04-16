@@ -686,6 +686,11 @@ textarea, input, select {
   margin-right: -0.5rem;
 }
 
+.mx-3 {
+  margin-left: 0.75rem;
+  margin-right: 0.75rem;
+}
+
 .mb-8 {
   margin-bottom: 2rem;
 }

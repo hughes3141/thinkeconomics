@@ -177,7 +177,7 @@ GET Variables:
 
             </div>
           </button>
-            <div class="answer hidden    m-3 py-2 px-4 border-4 border-sky-300 rounded-lg "><?//=$question['topic'];?>
+            <div class="answer hidden    mb-3 mx-3 py-2 px-4 border-4 border-sky-300 rounded-lg "><?//=$question['topic'];?>
               <div class="whitespace-pre-line"><?=htmlspecialchars(trim($question['model_answer']));?></div>
               <?php
 
