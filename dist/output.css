@@ -826,8 +826,12 @@ textarea, input, select {
   margin-left: -2.25rem;
 }
 
-.ml-9 {
-  margin-left: 2.25rem;
+.box-border {
+  box-sizing: border-box;
+}
+
+.box-content {
+  box-sizing: content-box;
 }
 
 .block {
@@ -1012,6 +1016,11 @@ textarea, input, select {
 
 .w-10 {
   width: 2.5rem;
+}
+
+.w-max {
+  width: -moz-max-content;
+  width: max-content;
 }
 
 .max-w-5xl {
@@ -2304,10 +2313,6 @@ textarea, input, select {
 
   .lg\:mt-32 {
     margin-top: 8rem;
-  }
-
-  .lg\:ml-9 {
-    margin-left: 2.25rem;
   }
 
   .lg\:inline-block {
