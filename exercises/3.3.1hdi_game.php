@@ -195,7 +195,7 @@ include($path."/header_tailwind.php");
       <p><button id="start" onclick="setup()" style="display: none">Start Game</button></p>
 
 
-      <div class="float-container noselect rounded">
+      <div class="float-container noselect rounded text-xs lg:text-base">
 
         <div class="float-child col1 rounded p-1" id="grid_1" onclick="test(1); myClear()" style="background-color: white;">
           <h1 id="c1" class="country_name text-lg font-mono"></h1>
@@ -220,14 +220,18 @@ include($path."/header_tailwind.php");
       </div>
       <p>Score: <span id="score">0</span>/<span id="roundcount">0</span></p>
 
-      <p><button class="border border-black rounded bg-pink-200 w-full" id="show_table" onclick="show_table()">Click here to show the values of all countries</button></p>
+      <p><button class="border border-black rounded bg-pink-200 w-full mb-2" id="show_table" onclick="show_table()">Click here to show the values of all countries</button></p>
 
-      <table id="all_table" style="table-layout: auto; width: ; display: none;">
-      <tbody><tr class="sticky top-20 bg-white">
+      <table id="all_table" style="table-layout: auto; width: ; display: none;" class="text-sm lg:text-base">
+      <tbody><tr class="sticky top-12 lg:top-20 bg-white">
         <th>Rank</th>
         <th>Country</th>
         <th>Human Development Index (HDI)</th>
-        <th>Life expectancy at birth</th><th>Expected years of schooling</th><th>Mean years of schooling</th><th>Gross national income (GNI) per capita</th><th>GNI per capita rank minus HDI rank	HDI rank</th>
+        <th class="hidden lg:table-cell">Life expectancy at birth</th>
+        <th class="hidden lg:table-cell">Expected years of schooling</th>
+        <th class="hidden lg:table-cell">Mean years of schooling</th>
+        <th class="hidden lg:table-cell">Gross national income (GNI) per capita</th>
+        <th>GNI per capita rank minus HDI rank	HDI rank</th>
 
         
       </tr>
@@ -442,11 +446,11 @@ var index = [
   [184,"Burkina Faso",0.449,59.3,9.1,2.1,2.118,-8,185],
   [185,"Mozambique",0.446,59.3,10.2,3.2,1.198,2,184],
   [186,"Mali",0.428,58.9,7.4,2.3,2.133,-11,186],
-  [187,"Burundi",0.426,61.7,10.7,3.1,732,4,187],
-  [188,"Central African Republic",0.404,53.9,8.0,4.3,966,1,188],
+  [187,"Burundi",0.426,61.7,10.7,3.1,0.732,4,187],
+  [188,"Central African Republic",0.404,53.9,8.0,4.3,0.966,1,188],
   [189,"Niger",0.400,61.6,7.0,2.1,1.240,-3,189],
   [190,"Chad",0.394,52.5,8.0,2.6,1.364,-7,190],
-  [191,"South Sudan",0.385,55.0,5.5,5.7,768,-1,191]
+  [191,"South Sudan",0.385,55.0,5.5,5.7,0.768,-1,191]
 ]
 
 var index21 = [
@@ -709,6 +713,16 @@ function populate() {
 		var cell6 = row.insertCell(5);
 		var cell7 = row.insertCell(6);
 		var cell8 = row.insertCell(7);
+
+    cell4.classList.add("hidden");
+    cell4.classList.add('lg:table-cell');
+    cell5.classList.add("hidden");
+    cell5.classList.add('lg:table-cell');
+    cell6.classList.add("hidden");
+    cell6.classList.add('lg:table-cell');
+    cell7.classList.add("hidden");
+    cell7.classList.add('lg:table-cell');
+    
 		cell1.innerHTML = index[i][0];
 		cell2.innerHTML = index[i][1];
 		cell3.innerHTML = index[i][2];

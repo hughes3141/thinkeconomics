@@ -31,6 +31,10 @@ $style_input = "
     border: 1px solid black;
   }
 
+  textarea, input {
+    padding-left: 0.25rem;
+  }
+
   
   ";
 
