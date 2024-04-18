@@ -170,9 +170,11 @@ if(!is_null($get_selectors['topics'])) {
 
 
   $quizInfo = array(
-    'quizName' => "Random",
+    'quizName' => "Quiz Generator:".(!is_null($get_selectors['topics']) ? " Topic ".$get_selectors['topics'] : "").(!is_null($get_selectors['examBoard']) ? " Exam Board: ".$get_selectors['examBoard'] : "")." ".$number."/".count($questions),
     'questions_id'=> $questionsFilterIds
   );
+
+  $quizid = 0;
 
 }
 
@@ -224,7 +226,7 @@ $style_input = ".hide {
 
       }
     
-    $responseId = insertMCQRecord($record, $_POST['userid'], $_POST['startTime'], $_POST['quizid'], $_POST['assignid']);
+    $responseId = insertMCQRecord($record, $_POST['userid'], $_POST['startTime'], $_POST['quizid'], $_POST['assignid'], $_POST['quizname']);
 
     echo "<script>window.location.replace('/user/user_mcq_review.php?responseId=".$responseId."')</script>";
 
@@ -258,7 +260,7 @@ if(str_contains($permissions, "main_admin")) {
         //print_r($assignInfo);
         
         //print_r($permissions);
-        print_r($quizInfo);
+        //print_r($quizInfo);
         //echo "<br>";
         //print_r($_GET);
         //echo "<br>";
@@ -309,92 +311,95 @@ if(str_contains($permissions, "main_admin")) {
       <input type = "text" name ="userid" value ="<?=$userId?>" style="display: ;" >
       <input type = "text" name="quizid" value = "<?=$quizid?>">
       <input type = "text" name="assignid" value = "<?=$assignid?>">
+      <input type = "text" name="quizname" value = "<?=$quizInfo['quizName']?>">
       
       <input type ="hidden" name ="submit_info" value ="submittedForm2">
     </div>
 		
 		<?php
 		//print_r($questions);
-		foreach ($questions as $key=>$question) {
-      
-			$questionInfo = getMCQquestionDetails($question);
-			//print_r($questionInfo);
-      $questionsDetails[$question] = $questionInfo;
-			$imgSource = "https://thinkeconomics.co.uk";
-			$imgPath = "";
-			if($questionInfo['path'] == "") {
-				$imgPath = $questionInfo['No'].".JPG";
-			} else {
-				$imgPath = $questionInfo['path'];
-			}
-			$img = $imgSource."/mcq/question_img/".$imgPath;
+    if(count($questions)>0 && $questions[0]!= "") {
+      foreach ($questions as $key=>$question) {
+        
+        $questionInfo = getMCQquestionDetails($question);
+        //print_r($questionInfo);
+        $questionsDetails[$question] = $questionInfo;
+        $imgSource = "https://thinkeconomics.co.uk";
+        $imgPath = "";
+        if($questionInfo['path'] == "") {
+          $imgPath = $questionInfo['No'].".JPG";
+        } else {
+          $imgPath = $questionInfo['path'];
+        }
+        $img = $imgSource."/mcq/question_img/".$imgPath;
 
-			$textOnly = 0;
-			if($questionInfo['textOnly'] == 1) {
-				$textOnly = 1;
-			}
+        $textOnly = 0;
+        if($questionInfo['textOnly'] == 1) {
+          $textOnly = 1;
+        }
 
-			$options = $questionInfo['options'];
-			$options = json_decode($options, true);
+        $options = $questionInfo['options'];
+        $options = json_decode($options, true);
 
-      $questionNo = $key + 1;
-      if($originalQuestionNumbers == 1) {
-        $questionNo = getOriginalOrder($question) + 1;
-      }
-			?>
-			<div class=" font-sans" id="question_div_<?=$key?>">
-				<h2>Question <?=$questionNo?>/<?=$quesitonsCount?></h2>
-				<p class="text-xs"><em id = "q4"><?=$questionInfo['No']?></em></p>
+        $questionNo = $key + 1;
+        if($originalQuestionNumbers == 1) {
+          $questionNo = getOriginalOrder($question) + 1;
+        }
+        ?>
+        <div class=" font-sans" id="question_div_<?=$key?>">
+          <h2>Question <?=$questionNo?>/<?=$quesitonsCount?></h2>
+          <p class="text-xs"><em id = "q4"><?=$questionInfo['No']?></em></p>
 
-        <div class="flex flex-row gap-x-2 font-mono text-xs md:text-base mt-2">
-          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 previous" value ="Previous Question" id="previous1" onclick="changeQuestion(this);" <?=($key == 0) ? "disabled" : ""?>>
-          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit1" onclick="submit2();">
-          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next1" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
-        </div>
-        <div class="lg:w-3/4 mx-auto">
-				  <?php
-          if($textOnly == 1) {
+          <div class="flex flex-row gap-x-2 font-mono text-xs md:text-base mt-2">
+            <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 previous" value ="Previous Question" id="previous1" onclick="changeQuestion(this);" <?=($key == 0) ? "disabled" : ""?>>
+            <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit1" onclick="submit2();">
+            <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next1" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
+          </div>
+          <div class="lg:w-3/4 mx-auto">
+            <?php
+            if($textOnly == 1) {
+              ?>
+              
+              <p class="my-3"><?=$questionInfo['question']?></p>
+              <?php
+            } else {
             ?>
-            
-            <p class="my-3"><?=$questionInfo['question']?></p>
+            <img src="<?=$img?>" class=" my-3" alt = "<?=$questionInfo['No']?>">
             <?php
-          } else {
-          ?>
-          <img src="<?=$img?>" class=" my-3" alt = "<?=$questionInfo['No']?>">
-          <?php
-          }
-          ?>
-          <div class="ml-3">
-            <?php
-
-            if($randomQuestions ==1 && $textOnly == 1) {
-              $options = shuffle_assoc($options);
-
             }
-            foreach($options as $optKey=>$option) {
-              if($textOnly == 0) {
-                $option = $optKey;
+            ?>
+            <div class="ml-3">
+              <?php
+
+              if($randomQuestions ==1 && $textOnly == 1) {
+                $options = shuffle_assoc($options);
+
+              }
+              foreach($options as $optKey=>$option) {
+                if($textOnly == 0) {
+                  $option = $optKey;
+                }
+                ?>
+                <p class="mb-2 ml-5">
+                  <input type="radio" class="-ml-5 mt-1.5 absolute" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
+                <label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
+                </p>
+                <?php
               }
               ?>
-              <p class="mb-2 ml-5">
-                <input type="radio" class="-ml-5 mt-1.5 absolute" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
-              <label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
-              </p>
-              <?php
-            }
-            ?>
+            </div>
           </div>
-        </div>
-        
-        <div class="flex flex-row gap-x-2 font-mono text-xs md:text-base mt-2">
-          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 previous" value ="Previous Question" id="previous1" onclick="changeQuestion(this);" <?=($key == 0) ? "disabled" : ""?>>
-          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit1" onclick="submit2();">
-          <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next1" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
-        </div>
+          
+          <div class="flex flex-row gap-x-2 font-mono text-xs md:text-base mt-2">
+            <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 previous" value ="Previous Question" id="previous1" onclick="changeQuestion(this);" <?=($key == 0) ? "disabled" : ""?>>
+            <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit1" onclick="submit2();">
+            <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next1" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
+          </div>
 
-			</div>
-			<?php
-		}
+        </div>
+        <?php
+      }
+    }
 		?>
 
 	</form>

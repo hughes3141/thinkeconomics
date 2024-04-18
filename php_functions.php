@@ -1074,7 +1074,7 @@ function markMCQquestion($questionId, $response) {
   }
 }
 
-function insertMCQRecord($record, $userid, $startTime, $quizid, $assignid) {
+function insertMCQRecord($record, $userid, $startTime, $quizid, $assignid, $quizname) {
   /*
   This function will insert a new record from a completed MCQ quiz
 
@@ -1089,7 +1089,7 @@ function insertMCQRecord($record, $userid, $startTime, $quizid, $assignid) {
   $score = 0;
 
   $quiz = getMCQquizInfo($quizid);
-  $quizname = $quiz['quizName'];
+  //$quizname = $quiz['quizName'];
 
   $timeStart = $startTime;
   $timeEnd = date("Y-m-d H:i:s");
