@@ -41,6 +41,13 @@ if(isset($_GET['quizid'])) {
   $quizid = $quizInfo['id'];
 }
 
+$get_selectors = array(
+  'id' => (isset($_GET['id'])&&$_GET['id']!="") ? $_GET['id'] : null,
+  'topics' => (isset($_GET['topics'])&&$_GET['topics']!="") ? $_GET['topics'] : null,
+  'number' => (isset($_GET['number'])&&$_GET['number']!="") ? $_GET['number'] : null,
+  'examBoard' => (isset($_GET['examBoard'])&&$_GET['examBoard']!="") ? $_GET['examBoard'] : null
+);
+
 
 
 
@@ -63,10 +70,8 @@ if(isset($_GET['randomQuestions'])) {
   
 }
 
-$questions = explode(",",$quizInfo['questions_id']);
-$questionsDetails = array();
-$questionsOriginal = $questions;
-$quesitonsCount = count($questions);
+
+
 
 function getOriginalOrder($questionid) {
   global $questionsOriginal;
@@ -102,6 +107,81 @@ if(isset($_GET['randomOptions'])) {
 
 //The following variable will toggle to show original question numbers (e.g. 5/10 as first question) when set to 1. Otherwise questions will come in random order but numbered sequentually e.g. 1/10 as first question
 $originalQuestionNumbers = 0;
+
+//The following will create a new random quiz when get variable 'topics' is defined. This will allow users to create a newly-minted random set of questions by a topic.
+
+if(!is_null($get_selectors['topics'])) {
+
+  $quizid = 0;
+  $topics = $get_selectors['topics'];
+  $topics = explode(",",$topics);
+  //print_r($topics);
+  foreach ($topics as $key=>$topic) {
+    $topics[$key] = trim($topic);
+  }
+  //var_dump($topics);
+
+  //Until getMCQquestionDetails2() can handle more than one topic, we will use $topics[0] and enter single topic
+
+  $questions = getMCQquestionDetails2($get_selectors['id'], null, $topics[0], null, null, null, $get_selectors['examBoard']);
+
+  $onlyRelevant = 1;
+  $noSimilar = 1;
+
+  foreach ($questions as $key=>$question) {
+    if($onlyRelevant == 1) {
+      if($question['relevant'] !='1') {
+        unset($questions[$key]);
+        //echo $key." ";
+      }
+    }
+    if($noSimilar == 1) {
+      if($question['similar'] !='') {
+        unset($questions[$key]);
+        //echo $key." ";
+      }
+    }
+  }
+
+  $questions = array_values($questions);
+
+  $number = 10;
+  if(!is_null($get_selectors['number'])) {
+    $number = $get_selectors['number'];
+  }
+  if ($number > count($questions)) {
+    $number = count($questions);
+  }
+
+  $numbers = range(0,count($questions)-1);
+  shuffle($numbers);
+  
+  $questionsFilter = array();
+  $questionsFilterIds = array();
+  for($x=0; $x<$number; $x++) {
+    $questionsFilter[$x] = $questions[$numbers[$x]];
+    array_push($questionsFilterIds, $questions[$numbers[$x]]['id']);
+  }
+
+  $questionsFilterIds = implode(",",$questionsFilterIds);
+
+  
+
+
+
+  $quizInfo = array(
+    'quizName' => "Random",
+    'questions_id'=> $questionsFilterIds
+  );
+
+}
+
+//These are original variables brought down in code so that we can populate with random questions
+
+$questions = explode(",",$quizInfo['questions_id']);
+$questionsDetails = array();
+$questionsOriginal = $questions;
+$quesitonsCount = count($questions);
 
 
 
@@ -178,11 +258,14 @@ if(str_contains($permissions, "main_admin")) {
         //print_r($assignInfo);
         
         //print_r($permissions);
-        //print_r($quizInfo);
+        print_r($quizInfo);
         //echo "<br>";
         //print_r($_GET);
         //echo "<br>";
         //print_r($_POST);
+        //print_r($get_selectors);
+        //print_r($questions);
+   
         
       ?>
     <h1 class="font-mono text-xl bg-pink-300 pl-1"><?=$quizInfo['quizName']?></h1>
