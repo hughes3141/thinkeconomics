@@ -1169,6 +1169,186 @@ function insertMCQquestionResponse($userid, $questionid, $response, $startTime, 
 
 }
 
+function getMCQCategoryValues($topic=null, $examBoard = null, $year = null, $component = null, $qualLevel = null, $unitName = null, $excludedYear = null, $dateBefore = null) {
+  /**
+   * This function returns unique category values from question_bank_3 for purposes of updating input drop-downs etc.
+   * 
+   * Used in:
+   * -mcq/generator.php
+   */
+
+   global $conn;
+   
+
+   $categories = array('topic', 'examBoard', 'qualLevel', 'component', 'unitName', 'year');
+   $categoryResults = array();
+
+   $calledVariable = "";
+
+
+   foreach($categories as $category) {
+
+      $results = array();
+      $params = "";
+      $bindArray = array();
+      $conjoiner = "";
+      $tableAlias = "";
+
+      /*
+      for($x=0; $x<count($categories); $x++) {
+        if ($category == $categories[$x]) {
+          $calledVariable = $category;
+        }
+      }
+      */
+
+      switch($category) {
+        case 'topic':
+          $calledVariable = $topic;
+          break;
+        case 'examBoard':
+          $calledVariable = $examBoard;
+          break;
+        case 'qualLevel':
+          $calledVariable = $qualLevel;
+          break;
+        case 'component':
+          $calledVariable = $component;
+          break;
+        case 'unitName':
+          $calledVariable = $unitName;
+          break;
+        case 'year':
+          $calledVariable = $year;
+          break;
+
+
+      }
+
+      $sql = " SELECT DISTINCT ".$category;
+      $sql .= " FROM question_bank_3";
+      //echo $sql;
+
+      if($category == 'topic') {
+        $sql = "SELECT DISTINCT q.topic, t.topicName
+            FROM question_bank_3 q 
+            LEFT JOIN topics t
+            ON q.topic = t.topicCode ";
+            $tableAlias = "q.";
+        //$category = "topic";
+      }
+      //var_dump($calledVariable);
+      //if(!$calledVariable) {
+
+        //These are genearl parameters that we don't want returned (due to nature of the table):
+
+        $sql .= " WHERE examBoard <> 'Exam Board' AND examBoard <> '' AND topic <> 'ma' ";
+        $conjoiner = 1;
+        
+
+        if($topic) {
+          $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
+          $sql .= $conjoin;
+          $sql .= $tableAlias;
+          $sql .= "topic LIKE ? ";
+          $topic = $topic."%";
+          $params .= "s";
+          array_push($bindArray, $topic);
+          $conjoiner = 1;
+        }
+
+        if($examBoard) {
+          $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+          $sql .= $tableAlias;
+          $sql .= "examBoard = ? ";
+          $params .= "s";
+          array_push($bindArray, $examBoard);
+          $conjoiner = 1;
+          
+        }
+    
+        if($year) {
+          $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+          $sql .= $tableAlias;
+          $sql .= "year = ? ";
+          $params .= "s";
+          array_push($bindArray, $year);
+          $conjoiner = 1;
+        }
+    
+        if($component) {
+          $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+          $sql .= $tableAlias;
+          $sql .= "component = ? ";
+          $params .= "i";
+          array_push($bindArray, $component);
+          $conjoiner = 1;
+        }
+    
+        if($qualLevel) {
+          $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+          $conjoiner = 1;
+          $sql .= $tableAlias;
+          $sql .= "qualLevel = ? ";
+          $params .= "s";
+          array_push($bindArray, $qualLevel);
+        }
+
+        if($excludedYear) {
+          $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+          $conjoiner = 1;
+          $sql .= $tableAlias;
+          $sql .= "year <>  ? ";
+          $params .= "s";
+          array_push($bindArray, $excludedYear);
+        }
+
+        if($dateBefore) {
+          $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+          $conjoiner = 1;
+          $sql .= $tableAlias;
+          $sql .= "dateCreate < ? ";
+          $params .= "s";
+          array_push($bindArray, $dateBefore);
+        }
+
+      //}
+
+      /*
+
+      $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+      $sql .= "caseBool IS NULL AND dataBool IS NULL ";
+      $sql .= " ORDER BY ".$category;
+
+      */
+
+      //echo $sql;
+
+      $stmt = $conn->prepare($sql);
+      if(count($bindArray)>0) {
+        $stmt->bind_param($params, ...$bindArray);
+      }
+      $stmt->execute();
+      $result = $stmt->get_result();
+      if($result->num_rows>0) {
+        while($row = $result->fetch_assoc()) {
+          
+          if($category == 'topic') {
+            $row[$category] = $row['topic']."###".$row['topicName'];
+          }
+          
+          array_push($results, $row[$category]);
+          //$results = $row[$category];
+        }
+      }
+      $categoryResults[$category] = $results;
+    }
+
+    return $categoryResults;
+
+  
+}
+
 //SAQ Question handling
 
 function getExercises($table, $topic = null, $userCreate = null) {
