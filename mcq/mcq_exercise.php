@@ -41,6 +41,11 @@ if(isset($_GET['quizid'])) {
   $quizid = $quizInfo['id'];
 }
 
+if(isset($_GET['quizid']) || isset($_GET['assignid'])) {
+  //The following array item is the original question order as listed in database.
+  $quizInfo['question_order_original'] = $quizInfo['questions_id'];
+}
+
 $get_selectors = array(
   'id' => (isset($_GET['id'])&&$_GET['id']!="") ? $_GET['id'] : null,
   'topics' => (isset($_GET['topics'])&&$_GET['topics']!="") ? $_GET['topics'] : null,
@@ -51,62 +56,7 @@ $get_selectors = array(
 
 
 
-$randomQuestionOrder = 0;
-
-//The following takes random Question Order parameter from $assignInfo:
-if(isset($assignInfo['randomQuestions'])) {
-  $randomQuestionOrder = $assignInfo['randomQuestions'];
-}
-
-//This allows override via GET variable:
-if(isset($_GET['randomQuestions'])) {
-  if($_GET['randomQuestions'] == 1) {
-    $randomQuestionOrder = 1;
-  }
-
-  if($_GET['randomQuestions'] == 0) {
-    $randomQuestionOrder = 0;
-  }
-  
-}
-
-
-
-
-function getOriginalOrder($questionid) {
-  global $questionsOriginal;
-  foreach ($questionsOriginal as $key=>$question) {
-    if ($questionid == $question) {
-      return $key;
-    }
-  }
-}
-
-if($randomQuestionOrder == 1) {
-  $qustions = shuffle($questions);
-}
-
-$randomQuestions = 0;
-
-//The following takes random Question Order parameter from $assignInfo:
-if(isset($assignInfo['randomOptions'])) {
-  $randomQuestions = $assignInfo['randomOptions'];
-}
-
-//This allows override via GET variable:
-if(isset($_GET['randomOptions'])) {
-  if($_GET['randomOptions'] == 1) {
-    $randomQuestions = 1;
-  }
-
-  if($_GET['randomOptions'] == 0) {
-    $randomQuestions = 0;
-  }
-  
-}
-
-//The following variable will toggle to show original question numbers (e.g. 5/10 as first question) when set to 1. Otherwise questions will come in random order but numbered sequentually e.g. 1/10 as first question
-$originalQuestionNumbers = 0;
+//Quiz Generation:
 
 //The following will create a new random quiz when get variable 'topics' is defined. This will allow users to create a newly-minted random set of questions by a topic.
 
@@ -165,13 +115,11 @@ if(!is_null($get_selectors['topics'])) {
 
   $questionsFilterIds = implode(",",$questionsFilterIds);
 
-  
-
-
-
   $quizInfo = array(
     'quizName' => "Quiz Generator:".(!is_null($get_selectors['topics']) ? " Topic ".$get_selectors['topics'] : "").(!is_null($get_selectors['examBoard']) ? " Exam Board: ".$get_selectors['examBoard'] : "")." ".$number."/".count($questions),
-    'questions_id'=> $questionsFilterIds
+    'questions_id'=> $questionsFilterIds,
+    'question_order_original' => $questionsFilterIds
+
   );
 
   $quizid = 0;
@@ -184,6 +132,54 @@ $questions = explode(",",$quizInfo['questions_id']);
 $questionsDetails = array();
 $questionsOriginal = $questions;
 $quesitonsCount = count($questions);
+
+
+$randomQuestionOrder = 0;
+//The following takes random Question Order parameter from $assignInfo:
+if(isset($assignInfo['randomQuestions'])) {
+  $randomQuestionOrder = $assignInfo['randomQuestions'];
+}
+
+//This allows override via GET variable:
+if(isset($_GET['randomQuestions'])) {
+  if($_GET['randomQuestions'] == 1) {
+    $randomQuestionOrder = 1;
+  }
+  if($_GET['randomQuestions'] == 0) {
+    $randomQuestionOrder = 0;
+  }
+}
+
+function getOriginalOrder($questionid) {
+  global $questionsOriginal;
+  foreach ($questionsOriginal as $key=>$question) {
+    if ($questionid == $question) {
+      return $key;
+    }
+  }
+}
+
+if($randomQuestionOrder == 1) {
+  shuffle($questions);
+}
+
+$randomOptionsOrder = 0;
+//The following takes randomOptions parameter from $assignInfo:
+if(isset($assignInfo['randomOptions'])) {
+  $randomOptionsOrder = $assignInfo['randomOptions'];
+}
+//This allows override via GET variable:
+if(isset($_GET['randomOptions'])) {
+  if($_GET['randomOptions'] == 1) {
+    $randomOptionsOrder = 1;
+  }
+  if($_GET['randomOptions'] == 0) {
+    $randomOptionsOrder = 0;
+  } 
+}
+
+//The following variable will toggle to show original question numbers (e.g. 5/10 as first question) when set to 1. Otherwise questions will come in random order but numbered sequentually e.g. 1/10 as first question
+$originalQuestionNumbers = 0;
 
 
 
@@ -210,6 +206,10 @@ $style_input = ".hide {
       $record = array();
 
       $submitTime = date("Y-m-d H:i:s");
+
+      $questionsOriginal = explode(",",$_POST['question_order_original']);
+
+      //print_r($questionsOriginal);
 
 
       foreach ($questionsOriginal as $key => $question) {
@@ -303,6 +303,8 @@ if(str_contains($permissions, "main_admin")) {
           <button type="button" class="border-4 border-sky-300 rounded bg-sky-200 hover:bg-sky-300 w-full mt-2 h-12" onclick="goBack(this)">Go Back</button>
 
           <button type="button" class="border-4 border-pink-300 rounded bg-pink-200 hover:bg-pink-300 w-full mt-2 h-12" onclick="this.form.submit()">Submit Score</button>
+
+          <input type="hidden" name="question_order_original" value="<?=$quizInfo['question_order_original']?>">
       </div>
   
     </div>
@@ -317,7 +319,7 @@ if(str_contains($permissions, "main_admin")) {
     </div>
 		
 		<?php
-		//print_r($questions);
+		print_r($questions);
     if(count($questions)>0 && $questions[0]!= "") {
       foreach ($questions as $key=>$question) {
         
@@ -371,7 +373,7 @@ if(str_contains($permissions, "main_admin")) {
             <div class="ml-3">
               <?php
 
-              if($randomQuestions ==1 && $textOnly == 1) {
+              if($randomOptionsOrder ==1 && $textOnly == 1) {
                 $options = shuffle_assoc($options);
 
               }
