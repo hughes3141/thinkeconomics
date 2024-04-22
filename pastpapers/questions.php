@@ -81,7 +81,7 @@ if(isset($_GET['testNoDate'])) {
 
 */
 
-if($userId) {
+if(str_contains($permissions, "main_admin")) {
   $excludedYear = null;
 }
 
