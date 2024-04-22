@@ -319,7 +319,7 @@ if(str_contains($permissions, "main_admin")) {
     </div>
 		
 		<?php
-		print_r($questions);
+		//print_r($questions);
     if(count($questions)>0 && $questions[0]!= "") {
       foreach ($questions as $key=>$question) {
         
@@ -338,6 +338,10 @@ if(str_contains($permissions, "main_admin")) {
         $textOnly = 0;
         if($questionInfo['textOnly'] == 1) {
           $textOnly = 1;
+        }
+        $noRandom = 0; 
+        if($questionInfo['noRandom'] == 1) {
+          $noRandom = 1;
         }
 
         $options = $questionInfo['options'];
@@ -373,7 +377,7 @@ if(str_contains($permissions, "main_admin")) {
             <div class="ml-3">
               <?php
 
-              if($randomOptionsOrder ==1 && $textOnly == 1) {
+              if($randomOptionsOrder ==1 && $textOnly == 1 && $noRandom == 0) {
                 $options = shuffle_assoc($options);
 
               }

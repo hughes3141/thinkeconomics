@@ -102,6 +102,8 @@ $controls = getMCQCategoryValues($get_selectors['topic'], $get_selectors['examBo
 
   }
 
+  $showExtraParameters = null;
+
 
   include($path."/header_tailwind.php");
 ?>
@@ -168,53 +170,58 @@ $controls = getMCQCategoryValues($get_selectors['topic'], $get_selectors['examBo
                   ?>
                     <option value="" <?=($get_selectors[$controlName]) ? $resetCategoryStyle : ""?> ><?=($get_selectors[$controlName]) ? $resetCategory : ""?></option>
                   <?php
-                  foreach($controlsIteration as $control) {
+                    $controlName = 'qualLevel';
+                    $controlsIteration = $controls[$controlName];
                     ?>
-                    <option  value="<?=$control?>" <?=($get_selectors[$controlName] == $control) ? "selected" : ""?>><?=$control?></option>
+                      <option value="" <?=($get_selectors[$controlName]) ? $resetCategoryStyle : ""?> ><?=($get_selectors[$controlName]) ? $resetCategory : ""?></option>
                     <?php
+                    foreach($controlsIteration as $control) {
+                      ?>
+                      <option  value="<?=$control?>" <?=($get_selectors[$controlName] == $control) ? "selected" : ""?>><?=$control?></option>
+                      <?php
 
-                  }
-                ?>
-              </select>
-            </div>
-            <div>
-              <label for="component_select">Unit/Component:</label><br>
-              <select class="w-full" id="component_select" name="component" onchange="this.form.submit();">
-                <?php
-                  $controlName = 'component';
-                  $controlsIteration = $controls[$controlName];
+                    }
                   ?>
-                    <option value="" <?=($get_selectors[$controlName]) ? $resetCategoryStyle : ""?>><?=($get_selectors[$controlName]) ? $resetCategory : ""?></option>
+                </select>
+              </div>
+              <div>
+                <label for="component_select">Unit/Component:</label><br>
+                <select class="w-full" id="component_select" name="component" onchange="this.form.submit();">
                   <?php
-                  foreach($controlsIteration as $control) {
+                    $controlName = 'component';
+                    $controlsIteration = $controls[$controlName];
                     ?>
-                    <option value="<?=$control?>" <?=($get_selectors[$controlName] == $control) ? "selected" : ""?>><?=$control?></option>
+                      <option value="" <?=($get_selectors[$controlName]) ? $resetCategoryStyle : ""?>><?=($get_selectors[$controlName]) ? $resetCategory : ""?></option>
                     <?php
-                  }
-                ?>
-              </select>
-            </div>
-            <div>
-              <label for="year_select">Year:</label><br>
-              <select class="w-full" id="year_select" name="year" onchange="this.form.submit();">
-                <?php
-                  $controlName = 'year';
-                  $controlsIteration = $controls[$controlName];
+                    foreach($controlsIteration as $control) {
+                      ?>
+                      <option value="<?=$control?>" <?=($get_selectors[$controlName] == $control) ? "selected" : ""?>><?=$control?></option>
+                      <?php
+                    }
                   ?>
-                    <option value="" <?=($get_selectors[$controlName]) ? $resetCategoryStyle : ""?>><?=($get_selectors[$controlName]) ? $resetCategory : ""?></option>
+                </select>
+              </div>
+              <div>
+                <label for="year_select">Year:</label><br>
+                <select class="w-full" id="year_select" name="year" onchange="this.form.submit();">
                   <?php
-                  foreach($controlsIteration as $control) {
+                    $controlName = 'year';
+                    $controlsIteration = $controls[$controlName];
                     ?>
-                    <option value="<?=$control?>" <?=($get_selectors[$controlName] == $control) ? "selected" : ""?>><?=$control?></option>
+                      <option value="" <?=($get_selectors[$controlName]) ? $resetCategoryStyle : ""?>><?=($get_selectors[$controlName]) ? $resetCategory : ""?></option>
                     <?php
+                    foreach($controlsIteration as $control) {
+                      ?>
+                      <option value="<?=$control?>" <?=($get_selectors[$controlName] == $control) ? "selected" : ""?>><?=$control?></option>
+                      <?php
 
-                  }
-                ?>
-              </select>
+                    }
+                  ?>
+                </select>
+              </div>
+              
             </div>
-            
-          </div>
-          <?php
+            <?php
           }
           ?>
           <div>
