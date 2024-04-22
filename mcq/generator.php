@@ -69,7 +69,8 @@ $get_selectors = array(
   'examBoard' => (isset($_GET['examBoard']) && $_GET['examBoard']!="") ? $_GET['examBoard'] : null,
   'year' => (isset($_GET['year']) && $_GET['year']!="") ? $_GET['year'] : null,
   'component' => (isset($_GET['component']) && $_GET['component']!="") ? $_GET['component'] : null,
-  'qualLevel' => (isset($_GET['qualLevel']) && $_GET['qualLevel']!="") ? $_GET['qualLevel'] : null
+  'qualLevel' => (isset($_GET['qualLevel']) && $_GET['qualLevel']!="") ? $_GET['qualLevel'] : null,
+  'generate' => (isset($_GET['generate']) && $_GET['generate']!="") ? $_GET['generate'] : null,
 
 );
 
@@ -77,15 +78,18 @@ $controls = getMCQCategoryValues($get_selectors['topic'], $get_selectors['examBo
 
 
 
+
   
 
   $run = 0;
   if(
-    $get_selectors['topic'] ||
+    $get_selectors['generate'] == 1 ||
     1 == 0
   ) {
     $run = 1;
   }
+
+  $showExtraParameters = null;
 
 
 
@@ -155,11 +159,16 @@ $controls = getMCQCategoryValues($get_selectors['topic'], $get_selectors['examBo
           </div>
           <?php
           if(!is_null($showExtraParameters)) {
-            ?>
-            <div class="<?=(is_null($get_selectors['examBoard'])) ? 'hidden' : ''?>">
-              <div>
-                <label for="qualLevel_select">Qualification:</label><br>
-                <select class="w-full" id="qualLevel_select" name="qualLevel" onchange="this.form.submit();">
+          ?>
+          <div class="<?=(is_null($get_selectors['examBoard'])) ? 'hidden' : ''?>">
+            <div>
+              <label for="qualLevel_select">Qualification:</label><br>
+              <select class="w-full" id="qualLevel_select" name="qualLevel" onchange="this.form.submit();">
+                <?php
+                  $controlName = 'qualLevel';
+                  $controlsIteration = $controls[$controlName];
+                  ?>
+                    <option value="" <?=($get_selectors[$controlName]) ? $resetCategoryStyle : ""?> ><?=($get_selectors[$controlName]) ? $resetCategory : ""?></option>
                   <?php
                     $controlName = 'qualLevel';
                     $controlsIteration = $controls[$controlName];
@@ -239,10 +248,10 @@ $controls = getMCQCategoryValues($get_selectors['topic'], $get_selectors['examBo
             </select>
           </div>
 
-          <input type="hidden"  value="Select">
-          <button type="button" onClick="window.location.href=window.location.href.split('?')[0]" class="bg-pink-200 w-full border border-black rounded mt-3">Reset All Parameters</button>
+          <button class="bg-sky-200 w-full border border-black rounded mt-3" onclick="generatequiz()" type="button">Create Quiz</button>
+          <input type="hidden" name="generate" id="generate_input">
+          <button  type="button" onClick="window.location.href=window.location.href.split('?')[0]" class="bg-pink-200 w-full border border-black rounded mt-3">Reset All Parameters</button>
 
-          <input type="submit" name="submit" value="Generate Quiz" class="bg-sky-200 w-full border border-black rounded mt-3"></input>
         </form>
       </div>
 
@@ -251,5 +260,15 @@ $controls = getMCQCategoryValues($get_selectors['topic'], $get_selectors['examBo
 </div>
 
 <script>
+
+
+  function generatequiz() {
+    var input = document.getElementById("generate_input");
+    input.value=1;
+    input.form.submit();
+
+
+  }
+
 </script>
 <?php   include($path."/footer_tailwind.php");?>
