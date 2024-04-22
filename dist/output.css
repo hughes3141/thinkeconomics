@@ -666,6 +666,11 @@ textarea, input, select {
   margin-right: 0.25rem;
 }
 
+.mx-3 {
+  margin-left: 0.75rem;
+  margin-right: 0.75rem;
+}
+
 .my-5 {
   margin-top: 1.25rem;
   margin-bottom: 1.25rem;
@@ -676,19 +681,14 @@ textarea, input, select {
   margin-right: -0.25rem;
 }
 
-.my-3 {
-  margin-top: 0.75rem;
-  margin-bottom: 0.75rem;
-}
-
 .-mx-2 {
   margin-left: -0.5rem;
   margin-right: -0.5rem;
 }
 
-.mx-3 {
-  margin-left: 0.75rem;
-  margin-right: 0.75rem;
+.my-3 {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .mb-8 {
@@ -815,6 +815,10 @@ textarea, input, select {
   margin-top: -0.25rem;
 }
 
+.-mt-2 {
+  margin-top: -0.5rem;
+}
+
 .-ml-5 {
   margin-left: -1.25rem;
 }
@@ -823,24 +827,8 @@ textarea, input, select {
   margin-top: 1.25rem;
 }
 
-.-mt-2 {
-  margin-top: -0.5rem;
-}
-
 .-ml-9 {
   margin-left: -2.25rem;
-}
-
-.ml-9 {
-  margin-left: 2.25rem;
-}
-
-.box-border {
-  box-sizing: border-box;
-}
-
-.box-content {
-  box-sizing: content-box;
 }
 
 .block {
@@ -1027,9 +1015,8 @@ textarea, input, select {
   width: 2.5rem;
 }
 
-.w-max {
-  width: -moz-max-content;
-  width: max-content;
+.w-4\/5 {
+  width: 80%;
 }
 
 .max-w-5xl {

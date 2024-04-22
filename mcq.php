@@ -26,6 +26,12 @@ include($path."/header_tailwind.php");
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">Multiple Choice Questions (MCQs)</h1>
     <div class="container mx-auto px-0 mt-2 bg-white text-black">
+      <div class="text-center">
+        <div class="text-center p-3">
+          <a class="font-mono bg-sky-200 inline-block p-3 underline text-sky-700 rounded border-2 border-pink-300 w-5/6 text-xl" href="/mcq/generator.php">MCQ Quiz Generator</a>
+          <p class="font-sans">☝️ Generate your own quiz by exam board and topic ☝️</p>
+        </div>
+      </div>
       <ul class="list-none">
         <h2 class="font-mono text-xl bg-pink-300 pl-1">Year 1</h2>
           <h3 class="font-mono text-lg bg-pink-200 pl-1">Micro</h3>
