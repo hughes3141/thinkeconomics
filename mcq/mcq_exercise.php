@@ -366,7 +366,7 @@ if(str_contains($permissions, "main_admin")) {
             if($textOnly == 1) {
               ?>
               
-              <p class="my-3"><?=$questionInfo['question']?></p>
+              <p class="my-3 mx-5 whitespace-pre-wrap"><?=$questionInfo['question']?></p>
               <?php
             } else {
             ?>
@@ -374,7 +374,7 @@ if(str_contains($permissions, "main_admin")) {
             <?php
             }
             ?>
-            <div class="ml-3">
+            <div class="ml-5">
               <?php
 
               if($randomOptionsOrder ==1 && $textOnly == 1 && $noRandom == 0) {
