@@ -34,8 +34,17 @@ $style_input = "
     td, th {
 
       border: 1px solid black;
-      padding: 10px;
+      //padding: 10px;
       }
+
+    @media (min-width: 768px) { 
+      
+      td, th {
+
+        //border: 1px solid black;
+        padding: 10px;
+        }
+     }
 
     td.noBor {
 
@@ -51,76 +60,78 @@ include($path."/header_tailwind.php");
 
 
 
-<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4 ">
     <h1 class="font-mono text-2xl bg-pink-400 pl-1">Income Tax Calculator</h1>
-    <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
+    <div class=" container mx-auto px-1 mt-2 bg-white text-black mb-5">
 
 
-      <p>Pre-Tax Income:<input type = "number" id="input" value="12500" min="0" step="1000" onchange="calculate()" ></p>
-      <button onclick = "calculate()">Calculate</button>
-      <br><br>
-      <button onclick = "randomIncome()">Random Income</button>
+    
+      <div class=" w-full md:w-3/4 mx-auto pt-2">
+      <p>Pre-Tax Income: <input type = "number" id="input" value="12500" min="0" step="1000" onchange="calculate()" ></p>
 
-      <br><br>
+        <button onclick class="border border-black bg-pink-200 w-full rounded px-3 my-1" = "calculate()">Calculate</button>
+        <button onclick class="border border-black bg-sky-200 w-full rounded px-3 my-1" = "randomIncome()">Random Income</button>
+      </div>
       <p> Style:
       <input type="radio" id="simple" name="complexity" value ="simple" checked ="true">
       <label for="simple">Simple</label>
       <input type="radio" id="comp" name="complexity" value ="complex">
       <label for="simple">Adjusted Personal Allowance</label>
       </p>
+      <div class="">
+        <table class="table-fixed w-full text-xs md:text-base">
 
-      <table>
+          <tr>
+          <th>Band</th>
+          <th>Taxable Income</th>
+          <th>Tax Rate</th>
+          <th>Income in this Band</th>
+          <th>Tax Payable in this Band</th>
+          </tr>
+          <tr>
+          <td>Personal Allowance</td>
+          <td>Up to <span id="c_0"></span></td>
+          <td>0&percnt;</td>
+          <td id="0_0"></td>
+          <td id="0_1"></td>
+          </tr>
+          <tr>
+          <td>Basic Rate</td>
+          <td><span id="c_1"></span> to <span id="c_2"></span></td>
+          <td>20&percnt;</td>
+          <td id="1_0"></td>
+          <td id="1_1"></td>
+          </tr>
+          <tr>
+          <td>Higher Rate</td>
+          <td><span id="c_3"></span> to <span id="c_4"></span></td>
+          <td>40&percnt;</td>
+          <td id="2_0"></td>
+          <td id="2_1"></td>
+          </tr>
+          <tr>
+          <td>Additional Rate</td>
+          <td>over <span id="c_5"></td>
+          <td>45&percnt;</td>
+          <td id="3_0"></td>
+          <td id="3_1"></td>
+          </tr>
+          <tr>
+          <td class="noBor"></td>
+          <td class="noBor"></td>
 
-      <tr>
-      <th>Band</th>
-      <th>Taxable Income</th>
-      <th>Tax Rate</th>
-      <th>Income in this Band</th>
-      <th>Tax Payable in this Band</th>
-      </tr>
-      <tr>
-      <td>Personal Allowance</td>
-      <td>Up to <span id="c_0"></span></td>
-      <td>0&percnt;</td>
-      <td id="0_0"></td>
-      <td id="0_1"></td>
-      </tr>
-      <tr>
-      <td>Basic Rate</td>
-      <td><span id="c_1"></span> to <span id="c_2"></span></td>
-      <td>20&percnt;</td>
-      <td id="1_0"></td>
-      <td id="1_1"></td>
-      </tr>
-      <tr>
-      <td>Higher Rate</td>
-      <td><span id="c_3"></span> to <span id="c_4"></span></td>
-      <td>40&percnt;</td>
-      <td id="2_0"></td>
-      <td id="2_1"></td>
-      </tr>
-      <tr>
-      <td>Additional Rate</td>
-      <td>over <span id="c_5"></td>
-      <td>45&percnt;</td>
-      <td id="3_0"></td>
-      <td id="3_1"></td>
-      </tr>
-      <tr>
-      <td class="noBor"></td>
-      <td class="noBor"></td>
-
-      <td class="noBor"><b>Total:</b></td>
-      <td id="4_0"></td>
-      <td id="4_1"></td>
-      </tr>
-      <tr>
-      <td class="noBor"></td>
-      <td class="noBor"></td>
-      <td class="noBor"></td>
-      <td colspan="2" id="4_5" style="display:none";>Disposable Income = <span id="4_2"></span> - <span id="4_3"></span> = <span id="4_4"></span></td>
-      </tr>
-      </table>
+          <td class="noBor"><b>Total:</b></td>
+          <td id="4_0"></td>
+          <td id="4_1"></td>
+          </tr>
+          <tr>
+          <td class="noBor"></td>
+          <td class="noBor"></td>
+          <td class="noBor"></td>
+          <td colspan="2" id="4_5" style="display:none";>Disposable Income = <span id="4_2"></span> - <span id="4_3"></span> = <span id="4_4"></span></td>
+          </tr>
+        </table>
+      </div>
       <p></p>
       <p>Average Rate of Tax: <span id="average"></span></p>
       <p style="display:none;">Marginal Rate of Tax: <span id="marginal"></span></p>
@@ -128,13 +139,13 @@ include($path."/header_tailwind.php");
       <p>Interesting Reading:</p>
       <ul>
       <li>
-      <a href="https://www.gov.uk/income-tax-rates" target ="_blank">https://www.gov.uk/income-tax-rates</a>
+      <a class="underline text-sky-700" href="https://www.gov.uk/income-tax-rates" target ="_blank">https://www.gov.uk/income-tax-rates</a>
       </li>
       <li>
-      <a href="https://www.gov.uk/income-tax-rates/income-over-100000" target ="_blank">https://www.gov.uk/income-tax-rates/income-over-100000</a>
+      <a class="underline text-sky-700" href="https://www.gov.uk/income-tax-rates/income-over-100000" target ="_blank">https://www.gov.uk/income-tax-rates/income-over-100000</a>
       </li>
       <li>
-      <a href="https://www.buzzacott.co.uk/insights/exposing-the-60-income-tax-rate" target ="_blank">Exposing the 60&percnt; tax rate</a>
+      <a class="underline text-sky-700" href="https://www.buzzacott.co.uk/insights/exposing-the-60-income-tax-rate" target ="_blank">Exposing the 60&percnt; tax rate</a>
       </li>
       </ul>
       </div>
