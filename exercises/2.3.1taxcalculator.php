@@ -76,7 +76,7 @@ include($path."/header_tailwind.php");
       <input type="radio" id="simple" name="complexity" value ="simple" checked ="true">
       <label for="simple">Simple</label>
       <input type="radio" id="comp" name="complexity" value ="complex">
-      <label for="simple">Adjusted Personal Allowance</label>
+      <label for="comp">Adjusted Personal Allowance</label>
       </p>
       <div class="">
         <table class="table-fixed w-full text-xs md:text-base">
@@ -165,7 +165,7 @@ include($path."/header_tailwind.php");
 var index = [
   [12500,0],
   [50000,0.2],
-  [150000,0.4],
+  [125000,0.4],
   [0,0.45],
   [100000, 2]
 ]
