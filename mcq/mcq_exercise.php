@@ -96,7 +96,7 @@ if(!is_null($get_selectors['topics'])) {
      $excludedYear = 2023;
      if($question['year'] == $excludedYear) {
         unset($questions[$key]);
-        echo $key." ";
+        //echo $key." ";
       }
 	  
   }
