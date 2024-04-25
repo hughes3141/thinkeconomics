@@ -69,8 +69,8 @@ include($path."/header_tailwind.php");
       <div class=" w-full md:w-3/4 mx-auto pt-2">
       <p>Pre-Tax Income: <input type = "number" id="input" value="12500" min="0" step="1000" onchange="calculate()" ></p>
 
-        <button onclick class="border border-black bg-pink-200 w-full rounded px-3 my-1" = "calculate()">Calculate</button>
-        <button onclick class="border border-black bg-sky-200 w-full rounded px-3 my-1" = "randomIncome()">Random Income</button>
+        <button onclick class="border border-black bg-pink-200 w-full rounded px-3 my-1 hidden" = "calculate()">Calculate</button>
+        <button onclick class="border border-black bg-sky-200 w-full rounded px-3 my-1 hidden" = "randomIncome()">Random Income</button>
       </div>
       <p> Style:
       <input type="radio" id="simple" name="complexity" value ="simple" checked ="true">
