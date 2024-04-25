@@ -91,6 +91,14 @@ if(!is_null($get_selectors['topics'])) {
         //echo $key." ";
       }
     }
+	  
+     //Variable $excludedYear is set to prevent questions from coming from a particular year, e.g. for purposes of mock examination. Change when not required
+     $excludedYear = 2023;
+     if($question['year'] == $excludedYear) {
+        unset($questions[$key]);
+        echo $key." ";
+      }
+	  
   }
 
   $questions = array_values($questions);
