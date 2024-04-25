@@ -35,6 +35,7 @@ $style_input = "
 
       border: 1px solid black;
       //padding: 10px;
+      padding: 0px 5px 0px;
       }
 
     @media (min-width: 768px) { 
@@ -67,17 +68,29 @@ include($path."/header_tailwind.php");
 
     
       <div class=" w-full md:w-3/4 mx-auto pt-2">
-      <p>Pre-Tax Income: <input type = "number" id="input" value="12500" min="0" step="1000" onchange="calculate()" ></p>
+        <div class="flex mb-1">
+          <div class="">Pre-Tax Income: </div>
+          <div class="grow pl-1"><input type = "number" class=" pl-1 w-full" id="input" value="12500" min="0" step="1000" onchange="calculate()"  ></div>
+        </div>
 
-        <button onclick class="border border-black bg-pink-200 w-full rounded px-3 my-1 hidden" = "calculate()">Calculate</button>
-        <button onclick class="border border-black bg-sky-200 w-full rounded px-3 my-1 hidden" = "randomIncome()">Random Income</button>
+        <button  class="border border-black bg-pink-200 w-full rounded px-3 my-1 " onclick = "calculate()">Calculate</button>
+        <div class="flex my-1 justify-between gap-x-1">
+          <div class="basis-1/2"><button class="border border-black bg-pink-100 w-full rounded px-3" onclick="changeValue(-1000);" >Subtract £1000</button></div>
+          <div class="basis-1/2"><button class="border border-black bg-pink-100 w-full rounded px-3" onclick="changeValue(1000);" >Add £1000</button></div>
+
+        </div>
+        <button  class="border border-black bg-sky-200 w-full rounded px-3 my-1 " onclick = "randomIncome()">Random Income</button>
       </div>
-      <p> Style:
-      <input type="radio" id="simple" name="complexity" value ="simple" checked ="true">
-      <label for="simple">Simple</label>
-      <input type="radio" id="comp" name="complexity" value ="complex">
-      <label for="comp">Adjusted Personal Allowance</label>
-      </p>
+      <div class="flex justify-around mb-1">
+        <div>
+          <input type="radio" id="simple" name="complexity" value ="simple" checked ="true">
+          <label for="simple">Simple</label>
+        </div>
+        <div>
+          <input type="radio" id="comp" name="complexity" value ="complex">
+          <label for="comp">Adjusted Personal Allowance</label>
+        </div>
+      </div>
       <div class="">
         <table class="table-fixed w-full text-xs md:text-base">
 
@@ -419,9 +432,20 @@ function toComma2(x) {
     return fixedNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
+function changeValue(x) {
+  var input = document.getElementById("input");
+  var val = parseInt(input.value);
+  
+  val += x;
+  input.value = val;
+  console.log(val);
+  calculate();
+
+  
+  
+
+}
+
 </script>
 
-</body>
-
-
-</html>
+<?php   include($path."/footer_tailwind.php");?>
