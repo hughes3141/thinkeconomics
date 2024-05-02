@@ -258,6 +258,7 @@ GET variables:
           echo "<td>".$row['topic']."</td>";
           echo "<td><p><strong>Headline: </strong>".$row['headline'];
           echo ($row['video'] == 1) ? " (Video)" : "";
+          echo ($row['audio'] == 1) ? " (Audio)" : "";
           
           echo "</p><p><strong>Link: </strong><a class = 'hover:bg-sky-100 underline text-sky-700' target ='_blank' href='".$row['link']."'>".$row['link']."</a>";
 
@@ -274,7 +275,9 @@ GET variables:
 
           if($row['explanation_long']!="") {
             ?>
-            <button class="underline text-sky-700" type="button" onclick="toggleHide(this, 'longExplanationToggle_<?=$row['id']?>','Show Long Explanation', 'Hide Long Explanation')">Show Long Explanation</button>
+            <p>
+              <button class=" border-black rounded bg-sky-100 hover:bg-sky-200 px-1" type="button" onclick="toggleHide(this, 'longExplanationToggle_<?=$row['id']?>','Show Long Explanation', 'Hide Long Explanation')">Show Long Explanation</button>
+            </p>
             <div class="longExplanationToggle_<?=$row['id']?> hidden">
               <p><strong>Long Explanation: </strong></p>
               <p class="whitespace-pre-wrap"><?=$row['explanation_long']?></p>
@@ -283,22 +286,37 @@ GET variables:
             <?php
           }
 
-          if($row['photoAssets']!="") {
+          if($row['photoAssets']!="" || $row['photoLinks']!="") {
             ?>
-            <button class="underline text-sky-700" type="button" onclick="toggleHide(this, 'photoAssetsToggle_<?=$row['id']?>','Show Images', 'Hide Images')">Show Images</button>
+            <p>
+              <button class="underline text-sky-700" type="button" onclick="toggleHide(this, 'photoAssetsToggle_<?=$row['id']?>','Show Images', 'Hide Images')">Show Images</button>
+            </p>
             <div class="photoAssetsToggle_<?=$row['id']?> hidden">
               <?php
                 $photoAssets = explode(",", $row['photoAssets']);
                 //print_r($photoAssets);
-                foreach ($photoAssets as $asset) {
-                  $asset = getUploadsInfo($asset)[0];
-                  //print_r($asset);
-                  ?>
-                  <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
-                  <?php
-                  }
-                
-              ?>
+                if( $photoAssets[0] != "") {
+                  foreach ($photoAssets as $asset) {
+                    $asset = getUploadsInfo($asset)[0];
+                    //print_r($asset);
+                    ?>
+                    <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                    <?php
+                    }
+                }
+
+                  $photoLinks = $row['photoLinks'];
+                  $photoLinks = explode(", ", $photoLinks);
+                  //print_r($photoLinks);
+                  if(count($photoLinks) > 0) {
+                      foreach($photoLinks as $link) {
+                        $link = trim($link);
+                        ?>
+                        <img alt="<?=$link?>" src="<?=$link?>">
+                        <?php
+                      }
+                    }
+                ?>
 
             </div>
             <?php
