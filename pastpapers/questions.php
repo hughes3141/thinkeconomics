@@ -259,7 +259,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   $topicName = $topicList[1];
                   if($topicCode != "") {
                     ?>
-                    <option value="<?=$topicCode?>" <?=($get_selectors[$controlName] == $topicList[0]) ? "selected" : ""?>><?=$topicName?></option>
+                    <option value="<?=$topicCode?>" <?=($get_selectors[$controlName] == $topicList[0]) ? "selected" : ""?>>(<?=$topicCode?>) <?=$topicName?></option>
                     <?php
                   }
 
