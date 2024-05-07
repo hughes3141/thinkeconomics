@@ -195,7 +195,7 @@ GET variables:
               <div class="show_<?=$row['id'];?>">
                 <?=$row['topic'];?>
               </div>
-              <textarea class="w-full hide hide_<?=$row['id'];?>" name="topic"><?=$row['topic']?></textarea>
+              <textarea class="w-full hide hide_<?=$row['id'];?>" name="topic" spellcheck="true"><?=$row['topic']?></textarea>
               <?php //print_r($row);?>
             </td>
             <td class='col2'>
@@ -203,7 +203,7 @@ GET variables:
               <div class="show_<?=$row['id'];?>">
                 <p><?=$row['headline'];?><p>
               </div>
-              <textarea id="headline_<?=$row['id']?>" class="w-full hide hide_<?=$row['id'];?>" name="headline"><?=$row['headline']?></textarea>
+              <textarea id="headline_<?=$row['id']?>" class="w-full hide hide_<?=$row['id'];?>" name="headline" spellcheck="true"><?=$row['headline']?></textarea>
 
               <label class="font-bold" for="link_<?=$row['id']?>">Link:</label>
               <div class="show_<?=$row['id'];?>">
@@ -222,20 +222,20 @@ GET variables:
               <div class="show_<?=$row['id'];?>">
                 <?=$row['explanation'];?>
               </div>
-              <textarea class="w-full hide hide_<?=$row['id'];?>" name="explanation"><?=$row['explanation']?></textarea>
+              <textarea class="w-full hide hide_<?=$row['id'];?>" name="explanation" spellcheck="true"><?=$row['explanation']?></textarea>
             </td>
             <td>
               <div class="show_<?=$row['id'];?>">
-                <?=$row['explanation_long'];?>
+                <div class="whitespace-pre-wrap"></p><?=$row['explanation_long'];?></div>
               </div>
-              <textarea class="w-full hide hide_<?=$row['id'];?>" name="explanation_long"><?=$row['explanation_long']?></textarea>
+              <textarea class="w-full hide hide_<?=$row['id'];?>" name="explanation_long" spellcheck="true"><?=$row['explanation_long']?></textarea>
             </td>
             <td>
               <label class="font-bold" for="keyWords_<?=$row['id']?>">Key Words</label>
               <div class="show_<?=$row['id'];?>">
                 <?=$row['keyWords'];?>
               </div>
-              <textarea id="keyWords_<?=$row['id']?>" class="w-full hide hide_<?=$row['id'];?>" name="keyWords"><?=$row['keyWords']?></textarea>
+              <textarea id="keyWords_<?=$row['id']?>" class="w-full hide hide_<?=$row['id'];?>" name="keyWords" spellcheck="true"><?=$row['keyWords']?></textarea>
 
               <label class="font-bold" for="articleAsset<?=$row['id']?>">Article Asset:</label>
               <div class="show_<?=$row['id'];?>">
