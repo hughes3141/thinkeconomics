@@ -226,7 +226,7 @@ GET variables:
             </td>
             <td>
               <div class="show_<?=$row['id'];?>">
-                <p class="whitespace-pre-wrap"></p><?=$row['explanation_long'];?></p>
+                <div class="whitespace-pre-wrap"></p><?=$row['explanation_long'];?></div>
               </div>
               <textarea class="w-full hide hide_<?=$row['id'];?>" name="explanation_long" spellcheck="true"><?=$row['explanation_long']?></textarea>
             </td>
