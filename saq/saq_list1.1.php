@@ -614,7 +614,7 @@ include($path."/header_tailwind.php");
           </td>
           <td class="align-top">
             <div class="show_<?=$row['id'];?>">
-              <div class="whitespace-pre-line"><?=htmlspecialchars($row['question']);?></div>
+              <div class="whitespace-pre-line"><?=$row['question'];?></div>
               
               <?php
                     if(!is_null($row['q_path'])) {
@@ -641,7 +641,7 @@ include($path."/header_tailwind.php");
                 ?>
             </div>
             <div class= "hide hide_<?=$row['id'];?>">
-              <textarea class="h-44" name ="question"><?=htmlspecialchars($row['question'])?></textarea>
+              <textarea class="h-44" name ="question"><?=($row['question'])?></textarea>
               <br>
               <div class="<?=is_null($showAssetId)?"hidden":""?>">
                 <label for="qA_<?=$row['id'];?>">Question Asset Id:</label><br>
