@@ -418,7 +418,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   //print_r($questionAssets);
 
                   //Define what types of assets will be shown:
-                  $showMarkScheme = $showGuide = $showModel = null;
+                  $showMarkScheme = $showGuide = $showModel = $showExamReportText = null;
                   if($question2['markSchemeAssets']!="") {
                     $showMarkScheme = 1;
                   }
@@ -427,6 +427,10 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   }
                   if($question2['modelAnswer']!="") {
                     $showModel = 1;
+                  }
+
+                  if($question2['examReportText'] != "") {
+                    $showExamReportText = 1;
                   }
                   ?>
 
@@ -447,6 +451,13 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                         ?>
                         <button class="border rounded bg-sky-300 border-black mb-1 px-1 " type="button" onclick="toggleHide(this, 'modelAnswerToggle_<?=$question2['id']?>', 'Show Model Answer', 'Hide Model Answer', 'block')">Show Model Answer</button>
                         <?php
+                      }
+
+                      if($showExamReportText) {
+                        ?>
+                        <button class="border rounded bg-sky-100 border-black mb-1 p-1" type="button" onclick="toggleHide(this, 'examReportTextToggle_<?=$question2['id']?>', 'Show Exam Report', 'Hide Exam Report', 'block')">Show Exam Report</button>
+                        <?php
+
                       }
                       ?>
                     </div>
@@ -525,11 +536,27 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                               <?php
                             }
                         }
-
-
                         ?>
                       </div>
                       <?php
+                    }
+
+                    if($showExamReportText) {
+                      ?>
+                      <div class="bg-sky-100 mb-2 px-1 border-2 border-sky-200 rounded examReportTextToggle_<?=$question2['id']?> hidden">
+                        <h3 class="text-lg bg-sky-200 -mx-1">Exam Report</h3>
+                        <?php
+                        $examReportText = $question2['examReportText'];
+                        $examReportText = explode("\n", $examReportText);
+                        foreach($examReportText as $p) {
+                          ?>
+                          <p class="mb=1"><?=$p?></p>
+                          <?php
+                        }
+                        ?>
+                        </div>
+                        <?php
+
                     }
                     ?>
                   </div>
@@ -560,6 +587,13 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                     ?>
                     <div class="text-center">
                       <a class ="hover:bg-sky-200 hover:text-pink-500 w-full block underline rounded" href="<?=$question['markSchemeLink']?>" target="_blank">Link to Mark Scheme</a>
+                    </div>
+                    <?php
+                  }
+                  if($question['examReportLink'] != "") {
+                    ?>
+                    <div class="text-center">
+                      <a class ="hover:bg-sky-200 hover:text-pink-500 w-full block underline rounded" href="<?=$question['examReportLink']?>" target="_blank">Link to Exam Report</a>
                     </div>
                     <?php
                   }
