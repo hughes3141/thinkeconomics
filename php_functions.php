@@ -5255,4 +5255,76 @@ function shuffle_assoc($list) {
 }
 
 
+
+
+function insertExerciseList($name, $link, $topic) {
+  /*
+  This function inserts new Exercise titles into exercise_list
+  Used in:
+  -exercises/list_manager.php
+  */
+
+  global $conn;
+
+  $sql = "INSERT INTO exercise_list
+          (name, link, topic)
+          VALUES (?,?,?)";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("sss", $name, $link, $topic);
+  $stmt->execute();
+}
+
+
+function getExerciseList($id = null, $topic=null) {
+  /*
+  This function returns Exercise titles from exercise_list
+  Used in:
+  -exercises/list_manager.php
+  */
+
+  global $conn;
+  $results = array();
+
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+  
+  $sql = "SELECT *
+          FROM exercise_list ";
+
+  if(!is_null($id)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " id = ?";
+    $params .= "i";
+    array_push($bindArray, $id);
+  }
+
+  if(!is_null($topic)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " topic = ?";
+    $params .= "s";
+    array_push($bindArray, $topic);
+  }
+
+  $stmt = $conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+
+  return $results;
+
+
+}
+
 ?>
+
+
