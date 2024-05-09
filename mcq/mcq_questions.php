@@ -443,7 +443,7 @@ $_GET controls:
                       <?=$question['No']?>
                     </td>
                     <td>
-                      <p><?=$question['examBoard']?> <?=$question['unitName']?> <?=$question['qualLevel']?></p>
+                      <p><?=$question['examBoard']?> <?=$question['unitName']?> <?=$question['qualLevel']?> <?=$question['series']?> <?=$question['year']?> Question <?=$question['questionNo']?></p>
                       <div>
                         <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question']?></p>
                         <textarea  name="question" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question']?></textarea>
