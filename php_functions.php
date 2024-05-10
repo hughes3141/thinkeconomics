@@ -5267,11 +5267,109 @@ function insertExerciseList($name, $link, $topic) {
   global $conn;
 
   $sql = "INSERT INTO exercise_list
-          (name, link, topic)
-          VALUES (?,?,?)";
+          (name, link, topic, topicOrder)
+          VALUES (?,?,?,?)";
+  $topicOrder = getExerciseListTopicCount($topic);
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("sss", $name, $link, $topic);
+  $stmt->bind_param("sssi", $name, $link, $topic, $topicOrder);
   $stmt->execute();
+}
+
+function updateExerciseList($id, $name = null, $link = null, $topic = null, $active = null, $topicOrder = null) {
+
+  /*
+  This function updates exercise_list with values for given id.
+  Used in:
+  -list-manager.php
+  */
+  global $conn;
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+
+  $sql = "UPDATE exercise_list
+          SET ";
+
+  if(!is_null($name)) {
+    $sql .= " name =? ";
+    $params .= "s";
+    array_push($bindArray, $name);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($link)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " link = ? ";
+    $params .= "s";
+    array_push($bindArray, $link);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($topic)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " topic = ? ";
+    $params .= "s";
+    array_push($bindArray, $topic);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($active)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " active = ? ";
+    $params .= "i";
+    array_push($bindArray, $active);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($topicOrder)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " topicOrder = ? ";
+    $params .= "i";
+    array_push($bindArray, $topicOrder);
+    $conjoiner = 1;
+  }
+
+  $sql .= " WHERE id = ? ";
+  $params .= "i";
+  array_push($bindArray, $id);
+
+  //echo $sql;
+
+  $stmt=$conn->prepare($sql);
+  //Note that this only runs if $bindArray is greater than 1 because 'WHERE id = ?' is not dependent on input. Usually '  if(count($bindArray)>0) '
+  if(count($bindArray)>1) {
+    $stmt->bind_param($params, ...$bindArray);
+    $stmt->execute();
+  }
+
+  return $sql;
+
+
+
+
+}
+
+function getExerciseListTopicCount($topic) {
+  global $conn;
+  $results = array();
+  $sql = "SELECT COUNT(*)
+          FROM exercise_list
+          WHERE topic = ?";
+  $stmt = $conn->prepare($sql);
+  
+    $stmt->bind_param("s", $topic);
+  
+  $stmt->execute();
+
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    $row = $result->fetch_assoc();
+    return $row['COUNT(*)'];
+    
+  }
+
+
+  
 }
 
 
@@ -5307,6 +5405,8 @@ function getExerciseList($id = null, $topic=null) {
     $params .= "s";
     array_push($bindArray, $topic);
   }
+
+  $sql .= " ORDER BY topic, topicOrder ";
 
   $stmt = $conn->prepare($sql);
   if(count($bindArray)>0) {
