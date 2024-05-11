@@ -88,7 +88,7 @@ include($path."/header_tailwind.php");
           </p>
           <p class="mb-3">
             <label for="linkInput">Link:</label>
-            <textarea id="linkInput" type="text" name="link"></textarea>
+            <textarea class="w-full" id="linkInput" type="text" name="link"></textarea>
           </p>
           <p class="mb-3">
             <label for="topicInput">Topic:</label>

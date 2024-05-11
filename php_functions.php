@@ -3760,6 +3760,45 @@ function updateTopicsGeneralList($id, $code, $name, $subjectId, $levelsArray) {
     return "Record $id updated";
 }
 
+// simple topics:
+
+function getTopics($id=null) {
+  global $conn;
+  $results = array();
+
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+  
+  $sql = "SELECT *
+          FROM topics ";
+
+  if(!is_null($id)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " id = ?";
+    $params .= "i";
+    array_push($bindArray, $id);
+  }
+
+  $sql .= " ORDER BY topicCode ";
+
+  $stmt = $conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+
+  return $results;
+
+}
+
 
 
 function getExamBoards($id = null) {
@@ -5373,7 +5412,7 @@ function getExerciseListTopicCount($topic) {
 }
 
 
-function getExerciseList($id = null, $topic=null) {
+function getExerciseList($id = null, $active = null, $topic=null) {
   /*
   This function returns Exercise titles from exercise_list
   Used in:
@@ -5397,6 +5436,17 @@ function getExerciseList($id = null, $topic=null) {
     $params .= "i";
     array_push($bindArray, $id);
   }
+
+  if(!is_null($active)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " active = 1";
+    //$params .= "s";
+    //array_push($bindArray, $topic);
+  }
+
+
+
 
   if(!is_null($topic)) {
     $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
