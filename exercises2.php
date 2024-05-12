@@ -31,8 +31,17 @@ $style_input = "";
 $exercises = getExerciseList(null, 1);
 $topics = getTopics();
 $topicConverter = array();
+$topicFamilyCodes = array();
+$topicFamilyCodesConverter = array();
+
 foreach($topics as $topic) {
   $topicConverter[$topic['topicCode']] = $topic['shortName'];
+
+  $topicFamilyCode = substr($topic['topicCode'],0,3);
+  if(!in_array($topicFamilyCode, $topicFamilyCodes)) {
+    array_push($topicFamilyCodes, $topicFamilyCode);
+    $topicFamilyCodesConverter[$topicFamilyCode] = $topic['topicFamily'];
+  }
 }
 
 $broadTopics = array('1'=>"Microeconomics", '2'=>"Macroeconomics", '3'=>'Global Economics');
@@ -42,6 +51,14 @@ foreach($exercises as $exercise) {
   $broadTopic = $exercise['topic'][0];
   if(!in_array($broadTopic, $usedBroadTopics)) {
     array_push($usedBroadTopics, $broadTopic);
+  }
+}
+
+$usedTopicFamilies = array();
+foreach($exercises as $exercise) {
+  $topicFamily = substr($exercise['topic'],0,3);
+  if(!in_array($topicFamily, $usedTopicFamilies)) {
+    array_push($usedTopicFamilies, $topicFamily);
   }
 }
 
@@ -65,11 +82,15 @@ include($path."/header_tailwind.php");
   <div class="container mx-auto px-0 mt-2 bg-white text-black">
     <div>
       <?php
+      /*
       print_r($exercises);
       print_r($broadTopics);
       print_r($usedBroadTopics);
       print_r($usedTopics);
       print_r($topicConverter);
+      print_r($topicFamilyCodesConverter);
+      print_r($usedTopicFamilies);
+      */
       ?>
     </div>
     <ul class="list-none">
@@ -79,23 +100,35 @@ include($path."/header_tailwind.php");
         <div>
           <h2 class="font-mono text-xl bg-pink-300 pl-1"><?=$broadTopics[$usedBroadTopic]?></h2>
           <?php
-          foreach($usedTopics as $topic) {
-            if($topic[0] == $usedBroadTopic) {
-              ?>
-              <div>
-                <h3 class="font-mono text-lg bg-pink-200 pl-1"><?=$topicConverter[$topic]?></h3>
-                <?php
-                  foreach($exercises as $exercise) {
-                    if($exercise['topic'] == $topic) {
-                      ?>
-                      <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "<?=$exercise['link']?>"><?=$exercise['name']?></a></li>
-                      <?php
-                    }
-                  }
-                ?>
-              </div>
+          foreach($usedTopicFamilies as $topicFamily) {
+            if($topicFamily[0] == $usedBroadTopic) {
+            ?>
+            <div>
+              <h3 class="font-mono text-lg bg-pink-200 pl-1"><?=$topicFamilyCodesConverter[$topicFamily]?></h3>
               <?php
-              }
+                foreach($usedTopics as $topic) {
+                  if(substr($topic,0,3) == $topicFamily) {
+                    ?>
+                    <div>
+                      <h3 class="font-mono text-lg bg-pink-200 pl-1"><?=$topicConverter[$topic]?></h3>
+                      <?php
+                        foreach($exercises as $exercise) {
+                          if($exercise['topic'] == $topic) {
+                            ?>
+                            <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/<?=$exercise['link']?>"><?=$exercise['name']?></a></li>
+                            <?php
+                          }
+                        }
+                      ?>
+                    </div>
+                    <?php
+                    }
+                }
+              ?>
+              
+            </div>
+            <?php
+          }
           }
           ?>
         </div>
