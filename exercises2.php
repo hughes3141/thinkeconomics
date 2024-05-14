@@ -79,7 +79,7 @@ include($path."/header_tailwind.php");
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">Exercises</h1>
-  <div class="container mx-auto px-0 mt-2 bg-white text-black">
+  <div class="container mx-auto p-4 mt-2 bg-white text-black mb-5">
     <div>
       <?php
       /*
@@ -98,13 +98,13 @@ include($path."/header_tailwind.php");
       foreach($usedBroadTopics as $usedBroadTopic) {
         ?>
         <div>
-          <h2 class="font-mono text-xl bg-pink-300 pl-1"><?=$broadTopics[$usedBroadTopic]?></h2>
+          <h2 class="text-xl bg-sky-200 mb-2 p-1 rounded sticky top-12 lg:top-20 z-20"><?=$broadTopics[$usedBroadTopic]?></h2>
           <?php
           foreach($usedTopicFamilies as $topicFamily) {
             if($topicFamily[0] == $usedBroadTopic) {
             ?>
             <div>
-              <h3 class="font-mono text-lg bg-pink-200 pl-1"><?=$topicFamilyCodesConverter[$topicFamily]?></h3>
+              <h3 class="text-lg bg-pink-200 mb-2 p-1 rounded sticky top-20 lg:top-20 z-10"><?=$topicFamilyCodesConverter[$topicFamily]?></h3>
               <?php
                 foreach($usedTopics as $topic) {
                   if(substr($topic,0,3) == $topicFamily) {
