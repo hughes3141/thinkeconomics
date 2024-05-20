@@ -56,6 +56,8 @@ $style_input = "";
       img {
         float: right;
         width: 50%;
+        margin-left: 0.5rem;
+        margin-bottom: 0.5rem;
       }
     </style>
   </head>
@@ -72,6 +74,8 @@ $style_input = "";
         <input id="input3" style="width:90%" type="text" onchange="populateDocument();">
         <br><label>Img Order: </label>
         <input id="input4" style="width:90%" type="text" onchange="populateDocument();">
+        <br><label>source: </label>
+        <input id="input5" style="width:90%" type="text" onchange="populateDocument();">
     </p>
     </div>
 
@@ -84,6 +88,8 @@ $style_input = "";
     var input1 =document.getElementById('input1');
     var input2 =document.getElementById('input2');
     var input3 =document.getElementById('input3');
+    var input4 =document.getElementById('input4');
+    var input5 =document.getElementById('input5');
     var generated =document.getElementById('generated');
 
     function populateDocument() {
@@ -101,6 +107,8 @@ $style_input = "";
 
       var imageOrder = input4.value;
       var imageOrderArray = imageOrder.split(",");
+
+      var source = input5.value;
 
       for(var x=0; x<imageOrderArray.length; x++) {
         imageOrderArray[x] = parseInt(imageOrderArray[x]);
@@ -177,6 +185,15 @@ $style_input = "";
         }
         
         
+      }
+
+      var a = document.createElement('a');
+      a.innerHTML = source;
+      a.href=source;
+      a.target="_blank";
+
+      if(source != "") {
+        generated.appendChild(a);
       }
 
 
