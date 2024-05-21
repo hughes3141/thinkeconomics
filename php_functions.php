@@ -1707,6 +1707,64 @@ function updateNewsArticle($id, $headline = null, $datePublished = null, $explan
 
 }
 
+function insertNewsQuestion($question, $questionId, $answer, $answerId, $userId) {
+  /*
+  Used in:
+  -newsQuestionsList.php
+  */
+
+  global $conn;
+  
+  $sql = "INSERT INTO news_questions
+          (question, model_answer, questionAssetId, answerAssetId, userCreate)VALUES (?,?,?,?,?)";
+   $stmt = $conn->prepare($sql);
+   $stmt->bind_param("ssiii", $question, $questionId, $answer, $answerId, $userId);
+   $stmt->execute();
+   return "New record created successfully";
+
+
+
+}
+
+function updateNewsQuestion($id, $questionId, $answer, $answerId, $userId) {
+
+}
+
+function getNewsQuestion($id=null) {
+  global $conn;
+  $results = array();
+
+  $bindArray = array();
+  $params = "";
+  $conjoiner = 0;
+
+  $sql = "SELECT * from news_questions ";
+
+  if(!is_null($id)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " id = ? ";
+    array_push($bindArray, $id);
+    $params .= "i";
+
+  }
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray) > 0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+
+  return $results;
+
+}
+
 function login_log($userid) {
   //Very simple: this function logs when a user has logged in. Used primarily wiht login.php. Also used in newuser upon first registration.
   global $conn;
