@@ -1718,7 +1718,7 @@ function insertNewsQuestion($question, $questionId, $answer, $answerId, $userId)
   $sql = "INSERT INTO news_questions
           (question, model_answer, questionAssetId, answerAssetId, userCreate)VALUES (?,?,?,?,?)";
    $stmt = $conn->prepare($sql);
-   $stmt->bind_param("ssiii", $question, $questionId, $answer, $answerId, $userId);
+   $stmt->bind_param("ssssi", $question, $answer, $questionId, $answerId, $userId);
    $stmt->execute();
    return "New record created successfully";
 
