@@ -121,37 +121,73 @@ include($path."/header_tailwind.php");
       </form>
     </div>
     <div>
-      <?php
-        foreach($questions as $question) {
-          $questionAssets = explode(",",$question['questionAssetId']);
-          foreach ($questionAssets as $key => $asset) { 
-            $questionAssets[$key] = trim($asset);
-          }
-          $answerAssets = explode(",",$question['answerAssetId']);
-          foreach ($answerAssets as $key => $asset) { 
-            $answerAssets[$key] = trim($asset);
-          }
-          ?>
-          <p>Question: <?=$question['question']?></p>
-          <p><?php
-            foreach($questionAssets as $asset) {
-              //echo $asset;
-              
-              $img = getUploadsInfo($asset)[0];
-              //print_r($img);
-              echo"<br><br>";
-              
+      <table>
+        <tr>
+          <th>Question</th>
+          <th>Answer</th>
+          <th class="w-1/6">Edit</th>
+        </tr>
+        <?php
+          foreach($questions as $question) {
+            $questionAssets = explode(",",$question['questionAssetId']);
+            foreach ($questionAssets as $key => $asset) { 
+              $questionAssets[$key] = trim($asset);
+            }
+            $answerAssets = explode(",",$question['answerAssetId']);
+            foreach ($answerAssets as $key => $asset) { 
+              $answerAssets[$key] = trim($asset);
             }
             ?>
-            <img alt ="<?=$img['altText']?>" src="<?=$imgSource.$img['path']?>">
+            <tr>
+              <td>
+                <?php
+                  print_r($question);
+                ?>
+                <p>Question: <?=$question['question']?></p>
+                <p><?php
+                  foreach($questionAssets as $asset) {
+                    //echo $asset;
+                    $img = getUploadsInfo($asset)[0];
+                    ?>
+                    <img alt ="<?=$img['altText']?>" src="<?=$imgSource.$img['path']?>">
+                    <?php
+                  }
+                  ?>
+                </p>
+              </td>
+              <td>
+                <p>Answer: <?=$question['model_answer']?></p>
+                <p><?php
+                  foreach($answerAssets as $asset) {
+                    //echo $asset;
+                    $img = getUploadsInfo($asset)[0];
+                    ?>
+                    <img alt ="<?=$img['altText']?>" src="<?=$imgSource.$img['path']?>">
+                    <?php
+                  }
+                  ?>
+                </p>
+              </td>
+              <td>
+              <div>
+                <button type ="button" class= "w-full bg-pink-300 rounded border border-black mb-1" id = "button_<?=$question['id'];?>" onclick = "changeVisibility(this, <?=$question['id'];?>);">Edit</button>
+              </div>
+              <div class ="hidden hide_<?=$question['id'];?>">
+                <input type="hidden" name = "id" value = "<?=$question['id'];?>">
+                <input type="hidden" name = "subjectId" value = "<?=$question['subjectId'];?>">
+                <input type="hidden" name = "levelId" value = "<?=$question['levelId'];?>">
+
+                <input class="w-full bg-sky-200 rounded border border-black mb-1 toggleClass_35" type="submit" name="updateValue" value = "Update"></input>
+              </div>
+              </td>
+            </tr>
+
+            
+          
             <?php
-          ?></p>
-          <p>Answer: <?=$question['model_answer']?></p>
-          <p></p>
-         
-          <?php
-        }
-      ?>
+          }
+        ?>
+      </table>
     </div>
   </div>
 </div>
