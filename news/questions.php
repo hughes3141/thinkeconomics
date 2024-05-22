@@ -9,9 +9,12 @@ $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 include($path."/php_functions.php");
 
+$downloadPermissions = null;
+$userId = null;
+
 if (!isset($_SESSION['userid'])) {
   
-  header("location: /login.php");
+  //header("location: /login.php");
 
 }
 
@@ -19,10 +22,22 @@ else {
   $userId = $_SESSION['userid'];
   $userInfo = getUserInfo($_SESSION['userid']);
   $userType = $userInfo['usertype'];
+  $permissions = $userInfo['permissions'];
+  if((str_contains($permissions, "news_article_download") || str_contains($userInfo['school_permissions'], "news_article_download"))) {
+    $downloadPermissions = 1;
+  }
+  /*
   if (!($userType == "teacher" || $userType =="admin")) {
     header("location: /index.php");
   }
+  */
 }
+
+/*
+Note that the permission "news_article_download" must be present in either permissions for school or for user for article download to be available.
+
+
+*/
 
 $style_input = "";
 
@@ -43,10 +58,34 @@ $get_selectors = array(
 
 );
 
-$article = array();
+$article = array(
+  'id' => '',
+  'headline' => '',
+  'link' => '',
+  'datePublished' => '',
+  'explanation' => '',
+  'explanation_long' => '',
+  'questions_array' => '',
+  'topic' => '',
+  'keyWords' => '',
+  'dateCreated' => '',
+  'user' => '',
+  'active' => '',
+  'articleAsset' => '',
+  'bbcPerennial' => '',
+  'photoAssets' => '',
+  'photoLinks' => '',
+  'video' => '',
+  'audio' => '',
+  'path' => ''
+
+);
 if(!is_null($get_selectors['articleId'])) {
-  $article = getNewsArticles($get_selectors['articleId'])[0];
+  if(count(getNewsArticles($get_selectors['articleId'])) >0) {
+    $article = getNewsArticles($get_selectors['articleId'])[0];
+  }
 }
+
 
 $questions = array();
 
@@ -59,12 +98,19 @@ include($path."/header_tailwind.php");
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">News Questions</h1>
   <div class=" container mx-auto px-4 pb-4 mt-2 bg-white text-black mb-5">
     <?php
-    print_r($article);
+    //print_r($article);
     $imgSource = "https://www.thinkeconomics.co.uk";
     ?>
     <p>Headline: <?=$article['headline']?></p>
     <p>Source: <a class="underline text-sky-700" target="_blank" href="<?=$article['link']?>"><?=$article['link']?></a></p>
+    <p>Date: <?=date_format(date_create($article['datePublished']), 'd M Y')?></p>
+
     <?php
+      if($article['path'] != "" && $downloadPermissions) {
+        ?>
+        <a class="bg-sky-100 hover:bg-sky-200  rounded whitespace-nowrap" target="_blank" href="<?=$imgSource.$article['path']?>">Download PDF</a>
+        <?php
+      }
       $images = array();
       //Get any images that are uploaded in uploads:
       if($article['photoAssets'] != "") {
@@ -87,8 +133,69 @@ include($path."/header_tailwind.php");
         }
       }
       //print_r($images);
+      if(count($images)>0){
+      ?>
+        <img src="<?=$images[0]['path']?>" alt ="<?=$images[0]['altText']?>">
+      <?php
+      }
+      if($article['explanation'] != "") {
+        ?>
+        <div>
+          <p>Explanation: </p>
+          <p class="whitespace-pre-wrap"><?=$article['explanation']?></p>
+        </div>
+        <?php
+      }
+
+      if($article['explanation_long'] != "") {
+        ?>
+        <div>
+          <p>Long Explanation:</p>
+          <p class="whitespace-pre-wrap">Long Explanation: <?=$article['explanation_long']?></p>
+        </div>
+        <?php
+      }
+      if($article['questions_array'] != "") {
+        $questions = explode(",",$article['questions_array']);
+        foreach ($questions as $key => $question) {
+          $questions[$key] = getNewsQuestion($question)[0];
+        }
+        //print_r($questions);
+        ?>
+        <div>
+          <h2>Questions:</h2>
+          <ol class="list-decimal list-inside">
+            <?php
+              foreach($questions as $question) {
+                ?>
+                <li class="whitespace-pre-wrap"><?=$question['question']?></li>
+                <button class="border border-black rounded bg-pink-200 px-1" onclick="toggleHide(this, 'markSchemeToggle_<?=$question['id']?>', 'Show Answer', 'Hide Answer', 'block')">Show Answer</button>
+                <div class=" bg-pink-100 hidden markSchemeToggle_<?=$question['id']?>">
+                  <p class="whitespace-pre-wrap"><?=$question['model_answer']?></p>
+                  <?php
+                    $imagesArray = array();
+                    if($question['answerAssetId'] != "") {
+                      $imagesArray = explode(",",$question['answerAssetId']);
+                      //print_r($imagesArray);
+                    }
+                    foreach ($imagesArray as $imageAsset) {
+                      $imageDetails = getUploadsInfo($imageAsset)[0];
+                      //print_r($imageDetails);
+                      ?>
+                      <img src="<?=$imgSource.$imageDetails['path']?>" alt="<?=$imageDetails['altText']?>">
+                      <?php
+                    }
+                  ?>
+                </div>
+                <?php
+              }
+            ?>
+          </ol>
+        </div>
+        <?php
+      }
     ?>
-    <img src="<?=$images[0]['path']?>" alt ="<?=$images[0]['altText']?>">
+    
   </div>
 </div>
 
