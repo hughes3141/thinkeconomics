@@ -25,6 +25,8 @@ module.exports = {
     "../admin/**/*.{html,js,php}",
     "../pastpapers/**/*.{html,js,php}",
     "../news/**/*.{html,js,php}",
+    
+    "../exercises2.php",
 
     "../node_modules/flowbite/**/*.js"
 
