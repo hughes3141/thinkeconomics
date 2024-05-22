@@ -1707,7 +1707,7 @@ function updateNewsArticle($id, $headline = null, $datePublished = null, $explan
 
 }
 
-function insertNewsQuestion($question, $questionId, $answer, $answerId, $userId) {
+function insertNewsQuestion($question, $questionId, $answer, $answerId, $userId, $topic, $articleId) {
   /*
   Used in:
   -newsQuestionsList.php
@@ -1716,9 +1716,9 @@ function insertNewsQuestion($question, $questionId, $answer, $answerId, $userId)
   global $conn;
   
   $sql = "INSERT INTO news_questions
-          (question, model_answer, questionAssetId, answerAssetId, userCreate)VALUES (?,?,?,?,?)";
+          (question, model_answer, questionAssetId, answerAssetId, userCreate, topic, articleId)VALUES (?,?,?,?,?,?,?)";
    $stmt = $conn->prepare($sql);
-   $stmt->bind_param("ssssi", $question, $answer, $questionId, $answerId, $userId);
+   $stmt->bind_param("ssssisi", $question, $answer, $questionId, $answerId, $userId, $topic, $articleId);
    $stmt->execute();
    return "New record created successfully";
 
@@ -1726,7 +1726,104 @@ function insertNewsQuestion($question, $questionId, $answer, $answerId, $userId)
 
 }
 
-function updateNewsQuestion($id, $questionId, $answer, $answerId, $userId) {
+function updateNewsQuestion($id, $userId, $question = null, $questionId = null, $answer = null, $answerId = null, $topic = null, $articleId = null) {
+  /*
+  Function to update news_questions with new value for given id
+  Used in:
+  -newsQuestionsList.php
+  */
+
+  global $conn;
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+
+  $sql = "UPDATE news_questions
+          SET ";
+
+  if(!is_null($question)) {
+    $sql .= " question = ? ";
+    $params .= "s";
+    array_push($bindArray, $question);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($questionId)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " questionAssetId = ? ";
+    $params .= "s";
+    array_push($bindArray, $questionId);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($answer)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " model_answer = ? ";
+    $params .= "s";
+    array_push($bindArray, $answer);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($answerId)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " answerAssetId = ? ";
+    $params .= "s";
+    array_push($bindArray, $answerId);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($topic)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " topic = ? ";
+    $params .= "s";
+    array_push($bindArray, $topic);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($articleId)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " articleId = ? ";
+    $params .= "i";
+    array_push($bindArray, $articleId);
+    $conjoiner = 1;
+  }
+
+  $sql .= " WHERE id = ? ";
+  $params .= "i";
+  array_push($bindArray, $id);
+
+  //echo $sql;
+  //echo $params;
+  //print_r($bindArray);
+
+  $stmt=$conn->prepare($sql);
+  //Note that this only runs if $bindArray is greater than 1 because 'WHERE id = ?' is not dependent on input. Usually '  if(count($bindArray)>0) '
+  if(count($bindArray)>1) {
+    $stmt->bind_param($params, ...$bindArray);
+    $stmt->execute();
+    return $sql;
+  }
+
+  //Check to see that the user has the right to update:
+
+  $newsQuestion = getNewsQuestion($id)[0];
+  $newsQuestionOwner = $newsQuestion['userCreate'];
+  
+
+  if($newsQuestionOwner == $userId) {
+    //$stmt->execute();
+    return "Record ".$newsQuestion['id']." updated successfully";
+  } else {
+    return "Error: User does not have editing permissions.".$newsQuestionOwner." ".$userId;
+
+  }
+  
+  return $newsQuestion;
+
+
+
+  
+  
 
 }
 

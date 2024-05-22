@@ -42,10 +42,11 @@ $style_input = "
   }";
 
 $updateMessage = "";
+$updateArray = array();
 
 if($_SERVER['REQUEST_METHOD']=='POST') {
 
-  if($_POST['submit'] = "Create Question") {
+  if($_POST['submit'] == "Create Question") {
     $count = $_POST['questionsCount'];
     $userCreate = $_SESSION['userid'];
 
@@ -54,13 +55,20 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
       $model_answer = $_POST['model_answer_'.$x];
       $questionAsset = $_POST['questionAsset_'.$x];
       $answerAsset = $_POST['answerAsset_'.$x];
+      
 
       if($_POST['active_entry_'.$x] == "1") {
-        insertNewsQuestion($question, $questionAsset, $model_answer, $answerAsset, $userCreate);
+        insertNewsQuestion($question, $questionAsset, $model_answer, $answerAsset, $userCreate, $_POST['topic'], $_POST['articleId']);
       }
       
     }
 
+  }
+
+  if($_POST['submit'] == "Update") {
+    $updateMessage = updateNewsQuestion($_POST['id'], $userId, $_POST['question'], $_POST['questionAssetId'], $_POST['model_answer'], $_POST['answerAssetId'], $_POST['topic'], $_POST['articleId']);
+
+    //$updateMessage = updateNewsQuestion($_POST['id'], $userId, $_POST['question']);
   }
 
 }
@@ -99,10 +107,18 @@ include($path."/header_tailwind.php");
   <div class=" container mx-auto px-4 pb-4 mt-2 bg-white text-black mb-5">
     <?php
     print_r($_POST);
+    //print_r($updateArray);
     $imgSource = "https://www.thinkeconomics.co.uk";
     ?>
     <div>
       <form method="post" action ="">
+        <div>
+          <label for="topicInput">Topic: </label>
+          <input id="topicInput" type="text" name="topic">
+
+          <label for="articleIdInput">Article Id: </label>
+          <input id="articleIdInput" type="number" name="articleId">
+        </div>
         <table id="question_input_table" class="input_table w-full table-fixed">
           <tr>
             <th class = "w-2/5">Question</th>
@@ -139,47 +155,82 @@ include($path."/header_tailwind.php");
             }
             ?>
             <tr>
-              <td>
-                <?php
-                  print_r($question);
-                ?>
-                <p>Question: <?=$question['question']?></p>
-                <p><?php
-                  foreach($questionAssets as $asset) {
-                    //echo $asset;
-                    $img = getUploadsInfo($asset)[0];
-                    ?>
-                    <img alt ="<?=$img['altText']?>" src="<?=$imgSource.$img['path']?>">
-                    <?php
-                  }
+              <form method="post" action="">
+                <td>
+                  <?php
+                    print_r($question);
                   ?>
-                </p>
-              </td>
-              <td>
-                <p>Answer: <?=$question['model_answer']?></p>
-                <p><?php
-                  foreach($answerAssets as $asset) {
-                    //echo $asset;
-                    $img = getUploadsInfo($asset)[0];
-                    ?>
-                    <img alt ="<?=$img['altText']?>" src="<?=$imgSource.$img['path']?>">
-                    <?php
-                  }
-                  ?>
-                </p>
-              </td>
-              <td>
-              <div>
-                <button type ="button" class= "w-full bg-pink-300 rounded border border-black mb-1" id = "button_<?=$question['id'];?>" onclick = "changeVisibility(this, <?=$question['id'];?>);">Edit</button>
-              </div>
-              <div class ="hidden hide_<?=$question['id'];?>">
-                <input type="hidden" name = "id" value = "<?=$question['id'];?>">
-                <input type="hidden" name = "subjectId" value = "<?=$question['subjectId'];?>">
-                <input type="hidden" name = "levelId" value = "<?=$question['levelId'];?>">
+                  <div class="toggleClass_<?=$question['id']?>">
+                    <p>Question: <?=$question['question']?></p>
+                    <p><?php
+                      if($question['questionAssetId']!="") {
+                        foreach($questionAssets as $asset) {
+                          //echo $asset;
+                          $img = getUploadsInfo($asset)[0];
+                          ?>
+                          <img alt ="<?=$img['altText']?>" src="<?=$imgSource.$img['path']?>">
+                          <?php
+                        }
+                      }
+                      ?>
+                    </p>
+                    <p><?=$question['topic']?></p>
+                    <p><?=$question['articleId']?></p>
+                  </div>
+                  <div class="hidden toggleClass_<?=$question['id']?>">
+                      <label for="questionInput_<?=$question['id']?>"></label>
+                      <textarea id="questionInput_<?=$question['id']?>" name="question"><?=$question['question']?></textarea>
 
-                <input class="w-full bg-sky-200 rounded border border-black mb-1 toggleClass_35" type="submit" name="updateValue" value = "Update"></input>
-              </div>
-              </td>
+                      <label for="quesetionAssetIdInput_<?=$question['id']?>"></label>
+                      <input type="text" id="quesetionAssetIdInput_<?=$question['id']?>" name="questionAssetId" value="<?=$question['questionAssetId']?>">
+
+                      <label for="topicInput_<?=$question['id']?>"></label>
+                      <input type="text" id="topicInput_<?=$question['id']?>" name="topic" value="<?=$question['topic']?>">
+
+                      <label for="articleIdInput_<?=$question['id']?>"></label>
+                      <input type="text" id="articleIdInput_<?=$question['id']?>" name="articleId" value="<?=$question['articleId']?>">
+                  </div>
+                  
+                </td>
+                <td>
+                  <div class="toggleClass_<?=$question['id']?>">
+                    <p>Answer: <?=$question['model_answer']?></p>
+                    <p><?php
+                      if($question['answerAssetId'] != "") {
+                        foreach($answerAssets as $asset) {
+                          //echo $asset;
+                          $img = getUploadsInfo($asset)[0];
+                          ?>
+                          <img alt ="<?=$img['altText']?>" src="<?=$imgSource.$img['path']?>">
+                          <?php
+                        }
+                      }
+                      ?>
+                    </p>
+                  </div>
+                  <div class="hidden toggleClass_<?=$question['id']?>">
+                      <label for="answerInput_<?=$question['id']?>"></label>
+                      <textarea id="answerInput_<?=$question['id']?>" name="model_answer"><?=$question['model_answer']?></textarea>
+
+                      <label for="answerAssetIdInput_<?=$question['id']?>"></label>
+                      <input type="text" id="answerAssetIdInput_<?=$question['id']?>" name="answerAssetId" value="<?=$question['answerAssetId']?>">
+                      
+                      
+                  </div>
+                </td>
+                <td>
+                  <div>
+                    <button type ="button" class= "w-full bg-pink-300 rounded border border-black mb-1" id = "button_<?=$question['id'];?>" onclick = "toggleHide(this, 'toggleClass_<?=$question['id']?>', 'Edit', 'Hide Edit', 'block');">Edit</button>
+                  </div>
+                  <div class ="hidden toggleClass_<?=$question['id'];?>">
+                    <input type="hidden" name = "id" value = "<?=$question['id'];?>">
+                    <input type="hidden" name = "subjectId" value = "<?=$question['subjectId'];?>">
+                    <input type="hidden" name = "levelId" value = "<?=$question['levelId'];?>">
+
+                    <input class="w-full bg-sky-200 rounded border border-black mb-1 toggleClass_35" type="submit" name="submit" value = "Update"></input>
+                  </div>
+                </td>
+              </form>
             </tr>
 
             
