@@ -230,6 +230,7 @@ include "../header_tailwind.php";
             <h2 class="font-mono text-lg bg-pink-200 pl-1">News Management</h2>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/news_input.php">News Input</a></p>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/news_list.php">News List</a></p>
+              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/newsQuestionsList.php">News Questions Manager</a></p>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/printfriendly.php">Print Friendly</a></p>
 
             <h2 class="font-mono text-lg bg-pink-200 pl-1">Page Management</h2>
