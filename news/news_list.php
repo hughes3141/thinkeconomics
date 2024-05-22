@@ -54,7 +54,7 @@ $updateQuestionBool = 0;
 
 if($_SERVER['REQUEST_METHOD']=='POST') {
   $updateQuestionBool = 1;
-  updateNewsArticle($_POST['id'], $_POST['headline'], $_POST['datePublished'], $_POST['explanation'], $_POST['explanation_long'], $_POST['keyWords'], $_POST['link'], $_POST['articleAsset'], $_POST['active'], $_POST['bbcPerennial'], $_POST['photoAssets'], $_POST['topic'], $_POST['video'], $_POST['audio'], $_POST['photoLinks']);
+  updateNewsArticle($_POST['id'], $_POST['headline'], $_POST['datePublished'], $_POST['explanation'], $_POST['explanation_long'], $_POST['keyWords'], $_POST['link'], $_POST['articleAsset'], $_POST['active'], $_POST['bbcPerennial'], $_POST['photoAssets'], $_POST['topic'], $_POST['video'], $_POST['audio'], $_POST['photoLinks'], $_POST['questions_array']);
 
 
   /*
@@ -236,6 +236,12 @@ GET variables:
                 <?=$row['keyWords'];?>
               </div>
               <textarea id="keyWords_<?=$row['id']?>" class="w-full hide hide_<?=$row['id'];?>" name="keyWords"><?=$row['keyWords']?></textarea>
+
+              <label class="font-bold" for="">Questions:</label>
+              <div class="show_<?=$row['id']?>">
+              <?=$row['questions_array']?>
+              </div>
+              <input type="text" name="questions_array" class="w-full hide hide_<?=$row['id']?>" value="<?=$row['questions_array']?>">
 
               <label class="font-bold" for="articleAsset<?=$row['id']?>">Article Asset:</label>
               <div class="show_<?=$row['id'];?>">

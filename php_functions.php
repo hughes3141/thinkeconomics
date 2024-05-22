@@ -1800,8 +1800,8 @@ function updateNewsQuestion($id, $userId, $question = null, $questionId = null, 
   //Note that this only runs if $bindArray is greater than 1 because 'WHERE id = ?' is not dependent on input. Usually '  if(count($bindArray)>0) '
   if(count($bindArray)>1) {
     $stmt->bind_param($params, ...$bindArray);
-    $stmt->execute();
-    return $sql;
+    //$stmt->execute();
+
   }
 
   //Check to see that the user has the right to update:
@@ -1811,8 +1811,8 @@ function updateNewsQuestion($id, $userId, $question = null, $questionId = null, 
   
 
   if($newsQuestionOwner == $userId) {
-    //$stmt->execute();
-    return "Record ".$newsQuestion['id']." updated successfully";
+    $stmt->execute();
+    return "Record ".$id." updated successfully";
   } else {
     return "Error: User does not have editing permissions.".$newsQuestionOwner." ".$userId;
 

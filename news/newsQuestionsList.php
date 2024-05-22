@@ -102,12 +102,13 @@ include($path."/header_tailwind.php");
 ?>
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
-  <?=$updateMessage?>
+  
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">News Questions List</h1>
   <div class=" container mx-auto px-4 pb-4 mt-2 bg-white text-black mb-5">
     <?php
-    print_r($_POST);
+    //print_r($_POST);
     //print_r($updateArray);
+    echo $updateMessage;
     $imgSource = "https://www.thinkeconomics.co.uk";
     ?>
     <div>
@@ -158,10 +159,11 @@ include($path."/header_tailwind.php");
               <form method="post" action="">
                 <td>
                   <?php
-                    print_r($question);
+                    //print_r($question);
                   ?>
+                  <p><?=$question['id']?></p>
                   <div class="toggleClass_<?=$question['id']?>">
-                    <p>Question: <?=$question['question']?></p>
+                    <p class="whitespace-pre-wrap">Question: <?=$question['question']?></p>
                     <p><?php
                       if($question['questionAssetId']!="") {
                         foreach($questionAssets as $asset) {
@@ -179,7 +181,7 @@ include($path."/header_tailwind.php");
                   </div>
                   <div class="hidden toggleClass_<?=$question['id']?>">
                       <label for="questionInput_<?=$question['id']?>"></label>
-                      <textarea id="questionInput_<?=$question['id']?>" name="question"><?=$question['question']?></textarea>
+                      <textarea class="w-full" id="questionInput_<?=$question['id']?>" name="question"><?=$question['question']?></textarea>
 
                       <label for="quesetionAssetIdInput_<?=$question['id']?>"></label>
                       <input type="text" id="quesetionAssetIdInput_<?=$question['id']?>" name="questionAssetId" value="<?=$question['questionAssetId']?>">
@@ -194,7 +196,7 @@ include($path."/header_tailwind.php");
                 </td>
                 <td>
                   <div class="toggleClass_<?=$question['id']?>">
-                    <p>Answer: <?=$question['model_answer']?></p>
+                    <p class="whitespace-pre-wrap">Answer: <?=$question['model_answer']?></p>
                     <p><?php
                       if($question['answerAssetId'] != "") {
                         foreach($answerAssets as $asset) {
@@ -210,7 +212,7 @@ include($path."/header_tailwind.php");
                   </div>
                   <div class="hidden toggleClass_<?=$question['id']?>">
                       <label for="answerInput_<?=$question['id']?>"></label>
-                      <textarea id="answerInput_<?=$question['id']?>" name="model_answer"><?=$question['model_answer']?></textarea>
+                      <textarea class="w-full" id="answerInput_<?=$question['id']?>" name="model_answer"><?=$question['model_answer']?></textarea>
 
                       <label for="answerAssetIdInput_<?=$question['id']?>"></label>
                       <input type="text" id="answerAssetIdInput_<?=$question['id']?>" name="answerAssetId" value="<?=$question['answerAssetId']?>">
