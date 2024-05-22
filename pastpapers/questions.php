@@ -57,7 +57,7 @@ if(str_contains($permissions, "main_admin")) {
 
 if($_SERVER['REQUEST_METHOD']==='POST') {}
 
-$excludedYear = 2023;
+$excludedYear = 2024;
 
 /*
 
