@@ -93,7 +93,7 @@ include($path."/header_tailwind.php");
 
 ?>
 
-<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
   
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">News Questions</h1>
   <div class=" container mx-auto px-4 pb-4 mt-2 pt-1 bg-white text-black mb-5">
