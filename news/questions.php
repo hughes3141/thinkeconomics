@@ -169,7 +169,7 @@ include($path."/header_tailwind.php");
         }
         //print_r($questions);
         ?>
-        <div>
+        <div class="clear-right">
           <h3 class="md:w-1/3 py-1 rounded bg-pink-100 pr-1 my-2">Questions:</h3>
           <ol class="list-decimal list-outside ml-5">
             <?php
