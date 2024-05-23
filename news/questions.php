@@ -96,14 +96,46 @@ include($path."/header_tailwind.php");
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
   
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">News Questions</h1>
-  <div class=" container mx-auto px-4 pb-4 mt-2 bg-white text-black mb-5">
+  <div class=" container mx-auto px-4 pb-4 mt-2 pt-1 bg-white text-black mb-5">
     <?php
     //print_r($article);
     $imgSource = "https://www.thinkeconomics.co.uk";
+
+    $images = array();
+    //Get any images that are uploaded in uploads:
+    if($article['photoAssets'] != "") {
+      $imagesUploads = explode(",",$article['photoAssets']);
+      //print_r($imagesUploads);
+      foreach ($imagesUploads as $imageId) {
+        $imageUpload = getUploadsInfo($imageId)[0];
+        //print_r($imageUpload);
+        $imageArray = array('path' => $imgSource.$imageUpload['path'], 'altText'=> $imageUpload['altText']);
+        array_push($images, $imageArray);
+      }
+    }
+    //Get any images that are linked in database under imageLink:
+    if($article['photoLinks'] != "") {
+      $imagesLinks = explode(", ",$article['photoLinks']);
+      //print_r($imagesUploads);
+      foreach ($imagesLinks as $link) {
+        $imageArray = array('path' => trim($link), 'altText'=> $link);
+        array_push($images, $imageArray);
+      }
+    }
+    //print_r($images);
+
     ?>
-    <p>Headline: <?=$article['headline']?></p>
-    <p>Source: <a class="underline text-sky-700" target="_blank" href="<?=$article['link']?>"><?=$article['link']?></a></p>
-    <p>Date: <?=date_format(date_create($article['datePublished']), 'd M Y')?></p>
+    <h2 class="text-lg bg-pink-200 p-1 my-1 rounded">Headline: <?=$article['headline']?></h2>
+    <?php
+
+    if(count($images)>0){
+      ?>
+        <img class="md:w-1/2 md:float-right md:ml-1 mb-1" src="<?=$images[0]['path']?>" alt ="<?=$images[0]['altText']?>">
+      <?php
+      }
+    ?>
+    <p class="text-ellipsis overflow-hidden">Source: <a class="underline text-sky-700" target="_blank" href="<?=$article['link']?>"><?=$article['link']?></a></p>
+    <p><?=date_format(date_create($article['datePublished']), 'd M Y')?></p>
 
     <?php
       if($article['path'] != "" && $downloadPermissions) {
@@ -111,37 +143,12 @@ include($path."/header_tailwind.php");
         <a class="bg-sky-100 hover:bg-sky-200  rounded whitespace-nowrap" target="_blank" href="<?=$imgSource.$article['path']?>">Download PDF</a>
         <?php
       }
-      $images = array();
-      //Get any images that are uploaded in uploads:
-      if($article['photoAssets'] != "") {
-        $imagesUploads = explode(",",$article['photoAssets']);
-        //print_r($imagesUploads);
-        foreach ($imagesUploads as $imageId) {
-          $imageUpload = getUploadsInfo($imageId)[0];
-          //print_r($imageUpload);
-          $imageArray = array('path' => $imgSource.$imageUpload['path'], 'altText'=> $imageUpload['altText']);
-          array_push($images, $imageArray);
-        }
-      }
-      //Get any images that are linked in database under imageLink:
-      if($article['photoLinks'] != "") {
-        $imagesLinks = explode(", ",$article['photoLinks']);
-        //print_r($imagesUploads);
-        foreach ($imagesLinks as $link) {
-          $imageArray = array('path' => trim($link), 'altText'=> $link);
-          array_push($images, $imageArray);
-        }
-      }
-      //print_r($images);
-      if(count($images)>0){
-      ?>
-        <img src="<?=$images[0]['path']?>" alt ="<?=$images[0]['altText']?>">
-      <?php
-      }
+
+
       if($article['explanation'] != "") {
         ?>
         <div>
-          <p>Explanation: </p>
+          <h3 class="md:w-1/3 py-1 rounded bg-pink-100 pr-1 my-2">Explanation: </h3>
           <p class="whitespace-pre-wrap"><?=$article['explanation']?></p>
         </div>
         <?php
@@ -150,8 +157,8 @@ include($path."/header_tailwind.php");
       if($article['explanation_long'] != "") {
         ?>
         <div>
-          <p>Long Explanation:</p>
-          <p class="whitespace-pre-wrap">Long Explanation: <?=$article['explanation_long']?></p>
+          <h3 class="md:w-1/3 py-1 rounded bg-pink-100 pr-1 my-2">Long Explanation:</h3>
+          <p class="whitespace-pre-wrap"><?=$article['explanation_long']?></p>
         </div>
         <?php
       }
@@ -163,14 +170,18 @@ include($path."/header_tailwind.php");
         //print_r($questions);
         ?>
         <div>
-          <h2>Questions:</h2>
-          <ol class="list-decimal list-inside">
+          <h3 class="md:w-1/3 py-1 rounded bg-pink-100 pr-1 my-2">Questions:</h3>
+          <ol class="list-decimal list-outside ml-5">
             <?php
               foreach($questions as $question) {
                 ?>
-                <li class="whitespace-pre-wrap"><?=$question['question']?></li>
-                <button class="border border-black rounded bg-pink-200 px-1" onclick="toggleHide(this, 'markSchemeToggle_<?=$question['id']?>', 'Show Answer', 'Hide Answer', 'block')">Show Answer</button>
-                <div class=" bg-pink-100 hidden markSchemeToggle_<?=$question['id']?>">
+                <li class="whitespace-pre-wrap mb-1 px-1"><?=$question['question']?></li>
+                <?php
+                if($question['model_answer'] != "") {
+
+                ?>
+                <button class="border border-black rounded bg-pink-200 px-1 mb-1" onclick="toggleHide(this, 'markSchemeToggle_<?=$question['id']?>', 'Show Answer', 'Hide Answer', 'block')">Show Answer</button>
+                <div class=" bg-pink-100 mb-1 p-2 hidden markSchemeToggle_<?=$question['id']?>">
                   <p class="whitespace-pre-wrap"><?=$question['model_answer']?></p>
                   <?php
                     $imagesArray = array();
@@ -188,6 +199,7 @@ include($path."/header_tailwind.php");
                   ?>
                 </div>
                 <?php
+                }
               }
             ?>
           </ol>

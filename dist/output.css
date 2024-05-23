@@ -856,6 +856,11 @@ textarea, input, select {
   margin-left: -2.25rem;
 }
 
+.-ml-1 {
+  margin-left: -0.25rem;
+}
+
+
 .block {
   display: block;
 }
@@ -1116,6 +1121,10 @@ textarea, input, select {
   list-style-position: inside;
 }
 
+.list-outside {
+  list-style-position: outside;
+}
+
 .list-none {
   list-style-type: none;
 }
@@ -1251,6 +1260,10 @@ textarea, input, select {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.text-ellipsis {
+  text-overflow: ellipsis;
 }
 
 .whitespace-nowrap {
@@ -1676,6 +1689,10 @@ textarea, input, select {
 
 .pb-2 {
   padding-bottom: 0.5rem;
+}
+
+.pr-1 {
+  padding-right: 0.25rem;
 }
 
 .text-left {
@@ -2210,6 +2227,10 @@ textarea, input, select {
 }
 
 @media (min-width: 768px) {
+  .md\:float-right {
+    float: right;
+  }
+
   .md\:mb-6 {
     margin-bottom: 1.5rem;
   }
@@ -2220,6 +2241,10 @@ textarea, input, select {
 
   .md\:ml-9 {
     margin-left: 2.25rem;
+  }
+
+  .md\:ml-1 {
+    margin-left: 0.25rem;
   }
 
   .md\:block {
@@ -2266,8 +2291,13 @@ textarea, input, select {
     width: 16.666667%;
   }
 
+
+  .md\:w-1\/2 {
+    width: 50%;
+
   .md\:w-3\/4 {
     width: 75%;
+
   }
 
   .md\:grid-cols-2 {
@@ -2296,6 +2326,10 @@ textarea, input, select {
 
   .md\:whitespace-normal {
     white-space: normal;
+  }
+
+  .md\:rounded {
+    border-radius: 0.25rem;
   }
 
   .md\:px-2 {
