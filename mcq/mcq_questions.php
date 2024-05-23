@@ -188,7 +188,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       }
       $optionsArray = json_encode($optionsArray);
       
-      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar']);
+      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar'], $_POST['noRandom']);
       ?>
       <?php
     }
@@ -443,7 +443,7 @@ $_GET controls:
                       <?=$question['No']?>
                     </td>
                     <td>
-                      <p><?=$question['examBoard']?> <?=$question['unitName']?> <?=$question['qualLevel']?></p>
+                      <p><?=$question['examBoard']?> <?=$question['unitName']?> <?=$question['qualLevel']?> <?=$question['series']?> <?=$question['year']?> Question <?=$question['questionNo']?></p>
                       <div>
                         <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question']?></p>
                         <textarea  name="question" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question']?></textarea>
@@ -571,6 +571,24 @@ $_GET controls:
                         </div>
 
                       </div>
+                      <!-- No Random Order Input-->
+                      <div>
+                        <div class="toggleClass_<?=$question['id']?>">
+                          <p><?=($question['noRandom']==1) ? "No Random Options" : ""?><p>
+                        </div>
+                        <div class="toggleClass_<?=$question['id']?> hidden">
+                          <p>
+                            <input id="noRandom_yes_<?=$question['id']?>" name="noRandom" type="radio" value="1" <?=($question['noRandom']==1) ? "checked" : ""?>>
+                            <label for="noRandom_yes_<?=$question['id']?>">No Random</label>
+                          </p>
+                          <p>
+                            <input id="noRandom_no_<?=$question['id']?>" name="noRandom" type="radio" value="0" <?=($question['noRandom']==0) ? "checked" : ""?>>
+                            <label for="noRandom_no_<?=$question['id']?>">Random Enabled</label>
+                          </p>
+                        </div>
+
+                      </div>
+
                       <!-- Question Relevance and Duplication Inputs-->
                       <div class="toggleClass_<?=$question['id']?> ">
                         <p><span class="<?=($question['relevant'] == 0 ) ? "bg-pink-200" : ""?>"><?=($question['relevant'] == 1) ? "Relevant" : "Not Relevant"?></span></p>

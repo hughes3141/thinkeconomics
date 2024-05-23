@@ -197,7 +197,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       $caseId = ($_POST['caseId'] != "") ? $_POST['caseId'] : null;
       
       
-      updatePastPaperQuestionDetails($_POST['id'], $_POST['question'], $_POST['answer'], $_POST['questionAssets'], $_POST['markSchemeAssets'], $_POST['examreportAssets'], $_POST['topic'], $_POST['keywords'], $_POST['explanation'], $_POST['marks'], $caseId, $caseBool, $_POST['examPaperLink'], $_POST['markSchemeLink'], $_POST['examReportLink'], $_POST['guide'], $_POST['modelAnswer'], $_POST['modelAnswerAssets']);
+      updatePastPaperQuestionDetails($_POST['id'], $_POST['question'], $_POST['answer'], $_POST['questionAssets'], $_POST['markSchemeAssets'], $_POST['examreportAssets'], $_POST['topic'], $_POST['keywords'], $_POST['explanation'], $_POST['marks'], $caseId, $caseBool, $_POST['examPaperLink'], $_POST['markSchemeLink'], $_POST['examReportLink'], $_POST['guide'], $_POST['modelAnswer'], $_POST['modelAnswerAssets'], $_POST['examReportText']);
       ?>
       <?php
     }
@@ -482,6 +482,24 @@ $_GET controls:
                             
                             <?php
                           }
+
+                          if($question['examReportText'] != "" || $question['examReportAssets'] != "") {
+                            ?>
+                            <button class="border rounded bg-sky-200 border-black mb-1 p-1" type="button" onclick="toggleHide(this, 'examReportTextToggle_<?=$question['id']?>', 'Show Exam Report', 'Hide Exam Report', 'block')">Show Exam Report</button>
+                            
+                            <div class="bg-sky-100 m-1 p-1 border-4 border-sky-200 examReportTextToggle_<?=$question['id']?> hidden">
+                            <h2 class="text-lg bold text-pink-700 underline">Exam Report</h2>
+                            <?php
+                              if($question['examReportText'] != "") {
+                                ?>
+                                <p class="whitespace-pre-line"><?=$question['examReportText']?></p>
+                                <?php
+                              }
+                            ?>
+
+                            </div>
+                            <?php
+                          }
                           
                           ?>
                         </div>
@@ -577,6 +595,11 @@ $_GET controls:
 
                             <label for="modelAnswerAssets_<?=$question['id']?>">Model Answer Assets: </label>
                             <p><input id="modelAnswerAssets_<?=$question['id']?>" type="text" name= "modelAnswerAssets" value="<?=$question['modelAnswerAssets']?>"><p>
+
+                            <label for="examReportText_<?=$question['id']?>">Exam Report Text:</label>
+                            <p>
+                              <textarea class="resize w-full" spellcheck="true" name = "examReportText" id="examReportText_<?=$question['id']?>"><?=$question['examReportText']?></textarea>
+                            </p>
 
                             <label for="caseId_<?=$question['id']?>">Case Id: </label>
                             <p><input id="caseId_<?=$question['id']?>" type="number" name= "caseId" value="<?=$question['caseId']?>"><p>

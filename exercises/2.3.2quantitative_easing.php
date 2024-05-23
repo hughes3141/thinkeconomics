@@ -176,7 +176,8 @@ function populate() {
 
 var password =  <?php include "../password.php"; ?>;
 
-var passed = false;
+
+var passed = true;
 
 
 function passwordPrompt() {
