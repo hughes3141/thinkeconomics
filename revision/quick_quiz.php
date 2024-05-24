@@ -26,7 +26,7 @@ include ($path."/header_tailwind.php");
  */
 
  $imgSourcePathPrefix = "";
- //$imgSourcePathPrefix = "https://www.thinkeconomics.co.uk";
+ $imgSourcePathPrefix = "https://www.thinkeconomics.co.uk";
 
 
 //Get topics as GET variables
@@ -144,51 +144,53 @@ GET Variables:
       foreach($randomQuestions as $key=>$question) {
         ?>
         
-        <div class="content-center">
+        <div class="">
           <?php
             if(isset($_GET['test'])) {
               print_r($question);
             }
           ?>
-          <div class=" question text-center m-3 py-2 px-4  text-black border-4 border-pink-400  rounded-lg shadow-md hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers(<?=$key;?>)">
-          <!-- bg-pink-400 text-white font-semibold--> 
-          <div class = "whitespace-pre-line"><?php
-              if($questionNosBool == 1) {
-                echo $questionNumber.": ";
-              } 
-              echo htmlspecialchars(trim($question['question']));
-              if($topicShowBool == 1) {
-                echo " 
-                <i>(".$question['topic'].")</i>";
+            <button class="w-full">
+              <div class=" question text-center m-3 py-2 px-4  text-black border-4 border-pink-400  rounded-lg shadow-md hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75" onclick="showAnswers(<?=$key;?>)">
+              <!-- bg-pink-400 text-white font-semibold--> 
+                <div class = "whitespace-pre-line"><?php
+                  if($questionNosBool == 1) {
+                    echo $questionNumber.": ";
+                  } 
+                  echo htmlspecialchars(trim($question['question']));
+                  if($topicShowBool == 1) {
+                    echo " 
+                    <i>(".$question['topic'].")</i>";
+                  }
+                ?></div>
+
+              <?php
+              
+
+              if($question['q_path'] != "") {
+                ?>
+                <img class = "mx-auto object-center " src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
+                <?php
               }
-            ?></div>
 
-            <?php
-            
+            ?>
 
-            if($question['q_path'] != "") {
+            </div>
+          </button>
+            <div class="answer hidden    mb-3 mx-3 py-2 px-4 border-4 border-sky-300 rounded-lg "><?//=$question['topic'];?>
+              <div class="whitespace-pre-line"><?=htmlspecialchars(trim($question['model_answer']));?></div>
+              <?php
+
+
+
+            if($question['a_path'] != "") {
               ?>
-              <img class = "mx-auto object-center " src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
+                <img class = "object-center " src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
               <?php
             }
-
-          ?>
-
-        </div>
-          <div class="answer hidden    m-3 py-2 px-4 border-4 border-sky-300 rounded-lg "><?//=$question['topic'];?>
-            <div class="whitespace-pre-line"><?=htmlspecialchars(trim($question['model_answer']));?></div>
-            <?php
-
-
-
-          if($question['a_path'] != "") {
-            ?>
-              <img class = "object-center " src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
-            <?php
-          }
-          
-          
-          ?></div>
+            
+            
+            ?></div>
           
         </div>
 

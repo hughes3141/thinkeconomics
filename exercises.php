@@ -24,7 +24,7 @@ include($path."/header_tailwind.php");
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">Exercises</h1>
   <div class="container mx-auto px-0 mt-2 bg-white text-black">
-    <ul class="list-none">
+    <ul class="list-none" id="exerciseList">
       <h2 class="font-mono text-xl bg-pink-300 pl-1">Year 1</h2>
       <h3 class="font-mono text-lg bg-pink-200 pl-1">Micro</h3>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/1.1.1opportunity_cost.php">1.1.1 Opportunity Cost Exercise</a></li>
@@ -124,8 +124,44 @@ include($path."/header_tailwind.php");
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/3.3.1gdp_limits_questions.php">3.3.1 Limitations of GDP: Summary Questions</a></li>
         <li class="ml-2 mr-2 hover:bg-sky-100"><a class ="block" href = "exercises/3.3.2corruption_perception_game.php">3.3.2 Corruption Perceptions Index Game</a></li>
     </ul>
+
+
+    <table id="summaryTable"></table>
   </div>
 </div>
+
+<script>
+  info = [];
+  var list = document.getElementById('exerciseList');
+  list = document.querySelectorAll('li');
+  console.log(list);
+
+  for(var x=0; x<list.length; x++) {
+    var info2 = [];
+    info2.push(list[x].innerText)
+    info2.push(list[x].childNodes[0].href)
+    info.push(info2)
+  }
+
+  console.log(info);
+
+  var table = document.getElementById('summaryTable');
+
+  for(var x=0; x<info.length; x++) {
+    var row = table.insertRow(x);
+    console.log(table);
+    var cell1 = row.insertCell(0);
+    var cell2 = row.insertCell(1);
+
+    cell1.innerHTML = info[x][0];
+    cell2.innerHTML = info[x][1];
+
+
+
+  }
+
+
+</script>
 
 
 

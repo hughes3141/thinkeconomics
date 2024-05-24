@@ -149,6 +149,7 @@ include($path."/header_tailwind.php");
               <td>
                 <p class="font-bold toggleClass_<?=$quiz['id']?>"><?=date('d/m/Y h:ia', strtotime($quiz['dateCreated']))?></p>
                 <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['notes']?></p>
+                <p  class="toggleClass_<?=$quiz['id']?>">Count: <?=count($questions)?></p>
                 
                 <textarea class="toggleClass_<?=$quiz['id']?> hidden" name="notes"><?=$quiz['notes']?></textarea>
               </td>
