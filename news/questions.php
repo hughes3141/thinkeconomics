@@ -11,6 +11,7 @@ include($path."/php_functions.php");
 
 $downloadPermissions = null;
 $userId = null;
+$permissions = '';
 
 if (!isset($_SESSION['userid'])) {
   
@@ -43,6 +44,7 @@ $style_input = "";
 
 $get_selectors = array(
   'articleId' => (isset($_GET['articleId']) && $_GET['articleId'] != "") ? $_GET['articleId'] : null,
+  'questionIds' => (isset($_GET['questionIds']) && $_GET['questionIds'] != "") ? $_GET['questionIds'] : null,
   'topic' => (isset($_GET['topic']) && $_GET['topic'] != "") ? $_GET['topic'] : null,
   'keyword' => (isset($_GET['keyword']) && $_GET['keyword'] != "") ? $_GET['keyword'] : null,
   'startDate' => (isset($_GET['startDate']) && $_GET['startDate'] != "") ? $_GET['startDate'] : null,
@@ -89,16 +91,57 @@ if(!is_null($get_selectors['articleId'])) {
 
 $questions = array();
 
+if($article['questions_array'] != "") {
+  $questions = explode(",",$article['questions_array']);
+
+  if(!is_null($get_selectors['questionIds'])) {
+    $questions = explode(",",$get_selectors['questionIds']);
+  }
+
+  foreach ($questions as $key => $question) {
+    $questionInfo = getNewsQuestion($question);
+    if(count($questionInfo)>0) {
+      $questions[$key] = $questionInfo[0];
+    } else {
+      $questions[$key] = array(
+        'question' => '',
+        'topic' => '',
+        'id' => '',
+        'model_answer' => '',
+        'answer_img' => '',
+        'questionAssetId' => '',
+        'answerAssetId' => '',
+        'articleId' => ''
+      );
+    }
+  } 
+}
+
+
+
 include($path."/header_tailwind.php");
+
+if(str_contains($permissions, 'main_admin')) {
+  ?>
+  <!--
+
+  Get variables:
+  -articleId
+  -questionsIds
+
+-->
+  <?php
+}
 
 ?>
 
-<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
   
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">News Questions</h1>
   <div class=" container mx-auto px-4 pb-4 mt-2 pt-1 bg-white text-black mb-5">
     <?php
     //print_r($article);
+    //print_r($questions);
     $imgSource = "https://www.thinkeconomics.co.uk";
 
     $images = array();
@@ -125,7 +168,7 @@ include($path."/header_tailwind.php");
     //print_r($images);
 
     ?>
-    <h2 class="text-lg bg-pink-200 p-1 my-1 rounded">Headline: <?=$article['headline']?></h2>
+    <h2 class="text-xl bg-pink-200 p-1 my-2 rounded">Headline: <?=$article['headline']?></h2>
     <?php
 
     if(count($images)>0){
@@ -134,13 +177,13 @@ include($path."/header_tailwind.php");
       <?php
       }
     ?>
-    <p class="text-ellipsis overflow-hidden">Source: <a class="underline text-sky-700" target="_blank" href="<?=$article['link']?>"><?=$article['link']?></a></p>
-    <p><?=date_format(date_create($article['datePublished']), 'd M Y')?></p>
+    <p class="text-ellipsis overflow-hidden ml-1"><a class="underline text-sky-700" target="_blank" href="<?=$article['link']?>"><?=$article['link']?></a></p>
+    <p class="ml-1"><?=date_format(date_create($article['datePublished']), 'd M Y')?></p>
 
     <?php
       if($article['path'] != "" && $downloadPermissions) {
         ?>
-        <a class="bg-sky-100 hover:bg-sky-200  rounded whitespace-nowrap" target="_blank" href="<?=$imgSource.$article['path']?>">Download PDF</a>
+        <a class="bg-sky-100 hover:bg-sky-200 ml-1 rounded whitespace-nowrap" target="_blank" href="<?=$imgSource.$article['path']?>">Download PDF</a>
         <?php
       }
 
@@ -148,8 +191,8 @@ include($path."/header_tailwind.php");
       if($article['explanation'] != "") {
         ?>
         <div>
-          <h3 class="md:w-1/3 py-1 rounded bg-pink-100 pr-1 my-2">Explanation: </h3>
-          <p class="whitespace-pre-wrap"><?=$article['explanation']?></p>
+          <h3 class="md:w-1/3 py-1 rounded bg-pink-100 px-1 my-2">Explanation: </h3>
+          <p class="whitespace-pre-wrap ml-1"><?=$article['explanation']?></p>
         </div>
         <?php
       }
@@ -157,49 +200,49 @@ include($path."/header_tailwind.php");
       if($article['explanation_long'] != "") {
         ?>
         <div>
-          <h3 class="md:w-1/3 py-1 rounded bg-pink-100 pr-1 my-2">Long Explanation:</h3>
-          <p class="whitespace-pre-wrap"><?=$article['explanation_long']?></p>
+          <h3 class="md:w-1/3 py-1 rounded bg-pink-100 px-1 my-2">Long Explanation:</h3>
+          <p class="whitespace-pre-wrap ml-1"><?=$article['explanation_long']?></p>
         </div>
         <?php
       }
-      if($article['questions_array'] != "") {
-        $questions = explode(",",$article['questions_array']);
-        foreach ($questions as $key => $question) {
-          $questions[$key] = getNewsQuestion($question)[0];
-        }
-        //print_r($questions);
+
+      if(count($questions) > 0) {
         ?>
         <div>
-          <h3 class="md:w-1/3 py-1 rounded bg-pink-100 pr-1 my-2">Questions:</h3>
-          <ol class="list-decimal list-outside ml-5">
+          <h3 class="md:w-1/3 py-1 rounded bg-pink-100 px-1 my-2 clear-right">Questions:</h3>
+          <ol class="list-decimal list-outside ml-4">
             <?php
               foreach($questions as $question) {
                 ?>
-                <li class="whitespace-pre-wrap mb-1 px-1"><?=$question['question']?></li>
-                <?php
-                if($question['model_answer'] != "") {
-
-                ?>
-                <button class="border border-black rounded bg-pink-200 px-1 mb-1" onclick="toggleHide(this, 'markSchemeToggle_<?=$question['id']?>', 'Show Answer', 'Hide Answer', 'block')">Show Answer</button>
-                <div class=" bg-pink-100 mb-1 p-2 hidden markSchemeToggle_<?=$question['id']?>">
-                  <p class="whitespace-pre-wrap"><?=$question['model_answer']?></p>
+                <div class="pl-1">
+                  <li class="whitespace-pre-wrap mb-1"><?=$question['question']?></li>
                   <?php
-                    $imagesArray = array();
-                    if($question['answerAssetId'] != "") {
-                      $imagesArray = explode(",",$question['answerAssetId']);
-                      //print_r($imagesArray);
-                    }
-                    foreach ($imagesArray as $imageAsset) {
-                      $imageDetails = getUploadsInfo($imageAsset)[0];
-                      //print_r($imageDetails);
-                      ?>
-                      <img src="<?=$imgSource.$imageDetails['path']?>" alt="<?=$imageDetails['altText']?>">
-                      <?php
-                    }
+                  if($question['model_answer'] != "") {
+
+                  ?>
+                  <button class="border border-black rounded bg-pink-200 px-1 mb-1" onclick="toggleHide(this, 'markSchemeToggle_<?=$question['id']?>', 'Show Answer', 'Hide Answer', 'block')">Show Answer</button>
+                  <div class=" rounded border-2 border-sky-200 bg-pink-100 mb-1 p-2 hidden markSchemeToggle_<?=$question['id']?>">
+                    <p class="whitespace-pre-wrap"><?=$question['model_answer']?></p>
+                    <?php
+                      $imagesArray = array();
+                      if($question['answerAssetId'] != "") {
+                        $imagesArray = explode(",",$question['answerAssetId']);
+                        //print_r($imagesArray);
+                      }
+                      foreach ($imagesArray as $imageAsset) {
+                        $imageDetails = getUploadsInfo($imageAsset)[0];
+                        //print_r($imageDetails);
+                        ?>
+                        <img src="<?=$imgSource.$imageDetails['path']?>" alt="<?=$imageDetails['altText']?>">
+                        <?php
+                      }
+                    ?>
+                  </div>
+                  <?php
+                  }
                   ?>
                 </div>
                 <?php
-                }
               }
             ?>
           </ol>
