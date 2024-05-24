@@ -614,6 +614,10 @@ textarea, input, select {
   float: none;
 }
 
+.clear-right {
+  clear: right;
+}
+
 .m-8 {
   margin: 2rem;
 }
@@ -826,8 +830,8 @@ textarea, input, select {
   margin-left: -2.25rem;
 }
 
-.-ml-1 {
-  margin-left: -0.25rem;
+.ml-4 {
+  margin-left: 1rem;
 }
 
 .block {
@@ -1389,6 +1393,11 @@ textarea, input, select {
 .border-slate-500 {
   --tw-border-opacity: 1;
   border-color: rgb(100 116 139 / var(--tw-border-opacity));
+}
+
+.border-pink-200 {
+  --tw-border-opacity: 1;
+  border-color: rgb(251 207 232 / var(--tw-border-opacity));
 }
 
 .bg-white {
@@ -2268,10 +2277,6 @@ textarea, input, select {
 
   .md\:whitespace-normal {
     white-space: normal;
-  }
-
-  .md\:rounded {
-    border-radius: 0.25rem;
   }
 
   .md\:px-2 {
