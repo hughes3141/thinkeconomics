@@ -11,6 +11,7 @@ include($path."/php_functions.php");
 
 $downloadPermissions = null;
 $userId = null;
+$permissions = '';
 
 if (!isset($_SESSION['userid'])) {
   
@@ -119,6 +120,18 @@ if($article['questions_array'] != "") {
 
 
 include($path."/header_tailwind.php");
+
+if(str_contains($permissions, 'main_admin')) {
+  ?>
+  <!--
+
+  Get variables:
+  -articleId
+  -questionsIds
+
+-->
+  <?php
+}
 
 ?>
 
