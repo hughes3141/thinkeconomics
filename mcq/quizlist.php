@@ -40,7 +40,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
 
   if(isset($_POST['submit']) && $_POST['submit'] == "Update") {
-    updateMCQquizDetails($_POST['id'],$_POST['topic'],$_POST['quizName'],$_POST['notes'],$_POST['description'],$_POST['active'], $_POST['topicQuiz']);
+    updateMCQquizDetails($_POST['id'],$_POST['topic'],$_POST['quizName'],$_POST['notes'],$_POST['description'],$_POST['active'], $_POST['topicQuiz'], $_POST['mcqHomePage']);
     $updateQuestionBool = 1;
     
   }
@@ -55,11 +55,12 @@ $get_selectors = array(
   'questionId' => (isset($_GET['questionId'])&&$_GET['questionId']!="") ? $_GET['questionId'] : null,
   'active' => (isset($_GET['inactive'])&&$_GET['inactive']=="1") ? 0 : 1,
   'inactive' => (isset($_GET['inactive'])&&$_GET['inactive']!="") ? $_GET['inactive'] : null,
+  'orderBy' => (isset($_GET['orderBy'])&&$_GET['orderBy']!="") ? $_GET['orderBy'] : null,
 
 
 );
 
-$quizzes = getMCQquizDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionId'], $userId, $get_selectors['active']);
+$quizzes = getMCQquizDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionId'], $userId, $get_selectors['active'], null, $get_selectors['orderBy']);
 
 include($path."/header_tailwind.php");
 
@@ -84,6 +85,12 @@ include($path."/header_tailwind.php");
         <label for="questionId_select">Question Id:</label>
         <input type="text" id="questionId_select" name="questionId" value="<?=$get_selectors['questionId']?>"</input>
 
+        <label for="orderByInput">Order By: </label>
+        <select name="orderBy" id="orderByInput">
+        <option value=""></option>
+          <option value="topic" <?=$get_selectors['orderBy'] == 'topic' ? 'selected' : ''?>>Topic</option>
+        </select>
+
         <input type="checkbox" name="inactive" value= "1" id="active_select" <?=($get_selectors['inactive']==1 ) ? "checked" : ""?>>
         <label for="active_select">Show Inactive</label>
 
@@ -95,6 +102,7 @@ include($path."/header_tailwind.php");
         //print_r($quizzes);
         print_r($_POST);
       }
+      print_r($_POST);
       ?>
       <table class="w-full table-fixed mb-2 border border-black">
         <tr class="sticky top-16 bg-white">
@@ -160,6 +168,7 @@ include($path."/header_tailwind.php");
               <td>
                 <p class="toggleClass_<?=$quiz['id']?> <?=($quiz['active']==0) ? "bg-pink-200" : ""?>"><?=($quiz['active']==1) ? "Active" : "Inactive"?></p>
                 <p class="toggleClass_<?=$quiz['id']?> <?=($quiz['topicQuiz']==0) ? "bg-sky-200" : ""?>"><?=($quiz['topicQuiz']==1) ? "Topic Quiz" : "Not Topic Quiz"?></p>
+                <p class="toggleClass_<?=$quiz['id']?> <?=($quiz['mcqHomePage']==1) ? "bg-pink-200" : ""?>"><?=($quiz['mcqHomePage']==1) ? "MCQ Home Page" : "Not MCQ Home Page"?></p>
                 <div class="toggleClass_<?=$quiz['id']?> hidden">
                   <input type="radio" id="active_select_<?=$quiz['id']?>" name="active" value="1" <?=($quiz['active']==1) ? "checked" : ""?>>
                   <label for="active_select_<?=$quiz['id']?>">Active</label><br>
@@ -169,7 +178,14 @@ include($path."/header_tailwind.php");
                   <input type="radio" id="topicQuiz_select_<?=$quiz['id']?>" name="topicQuiz" value="1" <?=($quiz['topicQuiz']==1) ? "checked" : ""?>>
                   <label for="topicQuiz_select_<?=$quiz['id']?>">Topic Quiz</label><br>
                   <input type="radio" id="notopicQuiz_select_<?=$quiz['id']?>" name="topicQuiz" value="0" <?=($quiz['topicQuiz']==0) ? "checked" : ""?>>
-                  <label for="notopicQuiz_select_<?=$quiz['id']?>">Not Topic Quiz</label>
+                  <label for="notopicQuiz_select_<?=$quiz['id']?>">Not Topic Quiz</label><br>
+
+                  <input type="radio" id="mcqHomePage_select_<?=$quiz['id']?>" name="mcqHomePage" value="1" <?=($quiz['mcqHomePage']==1) ? "checked" : ""?>>
+                  <label for="mcqHomePage_select_<?=$quiz['id']?>">MCQ Home Page</label><br>
+                  <input type="radio" id="nomcqHomePage_select_<?=$quiz['id']?>" name="mcqHomePage" value="0" <?=($quiz['mcqHomePage']==0) ? "checked" : ""?>>
+                  <label for="nomcqHomePage_select_<?=$quiz['id']?>">Not MCQ Home Page</label>
+
+
                 </div>
               </td>
               <td>
