@@ -1548,7 +1548,7 @@ function getNewsArticlesByTopic($topic) {
   return $articles;
 }
 
-function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null, $userCreate = null, $limit = null, $searchFor = null, $link = null, $bbcPerennial = null, $active = null, $withImages = null, $video = null, $audio = null) {
+function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null, $userCreate = null, $limit = null, $searchFor = null, $link = null, $bbcPerennial = null, $active = null, $withImages = null, $video = null, $audio = null, $hasQuestions = null) {
   global $conn;
   $articles = array();
 
@@ -1673,6 +1673,12 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
     $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
     $conjoiner = 1;
     $sql .= " audio = 1 ";
+  }
+
+  if($hasQuestions) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " questions_array <> '' ";
   }
 
   
