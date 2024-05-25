@@ -1887,6 +1887,161 @@ function updateNewsArticle($id, $headline = null, $datePublished = null, $explan
 
 }
 
+function insertNewsQuestion($question, $questionId, $answer, $answerId, $userId, $topic, $articleId) {
+  /*
+  Used in:
+  -newsQuestionsList.php
+  */
+
+  global $conn;
+  
+  $sql = "INSERT INTO news_questions
+          (question, model_answer, questionAssetId, answerAssetId, userCreate, topic, articleId)VALUES (?,?,?,?,?,?,?)";
+   $stmt = $conn->prepare($sql);
+   $stmt->bind_param("ssssisi", $question, $answer, $questionId, $answerId, $userId, $topic, $articleId);
+   $stmt->execute();
+   return "New record created successfully";
+
+
+
+}
+
+function updateNewsQuestion($id, $userId, $question = null, $questionId = null, $answer = null, $answerId = null, $topic = null, $articleId = null) {
+  /*
+  Function to update news_questions with new value for given id
+  Used in:
+  -newsQuestionsList.php
+  */
+
+  global $conn;
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+
+  $sql = "UPDATE news_questions
+          SET ";
+
+  if(!is_null($question)) {
+    $sql .= " question = ? ";
+    $params .= "s";
+    array_push($bindArray, $question);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($questionId)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " questionAssetId = ? ";
+    $params .= "s";
+    array_push($bindArray, $questionId);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($answer)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " model_answer = ? ";
+    $params .= "s";
+    array_push($bindArray, $answer);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($answerId)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " answerAssetId = ? ";
+    $params .= "s";
+    array_push($bindArray, $answerId);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($topic)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " topic = ? ";
+    $params .= "s";
+    array_push($bindArray, $topic);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($articleId)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " articleId = ? ";
+    $params .= "i";
+    array_push($bindArray, $articleId);
+    $conjoiner = 1;
+  }
+
+  $sql .= " WHERE id = ? ";
+  $params .= "i";
+  array_push($bindArray, $id);
+
+  //echo $sql;
+  //echo $params;
+  //print_r($bindArray);
+
+  $stmt=$conn->prepare($sql);
+  //Note that this only runs if $bindArray is greater than 1 because 'WHERE id = ?' is not dependent on input. Usually '  if(count($bindArray)>0) '
+  if(count($bindArray)>1) {
+    $stmt->bind_param($params, ...$bindArray);
+    //$stmt->execute();
+
+  }
+
+  //Check to see that the user has the right to update:
+
+  $newsQuestion = getNewsQuestion($id)[0];
+  $newsQuestionOwner = $newsQuestion['userCreate'];
+  
+
+  if($newsQuestionOwner == $userId) {
+    $stmt->execute();
+    return "Record ".$id." updated successfully";
+  } else {
+    return "Error: User does not have editing permissions.".$newsQuestionOwner." ".$userId;
+
+  }
+  
+  return $newsQuestion;
+
+
+
+  
+  
+
+}
+
+function getNewsQuestion($id=null) {
+  global $conn;
+  $results = array();
+
+  $bindArray = array();
+  $params = "";
+  $conjoiner = 0;
+
+  $sql = "SELECT * from news_questions ";
+
+  if(!is_null($id)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " id = ? ";
+    array_push($bindArray, $id);
+    $params .= "i";
+
+  }
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray) > 0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+
+  return $results;
+
+}
+
 function login_log($userid) {
   //Very simple: this function logs when a user has logged in. Used primarily wiht login.php. Also used in newuser upon first registration.
   global $conn;
@@ -3760,6 +3915,45 @@ function updateTopicsGeneralList($id, $code, $name, $subjectId, $levelsArray) {
     return "Record $id updated";
 }
 
+// simple topics:
+
+function getTopics($id=null) {
+  global $conn;
+  $results = array();
+
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+  
+  $sql = "SELECT *
+          FROM topics ";
+
+  if(!is_null($id)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " id = ?";
+    $params .= "i";
+    array_push($bindArray, $id);
+  }
+
+  $sql .= " ORDER BY topicCode ";
+
+  $stmt = $conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+
+  return $results;
+
+}
+
 
 
 function getExamBoards($id = null) {
@@ -5050,7 +5244,7 @@ function getPastPaperQuestionDetails($id=null, $topic=null, $questionCode=null, 
 
 }
 
-function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks, $caseId, $caseBool, $examPaperLink, $markSchemeLink, $examReportLink, $guide, $modelAnswer, $modelAnswerAssets) {
+function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks, $caseId, $caseBool, $examPaperLink, $markSchemeLink, $examReportLink, $guide, $modelAnswer, $modelAnswerAssets, $examReportText) {
   /**
    * Used to update pastpaper_question_bank
    * Used in:
@@ -5064,10 +5258,10 @@ function updatePastPaperQuestionDetails($id, $question, $answer, $questionAssets
 
    global $conn;
    $sql = " UPDATE pastpaper_question_bank
-            SET question = ?, answer = ?,  questionAssets = ?, markSchemeAssets = ?, examReportAssets =?, topic = ?, keywords = ?, explanation = ?, marks = ?, questionAssets_array = ?, markSchemeAssets_array = ?, examReportAssets_array = ?, caseId = ?, caseBool = ?, examPaperLink=?, markSchemeLink=?, examReportLink = ?, guide = ?, modelAnswer = ?, modelAnswerAssets =?, modelAnswerAssets_array = ?
+            SET question = ?, answer = ?,  questionAssets = ?, markSchemeAssets = ?, examReportAssets =?, topic = ?, keywords = ?, explanation = ?, marks = ?, questionAssets_array = ?, markSchemeAssets_array = ?, examReportAssets_array = ?, caseId = ?, caseBool = ?, examPaperLink=?, markSchemeLink=?, examReportLink = ?, guide = ?, modelAnswer = ?, modelAnswerAssets =?, modelAnswerAssets_array = ?, examReportText = ?
    WHERE id = ?";
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("ssssssssisssiisssssssi", $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks, $questionAssets_array, $markSchemeAssets_array, $examReportAssets_array, $caseId, $caseBool, $examPaperLink, $markSchemeLink, $examReportLink, $guide, $modelAnswer, $modelAnswerAssets, $modelAnswerAssets_array, $id);
+  $stmt->bind_param("ssssssssisssiissssssssi", $question, $answer, $questionAssets, $markSchemeAssets, $examReportAssets, $topic, $keywords, $explanation, $marks, $questionAssets_array, $markSchemeAssets_array, $examReportAssets_array, $caseId, $caseBool, $examPaperLink, $markSchemeLink, $examReportLink, $guide, $modelAnswer, $modelAnswerAssets, $modelAnswerAssets_array, $examReportText, $id);
   $stmt->execute();
 
 }
@@ -5255,4 +5449,187 @@ function shuffle_assoc($list) {
 }
 
 
+
+
+function insertExerciseList($name, $link, $topic) {
+  /*
+  This function inserts new Exercise titles into exercise_list
+  Used in:
+  -exercises/list_manager.php
+  */
+
+  global $conn;
+
+  $sql = "INSERT INTO exercise_list
+          (name, link, topic, topicOrder)
+          VALUES (?,?,?,?)";
+  $topicOrder = getExerciseListTopicCount($topic);
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("sssi", $name, $link, $topic, $topicOrder);
+  $stmt->execute();
+}
+
+function updateExerciseList($id, $name = null, $link = null, $topic = null, $active = null, $topicOrder = null) {
+
+  /*
+  This function updates exercise_list with values for given id.
+  Used in:
+  -list-manager.php
+  */
+  global $conn;
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+
+  $sql = "UPDATE exercise_list
+          SET ";
+
+  if(!is_null($name)) {
+    $sql .= " name =? ";
+    $params .= "s";
+    array_push($bindArray, $name);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($link)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " link = ? ";
+    $params .= "s";
+    array_push($bindArray, $link);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($topic)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " topic = ? ";
+    $params .= "s";
+    array_push($bindArray, $topic);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($active)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " active = ? ";
+    $params .= "i";
+    array_push($bindArray, $active);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($topicOrder)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " topicOrder = ? ";
+    $params .= "i";
+    array_push($bindArray, $topicOrder);
+    $conjoiner = 1;
+  }
+
+  $sql .= " WHERE id = ? ";
+  $params .= "i";
+  array_push($bindArray, $id);
+
+  //echo $sql;
+
+  $stmt=$conn->prepare($sql);
+  //Note that this only runs if $bindArray is greater than 1 because 'WHERE id = ?' is not dependent on input. Usually '  if(count($bindArray)>0) '
+  if(count($bindArray)>1) {
+    $stmt->bind_param($params, ...$bindArray);
+    $stmt->execute();
+  }
+
+  return $sql;
+
+
+
+
+}
+
+function getExerciseListTopicCount($topic) {
+  global $conn;
+  $results = array();
+  $sql = "SELECT COUNT(*)
+          FROM exercise_list
+          WHERE topic = ?";
+  $stmt = $conn->prepare($sql);
+  
+    $stmt->bind_param("s", $topic);
+  
+  $stmt->execute();
+
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    $row = $result->fetch_assoc();
+    return $row['COUNT(*)'];
+    
+  }
+
+
+  
+}
+
+
+function getExerciseList($id = null, $active = null, $topic=null) {
+  /*
+  This function returns Exercise titles from exercise_list
+  Used in:
+  -exercises/list_manager.php
+  */
+
+  global $conn;
+  $results = array();
+
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+  
+  $sql = "SELECT *
+          FROM exercise_list ";
+
+  if(!is_null($id)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " id = ?";
+    $params .= "i";
+    array_push($bindArray, $id);
+  }
+
+  if(!is_null($active)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " active = 1";
+    //$params .= "s";
+    //array_push($bindArray, $topic);
+  }
+
+
+
+
+  if(!is_null($topic)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " topic = ?";
+    $params .= "s";
+    array_push($bindArray, $topic);
+  }
+
+  $sql .= " ORDER BY topic, topicOrder ";
+
+  $stmt = $conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+
+  return $results;
+
+
+}
+
 ?>
+
+

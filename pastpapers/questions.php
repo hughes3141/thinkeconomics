@@ -57,7 +57,7 @@ if(str_contains($permissions, "main_admin")) {
 
 if($_SERVER['REQUEST_METHOD']==='POST') {}
 
-$excludedYear = 2023;
+$excludedYear = 2024;
 
 /*
 
@@ -259,7 +259,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   $topicName = $topicList[1];
                   if($topicCode != "") {
                     ?>
-                    <option value="<?=$topicCode?>" <?=($get_selectors[$controlName] == $topicList[0]) ? "selected" : ""?>><?=$topicName?></option>
+                    <option value="<?=$topicCode?>" <?=($get_selectors[$controlName] == $topicList[0]) ? "selected" : ""?>>(<?=$topicCode?>) <?=$topicName?></option>
                     <?php
                   }
 
@@ -411,14 +411,14 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   echo "</div>";
 
                 }
-                ?>
-                
-                <?php
+                  ?>
+                  
+                  <?php
                   $markSchemeAssets = explode(",",$question2['markSchemeAssets']);
                   //print_r($questionAssets);
 
                   //Define what types of assets will be shown:
-                  $showMarkScheme = $showGuide = $showModel = null;
+                  $showMarkScheme = $showGuide = $showModel = $showExamReportText = null;
                   if($question2['markSchemeAssets']!="") {
                     $showMarkScheme = 1;
                   }
@@ -427,6 +427,10 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   }
                   if($question2['modelAnswer']!="") {
                     $showModel = 1;
+                  }
+
+                  if($question2['examReportText'] != "") {
+                    $showExamReportText = 1;
                   }
                   ?>
 
@@ -447,6 +451,13 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                         ?>
                         <button class="border rounded bg-sky-300 border-black mb-1 px-1 " type="button" onclick="toggleHide(this, 'modelAnswerToggle_<?=$question2['id']?>', 'Show Model Answer', 'Hide Model Answer', 'block')">Show Model Answer</button>
                         <?php
+                      }
+
+                      if($showExamReportText) {
+                        ?>
+                        <button class="border rounded bg-sky-100 border-black mb-1 p-1" type="button" onclick="toggleHide(this, 'examReportTextToggle_<?=$question2['id']?>', 'Show Exam Report', 'Hide Exam Report', 'block')">Show Exam Report</button>
+                        <?php
+
                       }
                       ?>
                     </div>
@@ -489,7 +500,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                     if($showGuide) {
                       ?>
                       <div class="guideToggle_<?=$question2['id']?> hidden mb-2 border-2 border-sky-200 rounded px-1">
-                        <h3 class="text-lg bg-sky-200 -mx-1">Question Guidance</h3>
+                        <h3 class="text-lg bg-sky-200 -mx-1 mb-2">Question Guidance</h3>
                         <?php
                         $guide = $question2['guide'];
                         $guide = explode("\n", $guide);
@@ -525,26 +536,43 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                               <?php
                             }
                         }
-
-
                         ?>
                       </div>
                       <?php
+                    }
+
+                    if($showExamReportText) {
+                      ?>
+                      <div class="bg-sky-100 mb-2 px-1 border-2 border-sky-200 rounded examReportTextToggle_<?=$question2['id']?> hidden">
+                        <h3 class="text-lg bg-sky-200 -mx-1">Exam Report</h3>
+                        <?php
+                        $examReportText = $question2['examReportText'];
+                        $examReportText = explode("\n", $examReportText);
+                        foreach($examReportText as $p) {
+                          ?>
+                          <p class="mb=1"><?=$p?></p>
+                          <?php
+                        }
+                        ?>
+                        </div>
+                        <?php
+
                     }
                     ?>
                   </div>
                   <?php
                   //}
+                  if($question2['userCreate'] == $userId) {
+                    ?>
+                    <div>
+                      <a class="underline text-sky-700 hover:bg-pink-300" target="_blank" href="pastpapers_questions.php?id=<?=$question2['id']?>&topic=&questionNo=&examBoard=&year=&component=">Edit Details</a>
+                    </div>
+                    <?php
+                  }
 
                 }
 
-                if($question['userCreate'] == $userId) {
-                  ?>
-                  <div>
-                    <a class="underline text-sky-700 hover:bg-pink-300" target="_blank" href="pastpapers_questions.php?id=<?=$question['id']?>&topic=&questionNo=&examBoard=&year=&component=">Edit Details</a>
-                  </div>
-                  <?php
-                }
+
                 ?>
                 <div class="px-2 py-2 bg-pink-200 grid lg:grid-cols-2">       
                   <?php
@@ -559,6 +587,13 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                     ?>
                     <div class="text-center">
                       <a class ="hover:bg-sky-200 hover:text-pink-500 w-full block underline rounded" href="<?=$question['markSchemeLink']?>" target="_blank">Link to Mark Scheme</a>
+                    </div>
+                    <?php
+                  }
+                  if($question['examReportLink'] != "") {
+                    ?>
+                    <div class="text-center">
+                      <a class ="hover:bg-sky-200 hover:text-pink-500 w-full block underline rounded" href="<?=$question['examReportLink']?>" target="_blank">Link to Exam Report</a>
                     </div>
                     <?php
                   }
