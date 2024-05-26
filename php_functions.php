@@ -677,7 +677,7 @@ function getMCQquizDetails($id=null, $topic = null, $questionId = null, $userCre
   if(!is_null($orderBy)) {
     $sql .= " ORDER BY ";
     if($orderBy == "topic") {
-      $sql .= " topic ";
+      $sql .= " topic, mcqHomePage DESC, topicOrder ";
     }
   }
 
@@ -701,7 +701,7 @@ function getMCQquizDetails($id=null, $topic = null, $questionId = null, $userCre
 
 }
 
-function updateMCQquizDetails($id, $topic, $quizName, $notes, $description, $active, $topicQuiz, $mcqHomePage) {
+function updateMCQquizDetails($id, $topic, $quizName, $notes, $description, $active, $topicQuiz, $mcqHomePage, $topicOrder) {
   /*
   A function to update values in mcq_quizzes table
   Used in:
@@ -711,10 +711,10 @@ function updateMCQquizDetails($id, $topic, $quizName, $notes, $description, $act
   global $conn;
 
   $sql = " UPDATE mcq_quizzes 
-          SET topic = ?, quizName = ?, notes = ?, description = ?, active = ?, topicQuiz = ?, mcqHomePage = ?
+          SET topic = ?, quizName = ?, notes = ?, description = ?, active = ?, topicQuiz = ?, mcqHomePage = ?, topicOrder = ?
           WHERE id = ?";
           $stmt=$conn->prepare($sql);
-  $stmt->bind_param("ssssiiii", $topic, $quizName, $notes, $description, $active, $topicQuiz, $mcqHomePage, $id);
+  $stmt->bind_param("ssssiiiii", $topic, $quizName, $notes, $description, $active, $topicQuiz, $mcqHomePage, $topicOrder, $id);
   $stmt->execute();
 
 

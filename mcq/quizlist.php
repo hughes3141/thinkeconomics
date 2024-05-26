@@ -40,7 +40,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
 
   if(isset($_POST['submit']) && $_POST['submit'] == "Update") {
-    updateMCQquizDetails($_POST['id'],$_POST['topic'],$_POST['quizName'],$_POST['notes'],$_POST['description'],$_POST['active'], $_POST['topicQuiz'], $_POST['mcqHomePage']);
+    updateMCQquizDetails($_POST['id'],$_POST['topic'],$_POST['quizName'],$_POST['notes'],$_POST['description'],$_POST['active'], $_POST['topicQuiz'], $_POST['mcqHomePage'], $_POST['topicOrder']);
     $updateQuestionBool = 1;
     
   }
@@ -102,7 +102,7 @@ include($path."/header_tailwind.php");
         //print_r($quizzes);
         print_r($_POST);
       }
-      print_r($_POST);
+      //print_r($_POST);
       ?>
       <table class="w-full table-fixed mb-2 border border-black">
         <tr class="sticky top-16 bg-white">
@@ -170,6 +170,9 @@ include($path."/header_tailwind.php");
                 <p class="toggleClass_<?=$quiz['id']?> <?=($quiz['topicQuiz']==0) ? "bg-sky-200" : ""?>"><?=($quiz['topicQuiz']==1) ? "Topic Quiz" : "Not Topic Quiz"?></p>
                 <p class="toggleClass_<?=$quiz['id']?> <?=($quiz['mcqHomePage']==1) ? "bg-pink-200" : ""?>"><?=($quiz['mcqHomePage']==1) ? "MCQ Home Page" : "Not MCQ Home Page"?></p>
                 <div class="toggleClass_<?=$quiz['id']?> hidden">
+                  <label for="topicOrderSelect_<?=$quiz['id']?>">Topic Order: </label><br>
+                  <input id="topicOrderSelect_<?=$quiz['id']?>" class="w-full" name="topicOrder" value="<?=$quiz['topicOrder']?>"></input><br>
+
                   <input type="radio" id="active_select_<?=$quiz['id']?>" name="active" value="1" <?=($quiz['active']==1) ? "checked" : ""?>>
                   <label for="active_select_<?=$quiz['id']?>">Active</label><br>
                   <input type="radio" id="inactive_select_<?=$quiz['id']?>" name="active" value="0" <?=($quiz['active']==0) ? "checked" : ""?>>
