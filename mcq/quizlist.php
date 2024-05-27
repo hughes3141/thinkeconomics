@@ -174,7 +174,7 @@ include($path."/header_tailwind.php");
                 <p class="toggleClass_<?=$quiz['id']?> <?=($quiz['active']==0) ? "bg-pink-200" : ""?>"><?=($quiz['active']==1) ? "Active" : "Inactive"?></p>
                 <p class="toggleClass_<?=$quiz['id']?> <?=($quiz['topicQuiz']==0) ? "bg-sky-200" : ""?>"><?=($quiz['topicQuiz']==1) ? "Topic Quiz" : "Not Topic Quiz"?></p>
                 <p class="toggleClass_<?=$quiz['id']?> <?=($quiz['mcqHomePage']==1) ? "bg-pink-200" : ""?>"><?=($quiz['mcqHomePage']==1) ? "MCQ Home Page" : "Not MCQ Home Page"?></p>
-                <p class="toggleClass_<?=$quiz['id']?> <?=($quiz['pastPaper']==1) ? "bg-pink-300" : ""?>"><?=($quiz['pastPaper']==1) ? "Past Paper" : "Not MCQ Home Page"?></p>
+                <p class="toggleClass_<?=$quiz['id']?> <?=($quiz['pastPaper']==1) ? "bg-pink-300" : ""?>"><?=($quiz['pastPaper']==1) ? "Past Paper ".$quiz['ppExamBoard']." ".$quiz['ppYear'] : "Not MCQ Home Page"?></p>
 
                 <div class="toggleClass_<?=$quiz['id']?> hidden">
                   <label for="topicOrderSelect_<?=$quiz['id']?>">Topic Order: </label><br>
