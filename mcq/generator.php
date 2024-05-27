@@ -30,6 +30,12 @@ else {
 
 }
 
+$eduqasCodeShow = null;
+
+if(str_contains($permissions, "eduqas_code_show")) {
+  $eduqasCodeShow = 1;
+}
+
 
 
 
@@ -239,7 +245,7 @@ $controls = getMCQCategoryValues($get_selectors['topic'], $get_selectors['examBo
                   $topicName = $topicList[1];
                   if($topicCode != "") {
                     ?>
-                    <option value="<?=$topicCode?>" <?=($get_selectors[$controlName] == $topicList[0]) ? "selected" : ""?>>(<?=$topicCode?>) <?=$topicName?></option>
+                    <option value="<?=$topicCode?>" <?=($get_selectors[$controlName] == $topicList[0]) ? "selected" : ""?>><?=$eduqasCodeShow ? "(".$topicCode.") " : "" ?><?=$topicName?></option>
                     <?php
                   }
 
