@@ -159,11 +159,11 @@ include($path."/header_tailwind.php");
                 <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['notes']?></p>
                 <p  class="toggleClass_<?=$quiz['id']?>">Count: <?=count($questions)?></p>
                 
-                <textarea class="toggleClass_<?=$quiz['id']?> hidden" name="notes"><?=$quiz['notes']?></textarea>
+                <textarea class="toggleClass_<?=$quiz['id']?> hidden p-1" name="notes"><?=$quiz['notes']?></textarea>
               </td>
               <td>
                 <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['description']?></p>
-                <textarea class="toggleClass_<?=$quiz['id']?> hidden" name="description"><?=$quiz['description']?></textarea>
+                <textarea class="toggleClass_<?=$quiz['id']?> hidden p-1" name="description"><?=$quiz['description']?></textarea>
               </td>
               <td>
                 <p class="toggleClass_<?=$quiz['id']?> <?=($quiz['active']==0) ? "bg-pink-200" : ""?>"><?=($quiz['active']==1) ? "Active" : "Inactive"?></p>

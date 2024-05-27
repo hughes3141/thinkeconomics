@@ -225,19 +225,19 @@ $_GET controls:
         <form method = "post" action ="">
           <p class="mb-1 ">
             <label for="quizNameInput">Quiz Name:</label>
-            <input class="w-full" id = "quizNameInput" type="text" name="quizName">
+            <input class="w-full p-1" id = "quizNameInput" type="text" name="quizName">
           </p>
           <p class="mb-1 ">
             <label for="topicInput">Topic:</label>
-            <input class="w-full" id = "topicInput" type="text" name="topic">
+            <input class="w-full p-1" id = "topicInput" type="text" name="topic">
           </p>
           <p class="mb-1 ">
             <label for="descriptionInput">Description:</label>
-            <textarea class="w-full" id = "descriptionInput"  name="description"></textarea>
+            <textarea class="w-full p-1" id = "descriptionInput"  name="description"></textarea>
           </p>
           <p class="mb-1 ">
             <label for="notesInput">Notes:</label>
-            <textarea class="w-full" id = "notesInput"  name="notes"></textarea>
+            <textarea class="w-full p-1" id = "notesInput"  name="notes"></textarea>
           </p>
           <input type="hidden" id="questionsIdInput" name="questions_id">
           <p class="mb-1 ">

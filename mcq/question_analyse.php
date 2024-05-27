@@ -339,7 +339,16 @@ $_GET controls:
             }
             ?>
             <tr >
-              <td class="<?=$background?>"><a class="underline text-sky-700" target="blank" href="mcq_preview.php?questions=<?=$question['id']?>&answerShow=1"><?=$question['id']?></a></td>
+              <td class="<?=$background?>">
+              <?php
+              if(isset($_GET['test'])) {
+                print_r($question);
+              }
+              
+              ?>
+              <a class="underline text-sky-700" target="blank" href="mcq_preview.php?questions=<?=$question['id']?>&answerShow=1"><?=$question['id']?></a>
+              <span class="text-xs"><?=" ".$question['examBoard']." ".$question['year']?></span>
+              </td>
               <?php
               foreach($globalUsedQuizzes as $quiz) {
                 $usedInQuizIds = explode(",",$question['usedInQuizzes'])
