@@ -602,7 +602,7 @@ function getMCQquizzesByTopic($topic = null) {
 
 }
 
-function getMCQquizDetails($id=null, $topic = null, $questionId = null, $userCreate = null, $active = null, $topicQuiz = null) {
+function getMCQquizDetails($id=null, $topic = null, $questionId = null, $userCreate = null, $active = null, $topicQuiz = null, $orderBy = null, $mcqHomePage = null) {
   /*
   This function is updated from previous two, used to pull information for MCQ quizzes
   */
@@ -668,6 +668,23 @@ function getMCQquizDetails($id=null, $topic = null, $questionId = null, $userCre
     array_push($bindArray, $topicQuiz);
   }
 
+  if($mcqHomePage) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " mcqHomePage = 1 ";
+  }
+
+  if(!is_null($orderBy)) {
+    $sql .= " ORDER BY ";
+    if($orderBy == "topic") {
+      $sql .= " topic, mcqHomePage DESC, topicOrder ";
+    }
+  }
+
+  //echo $sql;
+  //echo $params;
+  //print_r($bindArray);
+
   $stmt = $conn->prepare($sql);
   if(count($bindArray)>0) {
     $stmt->bind_param($params, ...$bindArray);
@@ -684,7 +701,7 @@ function getMCQquizDetails($id=null, $topic = null, $questionId = null, $userCre
 
 }
 
-function updateMCQquizDetails($id, $topic, $quizName, $notes, $description, $active, $topicQuiz) {
+function updateMCQquizDetails($id, $topic, $quizName, $notes, $description, $active, $topicQuiz, $mcqHomePage, $topicOrder) {
   /*
   A function to update values in mcq_quizzes table
   Used in:
@@ -694,10 +711,10 @@ function updateMCQquizDetails($id, $topic, $quizName, $notes, $description, $act
   global $conn;
 
   $sql = " UPDATE mcq_quizzes 
-          SET topic = ?, quizName = ?, notes = ?, description = ?, active = ?, topicQuiz = ?
+          SET topic = ?, quizName = ?, notes = ?, description = ?, active = ?, topicQuiz = ?, mcqHomePage = ?, topicOrder = ?
           WHERE id = ?";
           $stmt=$conn->prepare($sql);
-  $stmt->bind_param("ssssiii", $topic, $quizName, $notes, $description, $active, $topicQuiz, $id);
+  $stmt->bind_param("ssssiiiii", $topic, $quizName, $notes, $description, $active, $topicQuiz, $mcqHomePage, $topicOrder, $id);
   $stmt->execute();
 
 
