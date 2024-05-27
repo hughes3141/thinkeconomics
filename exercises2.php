@@ -9,6 +9,7 @@ $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 include($path."/php_functions.php");
 
+$permissions = "";
 
 if (!isset($_SESSION['userid'])) {
   
@@ -24,6 +25,12 @@ else {
     header("location: /");
   }
 
+}
+
+$eduqasCodeShow = null;
+
+if(str_contains($permissions, "eduqas_code_show")) {
+  $eduqasCodeShow = 1;
 }
 
 $style_input = "";
@@ -105,18 +112,18 @@ include($path."/header_tailwind.php");
             if($topicFamily[0] == $usedBroadTopic) {
             ?>
             <div>
-              <h3 class="text-lg bg-pink-200 my-2 p-1 rounded sticky top-20 lg:top-28 z-10 "><?=$topicFamilyCodesConverter[$topicFamily]?></h3>
+              <h3 class="text-lg bg-pink-200 my-2 p-1 rounded sticky top-20 lg:top-28 z-10 "><?=$eduqasCodeShow ? $topicFamily." " : ""?><?=$topicFamilyCodesConverter[$topicFamily]?></h3>
               <?php
                 foreach($usedTopics as $topic) {
                   if(substr($topic,0,3) == $topicFamily) {
                     ?>
                     <div>
-                      <h3 class="text-base bg-pink-100 mt-2 p-1 rounded z-0"><?=$topicConverter[$topic]?></h3>
+                      <h3 class="text-base bg-pink-100 mt-2 p-1 rounded z-0"><?=$eduqasCodeShow ? $topic." " : ""?><?=$topicConverter[$topic]?></h3>
                       <?php
                         foreach($exercises as $exercise) {
                           if($exercise['topic'] == $topic) {
                             ?>
-                            <li class="hover:bg-sky-100 rounded pl-1"><a class ="block" href = "exercises/<?=$exercise['link']?>"><?=$exercise['name']?></a></li>
+                            <li class="hover:bg-sky-100 rounded pl-1"><a class ="block" href = "exercises/<?=$exercise['link']?>"><?=$eduqasCodeShow ? "" : ""?><?=$exercise['name']?></a></li>
                             <?php
                           }
                         }

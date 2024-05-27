@@ -104,6 +104,12 @@ include($path."/header_tailwind.php");
 
       ?>
     </div>
+    <div class="text-center">
+        <div class="text-center p-3">
+          <a class="font-mono bg-sky-200 inline-block p-3 underline text-sky-700 rounded border-2 border-pink-300 w-5/6 text-xl" href="/mcq/generator.php">MCQ Quiz Generator</a>
+          <p class="font-sans">☝️ Generate your own quiz by exam board and topic ☝️</p>
+        </div>
+      </div>
     <ul class="list-none">
       <?php
       foreach($usedBroadTopics as $usedBroadTopic) {
