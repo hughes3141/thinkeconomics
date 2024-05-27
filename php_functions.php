@@ -602,7 +602,7 @@ function getMCQquizzesByTopic($topic = null) {
 
 }
 
-function getMCQquizDetails($id=null, $topic = null, $questionId = null, $userCreate = null, $active = null, $topicQuiz = null, $orderBy = null, $mcqHomePage = null) {
+function getMCQquizDetails($id=null, $topic = null, $questionId = null, $userCreate = null, $active = null, $topicQuiz = null, $orderBy = null, $mcqHomePage = null, $pastPaper = null) {
   /*
   This function is updated from previous two, used to pull information for MCQ quizzes
   */
@@ -674,10 +674,21 @@ function getMCQquizDetails($id=null, $topic = null, $questionId = null, $userCre
     $sql .= " mcqHomePage = 1 ";
   }
 
+  if(!is_null($pastPaper)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " pastPaper = ? ";
+    $params .= "i";
+    array_push($bindArray, $pastPaper);
+  }
+
   if(!is_null($orderBy)) {
     $sql .= " ORDER BY ";
     if($orderBy == "topic") {
       $sql .= " topic, mcqHomePage DESC, topicOrder ";
+    }
+    if($orderBy == "examBoard") {
+      $sql .= " ppExamBoard, ppYear ";
     }
   }
 
@@ -701,7 +712,7 @@ function getMCQquizDetails($id=null, $topic = null, $questionId = null, $userCre
 
 }
 
-function updateMCQquizDetails($id, $topic, $quizName, $notes, $description, $active, $topicQuiz, $mcqHomePage, $topicOrder) {
+function updateMCQquizDetails($id, $topic, $quizName, $notes, $description, $active, $topicQuiz, $mcqHomePage, $topicOrder, $pastPaper, $ppYear, $ppExamBoard) {
   /*
   A function to update values in mcq_quizzes table
   Used in:
@@ -711,10 +722,10 @@ function updateMCQquizDetails($id, $topic, $quizName, $notes, $description, $act
   global $conn;
 
   $sql = " UPDATE mcq_quizzes 
-          SET topic = ?, quizName = ?, notes = ?, description = ?, active = ?, topicQuiz = ?, mcqHomePage = ?, topicOrder = ?
+          SET topic = ?, quizName = ?, notes = ?, description = ?, active = ?, topicQuiz = ?, mcqHomePage = ?, topicOrder = ?, pastPaper = ?, ppYear = ?, ppExamBoard = ?
           WHERE id = ?";
           $stmt=$conn->prepare($sql);
-  $stmt->bind_param("ssssiiiii", $topic, $quizName, $notes, $description, $active, $topicQuiz, $mcqHomePage, $topicOrder, $id);
+  $stmt->bind_param("ssssiiiiiisi", $topic, $quizName, $notes, $description, $active, $topicQuiz, $mcqHomePage, $topicOrder, $pastPaper, $ppYear, $ppExamBoard, $id);
   $stmt->execute();
 
 
