@@ -35,11 +35,20 @@ if(str_contains($permissions, "eduqas_code_show")) {
 
 $style_input = "";
 
-$exercises = getMCQquizDetails(null,null,null,null,1,null,'topic',1);
+$exercises = getMCQquizDetails(null,null,null,null,1,null,'topic',1,0);
 $topics = getTopics();
 $topicConverter = array();
 $topicFamilyCodes = array();
 $topicFamilyCodesConverter = array();
+
+$pastPapers = getMCQquizDetails(null,null,null,null,1,null,'examBoard',1,1);
+$examBoards = array('Eduqas' =>0, 'WJEC'=>0, 'AQA'=>0);
+
+foreach($pastPapers as $pastPaper) {
+  if($examBoards[$pastPaper['ppExamBoard']] == 0) {
+    $examBoards[$pastPaper['ppExamBoard']] = 1;
+  }
+}
 
 foreach($topics as $topic) {
   $topicConverter[$topic['topicCode']] = $topic['shortName'];
@@ -100,10 +109,19 @@ include($path."/header_tailwind.php");
       //print_r($topicFamilyCodesConverter);
       //print_r($usedTopicFamilies);
 
+      //print_r($pastPapers);
+      //print_r($examBoards);
+
       
 
       ?>
     </div>
+    <div class="text-center">
+        <div class="text-center p-3">
+          <a class="font-mono bg-sky-200 inline-block p-3 underline text-sky-700 rounded border-2 border-pink-300 w-5/6 text-xl" href="/mcq/generator.php">MCQ Quiz Generator</a>
+          <p class="font-sans">☝️ Generate your own quiz by exam board and topic ☝️</p>
+        </div>
+      </div>
     <ul class="list-none">
       <?php
       foreach($usedBroadTopics as $usedBroadTopic) {
@@ -150,6 +168,41 @@ include($path."/header_tailwind.php");
       }
       ?>
     </ul>
+    <?php
+    if(count($pastPapers)>0) {
+      ?>
+      <div>
+        <h2 class="text-xl bg-sky-200 my-2 p-1 rounded sticky top-12 lg:top-20 z-20">Past Papers</h2>
+        <ul class="list-non">
+          <?php
+          foreach($examBoards as $examBoard=>$usedExamBoard) {
+            if($usedExamBoard == 1){
+              ?>
+              <div>
+                <h3 class="text-lg bg-pink-200 my-2 p-1 rounded sticky top-20 lg:top-28 z-10 "><?=$examBoard?></h2>
+                <?php
+                  foreach($pastPapers as $pastPaper) {
+                    if($pastPaper['ppExamBoard'] == $examBoard) {
+                      ?>
+                      <li class="hover:bg-sky-100 rounded pl-1"><a class ="block" href = "mcq/mcq_exercise.php?quizid=<?=$pastPaper['id']?>"><?=$pastPaper['quizName']?></a></li>
+                      <?php
+                    }
+                  }
+                ?>
+                
+
+              </div>
+              <?php
+            }
+          }
+          ?>
+
+        </ul>
+
+      </div>
+      <?php
+    }
+    ?>
   </div>
 </div>
 
