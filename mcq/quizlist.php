@@ -107,7 +107,7 @@ include($path."/header_tailwind.php");
         //print_r($quizzes);
         print_r($_POST);
       }
-      print_r($_POST);
+      //print_r($_POST);
       ?>
       <table class="w-full table-fixed mb-2 border border-black">
         <tr class="sticky top-16 bg-white">
