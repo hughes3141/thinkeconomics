@@ -4824,6 +4824,35 @@ function getMCQquizResults2($userId = null, $assignId = null, $quizId = null) {
 
 }
 
+function updateMCQquizResults($id, $assignID_mod) {
+  //Used to update table results when studnet result instances are to be updated for another assignment, e.g. when switching classes. Updates the assignID_mod 
+
+  /*
+  Used in:
+  -assignswitch.php
+  */
+
+  global $conn;
+
+  $sql = "UPDATE responses
+          SET assignID_mod = ?
+          WHERE id = ?";
+
+  //echo $sql;
+  //var_dump($assignID_mod);
+  //var_dump($id);
+
+  
+  $stmt = $conn->prepare($sql);
+
+  $stmt->bind_param("ii", $assignID_mod, $id);
+  $stmt->execute();
+  return "Record ".$id." updated with assignId ".$assignID_mod;
+
+
+
+}
+
 function getMCQresponseByUsernameTimestart($userId, $timeStart) {
   //returns $responseId: the id of the entry in the response table
   global $conn;

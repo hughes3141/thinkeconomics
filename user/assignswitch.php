@@ -50,7 +50,17 @@ table {
 }
 ";
 
+$changedResponses = array();
+
 if($_SERVER['REQUEST_METHOD']=='POST') {
+  if($_POST['submit'] == "Assign Responses") {
+    $changedResponses = explode(",",$_POST['ids']);
+    foreach($changedResponses as $response) {
+      $message = updateMCQquizResults($response, $_POST['assignId_'.$response]);
+      array_push($changedResponses, $message);
+
+    }
+  }
 
 }
 
@@ -81,6 +91,7 @@ include($path."/header_tailwind.php");
   <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
     <?php
       print_r($_POST);
+      print_r($changedResponses);
 
     ?>
 
@@ -127,8 +138,11 @@ include($path."/header_tailwind.php");
 
     ?>
     <form method="post" action="">
-      <input name="count"><input name="ids">
-      <button class="border p-1 bg-pink-300 rounded">Submit</button>
+      <!--
+      <input name="count">
+      -->
+      <input name="ids" id="ids">
+      <input type="submit" name="submit" class="border p-1 bg-pink-300 rounded" value="Assign Responses"></button>
       <table>
         <tr>
           <th>Current Group Assignments</th>
@@ -156,10 +170,13 @@ include($path."/header_tailwind.php");
                       echo "id: ".$response['id']." dateTime: ".$response['datetime']." duration: ".$response['duration']." percent: ".$response['percentage']." assignId: ".$response['assignId']." <br>assignName: ".$response['assignName']."<br>";
                       ?>
                       
+                      <!--
                       <input type="number" name="responseId_<?=$response['id']?>" value="<?=$response['id']?>">
+                      -->
                       <input type="number" name="assignId_<?=$response['id']?>" value="<?=$assignment['id']?>">
                       <br>
-                      <input type="checkbox" name="active_<?=$response['id']?>" id="activeInput_<?=$response['id']?>" value="<?=$response['id']?>" class="activeInput" onchange="updateIdInput();">
+                      
+                      <input type="checkbox" name="" id="activeInput_<?=$response['id']?>" value="<?=$response['id']?>" class="activeInput" onchange="updateIdInput();">
 
 
                       <?php
@@ -206,6 +223,8 @@ include($path."/header_tailwind.php");
   function updateIdInput() {
     const activeInput = document.getElementsByClassName("activeInput");
     console.log(activeInput);
+    const ids = document.getElementById("ids");
+    console.log(ids);
     var activeInputIds = [];
     for (var x=0; x<activeInput.length; x++) {
       if(activeInput[x].checked == true) {
@@ -214,6 +233,8 @@ include($path."/header_tailwind.php");
       }
     }
     console.log(activeInputIds);
+
+    ids.value = activeInputIds.join();
   }
 
 </script>
