@@ -127,11 +127,12 @@ include($path."/header_tailwind.php");
 
     ?>
     <form method="post" action="">
+      <input name="count"><input name="ids">
       <button class="border p-1 bg-pink-300 rounded">Submit</button>
       <table>
         <tr>
           <th>Current Group Assignments</th>
-          <th>Similar from Other Groups</th>
+          <th>Responses to same quiz</th>
         </tr>
         <tr>
           <?php
@@ -139,36 +140,31 @@ include($path."/header_tailwind.php");
             ?>
             <tr>
               <td>
+                <?php
+                  //print_r($assignment);
+                ?>
                 <?="id: ".$assignment['id']." <br>assignName: ".$assignment['assignName']." <br>quizid: ".$assignment['quizid']." <br>groupid: ".$assignment['groupid']." <br>dateCreated: ".$assignment['dateCreated']." <br>dateDue: ".$assignment['dateDue']."<br>";?>
               </td>
               <td>
                 <?php
-                  $otherGroupAssignments = getAssignmentsArray($groupid_array_compare, $startDate, 1, $assignment['quizid']);
-                  //print_r($otherGroupAssignments);
-                  if(count($otherGroupAssignments)>0) {
-                    $otherGroupAssignment = $otherGroupAssignments[0];
-                    echo "id: ".$otherGroupAssignment['id']." <br>assignName: ".$otherGroupAssignment['assignName']." <br>quizid: ".$otherGroupAssignment['quizid']." <br>groupid: ".$otherGroupAssignment['groupid']." <br>dateCreated: ".$otherGroupAssignment['dateCreated']." <br>dateDue: ".$otherGroupAssignment['dateDue']."<br>";
-                    $otherGroupResponses = array();
-                    if($assignment['type'] == 'mcq') {
-                      $responses = getMCQquizResults2($student['id'],$otherGroupAssignment['id']);
-                      //print_r($responses);
-                      echo "Student Responses: ";
-                      echo count($responses)."<br>";
-                      foreach($responses as $response) {
-                        echo "id: ".$response['id']." dateTime: ".$response['datetime']." duration: ".$response['duration']."<br>";
-                        ?>
-                        
-                        <input type="number" name="responseId_<?=$response['id']?>" value="<?=$response['id']?>">
-                        <input type="number" name="responseId_<?=$response['id']?>" value="<?=$assignment['id']?>">
-
-
-                        <?php
-                      }
+                  if($assignment['type']=='mcq') {
+                    $responses = getMCQquizResults2($student['id'], null, $assignment['quizid']);
+                    //print_r($responses);
+                    echo "Student Responses: ";
+                    echo count($responses)."<br>";
+                    foreach($responses as $response) {
+                      echo "id: ".$response['id']." dateTime: ".$response['datetime']." duration: ".$response['duration']." percent: ".$response['percentage']." assignId: ".$response['assignId']." <br>assignName: ".$response['assignName']."<br>";
+                      ?>
                       
+                      <input type="number" name="responseId_<?=$response['id']?>" value="<?=$response['id']?>">
+                      <input type="number" name="assignId_<?=$response['id']?>" value="<?=$assignment['id']?>">
+                      <br>
+                      <input type="checkbox" name="active_<?=$response['id']?>" id="activeInput_<?=$response['id']?>" value="<?=$response['id']?>" class="activeInput" onchange="updateIdInput();">
+
+
+                      <?php
                     }
                   }
-
-                  
                 ?>
 
               </td>
@@ -201,28 +197,24 @@ include($path."/header_tailwind.php");
     </div>
 
 
-    
-        
-
-
-    <?php
-
-
-
-    
-
-
-
-    
-
-
-  
-  ?>
 
   </div>
 </div>
 
 <script>
+
+  function updateIdInput() {
+    const activeInput = document.getElementsByClassName("activeInput");
+    console.log(activeInput);
+    var activeInputIds = [];
+    for (var x=0; x<activeInput.length; x++) {
+      if(activeInput[x].checked == true) {
+        activeInputIds.push(activeInput[x].value)
+
+      }
+    }
+    console.log(activeInputIds);
+  }
 
 </script>
 
