@@ -57,8 +57,8 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
     if($_POST['ids'] != "") {
       $changedResponses = explode(",",$_POST['ids']);
       foreach($changedResponses as $response) {
-        //$message = updateMCQquizResults($response, $_POST['assignId_'.$response]);
-        //array_push($changedResponses, $message);
+        $message = updateMCQquizResults($response, $_POST['assignId_'.$response]);
+        array_push($changedResponses, $message);
 
       }
     }
@@ -124,12 +124,8 @@ include($path."/header_tailwind.php");
   <h1 class="font-mono text-2xl bg-pink-400 pl-1 mb-2">Assignment Switch</h1>
   <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
     <?php
-    if(!is_null($get_selectors['studentId'])){
-      ?>
-      <p>Student: <?=$studentInfo['name_first']?> <?=$studentInfo['name_last']?>
-      <?php
-    }
-      print_r($_POST);
+
+      //print_r($_POST);
       print_r($changedResponses);
       //print_r($studentInfo)
       //print_r($students);
@@ -176,53 +172,92 @@ include($path."/header_tailwind.php");
 
     </form>
     <form method="post" action="">
-      <!--
-      <input name="count">
-      -->
-      <input name="ids" id="ids">
+      <input name="ids" id="ids" type="hidden">
       <input type="checkbox" id="selectAllCheckBox" onchange="checkAllBoxes();">
       <label for="selectAllCheckBox">Select All</label>
-      <input id="inputFormSubmit" type="submit" name="submit" class="border p-1 bg-pink-300 rounded" value="Assign Responses" disabled>
-      <table>
+      <input id="inputFormSubmit" type="submit" name="submit" class="border p-1 bg-pink-300 rounded" value="Assign Responses" onclick="updateIdInput();" disabled>
+      <?php
+        if(!is_null($get_selectors['studentId'])){
+          ?>
+          <p>Student: <?=$studentInfo['name_first']?> <?=$studentInfo['name_last']?>
+          <?php
+        }
+      ?>
+      <table class="">
         <tr>
-          <th>Current Group Assignments</th>
-          <th>Responses to same quiz</th>
+          <th class="w-1/2">Current Group Assignments</th>
+          <th class="w-1/2">Responses to same quiz</th>
         </tr>
         <tr>
           <?php
           foreach ($assignments as $assignment) {
+            $groupName = getGroupInfoById($assignment['groupid'])['name'];
             ?>
             <tr>
               <td>
                 <?php
                   //print_r($assignment);
                 ?>
+                <p><?=$assignment['assignName']?></p>
+                <p>Group: <?=$groupName?></p>
+                <p><?=strtoupper($assignment['type'])?></p>
+                <p>Created: <?=date("d M y",strtotime($assignment['dateCreated']))?></p>
+                <p>Due: <?=date("d M y",strtotime($assignment['dateDue']))?></p>
+                <!--
                 <?="id: ".$assignment['id']." <br>assignName: ".$assignment['assignName']." <br>quizid: ".$assignment['quizid']." <br>groupid: ".$assignment['groupid']." <br>dateCreated: ".$assignment['dateCreated']." <br>dateDue: ".$assignment['dateDue']."<br>";?>
+              -->
               </td>
               <td>
                 <?php
                   if($assignment['type']=='mcq') {
                     $responses = getMCQquizResults2($studentInfo['id'], null, $assignment['quizid']);
                     //print_r($responses);
-                    echo "Student Responses: ";
-                    echo count($responses)."<br>";
-                    foreach($responses as $response) {
-                      if($response['assignId'] != $assignment['id']) {
-                        echo "id: ".$response['id']." dateTime: ".$response['datetime']." duration: ".$response['duration']." percent: ".$response['percentage']." assignId: ".$response['assignId']." <br>assignName: ".$response['assignName']."<br>";
-                        ?>
-                        
-                        <!--
-                        <input type="number" name="responseId_<?=$response['id']?>" value="<?=$response['id']?>">
-                        -->
-                        <input type="number" name="assignId_<?=$response['id']?>" value="<?=$assignment['id']?>">
-                        <br>
-                        
-                        <input type="checkbox" name="" id="activeInput_<?=$response['id']?>" value="<?=$response['id']?>" class="activeInput" onchange="updateIdInput();">
+                    ?>
+                    <p>Responses to Assigned Work: <?=count($responses)?></p>
+                    <div class="grid grid-cols-4">
+                      <?php
+                      foreach($responses as $response) {
+                        if($response['assignId'] != $assignment['id']) {
+                          $duration = $response['duration'];
+                          $seconds = $duration * 60;
+                          $minutes = floor($duration);
+                          $seconds -= $minutes * 60;
+                          $seconds = round($seconds,0);
+
+                          //echo "id: ".$response['id']." dateTime: ".$response['datetime']." duration: ".$response['duration']." percent: ".$response['percentage']." assignId: ".$response['assignId']." <br>assignName: ".$response['assignName']."<br>";
+
+                          ?>
+                          <div class="relative flex items-center">
+                            <input type="hidden" name="assignId_<?=$response['id']?>" value="<?=$assignment['id']?>">
+                            <input class="activeInput absolute right-2" type="checkbox" name="" id="activeInput_<?=$response['id']?>" value="<?=$response['id']?>" onchange="updateIdInput();">
+                          </div>
+                          <div class=" m-1 col-span-3 border-black rounded">                     
+                            <label for="activeInput_<?=$response['id']?>">
+                              <p><b><?=$response['percentage']?>&percnt;</b><br>
+                              <span class="">(<?=date("d.m.y",strtotime($response['datetime']))?>)</span><br>
+                              <!--<?=$response['datetime']?><br>-->
+                              <?=$minutes?>m:<?=$seconds?>s</p>
+                              <?php
+                              if($response['assignId']!="") {
+                                $responseAssign = getAssignmentData($response['assignId']);
+                                //print_r($responseAssign);
+                                ?>
+                                <p>Assignment Name: <?=$responseAssign['assignName']?></p>
+                                <p>Assignment Group: <?=getGroupInfoById($responseAssign['groupid'])['name']?></p>
+                                <?php
+                              }
+                              ?>
+                              
+                            </label>
+                          </div>
 
 
-                        <?php
+                          <?php
+                        }
                       }
-                    }
+                      ?>
+                    </div>
+                    <?php
                   }
                 ?>
 
@@ -265,9 +300,9 @@ include($path."/header_tailwind.php");
 
   function updateIdInput() {
     const activeInput = document.getElementsByClassName("activeInput");
-    console.log(activeInput);
+    //console.log(activeInput);
     const ids = document.getElementById("ids");
-    console.log(ids);
+    //console.log(ids);
     var activeInputIds = [];
     for (var x=0; x<activeInput.length; x++) {
       if(activeInput[x].checked == true) {

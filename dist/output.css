@@ -582,6 +582,14 @@ textarea, input, select {
   top: 4rem;
 }
 
+.right-0 {
+  right: 0px;
+}
+
+.right-2 {
+  right: 0.5rem;
+}
+
 .z-50 {
   z-index: 50;
 }
@@ -604,6 +612,10 @@ textarea, input, select {
 
 .col-span-2 {
   grid-column: span 2 / span 2;
+}
+
+.col-span-3 {
+  grid-column: span 3 / span 3;
 }
 
 .float-right {
@@ -671,6 +683,11 @@ textarea, input, select {
 .my-1 {
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
+}
+
+.my-auto {
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .mx-1 {
@@ -847,6 +864,10 @@ textarea, input, select {
   margin-left: 1rem;
 }
 
+.mr-0 {
+  margin-right: 0px;
+}
+
 .block {
   display: block;
 }
@@ -955,10 +976,6 @@ textarea, input, select {
   max-height: 100vh;
 }
 
-.max-h-28 {
-  max-height: 7rem;
-}
-
 .w-full {
   width: 100%;
 }
@@ -1011,6 +1028,10 @@ textarea, input, select {
   width: 20%;
 }
 
+.w-11\/12 {
+  width: 91.666667%;
+}
+
 .w-1\/2 {
   width: 50%;
 }
@@ -1037,10 +1058,6 @@ textarea, input, select {
 
 .w-10 {
   width: 2.5rem;
-}
-
-.w-11\/12 {
-  width: 91.666667%;
 }
 
 .max-w-5xl {
@@ -1135,16 +1152,16 @@ textarea, input, select {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .grid-cols-4 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-
-.grid-cols-3 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .flex-row {
@@ -2381,14 +2398,6 @@ textarea, input, select {
     margin-top: 8rem;
   }
 
-  .lg\:ml-5 {
-    margin-left: 1.25rem;
-  }
-
-  .lg\:ml-10 {
-    margin-left: 2.5rem;
-  }
-
   .lg\:inline-block {
     display: inline-block;
   }
@@ -2433,10 +2442,6 @@ textarea, input, select {
     width: 100%;
   }
 
-  .lg\:w-5\/6 {
-    width: 83.333333%;
-  }
-
   .lg\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2474,10 +2479,6 @@ textarea, input, select {
 
   .lg\:pt-32 {
     padding-top: 8rem;
-  }
-
-  .lg\:pt-0 {
-    padding-top: 0px;
   }
 
   .lg\:text-4xl {
