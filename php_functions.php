@@ -475,7 +475,7 @@ function getUpcomingAssignments($groupId) {
 }
 
 
-function getAssignmentsArray($groupIdArray, $startDate = null, $markBookShow = 1) {
+function getAssignmentsArray($groupIdArray, $startDate = null, $markBookShow = 1, $quizId = null) {
 
   /*
   This function generates an array of assigned work. Input is an array (in JSON form) of the groups that a studnet is listed in.
@@ -521,6 +521,14 @@ function getAssignmentsArray($groupIdArray, $startDate = null, $markBookShow = 1
   if($markBookShow == 1) {
     $sql .= " AND markBookShow = 1 ";
   }
+
+  if(!is_null($quizId)) {
+    $sql .= " AND quizid = ? ";
+    array_push($groupIdSql, $quizId);
+    $paramType .= "i";
+  }
+
+  
 
   $sql .= " ORDER BY dateDue ";
 
@@ -4736,7 +4744,7 @@ function getMCQquizResults($userId, $responseId = null) {
 
 }
 
-function getMCQquizResults2($userId = null, $assignId = null) {
+function getMCQquizResults2($userId = null, $assignId = null, $quizId = null) {
   /*
   Updated version of getMCQquizResults() to use up-to-date standard with bindArray etc.
 
@@ -4777,9 +4785,20 @@ function getMCQquizResults2($userId = null, $assignId = null) {
     $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
     $sql .= $conjoin;
     $sql .= $tableAlias;
-    $sql .= "assignId = ? ";
-    $params .= "i";
+    $sql .= "(assignId = ? OR assignId_mod = ?) ";
+    $params .= "ii";
     array_push($bindArray, $assignId);
+    array_push($bindArray, $assignId);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($quizId)) {
+    $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
+    $sql .= $conjoin;
+    //$sql .= $tableAlias;
+    $sql .= "q.id = ? ";
+    $params .= "i";
+    array_push($bindArray, $quizId);
     $conjoiner = 1;
   }
 
@@ -4801,6 +4820,35 @@ function getMCQquizResults2($userId = null, $assignId = null) {
   }
 
   return $results;
+
+
+}
+
+function updateMCQquizResults($id, $assignID_mod) {
+  //Used to update table results when studnet result instances are to be updated for another assignment, e.g. when switching classes. Updates the assignID_mod 
+
+  /*
+  Used in:
+  -assignswitch.php
+  */
+
+  global $conn;
+
+  $sql = "UPDATE responses
+          SET assignID_mod = ?
+          WHERE id = ?";
+
+  //echo $sql;
+  //var_dump($assignID_mod);
+  //var_dump($id);
+
+  
+  $stmt = $conn->prepare($sql);
+
+  $stmt->bind_param("ii", $assignID_mod, $id);
+  $stmt->execute();
+  return "Record ".$id." updated with assignId ".$assignID_mod;
+
 
 
 }
