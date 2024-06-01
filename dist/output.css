@@ -554,6 +554,10 @@ textarea, input, select {
   top: 5rem;
 }
 
+.right-2 {
+  right: 0.5rem;
+}
+
 .left-5 {
   left: 1.25rem;
 }
@@ -582,14 +586,6 @@ textarea, input, select {
   top: 4rem;
 }
 
-.right-0 {
-  right: 0px;
-}
-
-.right-2 {
-  right: 0.5rem;
-}
-
 .z-50 {
   z-index: 50;
 }
@@ -610,12 +606,12 @@ textarea, input, select {
   z-index: 0;
 }
 
-.col-span-2 {
-  grid-column: span 2 / span 2;
+.col-span-5 {
+  grid-column: span 5 / span 5;
 }
 
-.col-span-3 {
-  grid-column: span 3 / span 3;
+.col-span-2 {
+  grid-column: span 2 / span 2;
 }
 
 .float-right {
@@ -638,16 +634,16 @@ textarea, input, select {
   margin: 2rem;
 }
 
+.m-1 {
+  margin: 0.25rem;
+}
+
 .m-2 {
   margin: 0.5rem;
 }
 
 .m-3 {
   margin: 0.75rem;
-}
-
-.m-1 {
-  margin: 0.25rem;
 }
 
 .mx-auto {
@@ -683,11 +679,6 @@ textarea, input, select {
 .my-1 {
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
-}
-
-.my-auto {
-  margin-top: auto;
-  margin-bottom: auto;
 }
 
 .mx-1 {
@@ -864,10 +855,6 @@ textarea, input, select {
   margin-left: 1rem;
 }
 
-.mr-0 {
-  margin-right: 0px;
-}
-
 .block {
   display: block;
 }
@@ -1016,6 +1003,10 @@ textarea, input, select {
   width: 33.333333%;
 }
 
+.w-1\/2 {
+  width: 50%;
+}
+
 .w-auto {
   width: auto;
 }
@@ -1030,10 +1021,6 @@ textarea, input, select {
 
 .w-11\/12 {
   width: 91.666667%;
-}
-
-.w-1\/2 {
-  width: 50%;
 }
 
 .w-3\/4 {
@@ -1152,8 +1139,8 @@ textarea, input, select {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.grid-cols-3 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.grid-cols-6 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
 .grid-cols-4 {
@@ -1162,6 +1149,10 @@ textarea, input, select {
 
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .flex-row {
