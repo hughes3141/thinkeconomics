@@ -263,7 +263,7 @@ if(str_contains($permissions, "main_admin")) {
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
     <h1 class="font-mono text-2xl bg-pink-400 pl-1">MCQ Exercise</h1>
-    <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
+    <div class="container mx-auto lg:p-4 mt-2 bg-white text-black mb-5">
       <?php
        
         //print_r($assignInfo);
@@ -279,22 +279,22 @@ if(str_contains($permissions, "main_admin")) {
    
         
       ?>
-    <h1 class="font-mono text-xl bg-pink-300 pl-1"><?=$quizInfo['quizName']?></h1>
-    <p class="font-mono text-lg bg-pink-200 pl-1">Name: <?=$userInfo['name_first']?> <?=$userInfo['name_last']?></p>
-    <?php
-    if (str_contains($permissions, "teacher")) {
-      ?>
-      <form method="post" action = "/assign_create1.0.php" target="_blank">
-        <input type="hidden" name = "exerciseid" value ="<?=$quizInfo['id']?>"></input>
-        <input type="hidden" name = "type" value ="mcq"></input>
-        <input type="hidden" name = "groupId" value =""></input>
-        <p class="mt-2" >Teacher: <input class="bg-pink-200 p-1" type="submit" value="Create Assignment With this Exercise"></p>
-      </form>
+    <div class="p-1 lg:p-0">
+      <h1 class="font-mono text-xl bg-pink-300 pl-1 rounded mb-1"><?=$quizInfo['quizName']?></h1>
+      <p class=" bg-pink-200 pl-1 rounded mb-1">Name: <?=$userInfo['name_first']?> <?=$userInfo['name_last']?></p>
       <?php
-    }
-
-
-    ?>
+      if (str_contains($permissions, "teacher")) {
+        ?>
+        <form method="post" action = "/assign_create1.0.php" target="_blank">
+          <input type="hidden" name = "exerciseid" value ="<?=$quizInfo['id']?>"></input>
+          <input type="hidden" name = "type" value ="mcq"></input>
+          <input type="hidden" name = "groupId" value =""></input>
+          <p class="mt-2" ><input class="bg-sky-200 p-1" type="submit" value="Create Assignment With this Exercise"></p>
+        </form>
+        <?php
+      }
+      ?>
+    </div>
 
 	<form method  = "post" action ="" class="p-2">
     <div id="alertBox" class="fixed top-10 left-1 right-1 bottom-1 border-8 m-3 p-5 border-pink-400 rounded-xl bg-white z-10 hidden flex  justify-center ">
@@ -363,27 +363,27 @@ if(str_contains($permissions, "main_admin")) {
         ?>
         <div class=" font-sans" id="question_div_<?=$key?>">
           <h2>Question <?=$questionNo?>/<?=$quesitonsCount?></h2>
-          <p class="text-xs"><em id = "q4"><?=$questionInfo['No']?></em></p>
+          <p class="text-xs hidden"><em id = "q4"><?=$questionInfo['No']?></em></p>
 
           <div class="flex flex-row gap-x-2 font-mono text-xs md:text-base mt-2">
             <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 previous" value ="Previous Question" id="previous1" onclick="changeQuestion(this);" <?=($key == 0) ? "disabled" : ""?>>
             <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit1" onclick="submit2();">
             <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next1" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
           </div>
-          <div class="lg:w-3/4 mx-auto">
+          <div class=" mx-auto">
             <?php
             if($textOnly == 1) {
               ?>
               
-              <p class="my-3 mx-5 whitespace-pre-wrap"><?=$questionInfo['question']?></p>
+              <p class="my-3 mx-auto lg:w-3/4 whitespace-pre-wrap"><?=$questionInfo['question']?></p>
               <?php
             } else {
             ?>
-            <img src="<?=$img?>" class=" my-3" alt = "<?=$questionInfo['No']?>">
+            <img src="<?=$img?>" class=" my-3 mx-auto max-h-screen" alt = "<?=$questionInfo['No']?>">
             <?php
             }
             ?>
-            <div class="ml-5">
+            <div class="mx-auto <?=$textOnly == 1 ? "lg:w-3/4" : "w-11/12 " ?>">
               <?php
 
               if($randomOptionsOrder ==1 && $textOnly == 1 && $noRandom == 0) {
