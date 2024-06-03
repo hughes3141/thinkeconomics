@@ -558,7 +558,24 @@ textarea, input, select {
   right: 0.5rem;
 }
 
+.left-5 {
+  left: 1.25rem;
+}
 
+.top-2 {
+  top: 0.5rem;
+}
+
+.top-10 {
+  top: 2.5rem;
+}
+
+.left-1 {
+  left: 0.25rem;
+}
+
+.right-1 {
+  right: 0.25rem;
 }
 
 .bottom-1 {
@@ -569,6 +586,17 @@ textarea, input, select {
   top: 4rem;
 }
 
+.z-50 {
+  z-index: 50;
+}
+
+.z-10 {
+  z-index: 10;
+}
+
+.z-30 {
+  z-index: 30;
+}
 
 .z-20 {
   z-index: 20;
@@ -578,7 +606,8 @@ textarea, input, select {
   z-index: 0;
 }
 
-
+.col-span-5 {
+  grid-column: span 5 / span 5;
 }
 
 .col-span-2 {
@@ -622,7 +651,9 @@ textarea, input, select {
   margin-right: auto;
 }
 
-
+.my-4 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .my-6 {
@@ -635,7 +666,34 @@ textarea, input, select {
   margin-bottom: 0.5rem;
 }
 
+.my-0 {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
 
+.my-12 {
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+}
+
+.my-1 {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.mx-1 {
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+}
+
+.mx-3 {
+  margin-left: 0.75rem;
+  margin-right: 0.75rem;
+}
+
+.my-5 {
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
 }
 
 .-mx-1 {
@@ -643,12 +701,19 @@ textarea, input, select {
   margin-right: -0.25rem;
 }
 
-
+.-mx-2 {
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
 }
 
 .my-3 {
   margin-top: 0.75rem;
   margin-bottom: 0.75rem;
+}
+
+.mx-5 {
+  margin-left: 1.25rem;
+  margin-right: 1.25rem;
 }
 
 .mb-8 {
@@ -663,7 +728,8 @@ textarea, input, select {
   margin-bottom: 1rem;
 }
 
-
+.mb-3 {
+  margin-bottom: 0.75rem;
 }
 
 .mt-6 {
@@ -674,6 +740,12 @@ textarea, input, select {
   margin-bottom: 1.25rem;
 }
 
+.mt-auto {
+  margin-top: auto;
+}
+
+.mt-4 {
+  margin-top: 1rem;
 }
 
 .mb-12 {
@@ -684,7 +756,20 @@ textarea, input, select {
   margin-top: 0px;
 }
 
+.mt-2 {
+  margin-top: 0.5rem;
+}
 
+.mr-3 {
+  margin-right: 0.75rem;
+}
+
+.ml-1 {
+  margin-left: 0.25rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
 }
 
 .mt-20 {
@@ -695,14 +780,28 @@ textarea, input, select {
   margin-left: 0.5rem;
 }
 
+.mr-2 {
+  margin-right: 0.5rem;
+}
 
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.mr-4 {
+  margin-right: 1rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
 }
 
 .ml-3 {
   margin-left: 0.75rem;
 }
 
-
+.mb-1\.5 {
+  margin-bottom: 0.375rem;
 }
 
 .mb-1 {
@@ -737,7 +836,8 @@ textarea, input, select {
   margin-right: -1rem;
 }
 
-
+.-mt-1 {
+  margin-top: -0.25rem;
 }
 
 .-mt-2 {
@@ -752,11 +852,8 @@ textarea, input, select {
   margin-top: 1.25rem;
 }
 
-
-}
-
-.ml-4 {
-  margin-left: 1rem;
+.-ml-9 {
+  margin-left: -2.25rem;
 }
 
 .ml-4 {
@@ -802,7 +899,6 @@ textarea, input, select {
 .hidden {
   display: none;
 }
-
 
 .h-1 {
   height: 0.25rem;
@@ -856,7 +952,12 @@ textarea, input, select {
   height: 83.333333%;
 }
 
+.h-44 {
+  height: 11rem;
+}
 
+.h-36 {
+  height: 9rem;
 }
 
 .max-h-80 {
@@ -871,7 +972,8 @@ textarea, input, select {
   width: 100%;
 }
 
-
+.w-64 {
+  width: 16rem;
 }
 
 .w-5\/6 {
@@ -1116,21 +1218,20 @@ textarea, input, select {
 
 .gap-4 {
   gap: 1rem;
-
 }
 
 .gap-3 {
   gap: 0.75rem;
 }
 
-.gap-x-2 {
-  -moz-column-gap: 0.5rem;
-       column-gap: 0.5rem;
-}
-
 .gap-x-1 {
   -moz-column-gap: 0.25rem;
        column-gap: 0.25rem;
+}
+
+.gap-x-2 {
+  -moz-column-gap: 0.5rem;
+       column-gap: 0.5rem;
 }
 
 .space-x-2 > :not([hidden]) ~ :not([hidden]) {
@@ -1188,11 +1289,16 @@ textarea, input, select {
   overflow-wrap: break-word;
 }
 
-
+.rounded-full {
+  border-radius: 9999px;
 }
 
-.rounded {
-  border-radius: 0.25rem;
+.rounded-none {
+  border-radius: 0px;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
 }
 
 .rounded {
@@ -1201,10 +1307,6 @@ textarea, input, select {
 
 .rounded-xl {
   border-radius: 0.75rem;
-}
-
-.rounded-lg {
-  border-radius: 0.5rem;
 }
 
 .rounded-t {
@@ -1246,13 +1348,16 @@ textarea, input, select {
   border-width: 1px;
 }
 
+.border-2 {
+  border-width: 2px;
 }
 
 .border-4 {
   border-width: 4px;
 }
 
-
+.border-8 {
+  border-width: 8px;
 }
 
 .border-b {
@@ -1283,11 +1388,18 @@ textarea, input, select {
   border-bottom-width: 2px;
 }
 
+.border-transparent {
+  border-color: transparent;
 }
 
-.border-pink-300 {
+.border-gray-100 {
   --tw-border-opacity: 1;
-  border-color: rgb(249 168 212 / var(--tw-border-opacity));
+  border-color: rgb(243 244 246 / var(--tw-border-opacity));
+}
+
+.border-gray-200 {
+  --tw-border-opacity: 1;
+  border-color: rgb(229 231 235 / var(--tw-border-opacity));
 }
 
 .border-black {
@@ -1295,6 +1407,9 @@ textarea, input, select {
   border-color: rgb(0 0 0 / var(--tw-border-opacity));
 }
 
+.border-pink-300 {
+  --tw-border-opacity: 1;
+  border-color: rgb(249 168 212 / var(--tw-border-opacity));
 }
 
 .border-slate-400 {
@@ -1332,7 +1447,14 @@ textarea, input, select {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
+.bg-gray-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
+}
 
+.bg-sky-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(125 211 252 / var(--tw-bg-opacity));
 }
 
 .bg-pink-300 {
@@ -1340,6 +1462,14 @@ textarea, input, select {
   background-color: rgb(249 168 212 / var(--tw-bg-opacity));
 }
 
+.bg-pink-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(251 207 232 / var(--tw-bg-opacity));
+}
+
+.bg-pink-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(244 114 182 / var(--tw-bg-opacity));
 }
 
 .bg-sky-100 {
@@ -1381,18 +1511,16 @@ textarea, input, select {
      object-position: center;
 }
 
-
+.p-6 {
+  padding: 1.5rem;
 }
 
 .p-8 {
   padding: 2rem;
 }
 
-
-}
-
-.p-3 {
-  padding: 0.75rem;
+.p-1 {
+  padding: 0.25rem;
 }
 
 .p-4 {
@@ -1415,7 +1543,8 @@ textarea, input, select {
   padding: 0.375rem;
 }
 
-
+.p-5 {
+  padding: 1.25rem;
 }
 
 .px-3 {
@@ -1453,20 +1582,44 @@ textarea, input, select {
   padding-right: 1.5rem;
 }
 
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
 
+.py-2 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.px-0 {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.px-1 {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+.py-2\.5 {
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
 }
 
 .py-5 {
   padding-top: 1.25rem;
   padding-bottom: 1.25rem;
-}
-
-.pb-4 {
-  padding-bottom: 1rem;
-}
-
-.pl-4 {
-  padding-left: 1rem;
 }
 
 .pt-24 {
@@ -1513,6 +1666,9 @@ textarea, input, select {
   padding-top: 0.25rem;
 }
 
+.pl-2 {
+  padding-left: 0.5rem;
+}
 
 .pr-3 {
   padding-right: 0.75rem;
@@ -1530,6 +1686,17 @@ textarea, input, select {
   padding-top: 0.5rem;
 }
 
+.pb-3 {
+  padding-bottom: 0.75rem;
+}
+
+.pl-11 {
+  padding-left: 2.75rem;
+}
+
+.pb-2 {
+  padding-bottom: 0.5rem;
+}
 
 .text-left {
   text-align: left;
@@ -1555,7 +1722,6 @@ textarea, input, select {
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-
 .text-5xl {
   font-size: 3rem;
   line-height: 1;
@@ -1571,6 +1737,20 @@ textarea, input, select {
   line-height: 2.25rem;
 }
 
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.text-base {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
 
 .text-sm {
   font-size: 0.875rem;
@@ -1628,10 +1808,14 @@ textarea, input, select {
   letter-spacing: 0em;
 }
 
+.text-gray-800 {
   --tw-text-opacity: 1;
   color: rgb(31 41 55 / var(--tw-text-opacity));
 }
 
+.text-gray-600 {
+  --tw-text-opacity: 1;
+  color: rgb(75 85 99 / var(--tw-text-opacity));
 }
 
 .text-white {
@@ -1639,6 +1823,19 @@ textarea, input, select {
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
+.text-pink-800 {
+  --tw-text-opacity: 1;
+  color: rgb(157 23 77 / var(--tw-text-opacity));
+}
+
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
+}
+
+.text-gray-700 {
+  --tw-text-opacity: 1;
+  color: rgb(55 65 81 / var(--tw-text-opacity));
 }
 
 .text-gray-500 {
@@ -1803,7 +2000,17 @@ textarea, input, select {
   border-color: rgb(125 211 252 / var(--tw-border-opacity));
 }
 
+.hover\:bg-sky-100:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(224 242 254 / var(--tw-bg-opacity));
+}
 
+.hover\:bg-gray-100:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-sky-200:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(186 230 253 / var(--tw-bg-opacity));
 }
@@ -1813,10 +2020,15 @@ textarea, input, select {
   background-color: rgb(56 189 248 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-pink-200:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(251 207 232 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-sky-300:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(125 211 252 / var(--tw-bg-opacity));
+}
 
 .hover\:bg-pink-300:hover {
   --tw-bg-opacity: 1;
@@ -1828,7 +2040,7 @@ textarea, input, select {
   background-color: rgb(244 114 182 / var(--tw-bg-opacity));
 }
 
-
+.hover\:text-gray-900:hover {
   --tw-text-opacity: 1;
   color: rgb(17 24 39 / var(--tw-text-opacity));
 }
@@ -2022,13 +2234,16 @@ textarea, input, select {
     float: right;
   }
 
-
   .md\:mb-6 {
     margin-bottom: 1.5rem;
   }
 
   .md\:mr-0 {
     margin-right: 0px;
+  }
+
+  .md\:ml-9 {
+    margin-left: 2.25rem;
   }
 
   .md\:ml-1 {
