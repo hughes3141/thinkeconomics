@@ -93,10 +93,11 @@ $get_selectors = array(
   'bbcPerennial' => (isset($_GET['bbcPerennial']) ) ? 1 : null,
   'withImages' => (isset($_GET['withImages']) ) ? 1 : null,
   'video' => (isset($_GET['video'])) ? 1 : null,
-  'audio' => (isset($_GET['audio'])) ? 1 : null
+  'audio' => (isset($_GET['audio'])) ? 1 : null,
+  'hasQuestions' => (isset($_GET['hasQuestions'])) ? 1 : null
 );
 
-$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['startDate'], $get_selectors['endDate'], $get_selectors['orderBy'], null, $get_selectors['limit'], $get_selectors['searchFor'], $get_selectors['link'], $get_selectors['bbcPerennial'], 1, $get_selectors['withImages'], $get_selectors['video'], $get_selectors['audio']);
+$newsArticles = getNewsArticles($get_selectors['id'], $get_selectors['keyword'], $get_selectors['topic'], $get_selectors['startDate'], $get_selectors['endDate'], $get_selectors['orderBy'], null, $get_selectors['limit'], $get_selectors['searchFor'], $get_selectors['link'], $get_selectors['bbcPerennial'], 1, $get_selectors['withImages'], $get_selectors['video'], $get_selectors['audio'], $get_selectors['hasQuestions']);
 ?>
 
 <?php include "header_tailwind.php"; 
@@ -204,6 +205,9 @@ GET variables:
                 </div>
                 <div class="">
                   <input type="checkbox" name="audio" id="audioInput" value="1" <?=(!is_null($get_selectors['audio'])) ? "checked" : ""?>><label for="audioInput"> Articles with Audio</label>
+                </div>
+                <div class="">
+                  <input type="checkbox" name="hasQuestions" id="hasQuestionsInput" value="1" <?=(!is_null($get_selectors['hasQuestions'])) ? "checked" : ""?>><label for="hasQuestionsInput"> Articles with Questions</label>
                 </div>
 
               </div>
@@ -319,6 +323,14 @@ GET variables:
                 ?>
 
             </div>
+            <?php
+          }
+
+          if($row['questions_array'] != "") {
+            ?>
+            <p>
+              <a class="underline text-sky-700" target="_blank" href="news/questions.php?articleId=<?=$row['id']?>">Summary Questions</a>
+            </p>
             <?php
           }
 
