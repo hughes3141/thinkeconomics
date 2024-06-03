@@ -35,11 +35,20 @@ if(str_contains($permissions, "eduqas_code_show")) {
 
 $style_input = "";
 
-$exercises = getExerciseList(null, 1);
+$exercises = getMCQquizDetails(null,null,null,null,1,null,'topic',1,0);
 $topics = getTopics();
 $topicConverter = array();
 $topicFamilyCodes = array();
 $topicFamilyCodesConverter = array();
+
+$pastPapers = getMCQquizDetails(null,null,null,null,1,null,'examBoard',1,1);
+$examBoards = array('Eduqas' =>0, 'WJEC'=>0, 'AQA'=>0);
+
+foreach($pastPapers as $pastPaper) {
+  if($examBoards[$pastPaper['ppExamBoard']] == 0) {
+    $examBoards[$pastPaper['ppExamBoard']] = 1;
+  }
+}
 
 foreach($topics as $topic) {
   $topicConverter[$topic['topicCode']] = $topic['shortName'];
@@ -71,7 +80,9 @@ foreach($exercises as $exercise) {
 
 $usedTopics = array();
 foreach($exercises as $exercise) {
-  $topic = $exercise['topic'];
+  $topicsList = explode(",",$exercise['topic']);
+  //print_r($topicsList);
+  $topic = $topicsList[0];
   if(!in_array($topic, $usedTopics)) {
     array_push($usedTopics, $topic);
   }
@@ -85,22 +96,32 @@ include($path."/header_tailwind.php");
 ?>
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
-  <h1 class="font-mono text-2xl bg-pink-400 pl-1">Exercises</h1>
+  <h1 class="font-mono text-2xl bg-pink-400 pl-1">Multiple Choice Questions</h1>
   <div class="container mx-auto p-4 mt-2 bg-white text-black mb-5">
     <div>
       <?php
-      /*
-      print_r($exercises);
-      print_r($broadTopics);
-      print_r($usedBroadTopics);
-      print_r($usedTopics);
-      print_r($topicConverter);
-      print_r($topicFamilyCodesConverter);
-      print_r($usedTopicFamilies);
-      */
+      
+      //print_r($exercises);
+      //print_r($broadTopics);
+      //print_r($usedBroadTopics);
+      //print_r($usedTopics);
+      //print_r($topicConverter);
+      //print_r($topicFamilyCodesConverter);
+      //print_r($usedTopicFamilies);
+
+      //print_r($pastPapers);
+      //print_r($examBoards);
+
+      
 
       ?>
     </div>
+    <div class="text-center">
+        <div class="text-center p-3">
+          <a class="font-mono bg-sky-200 inline-block p-3 underline text-sky-700 rounded border-2 border-pink-300 w-5/6 text-xl" href="/mcq/generator.php">MCQ Quiz Generator</a>
+          <p class="font-sans">☝️ Generate your own quiz by exam board and topic ☝️</p>
+        </div>
+      </div>
     <ul class="list-none">
       <?php
       foreach($usedBroadTopics as $usedBroadTopic) {
@@ -121,9 +142,12 @@ include($path."/header_tailwind.php");
                       <h3 class="text-base bg-pink-100 mt-2 p-1 rounded z-0"><?=$eduqasCodeShow ? $topic." " : ""?><?=$topicConverter[$topic]?></h3>
                       <?php
                         foreach($exercises as $exercise) {
-                          if($exercise['topic'] == $topic) {
+                          $topicsList = explode(",",$exercise['topic']);
+                          //print_r($topicsList);
+                          $topic0 = $topicsList[0];
+                          if($topic0 == $topic) {
                             ?>
-                            <li class="hover:bg-sky-100 rounded pl-1"><a class ="block" href = "exercises/<?=$exercise['link']?>"><?=$eduqasCodeShow ? "" : ""?><?=$exercise['name']?></a></li>
+                            <li class="hover:bg-sky-100 rounded pl-1"><a class ="block" href = "mcq/mcq_exercise.php?quizid=<?=$exercise['id']?>"><?=$eduqasCodeShow ? "" : ""?><?=$exercise['quizName']?></a></li>
                             <?php
                           }
                         }
@@ -144,6 +168,41 @@ include($path."/header_tailwind.php");
       }
       ?>
     </ul>
+    <?php
+    if(count($pastPapers)>0) {
+      ?>
+      <div>
+        <h2 class="text-xl bg-sky-200 my-2 p-1 rounded sticky top-12 lg:top-20 z-20">Past Papers</h2>
+        <ul class="list-non">
+          <?php
+          foreach($examBoards as $examBoard=>$usedExamBoard) {
+            if($usedExamBoard == 1){
+              ?>
+              <div>
+                <h3 class="text-lg bg-pink-200 my-2 p-1 rounded sticky top-20 lg:top-28 z-10 "><?=$examBoard?></h2>
+                <?php
+                  foreach($pastPapers as $pastPaper) {
+                    if($pastPaper['ppExamBoard'] == $examBoard) {
+                      ?>
+                      <li class="hover:bg-sky-100 rounded pl-1"><a class ="block" href = "mcq/mcq_exercise.php?quizid=<?=$pastPaper['id']?>"><?=$pastPaper['quizName']?></a></li>
+                      <?php
+                    }
+                  }
+                ?>
+                
+
+              </div>
+              <?php
+            }
+          }
+          ?>
+
+        </ul>
+
+      </div>
+      <?php
+    }
+    ?>
   </div>
 </div>
 

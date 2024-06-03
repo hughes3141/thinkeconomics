@@ -254,6 +254,7 @@ include "../header_tailwind.php";
                 <p class="ml-2 font-bold">New resources</p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../assign_create1.0.php">Assignment Create and List</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../user/user_work_review.php">User Work Review (dev)</a></p>
+                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../user/assignswitch.php">Assignment Switcher</a></p>
 
               <h3 class="font-mono text-md bg-pink-100 pl-1">Multiple Choice Questions</h3>
                 <p class="ml-2 font-bold hidden">Old resources</p>
