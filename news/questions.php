@@ -45,6 +45,11 @@ $style_input = "";
 $get_selectors = array(
   'articleId' => (isset($_GET['articleId']) && $_GET['articleId'] != "") ? $_GET['articleId'] : null,
   'questionIds' => (isset($_GET['questionIds']) && $_GET['questionIds'] != "") ? $_GET['questionIds'] : null,
+  'noShort' => (isset($_GET['noShort'])) ? 1 : null,
+  'noLong' => (isset($_GET['noLong'])) ? 1 : null,
+  'noA' => (isset($_GET['noA'])) ? 1 : null,
+
+
   'topic' => (isset($_GET['topic']) && $_GET['topic'] != "") ? $_GET['topic'] : null,
   'keyword' => (isset($_GET['keyword']) && $_GET['keyword'] != "") ? $_GET['keyword'] : null,
   'startDate' => (isset($_GET['startDate']) && $_GET['startDate'] != "") ? $_GET['startDate'] : null,
@@ -128,6 +133,9 @@ if(str_contains($permissions, 'main_admin')) {
   Get variables:
   -articleId
   -questionsIds
+  -noShort => No short explanation shown
+  -noLong => No long explanation shown
+  -noA => No answer button shown
 
 -->
   <?php
@@ -188,7 +196,7 @@ if(str_contains($permissions, 'main_admin')) {
       }
 
 
-      if($article['explanation'] != "") {
+      if($article['explanation'] != "" && is_null($get_selectors['noShort'])) {
         ?>
         <div>
           <h3 class="md:w-1/3 py-1 rounded bg-pink-100 px-1 my-2">Explanation: </h3>
@@ -197,7 +205,7 @@ if(str_contains($permissions, 'main_admin')) {
         <?php
       }
 
-      if($article['explanation_long'] != "") {
+      if($article['explanation_long'] != "" && is_null($get_selectors['noLong'])) {
         ?>
         <div>
           <h3 class="md:w-1/3 py-1 rounded bg-pink-100 px-1 my-2">Long Explanation:</h3>
@@ -217,7 +225,7 @@ if(str_contains($permissions, 'main_admin')) {
                 <div class="pl-1">
                   <li class="whitespace-pre-wrap mb-1"><?=$question['question']?></li>
                   <?php
-                  if($question['model_answer'] != "") {
+                  if($question['model_answer'] != "" && is_null($get_selectors['noA'])) {
 
                   ?>
                   <button class="border border-black rounded bg-pink-200 px-1 mb-1" onclick="toggleHide(this, 'markSchemeToggle_<?=$question['id']?>', 'Show Answer', 'Hide Answer', 'block')">Show Answer</button>

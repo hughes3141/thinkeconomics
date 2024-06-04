@@ -64,6 +64,9 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
     $userid = $userId;
     $active = $_POST['active'];
 
+    $video = (isset($_POST['video']) ? 1 : 0);
+    $audio = (isset($_POST['audio']) ? 1 : 0);
+
     $previousLink = getNewsArticles(null, null, null, null, null, null, null, null, null, $hyperlink);
 
     //print_r($previousLink);
@@ -78,7 +81,9 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
 
     if($insertRecord == 1) {
-      $confirmArticleEntry = insertNewsArticle($headline, $hyperlink, $datePublished, $explanation, $explanation_long, $topic, $datetime, $keyWords, $userid, $active);
+      if(!isset($_GET['test'])) {
+        $confirmArticleEntry = insertNewsArticle($headline, $hyperlink, $datePublished, $explanation, $explanation_long, $topic, $datetime, $keyWords, $userid, $active, $video, $audio);
+      }
     }
   }
   if(isset($_POST['submit']) && $_POST['submit'] == "Click to Update") {
@@ -158,6 +163,12 @@ include($path."/header_tailwind.php");
         <div>
           <label for="keyWords">Key Words:</label><br>
           <input class="w-full" type ="text" name="keyWords" id ="keyWords"><br>
+        </div>
+        <div>
+          <input type="checkbox" id="videoInput" name="video" value="1">
+          <label for="videoInput">Video</label><br>
+          <input type="checkbox" id="audioInput" name="audio" value="1">
+          <label for="audioInput">Audio</label>
         </div>
         <div>        
           <input type="radio" id="active_yes" name="active" value="1" checked>
