@@ -711,11 +711,6 @@ textarea, input, select {
   margin-bottom: 0.75rem;
 }
 
-.mx-5 {
-  margin-left: 1.25rem;
-  margin-right: 1.25rem;
-}
-
 .mb-8 {
   margin-bottom: 2rem;
 }
@@ -940,10 +935,6 @@ textarea, input, select {
   height: 4rem;
 }
 
-.h-60 {
-  height: 15rem;
-}
-
 .h-screen {
   height: 100vh;
 }
@@ -958,6 +949,10 @@ textarea, input, select {
 
 .h-36 {
   height: 9rem;
+}
+
+.h-32 {
+  height: 8rem;
 }
 
 .max-h-80 {
