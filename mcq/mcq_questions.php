@@ -189,7 +189,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       }
       $optionsArray = json_encode($optionsArray);
       
-      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar'], $_POST['noRandom'], $_POST['question2']);
+      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar'], $_POST['noRandom'], $_POST['question2'], $_POST['midImgAssetId']);
       ?>
       <?php
     }
@@ -291,20 +291,19 @@ $_GET controls:
     <h1 class="font-mono text-2xl bg-pink-400 pl-1">MCQ Questions</h1>
     <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
       <?php
+      
       if($_SERVER['REQUEST_METHOD']==='POST') {
         if(isset($_GET['test'])) {        
           print_r($_POST);
         }
         //print_r($questionsCollect);
         //echo "<br>"; print_r($optionsArray);
-
-
+        //print_r($_POST);
       }
       echo "<pre>";
       //print_r($questions);
       //print_r($examBoardCodeKey);
       echo "</pre>";
-      
 
       ?>
 
@@ -458,6 +457,10 @@ $_GET controls:
                         <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question']?></p>
                         <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question2']?></p>
                         <textarea  name="question" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question']?></textarea>
+
+                        <label class="toggleClass_<?=$question['id']?> hidden" for="<?='midImgAssetId_input_'.$question['id']?>">midImgAssetId: </label>
+                        <input id="<?='midImgAssetId_input_'.$question['id']?>" class="toggleClass_<?=$question['id']?> hidden" type="text" value="<?=$question['midImgAssetId']?>" name="midImgAssetId">
+
                         <textarea  name="question2" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question2']?></textarea>
                       </div>
                       <?php
@@ -467,7 +470,7 @@ $_GET controls:
                           $imgSource = "https://www.thinkeconomics.co.uk".$question['path'];
                         }
                         else {
-                          $imgSource = "question_img/".$question['No'].".JPG";
+                          $imgSource = "https://www.thinkeconomics.co.uk/mcq/question_img/".$question['No'].".JPG";
                         }
                       ?>
                       <p><img class = "w-3/4" src = "<?=$imgSource?>"></p>
