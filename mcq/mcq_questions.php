@@ -105,7 +105,8 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         'topics' => $_POST['topics_'.$x], 
         'keyWords' => $_POST['keyWords_'.$x],
         'active_entry' => $_POST['active_entry_'.$x],
-        'specPaper' => $specPaper
+        'specPaper' => $specPaper,
+        'questionText2' => $_POST['questionText2_'.$x]
       );
       array_push($questionsCollect, $newQuestion);
     }
@@ -164,7 +165,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
         //print_r($question);
 
-        insertMCQquestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['options'], $question['answer'], $question['assetId'], $question['topic'], $question['topics'], $question['keyWords']);
+        insertMCQquestion($userId, $questionCode, $question['questionNo'], $question['examBoard'], $question['level'], $question['unitNo'], $question['unitName'], $question['year'], $question['questionText'], $question['options'], $question['answer'], $question['assetId'], $question['topic'], $question['topics'], $question['keyWords'], $question['questionText2']);
 
         
         
@@ -188,7 +189,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       }
       $optionsArray = json_encode($optionsArray);
       
-      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar'], $_POST['noRandom']);
+      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar'], $_POST['noRandom'], $_POST['question2'], $_POST['midImgAssetId']);
       ?>
       <?php
     }
@@ -211,7 +212,9 @@ $get_selectors = array(
   'selectedQuestions' => (isset($_GET['selectedQuestions'])&&$_GET['selectedQuestions']!="") ? $_GET['selectedQuestions'] : null,
   'quizid' => (isset($_GET['quizid'])&&$_GET['quizid']!="") ? $_GET['quizid'] : null,
   'showQuizzes' => (isset($_GET['showQuizzes'])&&$_GET['showQuizzes']!="") ? $_GET['showQuizzes'] : null,
-  'excludedQuizzes' => (isset($_GET['excludedQuizzes'])&&$_GET['excludedQuizzes']!="") ? $_GET['excludedQuizzes'] : null
+  'excludedQuizzes' => (isset($_GET['excludedQuizzes'])&&$_GET['excludedQuizzes']!="") ? $_GET['excludedQuizzes'] : null,
+  'component' => (!empty($_GET['component'])) ? $_GET['component'] : null,
+  'unitName' => (!empty($_GET['unitName'])) ? $_GET['unitName'] : null
 
 
 
@@ -230,7 +233,7 @@ foreach ($get_selectors as $key => $element) {
 }
 
 if($run_questions == 1) {
-  $questions = getMCQquestionDetails2($get_selectors['id'], $get_selectors['questionNo'], $get_selectors['topic'], $get_selectors['keyword'], $get_selectors['search'], $get_selectors['orderby'], $get_selectors['examBoard'], $get_selectors['year']);
+  $questions = getMCQquestionDetails2($get_selectors['id'], $get_selectors['questionNo'], $get_selectors['topic'], $get_selectors['keyword'], $get_selectors['search'], $get_selectors['orderby'], $get_selectors['examBoard'], $get_selectors['year'], $get_selectors['component'], $get_selectors['unitName']);
   /*
   foreach($questions as $question) {
     array_push($originalQuestions, $question['id']);
@@ -288,20 +291,19 @@ $_GET controls:
     <h1 class="font-mono text-2xl bg-pink-400 pl-1">MCQ Questions</h1>
     <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
       <?php
+      
       if($_SERVER['REQUEST_METHOD']==='POST') {
         if(isset($_GET['test'])) {        
           print_r($_POST);
         }
         //print_r($questionsCollect);
         //echo "<br>"; print_r($optionsArray);
-
-
+        //print_r($_POST);
       }
       echo "<pre>";
       //print_r($questions);
       //print_r($examBoardCodeKey);
       echo "</pre>";
-      
 
       ?>
 
@@ -376,6 +378,9 @@ $_GET controls:
             <label for="component_select">Component:</label>
             <input type="text" id="component_select" name="component" value="<?=isset($_GET['examBoard']) ? $_GET['component'] : "" ?>"</input>
 
+            <label for="unitName_select">Unit Name:</label>
+            <input type="text" id="unitName_select" name="unitName" value="<?=$get_selectors['unitName']?>"</input>
+
             <label for="search_select">Search:</label>
             <input type="text" id="search_select" name="search" value="<?=isset($_GET['search']) ? $_GET['search'] : "" ?>"</input>
 
@@ -383,6 +388,7 @@ $_GET controls:
             <select id="orderby_select" name="orderby">
               <option value=""></option>
               <option value="question" <?=($get_selectors['orderby'] == "question") ? "selected" : ""?>>Question Text</option>
+              <option value="year" <?=($get_selectors['orderby'] == "year") ? "selected" : ""?>>Year</option>
             </select>
             <!--
             <label for="search_select">Search:</label>
@@ -422,6 +428,9 @@ $_GET controls:
       
       <div>
         <?php
+        if(isset($_GET['test'])) {
+          print_r($get_selectors);
+          }
         if(count($questions)>0) {
           ?>
           <table>
@@ -446,7 +455,13 @@ $_GET controls:
                       <p><?=$question['examBoard']?> <?=$question['unitName']?> <?=$question['qualLevel']?> <?=$question['series']?> <?=$question['year']?> Question <?=$question['questionNo']?></p>
                       <div>
                         <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question']?></p>
+                        <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question2']?></p>
                         <textarea  name="question" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question']?></textarea>
+
+                        <label class="toggleClass_<?=$question['id']?> hidden" for="<?='midImgAssetId_input_'.$question['id']?>">midImgAssetId: </label>
+                        <input id="<?='midImgAssetId_input_'.$question['id']?>" class="toggleClass_<?=$question['id']?> hidden" type="text" value="<?=$question['midImgAssetId']?>" name="midImgAssetId">
+
+                        <textarea  name="question2" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question2']?></textarea>
                       </div>
                       <?php
                         $imgSource = "";
@@ -455,7 +470,7 @@ $_GET controls:
                           $imgSource = "https://www.thinkeconomics.co.uk".$question['path'];
                         }
                         else {
-                          $imgSource = "question_img/".$question['No'].".JPG";
+                          $imgSource = "https://www.thinkeconomics.co.uk/mcq/question_img/".$question['No'].".JPG";
                         }
                       ?>
                       <p><img class = "w-3/4" src = "<?=$imgSource?>"></p>
@@ -791,7 +806,10 @@ function addInputRow() {
       case 1:
         var label = "questionText_"+(rowNo-1);
         //var value = "value = '"+(rowNo)+"'";
-        cells[i].innerHTML = "<textarea name="+label+" id= "+label+" "+"class='w-full rounded p-1 h-60'></textarea>";
+        cells[i].innerHTML = "<textarea name="+label+" id= "+label+" "+"class='w-full rounded p-1 h-32'></textarea>";
+        var label2 = "questionText2_"+(rowNo-1);
+        //var value = "value = '"+(rowNo)+"'";
+        cells[i].innerHTML += "<textarea name="+label2+" id= "+label2+" "+"class='w-full rounded p-1 h-32'></textarea>";
         break;
       case 2:
         /*

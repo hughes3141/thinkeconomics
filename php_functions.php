@@ -885,7 +885,7 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null, $k
 
 }
 
-function getMCQquestionDetails2($id = null, $questionNo = null, $topic = null, $keyword = null, $search = null, $orderBy = null, $examBoard = null, $year = null) {
+function getMCQquestionDetails2($id = null, $questionNo = null, $topic = null, $keyword = null, $search = null, $orderBy = null, $examBoard = null, $year = null, $component = null, $unitName = null) {
 
   /*
   This function will call details for individual MCQ questions.
@@ -903,7 +903,7 @@ function getMCQquestionDetails2($id = null, $questionNo = null, $topic = null, $
   $bindArray = array();
   $conjoiner = 0;
 
-  $sql ="SELECT q.id, q.No, q.Answer, q.Topic, q.topics, q.keywords, q.question, q.options, q.explanation, q.examBoard, q.component, q.assetId, q.unitName, q.qualLevel, q.textOnly, q.topicsAQA, q.topicsEdexcel, q.topicsOCR, q.topicsCIE, q.series, q.year, q.questionNo, q.noRandom, q.similar, q.relevant, a.path
+  $sql ="SELECT q.id, q.No, q.Answer, q.Topic, q.topics, q.keywords, q.question, q.question2, q.options, q.explanation, q.examBoard, q.component, q.assetId, q.unitName, q.qualLevel, q.textOnly, q.topicsAQA, q.topicsEdexcel, q.topicsOCR, q.topicsCIE, q.series, q.year, q.questionNo, q.noRandom, q.similar, q.relevant, q.midImgAssetId, a.path
         FROM question_bank_3 q
         LEFT JOIN upload_record a
           ON a.id = q.assetId";
@@ -931,7 +931,8 @@ function getMCQquestionDetails2($id = null, $questionNo = null, $topic = null, $
   if($topic) {
     $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
     $conjoiner = 1;
-    $sql .= " topic = ?";
+    $sql .= " topic LIKE ? ";
+    $topic = $topic."%";
     $params .= "s";
     array_push($bindArray, $topic);
   }
@@ -977,9 +978,30 @@ function getMCQquestionDetails2($id = null, $questionNo = null, $topic = null, $
     array_push($bindArray, $year);
   }
 
+  if(!is_null($component)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " component = ? ";
+    $params .= "i";
+    array_push($bindArray, $component);
+  }
+
+  if(!is_null($unitName)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " unitName LIKE ? ";
+    $unitName = $unitName."%";
+    $params .= "s";
+    array_push($bindArray, $unitName);
+  }
+
   if($orderBy) {
     if($orderBy == "question") {
       $sql .= " ORDER BY TRIM(question) ";
+    }
+
+    if($orderBy == "year") {
+      $sql .= " ORDER BY year ";
     }
   }
 
@@ -1021,7 +1043,7 @@ function updateMCQquestionExplanation($id, $explanation) {
 
 }
 
-function updateMCQquestion($id, $userId, $explanation, $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $relevant, $similar, $noRandom) {
+function updateMCQquestion($id, $userId, $explanation, $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $relevant, $similar, $noRandom, $question2, $midImgAssetId) {
   /*
   Used to update MCQ question information with id = $id
 
@@ -1062,15 +1084,15 @@ function updateMCQquestion($id, $userId, $explanation, $question, $optionsJSON, 
   
   //Update other values that are not explanation:
   $sql = "UPDATE question_bank_3
-          SET question = ?, options = ?, Topic = ?, topics = ?, Answer = ?, keywords = ?, textOnly = ?, relevant = ?, similar = ?, similar_array = ?, noRandom = ?
+          SET question = ?, options = ?, Topic = ?, topics = ?, Answer = ?, keywords = ?, textOnly = ?, relevant = ?, similar = ?, similar_array = ?, noRandom = ?, question2 = ?, midImgAssetId = ?
           WHERE id = ?";
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("ssssssiissii", $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $relevant, $similar, $similar_array, $noRandom, $id);
+  $stmt->bind_param("ssssssiississi", $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $relevant, $similar, $similar_array, $noRandom, $question2, $midImgAssetId, $id);
   $stmt->execute();
 
 }
 
-function insertMCQquestion($userCreate, $questionCode, $questionNo, $examBoard, $level, $unitNo, $unitName, $year, $questionText, $options, $answer, $assetId, $topic, $topics, $keyWords) {
+function insertMCQquestion($userCreate, $questionCode, $questionNo, $examBoard, $level, $unitNo, $unitName, $year, $questionText, $options, $answer, $assetId, $topic, $topics, $keyWords, $question2) {
   /*
   This function inserts a new MCQ question.
   Used in:
@@ -1083,10 +1105,10 @@ function insertMCQquestion($userCreate, $questionCode, $questionNo, $examBoard, 
   $active = 1;
 
   $sql = "INSERT INTO question_bank_3
-          (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, options, Answer, assetId, Topic, topics, keywords, dateCreate, active)
-          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+          (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, options, Answer, assetId, Topic, topics, keywords, dateCreate, active, question2)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("issssssssssissssi", $userCreate, $questionCode, $questionNo, $examBoard, $level, $unitNo, $unitName, $year, $questionText, $options, $answer, $assetId, $topic, $topics, $keyWords, $datetime, $active);
+  $stmt->bind_param("issssssssssissssis", $userCreate, $questionCode, $questionNo, $examBoard, $level, $unitNo, $unitName, $year, $questionText, $options, $answer, $assetId, $topic, $topics, $keyWords, $datetime, $active, $question2);
   $stmt->execute();
 
 
