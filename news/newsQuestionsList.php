@@ -181,16 +181,16 @@ include($path."/header_tailwind.php");
                   </div>
                   <div class="hidden toggleClass_<?=$question['id']?>">
                       <label for="questionInput_<?=$question['id']?>"></label>
-                      <textarea class="w-full" id="questionInput_<?=$question['id']?>" name="question"><?=$question['question']?></textarea>
+                      <textarea class="p-1 w-full" id="questionInput_<?=$question['id']?>" name="question"><?=$question['question']?></textarea>
 
                       <label for="quesetionAssetIdInput_<?=$question['id']?>"></label>
-                      <input type="text" id="quesetionAssetIdInput_<?=$question['id']?>" name="questionAssetId" value="<?=$question['questionAssetId']?>">
+                      <input class="px-1" type="text" id="quesetionAssetIdInput_<?=$question['id']?>" name="questionAssetId" value="<?=$question['questionAssetId']?>">
 
                       <label for="topicInput_<?=$question['id']?>"></label>
-                      <input type="text" id="topicInput_<?=$question['id']?>" name="topic" value="<?=$question['topic']?>">
+                      <input class="px-1" type="text" id="topicInput_<?=$question['id']?>" name="topic" value="<?=$question['topic']?>">
 
                       <label for="articleIdInput_<?=$question['id']?>"></label>
-                      <input type="text" id="articleIdInput_<?=$question['id']?>" name="articleId" value="<?=$question['articleId']?>">
+                      <input class="px-1" type="text" id="articleIdInput_<?=$question['id']?>" name="articleId" value="<?=$question['articleId']?>">
                   </div>
                   
                 </td>
@@ -212,10 +212,10 @@ include($path."/header_tailwind.php");
                   </div>
                   <div class="hidden toggleClass_<?=$question['id']?>">
                       <label for="answerInput_<?=$question['id']?>"></label>
-                      <textarea class="w-full" id="answerInput_<?=$question['id']?>" name="model_answer"><?=$question['model_answer']?></textarea>
+                      <textarea class="p-1 w-full" id="answerInput_<?=$question['id']?>" name="model_answer"><?=$question['model_answer']?></textarea>
 
                       <label for="answerAssetIdInput_<?=$question['id']?>"></label>
-                      <input type="text" id="answerAssetIdInput_<?=$question['id']?>" name="answerAssetId" value="<?=$question['answerAssetId']?>">
+                      <input class="px-1" type="text" id="answerAssetIdInput_<?=$question['id']?>" name="answerAssetId" value="<?=$question['answerAssetId']?>">
                       
                       
                   </div>
