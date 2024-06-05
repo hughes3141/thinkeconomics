@@ -465,6 +465,7 @@ $_GET controls:
                       </div>
                       <?php
                         $imgSource = "";
+                        $rootImgSource = "https://www.thinkeconomics.co.uk";
                         if($question['path']!="") {
                           //$imgSource = $path.$question['path'];
                           $imgSource = "https://www.thinkeconomics.co.uk".$question['path'];
@@ -473,7 +474,50 @@ $_GET controls:
                           $imgSource = "https://www.thinkeconomics.co.uk/mcq/question_img/".$question['No'].".JPG";
                         }
                       ?>
-                      <p><img class = "w-3/4" src = "<?=$imgSource?>"></p>
+                      <div class="border border-black p-1 m-1 rounded toggleClass_<?=$question['id']?>">
+                        <?php
+                        //print_r($question);
+                        if($question['textOnly']==1) {
+                          $question1 = explode("\n", $question['question']);
+                          foreach($question1 as $p) {
+                            ?>
+                            <p class="mb-1"><?=$p?></p>
+                            <?php
+                          }
+                          if($question['midImgAssetId'] != "") {
+                            $midImgAssets = explode(",", $question['midImgAssetId']);
+                            foreach($midImgAssets as $key => $asset) {
+                              $midImgAssets[$key] = trim($asset);
+                              $asset = getUploadsInfo($asset)[0];
+                              //print_r($asset);
+                              ?>
+                              <img alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
+                              <?php
+                            }
+                          }
+                          $question2 = explode("\n", $question['question2']);
+                          foreach($question2 as $p) {
+                            ?>
+                            <p class="mb-1"><?=$p?></p>
+                            <?php
+                          }
+                          $options =(array) json_decode($question['options']);
+                          echo "<ul>";
+                          foreach ($options as $key=>$option) {
+                            ?>
+                              <li><?=$key?>: <?=$option?></li>
+                            <?php
+                          }
+                          echo "</ul>";
+                          ?>
+                          <?php
+                        } else {
+                        ?>
+                          <p><img class = "" src = "<?=$imgSource?>"></p>
+                        <?php
+                        }
+                        ?>
+                      </div>
                       <div>
                         <h3>Topics:</h3>
                         <div class="toggleClass_<?=$question['id']?>">
