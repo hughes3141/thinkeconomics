@@ -532,7 +532,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                             $asset = getUploadsInfo($asset)[0];
                               //print_r($asset);
                               ?>
-                              <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                              <img class="lg:w-1/2 mx-auto" alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
                               <?php
                             }
                         }
