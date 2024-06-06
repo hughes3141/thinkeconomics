@@ -597,12 +597,14 @@ $_GET controls:
                             ?>
                         </div>
                         <div class="toggleClass_<?=$question['id']?> hidden">
+                            <label for="optionFill_<?=$question['id']?>" ;">Option Filler:</label>
+                            <textarea class="w-full border rounded border-pink-300 bg-pink-100" id="optionFill_<?=$question['id']?>" onchange="optionFill(<?=$question['id']?>)"></textarea>
                             <?php
                             echo "<ul>";
                             $optionCount = 0;
                             foreach ($options as $key=>$option) {
                               ?>
-                              <li><label for="option_<?=$optionCount?>"><?=$key?></label>: <textarea id="option_<?=$optionCount?>" class="w-full"name="option_<?=$optionCount?>" onfocus="this.select()" spellcheck="true"><?=$option?></textarea></li>
+                              <li><label for="option_<?=$optionCount?>_<?=$question['id']?>"><?=$key?></label>: <textarea id="option_<?=$optionCount?>_<?=$question['id']?>" class="w-full" name="option_<?=$optionCount?>" onfocus="this.select()" spellcheck="true"><?=$option?></textarea></li>
                               <?php
                               $optionCount ++;
                               
@@ -915,6 +917,22 @@ function hideRow(button) {
   console.log(input);
   row.style.display = "none";
   input.value='0';
+}
+
+
+function optionFill(questionId) {
+  const form = document.getElementById("optionFill_"+questionId);
+  //console.log(form);
+  var data = form.value;
+  data = data.split("\n");
+  for(var x=0; x<data.length; x++) {
+    data[x] = data[x].substring(2);
+    const optionInput = document.getElementById("option_"+x+"_"+questionId);
+    optionInput.innerHTML = data[x];
+  }
+  console.log(data);
+
+
 }
 
 <?php
