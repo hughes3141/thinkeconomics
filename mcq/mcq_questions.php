@@ -456,12 +456,17 @@ $_GET controls:
                       <div>
                         <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question']?></p>
                         <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question2']?></p>
-                        <textarea  name="question" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question']?></textarea>
+                        <div class="toggleClass_<?=$question['id']?> hidden">
+                          <textarea  name="question" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question']?></textarea>
 
-                        <label class="toggleClass_<?=$question['id']?> hidden" for="<?='midImgAssetId_input_'.$question['id']?>">midImgAssetId: </label>
-                        <input id="<?='midImgAssetId_input_'.$question['id']?>" class="toggleClass_<?=$question['id']?> hidden" type="text" value="<?=$question['midImgAssetId']?>" name="midImgAssetId">
+                          <label class="" for="<?='midImgAssetId_input_'.$question['id']?>">midImgAssetId: </label>
+                          <input id="<?='midImgAssetId_input_'.$question['id']?>" class="" type="text" value="<?=$question['midImgAssetId']?>" name="midImgAssetId">
 
-                        <textarea  name="question2" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question2']?></textarea>
+                          <textarea  name="question2" class="resize w-full " spellcheck="true"><?=$question['question2']?></textarea>
+
+                          <p>Table: <input type="number" id="midTableRowsInput"> X <input type="number" id="midTableColsInput"> <button type="button" class="border rounded border-black bg-pink-200 px-1 mx-1" onclick="createTableInput('midTable', 'midTableRowsInput', 'midTableColsInput')">Make table</button></p>
+                          <div id="midTable"></div>
+                        </div>
                       </div>
                       <?php
                         $imgSource = "";
@@ -933,6 +938,23 @@ function optionFill(questionId) {
   console.log(data);
 
 
+}
+
+function createTableInput(targetDiv, rowsInput, colsInput) {
+  targetDiv = document.getElementById(targetDiv);
+  targetDiv.innerHTML="";
+  const rows = document.getElementById(rowsInput).value;
+  const cols = document.getElementById(colsInput).value;
+  console.log(targetDiv);
+  const tbl = document.createElement('table');
+  for (let i = 0; i < rows; i++) {
+    const tr = tbl.insertRow();
+    for (let j = 0; j < cols; j++) {
+        const td = tr.insertCell();
+        td.appendChild(document.createTextNode(`Cell I${i}/J${j}`));
+    }
+  }
+  targetDiv.appendChild(tbl);
 }
 
 <?php
