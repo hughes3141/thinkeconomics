@@ -189,7 +189,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       }
       $optionsArray = json_encode($optionsArray);
       
-      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar'], $_POST['noRandom'], $_POST['question2'], $_POST['midImgAssetId']);
+      //updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar'], $_POST['noRandom'], $_POST['question2'], $_POST['midImgAssetId']);
       ?>
       <?php
     }
@@ -298,7 +298,7 @@ $_GET controls:
         }
         //print_r($questionsCollect);
         //echo "<br>"; print_r($optionsArray);
-        //print_r($_POST);
+        print_r($_POST);
       }
       echo "<pre>";
       //print_r($questions);
@@ -464,8 +464,9 @@ $_GET controls:
 
                           <textarea  name="question2" class="resize w-full " spellcheck="true"><?=$question['question2']?></textarea>
 
-                          <p>Table: <input type="number" id="midTableRowsInput"> X <input type="number" id="midTableColsInput"> <button type="button" class="border rounded border-black bg-pink-200 px-1 mx-1" onclick="createTableInput('midTable', 'midTableRowsInput', 'midTableColsInput')">Make table</button></p>
-                          <div id="midTable"></div>
+                          <p>Table: <input type="number" id="midTableRowsInput_<?=$question['id']?>"> X <input type="number" id="midTableColsInput_<?=$question['id']?>"> <button type="button" class="border rounded border-black bg-pink-200 px-1 mx-1" onclick="createTableInput('midTable_<?=$question['id']?>', 'midTableRowsInput_<?=$question['id']?>', 'midTableColsInput_<?=$question['id']?>', <?=$question['id']?>)">Make table</button></p>
+                          <div id="midTable_<?=$question['id']?>"></div>
+                          <input type="text" name="midTableInputArray_<?=$question['id']?>" id="midTableInputArray_<?=$question['id']?>">
                         </div>
                       </div>
                       <?php
@@ -940,7 +941,7 @@ function optionFill(questionId) {
 
 }
 
-function createTableInput(targetDiv, rowsInput, colsInput) {
+function createTableInput(targetDiv, rowsInput, colsInput, questionId = null) {
   targetDiv = document.getElementById(targetDiv);
   targetDiv.innerHTML="";
   const rows = document.getElementById(rowsInput).value;
@@ -951,10 +952,21 @@ function createTableInput(targetDiv, rowsInput, colsInput) {
     const tr = tbl.insertRow();
     for (let j = 0; j < cols; j++) {
         const td = tr.insertCell();
-        td.appendChild(document.createTextNode(`Cell I${i}/J${j}`));
+        const cellText = document.createTextNode(`Cell I${i}/J${j}`);
+        const cellInput = document.createElement('INPUT');
+        cellInput.setAttribute('type','text');
+        cellInput.setAttribute('name','midTableInput_'+i+'_'+j);
+        cellInput.setAttribute('class', 'midTableInput_'+questionId)
+        td.appendChild(cellInput);
+
+        //td.innerHTML= '<input name= "midTableInput_'+i+'_'+j+'">';
     }
   }
   targetDiv.appendChild(tbl);
+
+
+  const forms = document.querySelectorAll('form');
+  console.log(forms);
 }
 
 <?php
