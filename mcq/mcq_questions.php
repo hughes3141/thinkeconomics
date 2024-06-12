@@ -189,7 +189,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       }
       $optionsArray = json_encode($optionsArray);
       
-      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar'], $_POST['noRandom'], $_POST['question2'], $_POST['midImgAssetId'], $_POST['midTableInputArray']);
+      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar'], $_POST['noRandom'], $_POST['question2'], $_POST['midImgAssetId'], $_POST['midTableInputArray'], $_POST['optionsTable'], $_POST['optionsTableHeading']);
       ?>
       <?php
     }
@@ -676,6 +676,28 @@ $_GET controls:
                           <p>
                             <input id="noRandom_no_<?=$question['id']?>" name="noRandom" type="radio" value="0" <?=($question['noRandom']==0) ? "checked" : ""?>>
                             <label for="noRandom_no_<?=$question['id']?>">Random Enabled</label>
+                          </p>
+                        </div>
+
+                      </div>
+
+                      <!-- Input for options table -->
+                      <div>
+                        <div class="toggleClass_<?=$question['id']?> hidden">
+                          <label for="optionsTableHeading_<?=$question['id']?>">Options Table Heading:</label>
+                          <input type="text" name="optionsTableHeading" id="optionsTableHeading_<?=$question['id']?>" value="<?=$question['optionsTableHeading']?>">
+                        </div>
+                        <div class="toggleClass_<?=$question['id']?>">
+                          <p><?=($question['optionsTable']==1) ? "Options Table" : ""?><p>
+                        </div>
+                        <div class="toggleClass_<?=$question['id']?> hidden">
+                          <p>
+                            <input id="optionsTable_yes_<?=$question['id']?>" name="optionsTable" type="radio" value="1" <?=($question['optionsTable']==1) ? "checked" : ""?>>
+                            <label for="optionsTable_yes_<?=$question['id']?>">Options in Table</label>
+                          </p>
+                          <p>
+                            <input id="optionsTable_no_<?=$question['id']?>" name="optionsTable" type="radio" value="0" <?=($question['optionsTable']==0) ? "checked" : ""?>>
+                            <label for="optionsTable_no_<?=$question['id']?>">Options as List</label>
                           </p>
                         </div>
 

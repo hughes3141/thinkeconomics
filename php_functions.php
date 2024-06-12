@@ -903,7 +903,7 @@ function getMCQquestionDetails2($id = null, $questionNo = null, $topic = null, $
   $bindArray = array();
   $conjoiner = 0;
 
-  $sql ="SELECT q.id, q.No, q.Answer, q.Topic, q.topics, q.keywords, q.question, q.question2, q.options, q.explanation, q.examBoard, q.component, q.assetId, q.unitName, q.qualLevel, q.textOnly, q.topicsAQA, q.topicsEdexcel, q.topicsOCR, q.topicsCIE, q.series, q.year, q.questionNo, q.noRandom, q.similar, q.relevant, q.midImgAssetId, q.midTableArray, a.path
+  $sql ="SELECT q.id, q.No, q.Answer, q.Topic, q.topics, q.keywords, q.question, q.question2, q.options, q.explanation, q.examBoard, q.component, q.assetId, q.unitName, q.qualLevel, q.textOnly, q.topicsAQA, q.topicsEdexcel, q.topicsOCR, q.topicsCIE, q.series, q.year, q.questionNo, q.noRandom, q.similar, q.relevant, q.midImgAssetId, q.midTableArray, q.optionsTable, q.optionsTableHeading, a.path
         FROM question_bank_3 q
         LEFT JOIN upload_record a
           ON a.id = q.assetId";
@@ -1043,7 +1043,7 @@ function updateMCQquestionExplanation($id, $explanation) {
 
 }
 
-function updateMCQquestion($id, $userId, $explanation, $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $relevant, $similar, $noRandom, $question2, $midImgAssetId, $midTableArray) {
+function updateMCQquestion($id, $userId, $explanation, $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $relevant, $similar, $noRandom, $question2, $midImgAssetId, $midTableArray, $optionsTable, $optionsTableHeading) {
   /*
   Used to update MCQ question information with id = $id
 
@@ -1084,10 +1084,10 @@ function updateMCQquestion($id, $userId, $explanation, $question, $optionsJSON, 
   
   //Update other values that are not explanation:
   $sql = "UPDATE question_bank_3
-          SET question = ?, options = ?, Topic = ?, topics = ?, Answer = ?, keywords = ?, textOnly = ?, relevant = ?, similar = ?, similar_array = ?, noRandom = ?, question2 = ?, midImgAssetId = ?, midTableArray = ? 
+          SET question = ?, options = ?, Topic = ?, topics = ?, Answer = ?, keywords = ?, textOnly = ?, relevant = ?, similar = ?, similar_array = ?, noRandom = ?, question2 = ?, midImgAssetId = ?, midTableArray = ?, optionsTable = ?, optionsTableHeading = ?
           WHERE id = ?";
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("ssssssiississsi", $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $relevant, $similar, $similar_array, $noRandom, $question2, $midImgAssetId, $midTableArray, $id);
+  $stmt->bind_param("ssssssiississsisi", $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $relevant, $similar, $similar_array, $noRandom, $question2, $midImgAssetId, $midTableArray, $optionsTable, $optionsTableHeading, $id);
   $stmt->execute();
 
 }
