@@ -189,7 +189,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       }
       $optionsArray = json_encode($optionsArray);
       
-      //updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar'], $_POST['noRandom'], $_POST['question2'], $_POST['midImgAssetId']);
+      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar'], $_POST['noRandom'], $_POST['question2'], $_POST['midImgAssetId'], $_POST['midTableInputArray']);
       ?>
       <?php
     }
@@ -466,7 +466,8 @@ $_GET controls:
 
                           <p>Table: <input type="number" id="midTableRowsInput_<?=$question['id']?>"> X <input type="number" id="midTableColsInput_<?=$question['id']?>"> <button type="button" class="border rounded border-black bg-pink-200 px-1 mx-1" onclick="createTableInput('midTable_<?=$question['id']?>', 'midTableRowsInput_<?=$question['id']?>', 'midTableColsInput_<?=$question['id']?>', <?=$question['id']?>)">Make table</button></p>
                           <div id="midTable_<?=$question['id']?>"></div>
-                          <input type="text" name="midTableInputArray_<?=$question['id']?>" id="midTableInputArray_<?=$question['id']?>">
+
+                          <input type="text" name="midTableInputArray" id="midTableInputArray_<?=$question['id']?>">
                         </div>
                       </div>
                       <?php
@@ -482,7 +483,7 @@ $_GET controls:
                       ?>
                       <div class="border border-black p-1 m-1 rounded toggleClass_<?=$question['id']?>">
                         <?php
-                        //print_r($question);
+                        print_r($question);
                         if($question['textOnly']==1) {
                           $question1 = explode("\n", $question['question']);
                           foreach($question1 as $p) {
@@ -958,6 +959,7 @@ function createTableInput(targetDiv, rowsInput, colsInput, questionId = null) {
         cellInput.setAttribute('name','midTableInput_'+i+'_'+j);
         cellInput.setAttribute('class', 'midTableInput_'+questionId)
         td.appendChild(cellInput);
+        cellInput.setAttribute('onchange', 'compileTableInput(this);')
 
         //td.innerHTML= '<input name= "midTableInput_'+i+'_'+j+'">';
     }
@@ -965,8 +967,40 @@ function createTableInput(targetDiv, rowsInput, colsInput, questionId = null) {
   targetDiv.appendChild(tbl);
 
 
-  const forms = document.querySelectorAll('form');
-  console.log(forms);
+  //const forms = document.querySelectorAll('form');
+  //console.log(forms);
+}
+
+function compileTableInput(changedInput=null) {
+  var id = changedInput.classList[0];
+  id = id.replace("midTableInput_", "");
+  id = parseInt(id);
+  //console.log(id);
+  inputTable = changedInput.parentNode.parentNode.parentNode.parentNode;
+  //console.log(inputTable);
+  
+  var rowCount = inputTable.rows.length;
+  var tableArray = [];
+  for(var i=0; i<rowCount; i++) {
+    var row = inputTable.rows[i];
+    //console.log(row);
+    var cellCount = row.cells.length;
+    var cellArray = [];
+    for(var j=0; j<cellCount; j++) {
+      var cell = row.cells[j];
+      //console.log(cell);
+      var input = cell.childNodes[0];
+      cellArray.push(input.value);
+
+    }
+    tableArray.push(cellArray);
+  }
+
+  console.log(tableArray);
+
+  const midTableInput = document.getElementById("midTableInputArray_"+id);
+  midTableInput.value = JSON.stringify(tableArray);
+
 }
 
 <?php
