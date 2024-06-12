@@ -332,10 +332,11 @@ if(str_contains($permissions, "main_admin")) {
     if(count($questions)>0 && $questions[0]!= "") {
       foreach ($questions as $key=>$question) {
         
-        $questionInfo = getMCQquestionDetails($question);
+        $questionInfo = getMCQquestionDetails2($question)[0];
         //print_r($questionInfo);
         $questionsDetails[$question] = $questionInfo;
         $imgSource = "https://thinkeconomics.co.uk";
+        $rootImgSource = "https://www.thinkeconomics.co.uk";
         $imgPath = "";
         if($questionInfo['path'] == "") {
           $imgPath = $questionInfo['No'].".JPG";
@@ -374,8 +375,57 @@ if(str_contains($permissions, "main_admin")) {
             <?php
             if($textOnly == 1) {
               ?>
+              <div class=" my-3 mx-auto lg:w-3/4">
+                <?php
+                $question1 = explode("\n", $questionInfo['question']);
+                  foreach($question1 as $p) {
+                    ?>
+                    <p class="mb-1"><?=$p?></p>
+                    <?php
+                  }
+                  if($questionInfo['midImgAssetId'] != "") {
+                    $midImgAssets = explode(",", $questionInfo['midImgAssetId']);
+                    foreach($midImgAssets as $key => $asset) {
+                      $midImgAssets[$key] = trim($asset);
+                      $asset = getUploadsInfo($asset)[0];
+                      //print_r($asset);
+                      ?>
+                      <img class="w-full" style="<?=($get_selectors['width']) ? " width:".$get_selectors['width']."%" : "width:100%"?> " alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
+                      <?php
+                    }
+                  }
+                  if($questionInfo['midTableArray'] != "") {
+                    $midTableArray = json_decode($questionInfo['midTableArray']);
+                    //print_r($midTableArray);
+                    ?>
+                    <table class="mx-auto">
+                    <?php
+                    foreach ($midTableArray as $row) {
+                      ?>
+                      <tr>
+                        <?php
+                        foreach($row as $cell) {
+                          ?>
+                          <td class="px-4 text-center "><?=$cell?></td>
+                          <?php
+                        }
+                        ?>
+                      </tr>
+                      <?php
+                    }
+                    ?>
+                    </table>
+                    <?php
+                  }
+                  $question2 = explode("\n", $questionInfo['question2']);
+                  foreach($question2 as $p) {
+                    ?>
+                    <p class="mb-1"><?=$p?></p>
+                    <?php
+                  }
+                ?>
+              </div>
               
-              <p class="my-3 mx-auto lg:w-3/4 whitespace-pre-wrap"><?=$questionInfo['question']?></p>
               <?php
             } else {
             ?>

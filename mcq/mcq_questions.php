@@ -506,7 +506,7 @@ $_GET controls:
                             $midTableArray = json_decode($question['midTableArray']);
                             //print_r($midTableArray);
                             ?>
-                            <table class="mx-auto">
+                            <table class="mx-auto my-1">
                             <?php
                             foreach ($midTableArray as $row) {
                               ?>

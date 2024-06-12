@@ -24,6 +24,18 @@ else {
   }
 }
 
+$style_input = "
+  th, td {
+    border: 1px solid black;
+  }
+
+  textarea, input {
+    padding-left: 0.25rem;
+  }
+
+  
+  ";
+
 
 
 $get_selectors = array(
@@ -202,6 +214,32 @@ if($get_selectors['questions']) {
                     <?php
                   }
                 }
+
+                if($question['midTableArray'] != "") {
+                  $midTableArray = json_decode($question['midTableArray']);
+                  //print_r($midTableArray);
+                  ?>
+                  <table class="mx-auto my-1">
+                  <?php
+                  foreach ($midTableArray as $row) {
+                    ?>
+                    <tr>
+                      <?php
+                      foreach($row as $cell) {
+                        ?>
+                        <td class="px-4 text-center "><?=$cell?></td>
+                        <?php
+                      }
+                      ?>
+                    </tr>
+                    <?php
+
+                  }
+                  ?>
+                  </table>
+                  <?php
+                }
+
                 $question2 = explode("\n", $question['question2']);
                 foreach($question2 as $p) {
                   ?>
