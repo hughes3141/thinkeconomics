@@ -464,10 +464,10 @@ $_GET controls:
 
                           <textarea  name="question2" class="resize w-full " spellcheck="true"><?=$question['question2']?></textarea>
 
-                          <p>Table: <input type="number" id="midTableRowsInput_<?=$question['id']?>"> X <input type="number" id="midTableColsInput_<?=$question['id']?>"> <button type="button" class="border rounded border-black bg-pink-200 px-1 mx-1" onclick="createTableInput('midTable_<?=$question['id']?>', 'midTableRowsInput_<?=$question['id']?>', 'midTableColsInput_<?=$question['id']?>', <?=$question['id']?>)">Make table</button></p>
+                          <p class="<?=($question['midTableArray'] != "") ? 'hidden' : '' ?>">Table: <input type="number" id="midTableRowsInput_<?=$question['id']?>"> X <input type="number" id="midTableColsInput_<?=$question['id']?>"> <button type="button" class="border rounded border-black bg-pink-200 px-1 mx-1" onclick="createTableInput(<?=$question['id']?>)">Make table</button></p>
                           <div id="midTable_<?=$question['id']?>"></div>
 
-                          <input type="text" name="midTableInputArray" id="midTableInputArray_<?=$question['id']?>">
+                          <input type="text" name="midTableInputArray" id="midTableInputArray_<?=$question['id']?>" value='<?=$question['midTableArray']?>'>
                         </div>
                       </div>
                       <?php
@@ -483,7 +483,7 @@ $_GET controls:
                       ?>
                       <div class="border border-black p-1 m-1 rounded toggleClass_<?=$question['id']?>">
                         <?php
-                        print_r($question);
+                        //print_r($question);
                         if($question['textOnly']==1) {
                           $question1 = explode("\n", $question['question']);
                           foreach($question1 as $p) {
@@ -501,6 +501,30 @@ $_GET controls:
                               <img alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
                               <?php
                             }
+                          }
+                          if($question['midTableArray'] != "") {
+                            $midTableArray = json_decode($question['midTableArray']);
+                            //print_r($midTableArray);
+                            ?>
+                            <table class="mx-auto">
+                            <?php
+                            foreach ($midTableArray as $row) {
+                              ?>
+                              <tr>
+                                <?php
+                                foreach($row as $cell) {
+                                  ?>
+                                  <td class="px-4 text-center "><?=$cell?></td>
+                                  <?php
+                                }
+                                ?>
+                              </tr>
+                              <?php
+
+                            }
+                            ?>
+                            </table>
+                            <?php
                           }
                           $question2 = explode("\n", $question['question2']);
                           foreach($question2 as $p) {
@@ -702,7 +726,7 @@ $_GET controls:
                             }
                           ?>
                         </p>
-                      <p><button type="button" class="w-full bg-pink-300 rounded border border-black mb-1" onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit", "Hide Edit", "block");'>Edit</button>
+                      <p><button type="button" class="w-full bg-pink-300 rounded border border-black mb-1" onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit", "Hide Edit", "block"); createTableInput(<?=$question['id']?>, <?=$question['midTableArray']?>)'>Edit</button>
                       <input type="submit" class="w-full bg-sky-200 rounded border border-black mb-1 toggleClass_<?=$question['id']?> hidden" name="submit" value= "Update">
                       <p>
                     </td>
@@ -942,12 +966,20 @@ function optionFill(questionId) {
 
 }
 
-function createTableInput(targetDiv, rowsInput, colsInput, questionId = null) {
-  targetDiv = document.getElementById(targetDiv);
+function createTableInput(questionId = null, preLoad = null) {
+  targetDiv = document.getElementById("midTable_"+questionId);
   targetDiv.innerHTML="";
-  const rows = document.getElementById(rowsInput).value;
-  const cols = document.getElementById(colsInput).value;
-  console.log(targetDiv);
+  var rows;
+  var cols;
+  console.log(preLoad);
+  if(preLoad == null) {
+    rows = document.getElementById('midTableRowsInput_'+questionId).value;
+    cols = document.getElementById('midTableColsInput_'+questionId).value;
+  } else {
+    rows = preLoad.length;
+    cols= preLoad[0].length;
+  }
+  //console.log(targetDiv);
   const tbl = document.createElement('table');
   for (let i = 0; i < rows; i++) {
     const tr = tbl.insertRow();
@@ -957,7 +989,11 @@ function createTableInput(targetDiv, rowsInput, colsInput, questionId = null) {
         const cellInput = document.createElement('INPUT');
         cellInput.setAttribute('type','text');
         cellInput.setAttribute('name','midTableInput_'+i+'_'+j);
-        cellInput.setAttribute('class', 'midTableInput_'+questionId)
+        cellInput.setAttribute('class', 'midTableInput_'+questionId);
+        if(preLoad != null ) {
+          cellInput.setAttribute('value', preLoad[i][j]);
+
+        }
         td.appendChild(cellInput);
         cellInput.setAttribute('onchange', 'compileTableInput(this);')
 
