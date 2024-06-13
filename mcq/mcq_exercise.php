@@ -333,7 +333,7 @@ if(str_contains($permissions, "main_admin")) {
       foreach ($questions as $key=>$question) {
         
         $questionInfo = getMCQquestionDetails2($question)[0];
-        print_r($questionInfo);
+        //print_r($questionInfo);
         $questionsDetails[$question] = $questionInfo;
         $imgSource = "https://thinkeconomics.co.uk";
         $rootImgSource = "https://www.thinkeconomics.co.uk";
@@ -463,15 +463,56 @@ if(str_contains($permissions, "main_admin")) {
                   </tr>
                   <?php
                   }
+                    //Get option assets if available
+                    $optionsAssets = array();
+                    if($questionInfo['optionsAssets'] != "") {
+                      $optionsAssets = (array) json_decode($questionInfo  ['optionsAssets']);
+                    }
+                    //print_r($optionsAssets);
+
                     foreach($options as $optKey=>$option) {
                       if($textOnly == 0) {
                         $option = $optKey;
                       }
-                      if($optionsTable == 0) {                
+
+                      if($optionsTable == 0) {
+                        //Get option assets if available:
+                        $assets = array();
+                            if(isset($optionsAssets[$optKey]) && $optionsAssets[$optKey] != "") {
+                              $assets = explode(",",$optionsAssets[$optKey]);
+                            }
+                            //echo $optKey;
+                            //print_r($assets);
+
+                            $assetEnabled = 0;
+                            if(count($assets) > 0) {
+                              $assetEnabled = 1;
+                            }
                         ?>
                         <p class="mb-2 ml-5">
-                          <input type="radio" class="-ml-5 mt-1.5 absolute" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
-                        <label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
+                          <input type="radio" class="<?=($assetEnabled == 1) ? "" : "-ml-5 mt-1.5 absolute"?>" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
+                          <?php
+                          if($assetEnabled ==0) {
+                            ?>
+                              <label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
+                            <?php
+                          } else {
+                            ?>
+                            <label class=" " for="a_<?=$question?>_<?=$optKey?>">
+                              <?php
+                              foreach ($assets as $asset) {
+                                $asset = getUploadsInfo($asset)[0];
+                                //print_r($asset);
+                                ?>
+                                <img class="w-1/2 inline" alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
+                                <?php                                  
+                              }
+                              ?>
+                            </label>
+                            <?php
+                          }
+                          ?>
+                        
                         </p>
                         <?php
                       } else {

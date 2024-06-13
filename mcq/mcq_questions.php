@@ -544,11 +544,41 @@ $_GET controls:
                           }
                           $options =(array) json_decode($question['options']);
                           if($question['optionsTable'] == 0) {
+                            $optionsAssets = array();
+                            if($question['optionsAssets'] != "") {
+                              $optionsAssets = (array) json_decode($question  ['optionsAssets']);
+                            }
+                            //print_r($optionsAssets);
                             echo "<ul>";
                             foreach ($options as $key=>$option) {
-                              ?>
-                                <li><?=$key?>: <?=$option?></li>
-                              <?php
+                              $assets = array();
+                              if(isset($optionsAssets[$key]) && $optionsAssets[$key] != "") {
+                                $assets = explode(",",$optionsAssets[$key]);
+                              }
+                              //print_r($assets);
+                              
+                              if(count($assets) == 0) {
+                                ?>
+                                  <li><?=$key?>: <?=$option?></li>
+                                <?php
+                              } else {
+                                ?>
+                                <li>
+                                  <p><?=$key?>: 
+                                  <?php
+                                  foreach ($assets as $asset) {
+                                    $asset = getUploadsInfo($asset)[0];
+                                    //print_r($asset);
+                                    ?>
+                                    <img class="w-1/2 inline" alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>"></p>
+                                    </li>
+                                    <?php                                  
+                                  }
+                                  ?>
+                                  </p>
+                                </li>
+                                <?php
+                              }
                             }
                             echo "</ul>";
                           } else {
@@ -700,9 +730,13 @@ $_GET controls:
                             ?>
                             <input type="hidden" name="optionCount" value="<?=$optionCount?>">
                             <?php
-                            $optionCount = 0;                            
-                            $optionsAssets = (array) json_decode($question['optionsAssets']);
-                            print_r($optionsAssets);
+                            $optionsAssets = new SplFixedArray($optionCount);
+                            //print_r($optionsAssets);
+                            if($question['optionsAssets'] != "") {              
+                              $optionsAssets = (array) json_decode($question['optionsAssets']);
+                            }
+                            $optionCount = 0;
+                            //print_r($optionsAssets);
                             echo "<ul>";
                             foreach ($optionsAssets as $key=>$option) {
                               ?>
