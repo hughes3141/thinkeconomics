@@ -391,18 +391,21 @@ if(str_contains($permissions, "main_admin")) {
                     $midImgAssets = explode(",", $questionInfo['midImgAssetId']);
                     foreach($midImgAssets as $key => $asset) {
                       $midImgAssets[$key] = trim($asset);
-                      $asset = getUploadsInfo($asset)[0];
-                      //print_r($asset);
-                      ?>
-                      <img class="w-full" style="<?=($get_selectors['width']) ? " width:".$get_selectors['width']."%" : "width:100%"?> " alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
-                      <?php
+                      if(count(getUploadsInfo($asset)) >0) {
+                        $asset = getUploadsInfo($asset)[0];
+                        //print_r($asset);
+                        ?>
+                        <img alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
+                        <?php
+                      }
                     }
                   }
                   if($questionInfo['midTableArray'] != "") {
                     $midTableArray = json_decode($questionInfo['midTableArray']);
                     //print_r($midTableArray);
                     ?>
-                    <table class="mx-auto">
+                    <h2 class=" font-bold text-center my-1 mb-2"><?=$questionInfo['midTableHeader']?></h2>
+                    <table class="mx-auto my-2">
                     <?php
                     foreach ($midTableArray as $row) {
                       ?>
@@ -442,20 +445,61 @@ if(str_contains($permissions, "main_admin")) {
 
               if($randomOptionsOrder ==1 && $textOnly == 1 && $noRandom == 0) {
                 $options = shuffle_assoc($options);
-
               }
-              foreach($options as $optKey=>$option) {
-                if($textOnly == 0) {
-                  $option = $optKey;
-                }
-                if($optionsTable == 0) {                
-                  ?>
-                  <p class="mb-2 ml-5">
-                    <input type="radio" class="-ml-5 mt-1.5 absolute" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
-                  <label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
-                  </p>
+              
+              if($optionsTable == 1) {
+                ?>
+                <table class="mx-auto my-1">
+                  <tr >
+                    <?php
+                      $headerRow = $questionInfo['optionsTableHeading'];
+                      $headerRow = explode("     ",$headerRow);
+                      foreach ($headerRow as $cell) {
+                        ?>
+                        <td class="px-4 text-center "><?=$cell?></td>
+                        <?php
+                      }
+                    ?>
+                  </tr>
                   <?php
-                }
+                  }
+                    foreach($options as $optKey=>$option) {
+                      if($textOnly == 0) {
+                        $option = $optKey;
+                      }
+                      if($optionsTable == 0) {                
+                        ?>
+                        <p class="mb-2 ml-5">
+                          <input type="radio" class="-ml-5 mt-1.5 absolute" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
+                        <label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
+                        </p>
+                        <?php
+                      } else {
+                        $optionRows = explode("     ",$option);
+                        ?>
+                        <tr>
+                          <td class="px-4 text-center ">
+                            <input type="radio" class="" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
+                          </td>
+                          <?php
+                            foreach($optionRows as $cell) {
+                              ?>
+                              <td class="px-4 text-center ">
+                                <label for="a_<?=$question?>_<?=$optKey?>">
+                                  <?=$cell?>
+                                </label>
+                              </td>
+                              <?php
+                            }
+                          ?>
+                        </tr>
+                        <?php
+                      }
+                    }
+                    if($optionsTable == 1) {
+                    ?>
+                </table>
+              <?php
               }
               ?>
             </div>

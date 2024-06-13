@@ -499,17 +499,20 @@ $_GET controls:
                             $midImgAssets = explode(",", $question['midImgAssetId']);
                             foreach($midImgAssets as $key => $asset) {
                               $midImgAssets[$key] = trim($asset);
-                              $asset = getUploadsInfo($asset)[0];
-                              //print_r($asset);
-                              ?>
-                              <img alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
-                              <?php
+                              if(count(getUploadsInfo($asset)) >0) {
+                                $asset = getUploadsInfo($asset)[0];
+                                //print_r($asset);
+                                ?>
+                                <img alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
+                                <?php
+                              }
                             }
                           }
                           if($question['midTableArray'] != "") {
                             $midTableArray = json_decode($question['midTableArray']);
                             //print_r($midTableArray);
                             ?>
+                            <h2 class=" font-bold text-center my-1"><?=$question['midTableHeader']?></h2>
                             <table class="mx-auto my-1">
                             <?php
                             foreach ($midTableArray as $row) {
@@ -564,7 +567,7 @@ $_GET controls:
                                   $optionRows = explode("     ",$option);
                                   ?>
                                   <tr>
-                                    <td></td>
+                                    <td class="px-4 text-center "><?=$key?></td>
                                     <?php
                                       foreach($optionRows as $cell) {
                                         ?>
@@ -574,8 +577,6 @@ $_GET controls:
                                         <?php
                                       }
                                     ?>
- 
-
                                   </tr>
 
                                   <?php
