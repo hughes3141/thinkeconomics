@@ -184,12 +184,15 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       //Create array for options:
       $options = ['A', 'B', 'C', 'D', 'E'];
       $optionsArray = array();
+      $optionsAssetsArray = array();
       for($x=0; $x<$_POST['optionCount']; $x++) {
         $optionsArray[$options[$x]] = trim($_POST['option_'.$x]);
+        $optionsAssetsArray[$options[$x]] = trim($_POST['optionAssets_'.$x]);
       }
       $optionsArray = json_encode($optionsArray);
+      $optionsAssetsArray = json_encode($optionsAssetsArray);
       
-      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar'], $_POST['noRandom'], $_POST['question2'], $_POST['midImgAssetId'], $_POST['midTableInputArray'], $_POST['optionsTable'], $_POST['optionsTableHeading'], $_POST['midTableHeader']);
+      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar'], $_POST['noRandom'], $_POST['question2'], $_POST['midImgAssetId'], $_POST['midTableInputArray'], $_POST['optionsTable'], $_POST['optionsTableHeading'], $_POST['midTableHeader'], $optionsAssetsArray);
       ?>
       <?php
     }
@@ -487,7 +490,7 @@ $_GET controls:
                       ?>
                       <div class="border border-black p-1 m-1 rounded toggleClass_<?=$question['id']?>">
                         <?php
-                        //print_r($question);
+                        print_r($question);
                         if($question['textOnly']==1) {
                           $question1 = explode("\n", $question['question']);
                           foreach($question1 as $p) {
@@ -674,14 +677,20 @@ $_GET controls:
                             ?>
                         </div>
                         <div class="toggleClass_<?=$question['id']?> hidden">
-                            <label for="optionFill_<?=$question['id']?>" ;">Option Filler:</label>
+                            
+                        <label for="optionFill_<?=$question['id']?>" ;">Option Filler:</label>
                             <textarea class="w-full border rounded border-pink-300 bg-pink-100" id="optionFill_<?=$question['id']?>" onchange="optionFill(<?=$question['id']?>)"></textarea>
                             <?php
+                            
                             echo "<ul>";
                             $optionCount = 0;
                             foreach ($options as $key=>$option) {
                               ?>
-                              <li><label for="option_<?=$optionCount?>_<?=$question['id']?>"><?=$key?></label>: <textarea id="option_<?=$optionCount?>_<?=$question['id']?>" class="w-full" name="option_<?=$optionCount?>" onfocus="this.select()" spellcheck="true"><?=$option?></textarea></li>
+                              <li>
+                                <label for="option_<?=$optionCount?>_<?=$question['id']?>"><?=$key?></label>: <textarea id="option_<?=$optionCount?>_<?=$question['id']?>" class="w-full" name="option_<?=$optionCount?>" onfocus="this.select()" spellcheck="true"><?=$option?></textarea>
+
+                                
+                              </li>
                               <?php
                               $optionCount ++;
                               
@@ -690,6 +699,22 @@ $_GET controls:
                             //echo $optionCount;
                             ?>
                             <input type="hidden" name="optionCount" value="<?=$optionCount?>">
+                            <?php
+                            $optionCount = 0;                            
+                            $optionsAssets = (array) json_decode($question['optionsAssets']);
+                            print_r($optionsAssets);
+                            echo "<ul>";
+                            foreach ($optionsAssets as $key=>$option) {
+                              ?>
+                              <li>
+                                <label for="optionAssets_<?=$optionCount?>_<?=$question['id']?>"><?=$key?> Assets:</label>
+                                  <input type="text" id="optionAssets_<?=$optionCount?>_<?=$question['id']?>" name="optionAssets_<?=$optionCount?>" value="<?=$option?>">
+                              </li>
+                              <?php
+                              $optionCount ++;
+                            }
+                            echo "</ul>";
+                            ?>
                         </div>
                       </div>
                       <!-- Text Only Input:-->
