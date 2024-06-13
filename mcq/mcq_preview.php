@@ -24,6 +24,18 @@ else {
   }
 }
 
+$style_input = "
+  th, td {
+    border: 1px solid black;
+  }
+
+  textarea, input {
+    padding-left: 0.25rem;
+  }
+
+  
+  ";
+
 
 
 $get_selectors = array(
@@ -195,13 +207,42 @@ if($get_selectors['questions']) {
                   $midImgAssets = explode(",", $question['midImgAssetId']);
                   foreach($midImgAssets as $key => $asset) {
                     $midImgAssets[$key] = trim($asset);
-                    $asset = getUploadsInfo($asset)[0];
-                    //print_r($asset);
-                    ?>
-                    <img class="w-full" style="<?=($get_selectors['width']) ? " width:".$get_selectors['width']."%" : "width:100%"?> " alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
-                    <?php
+                    if(count(getUploadsInfo($asset)) >0) {
+                      $asset = getUploadsInfo($asset)[0];
+                      //print_r($asset);
+                      ?>
+                      <img alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
+                      <?php
+                    }
                   }
                 }
+
+                if($question['midTableArray'] != "") {
+                  $midTableArray = json_decode($question['midTableArray']);
+                  //print_r($midTableArray);
+                  ?>
+                  <h2 class=" font-bold text-center my-1"><?=$question['midTableHeader']?></h2>
+                  <table class="mx-auto my-1">
+                  <?php
+                  foreach ($midTableArray as $row) {
+                    ?>
+                    <tr>
+                      <?php
+                      foreach($row as $cell) {
+                        ?>
+                        <td class="px-4 text-center "><?=$cell?></td>
+                        <?php
+                      }
+                      ?>
+                    </tr>
+                    <?php
+
+                  }
+                  ?>
+                  </table>
+                  <?php
+                }
+
                 $question2 = explode("\n", $question['question2']);
                 foreach($question2 as $p) {
                   ?>
@@ -209,16 +250,53 @@ if($get_selectors['questions']) {
                   <?php
                 }
                 $options =(array) json_decode($question['options']);
-                //echo "<ul>";
-                foreach ($options as $key=>$option) {
-                  if($key != $option){
-                    ?>
-                      <p style="<?=($get_selectors['simple']==1) ? "margin: 0px; margin-left:1.25rem;" : ""?>"><?=$key?>: <?=$option?></p>
-                    <?php
+                if($question['optionsTable'] == 0) {
+                  //echo "<ul>";
+                  foreach ($options as $key=>$option) {
+                    if($key != $option){
+                      ?>
+                        <p style="<?=($get_selectors['simple']==1) ? "margin: 0px; margin-left:1.25rem;" : ""?>"><?=$key?>: <?=$option?></p>
+                      <?php
+                    }
                   }
-                }
-                //echo "</ul>";
-                
+                  //echo "</ul>";
+                } else {
+                  ?>
+                  <table class="mx-auto my-1">
+                    <tr >
+                      <?php
+                        $headerRow = $question['optionsTableHeading'];
+                        $headerRow = explode("     ",$headerRow);
+                        foreach ($headerRow as $cell) {
+                          ?>
+                          <td class="px-4 text-center "><?=$cell?></td>
+                          <?php
+                        }
+                      ?>
+                    </tr>
+                    <?php
+                      foreach($options as $key=>$option) {
+                        $optionRows = explode("     ",$option);
+                        ?>
+                        <tr>
+                          <td class="px-4 text-center "><?=$key?></td>
+                          <?php
+                            foreach($optionRows as $cell) {
+                              ?>
+                              <td class="px-4 text-center ">
+                                <?=$cell?>
+                              </td>
+                              <?php
+                            }
+                          ?>
+                        </tr>
+
+                        <?php
+                      }
+                    ?>
+                  </table>
+                  <?php
+                  }
               ?>
               </div>
               <?php

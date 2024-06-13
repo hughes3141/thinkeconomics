@@ -332,10 +332,11 @@ if(str_contains($permissions, "main_admin")) {
     if(count($questions)>0 && $questions[0]!= "") {
       foreach ($questions as $key=>$question) {
         
-        $questionInfo = getMCQquestionDetails($question);
+        $questionInfo = getMCQquestionDetails2($question)[0];
         //print_r($questionInfo);
         $questionsDetails[$question] = $questionInfo;
         $imgSource = "https://thinkeconomics.co.uk";
+        $rootImgSource = "https://www.thinkeconomics.co.uk";
         $imgPath = "";
         if($questionInfo['path'] == "") {
           $imgPath = $questionInfo['No'].".JPG";
@@ -351,6 +352,10 @@ if(str_contains($permissions, "main_admin")) {
         $noRandom = 0; 
         if($questionInfo['noRandom'] == 1) {
           $noRandom = 1;
+        }
+        $optionsTable = 0;
+        if($questionInfo['optionsTable'] == 1) {
+          $optionsTable = 1;
         }
 
         $options = $questionInfo['options'];
@@ -374,8 +379,60 @@ if(str_contains($permissions, "main_admin")) {
             <?php
             if($textOnly == 1) {
               ?>
+              <div class=" my-3 mx-auto lg:w-3/4">
+                <?php
+                $question1 = explode("\n", $questionInfo['question']);
+                  foreach($question1 as $p) {
+                    ?>
+                    <p class="mb-1"><?=$p?></p>
+                    <?php
+                  }
+                  if($questionInfo['midImgAssetId'] != "") {
+                    $midImgAssets = explode(",", $questionInfo['midImgAssetId']);
+                    foreach($midImgAssets as $key => $asset) {
+                      $midImgAssets[$key] = trim($asset);
+                      if(count(getUploadsInfo($asset)) >0) {
+                        $asset = getUploadsInfo($asset)[0];
+                        //print_r($asset);
+                        ?>
+                        <img alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
+                        <?php
+                      }
+                    }
+                  }
+                  if($questionInfo['midTableArray'] != "") {
+                    $midTableArray = json_decode($questionInfo['midTableArray']);
+                    //print_r($midTableArray);
+                    ?>
+                    <h2 class=" font-bold text-center my-1 mb-2"><?=$questionInfo['midTableHeader']?></h2>
+                    <table class="mx-auto my-2">
+                    <?php
+                    foreach ($midTableArray as $row) {
+                      ?>
+                      <tr>
+                        <?php
+                        foreach($row as $cell) {
+                          ?>
+                          <td class="px-4 text-center "><?=$cell?></td>
+                          <?php
+                        }
+                        ?>
+                      </tr>
+                      <?php
+                    }
+                    ?>
+                    </table>
+                    <?php
+                  }
+                  $question2 = explode("\n", $questionInfo['question2']);
+                  foreach($question2 as $p) {
+                    ?>
+                    <p class="mb-1"><?=$p?></p>
+                    <?php
+                  }
+                ?>
+              </div>
               
-              <p class="my-3 mx-auto lg:w-3/4 whitespace-pre-wrap"><?=$questionInfo['question']?></p>
               <?php
             } else {
             ?>
@@ -388,18 +445,102 @@ if(str_contains($permissions, "main_admin")) {
 
               if($randomOptionsOrder ==1 && $textOnly == 1 && $noRandom == 0) {
                 $options = shuffle_assoc($options);
-
               }
-              foreach($options as $optKey=>$option) {
-                if($textOnly == 0) {
-                  $option = $optKey;
-                }
+              
+              if($optionsTable == 1) {
                 ?>
-                <p class="mb-2 ml-5">
-                  <input type="radio" class="-ml-5 mt-1.5 absolute" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
-                <label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
-                </p>
-                <?php
+                <table class="mx-auto my-1">
+                  <tr >
+                    <?php
+                      $headerRow = $questionInfo['optionsTableHeading'];
+                      $headerRow = explode("     ",$headerRow);
+                      foreach ($headerRow as $cell) {
+                        ?>
+                        <td class="px-4 text-center "><?=$cell?></td>
+                        <?php
+                      }
+                    ?>
+                  </tr>
+                  <?php
+                  }
+                    //Get option assets if available
+                    $optionsAssets = array();
+                    if($questionInfo['optionsAssets'] != "") {
+                      $optionsAssets = (array) json_decode($questionInfo  ['optionsAssets']);
+                    }
+                    //print_r($optionsAssets);
+
+                    foreach($options as $optKey=>$option) {
+                      if($textOnly == 0) {
+                        $option = $optKey;
+                      }
+
+                      if($optionsTable == 0) {
+                        //Get option assets if available:
+                        $assets = array();
+                            if(isset($optionsAssets[$optKey]) && $optionsAssets[$optKey] != "") {
+                              $assets = explode(",",$optionsAssets[$optKey]);
+                            }
+                            //echo $optKey;
+                            //print_r($assets);
+
+                            $assetEnabled = 0;
+                            if(count($assets) > 0) {
+                              $assetEnabled = 1;
+                            }
+                        ?>
+                        <p class="mb-2 ml-5">
+                          <input type="radio" class="<?=($assetEnabled == 1) ? "" : "-ml-5 mt-1.5 absolute"?>" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
+                          <?php
+                          if($assetEnabled ==0) {
+                            ?>
+                              <label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
+                            <?php
+                          } else {
+                            ?>
+                            <label class=" " for="a_<?=$question?>_<?=$optKey?>">
+                              <?php
+                              foreach ($assets as $asset) {
+                                $asset = getUploadsInfo($asset)[0];
+                                //print_r($asset);
+                                ?>
+                                <img class="w-1/2 inline" alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
+                                <?php                                  
+                              }
+                              ?>
+                            </label>
+                            <?php
+                          }
+                          ?>
+                        
+                        </p>
+                        <?php
+                      } else {
+                        $optionRows = explode("     ",$option);
+                        ?>
+                        <tr>
+                          <td class="px-4 text-center ">
+                            <input type="radio" class="" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
+                          </td>
+                          <?php
+                            foreach($optionRows as $cell) {
+                              ?>
+                              <td class="px-4 text-center ">
+                                <label for="a_<?=$question?>_<?=$optKey?>">
+                                  <?=$cell?>
+                                </label>
+                              </td>
+                              <?php
+                            }
+                          ?>
+                        </tr>
+                        <?php
+                      }
+                    }
+                    if($optionsTable == 1) {
+                    ?>
+                </table>
+              <?php
               }
               ?>
             </div>

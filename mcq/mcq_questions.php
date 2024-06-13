@@ -184,12 +184,15 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       //Create array for options:
       $options = ['A', 'B', 'C', 'D', 'E'];
       $optionsArray = array();
+      $optionsAssetsArray = array();
       for($x=0; $x<$_POST['optionCount']; $x++) {
-        $optionsArray[$options[$x]] = $_POST['option_'.$x];
+        $optionsArray[$options[$x]] = trim($_POST['option_'.$x]);
+        $optionsAssetsArray[$options[$x]] = trim($_POST['optionAssets_'.$x]);
       }
       $optionsArray = json_encode($optionsArray);
+      $optionsAssetsArray = json_encode($optionsAssetsArray);
       
-      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar'], $_POST['noRandom'], $_POST['question2'], $_POST['midImgAssetId']);
+      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar'], $_POST['noRandom'], $_POST['question2'], $_POST['midImgAssetId'], $_POST['midTableInputArray'], $_POST['optionsTable'], $_POST['optionsTableHeading'], $_POST['midTableHeader'], $optionsAssetsArray);
       ?>
       <?php
     }
@@ -298,7 +301,7 @@ $_GET controls:
         }
         //print_r($questionsCollect);
         //echo "<br>"; print_r($optionsArray);
-        //print_r($_POST);
+        print_r($_POST);
       }
       echo "<pre>";
       //print_r($questions);
@@ -456,12 +459,23 @@ $_GET controls:
                       <div>
                         <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question']?></p>
                         <p class="whitespace-pre-line toggleClass_<?=$question['id']?>"><?=$question['question2']?></p>
-                        <textarea  name="question" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question']?></textarea>
+                        <div class="toggleClass_<?=$question['id']?> hidden">
+                          <textarea  name="question" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question']?></textarea>
 
-                        <label class="toggleClass_<?=$question['id']?> hidden" for="<?='midImgAssetId_input_'.$question['id']?>">midImgAssetId: </label>
-                        <input id="<?='midImgAssetId_input_'.$question['id']?>" class="toggleClass_<?=$question['id']?> hidden" type="text" value="<?=$question['midImgAssetId']?>" name="midImgAssetId">
+                          <label class="" for="<?='midImgAssetId_input_'.$question['id']?>">midImgAssetId: </label>
+                          <input id="<?='midImgAssetId_input_'.$question['id']?>" class="" type="text" value="<?=$question['midImgAssetId']?>" name="midImgAssetId">
 
-                        <textarea  name="question2" class="resize w-full toggleClass_<?=$question['id']?> hidden" spellcheck="true"><?=$question['question2']?></textarea>
+                          <textarea  name="question2" class="resize w-full " spellcheck="true"><?=$question['question2']?></textarea>
+
+                          <p class="<?=($question['midTableArray'] != "") ? 'hidden' : '' ?>">Table: <input type="number" id="midTableRowsInput_<?=$question['id']?>"> X <input type="number" id="midTableColsInput_<?=$question['id']?>"> <button type="button" class="border rounded border-black bg-pink-200 px-1 mx-1" onclick="createTableInput(<?=$question['id']?>)">Make table</button></p>
+                          <div id="midTable_<?=$question['id']?>"></div>
+
+                          <label for="midTableHeaderInput_<?=$question['id']?>">midTable Header:</label>
+                          <input type="text" name="midTableHeader" id="midTableHeaderInput_<?=$question['id']?>" value="<?=$question['midTableHeader']?>">
+                          <br>
+
+                          <input type="text" name="midTableInputArray" id="midTableInputArray_<?=$question['id']?>" value='<?=$question['midTableArray']?>'>
+                        </div>
                       </div>
                       <?php
                         $imgSource = "";
@@ -476,7 +490,7 @@ $_GET controls:
                       ?>
                       <div class="border border-black p-1 m-1 rounded toggleClass_<?=$question['id']?>">
                         <?php
-                        //print_r($question);
+                        print_r($question);
                         if($question['textOnly']==1) {
                           $question1 = explode("\n", $question['question']);
                           foreach($question1 as $p) {
@@ -488,12 +502,39 @@ $_GET controls:
                             $midImgAssets = explode(",", $question['midImgAssetId']);
                             foreach($midImgAssets as $key => $asset) {
                               $midImgAssets[$key] = trim($asset);
-                              $asset = getUploadsInfo($asset)[0];
-                              //print_r($asset);
-                              ?>
-                              <img alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
-                              <?php
+                              if(count(getUploadsInfo($asset)) >0) {
+                                $asset = getUploadsInfo($asset)[0];
+                                //print_r($asset);
+                                ?>
+                                <img alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
+                                <?php
+                              }
                             }
+                          }
+                          if($question['midTableArray'] != "") {
+                            $midTableArray = json_decode($question['midTableArray']);
+                            //print_r($midTableArray);
+                            ?>
+                            <h2 class=" font-bold text-center my-1"><?=$question['midTableHeader']?></h2>
+                            <table class="mx-auto my-1">
+                            <?php
+                            foreach ($midTableArray as $row) {
+                              ?>
+                              <tr>
+                                <?php
+                                foreach($row as $cell) {
+                                  ?>
+                                  <td class="px-4 text-center "><?=$cell?></td>
+                                  <?php
+                                }
+                                ?>
+                              </tr>
+                              <?php
+
+                            }
+                            ?>
+                            </table>
+                            <?php
                           }
                           $question2 = explode("\n", $question['question2']);
                           foreach($question2 as $p) {
@@ -502,13 +543,82 @@ $_GET controls:
                             <?php
                           }
                           $options =(array) json_decode($question['options']);
-                          echo "<ul>";
-                          foreach ($options as $key=>$option) {
+                          if($question['optionsTable'] == 0) {
+                            $optionsAssets = array();
+                            if($question['optionsAssets'] != "") {
+                              $optionsAssets = (array) json_decode($question  ['optionsAssets']);
+                            }
+                            //print_r($optionsAssets);
+                            echo "<ul>";
+                            foreach ($options as $key=>$option) {
+                              $assets = array();
+                              if(isset($optionsAssets[$key]) && $optionsAssets[$key] != "") {
+                                $assets = explode(",",$optionsAssets[$key]);
+                              }
+                              //print_r($assets);
+                              
+                              if(count($assets) == 0) {
+                                ?>
+                                  <li><?=$key?>: <?=$option?></li>
+                                <?php
+                              } else {
+                                ?>
+                                <li>
+                                  <p><?=$key?>: 
+                                  <?php
+                                  foreach ($assets as $asset) {
+                                    $asset = getUploadsInfo($asset)[0];
+                                    //print_r($asset);
+                                    ?>
+                                    <img class="w-1/2 inline" alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>"></p>
+                                    </li>
+                                    <?php                                  
+                                  }
+                                  ?>
+                                  </p>
+                                </li>
+                                <?php
+                              }
+                            }
+                            echo "</ul>";
+                          } else {
                             ?>
-                              <li><?=$key?>: <?=$option?></li>
+                            <table class="mx-auto my-1">
+                              <tr >
+                                <?php
+                                  $headerRow = $question['optionsTableHeading'];
+                                  $headerRow = explode("     ",$headerRow);
+                                  foreach ($headerRow as $cell) {
+                                    ?>
+                                    <td class="px-4 text-center "><?=$cell?></td>
+                                    <?php
+                                  }
+                                ?>
+                              </tr>
+                              <?php
+                                foreach($options as $key=>$option) {
+                                  $optionRows = explode("     ",$option);
+                                  ?>
+                                  <tr>
+                                    <td class="px-4 text-center "><?=$key?></td>
+                                    <?php
+                                      foreach($optionRows as $cell) {
+                                        ?>
+                                        <td class="px-4 text-center ">
+                                          <?=$cell?>
+                                        </td>
+                                        <?php
+                                      }
+                                    ?>
+                                  </tr>
+
+                                  <?php
+                                }
+                              ?>
+                            </table>
+
                             <?php
                           }
-                          echo "</ul>";
                           ?>
                           <?php
                         } else {
@@ -597,14 +707,20 @@ $_GET controls:
                             ?>
                         </div>
                         <div class="toggleClass_<?=$question['id']?> hidden">
-                            <label for="optionFill_<?=$question['id']?>" ;">Option Filler:</label>
+                            
+                        <label for="optionFill_<?=$question['id']?>" ;">Option Filler:</label>
                             <textarea class="w-full border rounded border-pink-300 bg-pink-100" id="optionFill_<?=$question['id']?>" onchange="optionFill(<?=$question['id']?>)"></textarea>
                             <?php
+                            
                             echo "<ul>";
                             $optionCount = 0;
                             foreach ($options as $key=>$option) {
                               ?>
-                              <li><label for="option_<?=$optionCount?>_<?=$question['id']?>"><?=$key?></label>: <textarea id="option_<?=$optionCount?>_<?=$question['id']?>" class="w-full" name="option_<?=$optionCount?>" onfocus="this.select()" spellcheck="true"><?=$option?></textarea></li>
+                              <li>
+                                <label for="option_<?=$optionCount?>_<?=$question['id']?>"><?=$key?></label>: <textarea id="option_<?=$optionCount?>_<?=$question['id']?>" class="w-full" name="option_<?=$optionCount?>" onfocus="this.select()" spellcheck="true"><?=$option?></textarea>
+
+                                
+                              </li>
                               <?php
                               $optionCount ++;
                               
@@ -613,6 +729,26 @@ $_GET controls:
                             //echo $optionCount;
                             ?>
                             <input type="hidden" name="optionCount" value="<?=$optionCount?>">
+                            <?php
+                            $optionsAssets = new SplFixedArray($optionCount);
+                            //print_r($optionsAssets);
+                            if($question['optionsAssets'] != "") {              
+                              $optionsAssets = (array) json_decode($question['optionsAssets']);
+                            }
+                            $optionCount = 0;
+                            //print_r($optionsAssets);
+                            echo "<ul>";
+                            foreach ($optionsAssets as $key=>$option) {
+                              ?>
+                              <li>
+                                <label for="optionAssets_<?=$optionCount?>_<?=$question['id']?>"><?=$key?> Assets:</label>
+                                  <input type="text" id="optionAssets_<?=$optionCount?>_<?=$question['id']?>" name="optionAssets_<?=$optionCount?>" value="<?=$option?>">
+                              </li>
+                              <?php
+                              $optionCount ++;
+                            }
+                            echo "</ul>";
+                            ?>
                         </div>
                       </div>
                       <!-- Text Only Input:-->
@@ -645,6 +781,28 @@ $_GET controls:
                           <p>
                             <input id="noRandom_no_<?=$question['id']?>" name="noRandom" type="radio" value="0" <?=($question['noRandom']==0) ? "checked" : ""?>>
                             <label for="noRandom_no_<?=$question['id']?>">Random Enabled</label>
+                          </p>
+                        </div>
+
+                      </div>
+
+                      <!-- Input for options table -->
+                      <div>
+                        <div class="toggleClass_<?=$question['id']?> hidden">
+                          <label for="optionsTableHeading_<?=$question['id']?>">Options Table Heading:</label>
+                          <input type="text" name="optionsTableHeading" id="optionsTableHeading_<?=$question['id']?>" value="<?=$question['optionsTableHeading']?>">
+                        </div>
+                        <div class="toggleClass_<?=$question['id']?>">
+                          <p><?=($question['optionsTable']==1) ? "Options Table" : ""?><p>
+                        </div>
+                        <div class="toggleClass_<?=$question['id']?> hidden">
+                          <p>
+                            <input id="optionsTable_yes_<?=$question['id']?>" name="optionsTable" type="radio" value="1" <?=($question['optionsTable']==1) ? "checked" : ""?>>
+                            <label for="optionsTable_yes_<?=$question['id']?>">Options in Table</label>
+                          </p>
+                          <p>
+                            <input id="optionsTable_no_<?=$question['id']?>" name="optionsTable" type="radio" value="0" <?=($question['optionsTable']==0) ? "checked" : ""?>>
+                            <label for="optionsTable_no_<?=$question['id']?>">Options as List</label>
                           </p>
                         </div>
 
@@ -695,7 +853,7 @@ $_GET controls:
                             }
                           ?>
                         </p>
-                      <p><button type="button" class="w-full bg-pink-300 rounded border border-black mb-1" onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit", "Hide Edit", "block");'>Edit</button>
+                      <p><button type="button" class="w-full bg-pink-300 rounded border border-black mb-1" onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit", "Hide Edit", "block"); createTableInput(<?=$question['id']?>, <?=$question['midTableArray']?>)'>Edit</button>
                       <input type="submit" class="w-full bg-sky-200 rounded border border-black mb-1 toggleClass_<?=$question['id']?> hidden" name="submit" value= "Update">
                       <p>
                     </td>
@@ -932,6 +1090,79 @@ function optionFill(questionId) {
   }
   console.log(data);
 
+
+}
+
+function createTableInput(questionId = null, preLoad = null) {
+  targetDiv = document.getElementById("midTable_"+questionId);
+  targetDiv.innerHTML="";
+  var rows;
+  var cols;
+  console.log(preLoad);
+  if(preLoad == null) {
+    rows = document.getElementById('midTableRowsInput_'+questionId).value;
+    cols = document.getElementById('midTableColsInput_'+questionId).value;
+  } else {
+    rows = preLoad.length;
+    cols= preLoad[0].length;
+  }
+  //console.log(targetDiv);
+  const tbl = document.createElement('table');
+  for (let i = 0; i < rows; i++) {
+    const tr = tbl.insertRow();
+    for (let j = 0; j < cols; j++) {
+        const td = tr.insertCell();
+        const cellText = document.createTextNode(`Cell I${i}/J${j}`);
+        const cellInput = document.createElement('INPUT');
+        cellInput.setAttribute('type','text');
+        cellInput.setAttribute('name','midTableInput_'+i+'_'+j);
+        cellInput.setAttribute('class', 'midTableInput_'+questionId);
+        if(preLoad != null ) {
+          cellInput.setAttribute('value', preLoad[i][j]);
+
+        }
+        td.appendChild(cellInput);
+        cellInput.setAttribute('onchange', 'compileTableInput(this);')
+
+        //td.innerHTML= '<input name= "midTableInput_'+i+'_'+j+'">';
+    }
+  }
+  targetDiv.appendChild(tbl);
+
+
+  //const forms = document.querySelectorAll('form');
+  //console.log(forms);
+}
+
+function compileTableInput(changedInput=null) {
+  var id = changedInput.classList[0];
+  id = id.replace("midTableInput_", "");
+  id = parseInt(id);
+  //console.log(id);
+  inputTable = changedInput.parentNode.parentNode.parentNode.parentNode;
+  //console.log(inputTable);
+  
+  var rowCount = inputTable.rows.length;
+  var tableArray = [];
+  for(var i=0; i<rowCount; i++) {
+    var row = inputTable.rows[i];
+    //console.log(row);
+    var cellCount = row.cells.length;
+    var cellArray = [];
+    for(var j=0; j<cellCount; j++) {
+      var cell = row.cells[j];
+      //console.log(cell);
+      var input = cell.childNodes[0];
+      cellArray.push(input.value);
+
+    }
+    tableArray.push(cellArray);
+  }
+
+  console.log(tableArray);
+
+  const midTableInput = document.getElementById("midTableInputArray_"+id);
+  midTableInput.value = JSON.stringify(tableArray);
 
 }
 
