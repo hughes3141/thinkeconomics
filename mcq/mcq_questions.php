@@ -185,11 +185,11 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
       $options = ['A', 'B', 'C', 'D', 'E'];
       $optionsArray = array();
       for($x=0; $x<$_POST['optionCount']; $x++) {
-        $optionsArray[$options[$x]] = $_POST['option_'.$x];
+        $optionsArray[$options[$x]] = trim($_POST['option_'.$x]);
       }
       $optionsArray = json_encode($optionsArray);
       
-      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar'], $_POST['noRandom'], $_POST['question2'], $_POST['midImgAssetId'], $_POST['midTableInputArray'], $_POST['optionsTable'], $_POST['optionsTableHeading']);
+      updateMCQquestion($_POST['id'], $userId, $_POST['explanation'], $_POST['question'], $optionsArray, $_POST['topic'], $_POST['topics'], $_POST['answer'], $_POST['keywords'], $_POST['textOnly'], $_POST['relevant'], $_POST['similar'], $_POST['noRandom'], $_POST['question2'], $_POST['midImgAssetId'], $_POST['midTableInputArray'], $_POST['optionsTable'], $_POST['optionsTableHeading'], $_POST['midTableHeader']);
       ?>
       <?php
     }
@@ -467,6 +467,10 @@ $_GET controls:
                           <p class="<?=($question['midTableArray'] != "") ? 'hidden' : '' ?>">Table: <input type="number" id="midTableRowsInput_<?=$question['id']?>"> X <input type="number" id="midTableColsInput_<?=$question['id']?>"> <button type="button" class="border rounded border-black bg-pink-200 px-1 mx-1" onclick="createTableInput(<?=$question['id']?>)">Make table</button></p>
                           <div id="midTable_<?=$question['id']?>"></div>
 
+                          <label for="midTableHeaderInput_<?=$question['id']?>">midTable Header:</label>
+                          <input type="text" name="midTableHeader" id="midTableHeaderInput_<?=$question['id']?>" value="<?=$question['midTableHeader']?>">
+                          <br>
+
                           <input type="text" name="midTableInputArray" id="midTableInputArray_<?=$question['id']?>" value='<?=$question['midTableArray']?>'>
                         </div>
                       </div>
@@ -533,13 +537,54 @@ $_GET controls:
                             <?php
                           }
                           $options =(array) json_decode($question['options']);
-                          echo "<ul>";
-                          foreach ($options as $key=>$option) {
+                          if($question['optionsTable'] == 0) {
+                            echo "<ul>";
+                            foreach ($options as $key=>$option) {
+                              ?>
+                                <li><?=$key?>: <?=$option?></li>
+                              <?php
+                            }
+                            echo "</ul>";
+                          } else {
                             ?>
-                              <li><?=$key?>: <?=$option?></li>
+                            <table class="mx-auto my-1">
+                              <tr >
+                                <?php
+                                  $headerRow = $question['optionsTableHeading'];
+                                  $headerRow = explode("     ",$headerRow);
+                                  foreach ($headerRow as $cell) {
+                                    ?>
+                                    <td class="px-4 text-center "><?=$cell?></td>
+                                    <?php
+                                  }
+                                ?>
+                              </tr>
+                              <?php
+                                foreach($options as $key=>$option) {
+                                  $optionRows = explode("     ",$option);
+                                  ?>
+                                  <tr>
+                                    <td></td>
+                                    <?php
+                                      foreach($optionRows as $cell) {
+                                        ?>
+                                        <td class="px-4 text-center ">
+                                          <?=$cell?>
+                                        </td>
+                                        <?php
+                                      }
+                                    ?>
+ 
+
+                                  </tr>
+
+                                  <?php
+                                }
+                              ?>
+                            </table>
+
                             <?php
                           }
-                          echo "</ul>";
                           ?>
                           <?php
                         } else {

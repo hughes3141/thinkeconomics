@@ -333,7 +333,7 @@ if(str_contains($permissions, "main_admin")) {
       foreach ($questions as $key=>$question) {
         
         $questionInfo = getMCQquestionDetails2($question)[0];
-        //print_r($questionInfo);
+        print_r($questionInfo);
         $questionsDetails[$question] = $questionInfo;
         $imgSource = "https://thinkeconomics.co.uk";
         $rootImgSource = "https://www.thinkeconomics.co.uk";
@@ -352,6 +352,10 @@ if(str_contains($permissions, "main_admin")) {
         $noRandom = 0; 
         if($questionInfo['noRandom'] == 1) {
           $noRandom = 1;
+        }
+        $optionsTable = 0;
+        if($questionInfo['optionsTable'] == 1) {
+          $optionsTable = 1;
         }
 
         $options = $questionInfo['options'];
@@ -444,12 +448,14 @@ if(str_contains($permissions, "main_admin")) {
                 if($textOnly == 0) {
                   $option = $optKey;
                 }
-                ?>
-                <p class="mb-2 ml-5">
-                  <input type="radio" class="-ml-5 mt-1.5 absolute" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
-                <label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
-                </p>
-                <?php
+                if($optionsTable == 0) {                
+                  ?>
+                  <p class="mb-2 ml-5">
+                    <input type="radio" class="-ml-5 mt-1.5 absolute" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
+                  <label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
+                  </p>
+                  <?php
+                }
               }
               ?>
             </div>
