@@ -1407,6 +1407,151 @@ function getMCQCategoryValues($topic=null, $examBoard = null, $year = null, $com
   
 }
 
+function outputMCQquestion($id, $rootImgSource) {
+  /*
+  This function returns parsed HTML for MCQ questions that are enabled as text-only
+  */
+
+  $question = getMCQquestionDetails2($id)[0];
+
+  $question1 = explode("\n", $question['question']);
+  foreach($question1 as $p) {
+    ?>
+    <p class="mb-1"><?=$p?></p>
+    <?php
+  }
+
+  if($question['midImgAssetId'] != "") {
+    $midImgAssets = explode(",", $question['midImgAssetId']);
+    foreach($midImgAssets as $key => $asset) {
+      $midImgAssets[$key] = trim($asset);
+      if(count(getUploadsInfo($asset)) >0) {
+        $asset = getUploadsInfo($asset)[0];
+        //print_r($asset);
+        ?>
+        <img class="w-1/2 mx-auto" alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
+        <?php
+      }
+    }
+  }
+
+  if($question['midTableArray'] != "") {
+    $midTableArray = json_decode($question['midTableArray']);
+    //print_r($midTableArray);
+    ?>
+    <h2 class=" font-bold text-center my-1"><?=$question['midTableHeader']?></h2>
+    <table class="mx-auto my-1">
+    <?php
+    foreach ($midTableArray as $row) {
+      ?>
+      <tr>
+        <?php
+        foreach($row as $cell) {
+          ?>
+          <td class="px-4 text-center "><?=$cell?></td>
+          <?php
+        }
+        ?>
+      </tr>
+      <?php
+
+    }
+    ?>
+    </table>
+    <?php
+  }
+
+  $question2 = explode("\n", $question['question2']);
+  foreach($question2 as $p) {
+    ?>
+    <p class="mb-1"><?=$p?></p>
+    <?php
+  }
+
+  $options =(array) json_decode($question['options']);
+  if($question['optionsTable'] == 0) {
+    $optionsAssets = array();
+    if($question['optionsAssets'] != "") {
+      $optionsAssets = (array) json_decode($question  ['optionsAssets']);
+    }
+    //print_r($optionsAssets);
+    echo "<ul>";
+    foreach ($options as $key=>$option) {
+      $assets = array();
+      if(isset($optionsAssets[$key]) && $optionsAssets[$key] != "") {
+        $assets = explode(",",$optionsAssets[$key]);
+      }
+      //print_r($assets);
+      
+      if(count($assets) == 0) {
+        ?>
+          <li><?=$key?>: <?=$option?></li>
+        <?php
+      } else {
+        ?>
+        <li>
+          <p><?=$key?>: 
+            <?php
+            foreach ($assets as $asset) {
+              $asset = getUploadsInfo($asset)[0];
+              //print_r($asset);
+              ?>
+              <img class="w-1/2 inline" alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>"></p>
+              </li>
+              <?php                                  
+            }
+            ?>
+          </p>
+        </li>
+        <?php
+      }
+    }
+    echo "</ul>";
+  } else {
+    ?>
+    <table class="mx-auto my-1">
+      <tr >
+        <?php
+          $headerRow = $question['optionsTableHeading'];
+          $headerRow = explode("     ",$headerRow);
+          foreach ($headerRow as $cell) {
+            ?>
+            <td class="px-4 text-center "><?=$cell?></td>
+            <?php
+          }
+        ?>
+      </tr>
+      <?php
+        foreach($options as $key=>$option) {
+          $optionRows = explode("     ",$option);
+          ?>
+          <tr>
+            <td class="px-4 text-center "><?=$key?></td>
+            <?php
+              foreach($optionRows as $cell) {
+                ?>
+                <td class="px-4 text-center ">
+                  <?=$cell?>
+                </td>
+                <?php
+              }
+            ?>
+          </tr>
+
+          <?php
+        }
+      ?>
+    </table>
+
+    <?php
+  }
+
+
+
+
+
+}
+
 //SAQ Question handling
 
 function getExercises($table, $topic = null, $userCreate = null) {
