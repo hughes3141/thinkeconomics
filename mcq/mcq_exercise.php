@@ -389,8 +389,8 @@ if(str_contains($permissions, "main_admin")) {
                   }
                   if($questionInfo['midImgAssetId'] != "") {
                     $midImgAssets = explode(",", $questionInfo['midImgAssetId']);
-                    foreach($midImgAssets as $key => $asset) {
-                      $midImgAssets[$key] = trim($asset);
+                    foreach($midImgAssets as $assetKey => $asset) {
+                      $midImgAssets[$assetKey] = trim($asset);
                       if(count(getUploadsInfo($asset)) >0) {
                         $asset = getUploadsInfo($asset)[0];
                         //print_r($asset);
@@ -551,6 +551,7 @@ if(str_contains($permissions, "main_admin")) {
             <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit1" onclick="submit2();">
             <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next1" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
           </div>
+          
 
         </div>
         <?php

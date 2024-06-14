@@ -301,7 +301,7 @@ $_GET controls:
         }
         //print_r($questionsCollect);
         //echo "<br>"; print_r($optionsArray);
-        print_r($_POST);
+        //print_r($_POST);
       }
       echo "<pre>";
       //print_r($questions);
@@ -490,7 +490,7 @@ $_GET controls:
                       ?>
                       <div class="border border-black p-1 m-1 rounded toggleClass_<?=$question['id']?>">
                         <?php
-                        print_r($question);
+                        //print_r($question);
                         if($question['textOnly']==1) {
                           $question1 = explode("\n", $question['question']);
                           foreach($question1 as $p) {
@@ -506,7 +506,7 @@ $_GET controls:
                                 $asset = getUploadsInfo($asset)[0];
                                 //print_r($asset);
                                 ?>
-                                <img alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
+                                <img class="w-1/2" alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
                                 <?php
                               }
                             }
@@ -565,16 +565,16 @@ $_GET controls:
                                 ?>
                                 <li>
                                   <p><?=$key?>: 
-                                  <?php
-                                  foreach ($assets as $asset) {
-                                    $asset = getUploadsInfo($asset)[0];
-                                    //print_r($asset);
+                                    <?php
+                                    foreach ($assets as $asset) {
+                                      $asset = getUploadsInfo($asset)[0];
+                                      //print_r($asset);
+                                      ?>
+                                      <img class="w-1/2 inline" alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>"></p>
+                                      </li>
+                                      <?php                                  
+                                    }
                                     ?>
-                                    <img class="w-1/2 inline" alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>"></p>
-                                    </li>
-                                    <?php                                  
-                                  }
-                                  ?>
                                   </p>
                                 </li>
                                 <?php
@@ -717,19 +717,18 @@ $_GET controls:
                             foreach ($options as $key=>$option) {
                               ?>
                               <li>
-                                <label for="option_<?=$optionCount?>_<?=$question['id']?>"><?=$key?></label>: <textarea id="option_<?=$optionCount?>_<?=$question['id']?>" class="w-full" name="option_<?=$optionCount?>" onfocus="this.select()" spellcheck="true"><?=$option?></textarea>
-
-                                
+                                <label for="option_<?=$optionCount?>_<?=$question['id']?>"><?=$key?></label>: <textarea id="option_<?=$optionCount?>_<?=$question['id']?>" class="w-full" name="option_<?=$optionCount?>" onfocus="this.select()" spellcheck="true"><?=$option?></textarea>                              
                               </li>
                               <?php
                               $optionCount ++;
-                              
                             }
                             echo "</ul>";
                             //echo $optionCount;
                             ?>
                             <input type="hidden" name="optionCount" value="<?=$optionCount?>">
                             <?php
+                            
+                            //This point deals with optionsAssets:
                             $optionsAssets = new SplFixedArray($optionCount);
                             //print_r($optionsAssets);
                             if($question['optionsAssets'] != "") {              

@@ -166,7 +166,7 @@ if($get_selectors['questions']) {
 
 
 
-      <div style="<?=($get_selectors['gridShow'] ==1) ? "display:grid; grid-template-columns: auto auto; grid-gap: 0.25rem; " : ""?>">
+      <div style="<?=($get_selectors['gridShow'] ==1) ? "display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-gap: 0.25rem; " : ""?>">
         <?php
         
           //print_r($quiz);
@@ -251,12 +251,38 @@ if($get_selectors['questions']) {
                 }
                 $options =(array) json_decode($question['options']);
                 if($question['optionsTable'] == 0) {
+                  $optionsAssets = array();
+                  if($question['optionsAssets'] != "") {
+                    $optionsAssets = (array) json_decode($question  ['optionsAssets']);
+                  }
                   //echo "<ul>";
                   foreach ($options as $key=>$option) {
-                    if($key != $option){
+                    $assets = array();
+                    if(isset($optionsAssets[$key]) && $optionsAssets[$key] != "") {
+                      $assets = explode(",",$optionsAssets[$key]);
+                    }
+                    if(count($assets) == 0) {
+                      if($key != $option){
+                        ?>
+                          <p style="<?=($get_selectors['simple']==1) ? "margin: 0px; margin-left:1.25rem;" : ""?>"><?=$key?>: <?=$option?></p>
+                        <?php
+                      }
+                    } else {
                       ?>
-                        <p style="<?=($get_selectors['simple']==1) ? "margin: 0px; margin-left:1.25rem;" : ""?>"><?=$key?>: <?=$option?></p>
+                      <p style="display:table"><span style="display:table-cell; vertical-align:middle"><?=$key?>: </span>
+                        <?php
+                        foreach ($assets as $asset) {
+                          $asset = getUploadsInfo($asset)[0];
+                          //print_r($asset);
+                          ?>
+                          <img class="" style="width: 70%; display: inline;" alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>"></p>
+                          </li>
+                          <?php                                  
+                        }
+                        ?>
+                      </p>
                       <?php
+
                     }
                   }
                   //echo "</ul>";
