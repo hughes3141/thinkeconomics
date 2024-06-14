@@ -490,8 +490,9 @@ $_GET controls:
                       ?>
                       <div class="border border-black p-1 m-1 rounded toggleClass_<?=$question['id']?>">
                         <?php
-                        //print_r($question);
                         if($question['textOnly']==1) {
+                          outputMCQquestion($question['id'], $rootImgSource);
+                          /*
                           $question1 = explode("\n", $question['question']);
                           foreach($question1 as $p) {
                             ?>
@@ -621,6 +622,7 @@ $_GET controls:
                           }
                           ?>
                           <?php
+                          */
                         } else {
                         ?>
                           <p><img class = "" src = "<?=$imgSource?>"></p>
