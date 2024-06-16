@@ -349,10 +349,21 @@ $_GET controls:
             }
             $img = $imgSource."/mcq/question_img/".$imgPath;
 
+            $asset  = getUploadsInfo($question['midImgAssetId'])[0];
+            $midAssetImgSrc = $imgSource.$asset['path'];
+            
+
             $questionDetailsInstance = array(
               'id'=>$question['id'],
               'No'=>$question['No'],
-              'question'=>preg_replace( "/[^a-zA-Z0-9]+/", '', $question['question']),
+              //'question'=>preg_replace( "/[^a-zA-Z0-9]+/", '', $question['question']),
+              //'question2'=>preg_replace( "/[^a-zA-Z0-9]+/", '', $question['question2']),
+
+              'question'=> $question['question'],
+              'question2'=> $question['question2'],
+              'midImgAssetId' => $question['midImgAssetId'],
+              'midImgPath' =>  $midAssetImgSrc,
+
               'path'=>$img,
               'Answer' =>$question['Answer'],
               'examBoard' =>$question['examBoard'],
@@ -361,7 +372,8 @@ $_GET controls:
               'component'=>$question['component'],
               'series'=>$question['series'],
               'Topic'=>$question['Topic'],
-              'questionNo'=>$question['questionNo']
+              'questionNo'=>$question['questionNo'],
+              'textOnly' => $question['textOnly']
             );
             $questionDetails[$question['id']] = $questionDetailsInstance;
 
@@ -398,7 +410,21 @@ $_GET controls:
                 <label for="quizSelect_<?=$question['id']?>">Include</label>
               </p>
               <p class="text-xs"><?=$question['question']?></p>
-              <img src="<?=$img?>" class="" alt = "<?=$question['No']?>">
+              <?php
+              if($question['textOnly'] == 1) {
+                ?>
+                <div class="text-xs">
+                  <?php
+                  outputMCQquestion($question['id'], $imgSource);
+                  ?>
+                </div>
+                <?php
+              } else {
+                ?>
+                <img src="<?=$img?>" class="" alt = "<?=$question['No']?>">
+                <?php
+              }
+              ?>
               <div class="text-xs">
                 
                 <p>Answer: <?=$question['Answer']?></p>
@@ -527,7 +553,7 @@ $_GET controls:
       p2.classList.add("text-xs");
 
       const questionDetails = questions[selectedQuestions[i]];
-      //console.log(questionDetails);
+      console.log(questionDetails);
       var p3 = document.createElement('p');
       p3.innerHTML = questionDetails.examBoard;
       p3.innerHTML += " "+questionDetails.qualLevel;
@@ -537,6 +563,16 @@ $_GET controls:
       p3.innerHTML += " Q"+questionDetails.questionNo;
       p3.innerHTML += " "+questionDetails.Topic;
       p3.classList.add("text-xs");
+      
+      var p4 = document.createElement('p');
+      p4.innerHTML = questionDetails.question;
+
+      var midImg = document.createElement('img');
+      midImg.src = questionDetails.midImgPath;
+
+      var p5 = document.createElement('p5');
+      p5.innerHTML += " "+questionDetails.question2;
+
       button.innerHTML = "Remove";
       button.className = "border border-black mx-1 px-1 bg-pink-200 rounded";
       button.setAttribute("onclick", "removeItem(selectedQuestions, "+selectedQuestions[i]+"); previewPopulate();")
@@ -547,8 +583,15 @@ $_GET controls:
       img.alt= questions[selectedQuestions[i]].No;
       div2.appendChild(p);
       div2.appendChild(p3);
+      if(questionDetails.textOnly == 1) {
+        div2.appendChild(p4);
+        div2.appendChild(midImg);
+        div2.appendChild(p5);
+      }
       div2.appendChild(p2);
-      div2.appendChild(img);
+      if(questionDetails.textOnly == 0) {
+        div2.appendChild(img);
+      }
       div.appendChild(div2);
 
       
