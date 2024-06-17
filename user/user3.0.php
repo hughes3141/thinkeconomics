@@ -230,9 +230,13 @@ include "../header_tailwind.php";
             <h2 class="font-mono text-lg bg-pink-200 pl-1">News Management</h2>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/news_input.php">News Input</a></p>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/news_list.php">News List</a></p>
+              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/questions.php?articleId=">Questions Page</a></p>
+              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/newsQuestionsList.php">News Questions Manager</a></p>
+              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/printfriendly.php">Print Friendly</a></p>
 
-            <h2 class="font-mono text-lg bg-pink-200 pl-1">Notes Management</h2>
+            <h2 class="font-mono text-lg bg-pink-200 pl-1">Page Management</h2>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../notes/notes_list.php">Notes List Update</a></p>
+              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../exercises/list_manager.php">Exercises List Update</a></p>
 
             <h2 class="font-mono text-lg bg-pink-200 pl-1">Revision Management</h2>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../revision/flashcard_collection_entry.php">Flashcard Collection Entry</a></p>
@@ -250,6 +254,7 @@ include "../header_tailwind.php";
                 <p class="ml-2 font-bold">New resources</p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../assign_create1.0.php">Assignment Create and List</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../user/user_work_review.php">User Work Review (dev)</a></p>
+                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../user/assignswitch.php">Assignment Switcher</a></p>
 
               <h3 class="font-mono text-md bg-pink-100 pl-1">Multiple Choice Questions</h3>
                 <p class="ml-2 font-bold hidden">Old resources</p>

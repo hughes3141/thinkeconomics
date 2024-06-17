@@ -550,6 +550,14 @@ textarea, input, select {
   top: 3rem;
 }
 
+.top-20 {
+  top: 5rem;
+}
+
+.right-2 {
+  right: 0.5rem;
+}
+
 .left-5 {
   left: 1.25rem;
 }
@@ -574,10 +582,6 @@ textarea, input, select {
   bottom: 0.25rem;
 }
 
-.top-20 {
-  top: 5rem;
-}
-
 .top-16 {
   top: 4rem;
 }
@@ -598,6 +602,14 @@ textarea, input, select {
   z-index: 20;
 }
 
+.z-0 {
+  z-index: 0;
+}
+
+.col-span-5 {
+  grid-column: span 5 / span 5;
+}
+
 .col-span-2 {
   grid-column: span 2 / span 2;
 }
@@ -614,8 +626,16 @@ textarea, input, select {
   float: none;
 }
 
+.clear-right {
+  clear: right;
+}
+
 .m-8 {
   margin: 2rem;
+}
+
+.m-1 {
+  margin: 0.25rem;
 }
 
 .m-2 {
@@ -624,10 +644,6 @@ textarea, input, select {
 
 .m-3 {
   margin: 0.75rem;
-}
-
-.m-1 {
-  margin: 0.25rem;
 }
 
 .mx-auto {
@@ -693,11 +709,6 @@ textarea, input, select {
 .my-3 {
   margin-top: 0.75rem;
   margin-bottom: 0.75rem;
-}
-
-.mx-5 {
-  margin-left: 1.25rem;
-  margin-right: 1.25rem;
 }
 
 .mb-8 {
@@ -840,6 +851,10 @@ textarea, input, select {
   margin-left: -2.25rem;
 }
 
+.ml-4 {
+  margin-left: 1rem;
+}
+
 .block {
   display: block;
 }
@@ -920,10 +935,6 @@ textarea, input, select {
   height: 4rem;
 }
 
-.h-60 {
-  height: 15rem;
-}
-
 .h-screen {
   height: 100vh;
 }
@@ -940,8 +951,16 @@ textarea, input, select {
   height: 9rem;
 }
 
+.h-32 {
+  height: 8rem;
+}
+
 .max-h-80 {
   max-height: 20rem;
+}
+
+.max-h-screen {
+  max-height: 100vh;
 }
 
 .w-full {
@@ -984,6 +1003,10 @@ textarea, input, select {
   width: 33.333333%;
 }
 
+.w-1\/2 {
+  width: 50%;
+}
+
 .w-auto {
   width: auto;
 }
@@ -996,8 +1019,8 @@ textarea, input, select {
   width: 20%;
 }
 
-.w-1\/2 {
-  width: 50%;
+.w-11\/12 {
+  width: 91.666667%;
 }
 
 .w-3\/4 {
@@ -1096,6 +1119,10 @@ textarea, input, select {
   list-style-position: inside;
 }
 
+.list-outside {
+  list-style-position: outside;
+}
+
 .list-none {
   list-style-type: none;
 }
@@ -1110,6 +1137,10 @@ textarea, input, select {
 
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-cols-6 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
 .grid-cols-4 {
@@ -1231,6 +1262,10 @@ textarea, input, select {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.text-ellipsis {
+  text-overflow: ellipsis;
 }
 
 .whitespace-nowrap {
@@ -1853,14 +1888,14 @@ textarea, input, select {
   color: rgb(7 89 133 / var(--tw-text-opacity));
 }
 
-.text-sky-500 {
-  --tw-text-opacity: 1;
-  color: rgb(14 165 233 / var(--tw-text-opacity));
-}
-
 .text-pink-700 {
   --tw-text-opacity: 1;
   color: rgb(190 24 93 / var(--tw-text-opacity));
+}
+
+.text-sky-500 {
+  --tw-text-opacity: 1;
+  color: rgb(14 165 233 / var(--tw-text-opacity));
 }
 
 .underline {
@@ -2190,6 +2225,10 @@ textarea, input, select {
 }
 
 @media (min-width: 768px) {
+  .md\:float-right {
+    float: right;
+  }
+
   .md\:mb-6 {
     margin-bottom: 1.5rem;
   }
@@ -2200,6 +2239,10 @@ textarea, input, select {
 
   .md\:ml-9 {
     margin-left: 2.25rem;
+  }
+
+  .md\:ml-1 {
+    margin-left: 0.25rem;
   }
 
   .md\:block {
@@ -2248,6 +2291,10 @@ textarea, input, select {
 
   .md\:w-3\/4 {
     width: 75%;
+  }
+
+  .md\:w-1\/2 {
+    width: 50%;
   }
 
   .md\:grid-cols-2 {
@@ -2315,6 +2362,10 @@ textarea, input, select {
 @media (min-width: 1024px) {
   .lg\:top-20 {
     top: 5rem;
+  }
+
+  .lg\:top-28 {
+    top: 7rem;
   }
 
   .lg\:col-span-2 {
@@ -2411,6 +2462,10 @@ textarea, input, select {
 
   .lg\:p-0 {
     padding: 0px;
+  }
+
+  .lg\:p-4 {
+    padding: 1rem;
   }
 
   .lg\:pt-32 {

@@ -57,7 +57,7 @@ if(str_contains($permissions, "main_admin")) {
 
 if($_SERVER['REQUEST_METHOD']==='POST') {}
 
-$excludedYear = 2023;
+$excludedYear = 2024;
 
 /*
 
@@ -500,7 +500,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                     if($showGuide) {
                       ?>
                       <div class="guideToggle_<?=$question2['id']?> hidden mb-2 border-2 border-sky-200 rounded px-1">
-                        <h3 class="text-lg bg-sky-200 -mx-1">Question Guidance</h3>
+                        <h3 class="text-lg bg-sky-200 -mx-1 mb-2">Question Guidance</h3>
                         <?php
                         $guide = $question2['guide'];
                         $guide = explode("\n", $guide);
@@ -532,7 +532,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                             $asset = getUploadsInfo($asset)[0];
                               //print_r($asset);
                               ?>
-                              <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+                              <img class="lg:w-1/2 mx-auto" alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
                               <?php
                             }
                         }

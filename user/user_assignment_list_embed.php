@@ -81,7 +81,7 @@ Used in:
                         $seconds = round($seconds,0);
 
                         $late = null;
-                        if($response['datetime'] > $assignment['dateDue'] && $key == 0) {
+                        if($response['datetime'] > $assignment['dateDue'] && $key == 0 && $response['assignID_mod'] == 0) {
                           $late = 1;
                         }
 

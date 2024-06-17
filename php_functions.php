@@ -475,7 +475,7 @@ function getUpcomingAssignments($groupId) {
 }
 
 
-function getAssignmentsArray($groupIdArray, $startDate = null, $markBookShow = 1) {
+function getAssignmentsArray($groupIdArray, $startDate = null, $markBookShow = 1, $quizId = null) {
 
   /*
   This function generates an array of assigned work. Input is an array (in JSON form) of the groups that a studnet is listed in.
@@ -521,6 +521,14 @@ function getAssignmentsArray($groupIdArray, $startDate = null, $markBookShow = 1
   if($markBookShow == 1) {
     $sql .= " AND markBookShow = 1 ";
   }
+
+  if(!is_null($quizId)) {
+    $sql .= " AND quizid = ? ";
+    array_push($groupIdSql, $quizId);
+    $paramType .= "i";
+  }
+
+  
 
   $sql .= " ORDER BY dateDue ";
 
@@ -602,7 +610,7 @@ function getMCQquizzesByTopic($topic = null) {
 
 }
 
-function getMCQquizDetails($id=null, $topic = null, $questionId = null, $userCreate = null, $active = null, $topicQuiz = null) {
+function getMCQquizDetails($id=null, $topic = null, $questionId = null, $userCreate = null, $active = null, $topicQuiz = null, $orderBy = null, $mcqHomePage = null, $pastPaper = null) {
   /*
   This function is updated from previous two, used to pull information for MCQ quizzes
   */
@@ -668,6 +676,34 @@ function getMCQquizDetails($id=null, $topic = null, $questionId = null, $userCre
     array_push($bindArray, $topicQuiz);
   }
 
+  if($mcqHomePage) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " mcqHomePage = 1 ";
+  }
+
+  if(!is_null($pastPaper)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " pastPaper = ? ";
+    $params .= "i";
+    array_push($bindArray, $pastPaper);
+  }
+
+  if(!is_null($orderBy)) {
+    $sql .= " ORDER BY ";
+    if($orderBy == "topic") {
+      $sql .= " topic, mcqHomePage DESC, topicOrder ";
+    }
+    if($orderBy == "examBoard") {
+      $sql .= " ppExamBoard, ppYear ";
+    }
+  }
+
+  //echo $sql;
+  //echo $params;
+  //print_r($bindArray);
+
   $stmt = $conn->prepare($sql);
   if(count($bindArray)>0) {
     $stmt->bind_param($params, ...$bindArray);
@@ -684,7 +720,7 @@ function getMCQquizDetails($id=null, $topic = null, $questionId = null, $userCre
 
 }
 
-function updateMCQquizDetails($id, $topic, $quizName, $notes, $description, $active, $topicQuiz) {
+function updateMCQquizDetails($id, $topic, $quizName, $notes, $description, $active, $topicQuiz, $mcqHomePage, $topicOrder, $pastPaper, $ppYear, $ppExamBoard) {
   /*
   A function to update values in mcq_quizzes table
   Used in:
@@ -694,10 +730,10 @@ function updateMCQquizDetails($id, $topic, $quizName, $notes, $description, $act
   global $conn;
 
   $sql = " UPDATE mcq_quizzes 
-          SET topic = ?, quizName = ?, notes = ?, description = ?, active = ?, topicQuiz = ?
+          SET topic = ?, quizName = ?, notes = ?, description = ?, active = ?, topicQuiz = ?, mcqHomePage = ?, topicOrder = ?, pastPaper = ?, ppYear = ?, ppExamBoard = ?
           WHERE id = ?";
           $stmt=$conn->prepare($sql);
-  $stmt->bind_param("ssssiii", $topic, $quizName, $notes, $description, $active, $topicQuiz, $id);
+  $stmt->bind_param("ssssiiiiiisi", $topic, $quizName, $notes, $description, $active, $topicQuiz, $mcqHomePage, $topicOrder, $pastPaper, $ppYear, $ppExamBoard, $id);
   $stmt->execute();
 
 
@@ -849,7 +885,7 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null, $k
 
 }
 
-function getMCQquestionDetails2($id = null, $questionNo = null, $topic = null, $keyword = null, $search = null, $orderBy = null, $examBoard = null, $year = null) {
+function getMCQquestionDetails2($id = null, $questionNo = null, $topic = null, $keyword = null, $search = null, $orderBy = null, $examBoard = null, $year = null, $component = null, $unitName = null) {
 
   /*
   This function will call details for individual MCQ questions.
@@ -867,7 +903,7 @@ function getMCQquestionDetails2($id = null, $questionNo = null, $topic = null, $
   $bindArray = array();
   $conjoiner = 0;
 
-  $sql ="SELECT q.id, q.No, q.Answer, q.Topic, q.topics, q.keywords, q.question, q.options, q.explanation, q.examBoard, q.component, q.assetId, q.unitName, q.qualLevel, q.textOnly, q.topicsAQA, q.topicsEdexcel, q.topicsOCR, q.topicsCIE, q.series, q.year, q.questionNo, q.noRandom, q.similar, q.relevant, a.path
+  $sql ="SELECT q.id, q.No, q.Answer, q.Topic, q.topics, q.keywords, q.question, q.question2, q.options, q.optionsAssets,q.explanation, q.examBoard, q.component, q.assetId, q.unitName, q.qualLevel, q.textOnly, q.topicsAQA, q.topicsEdexcel, q.topicsOCR, q.topicsCIE, q.series, q.year, q.questionNo, q.noRandom, q.similar, q.relevant, q.midImgAssetId, q.midTableArray, q.optionsTable, q.optionsTableHeading, q.midTableHeader, a.path
         FROM question_bank_3 q
         LEFT JOIN upload_record a
           ON a.id = q.assetId";
@@ -895,7 +931,8 @@ function getMCQquestionDetails2($id = null, $questionNo = null, $topic = null, $
   if($topic) {
     $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
     $conjoiner = 1;
-    $sql .= " topic = ?";
+    $sql .= " topic LIKE ? ";
+    $topic = $topic."%";
     $params .= "s";
     array_push($bindArray, $topic);
   }
@@ -941,9 +978,30 @@ function getMCQquestionDetails2($id = null, $questionNo = null, $topic = null, $
     array_push($bindArray, $year);
   }
 
+  if(!is_null($component)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " component = ? ";
+    $params .= "i";
+    array_push($bindArray, $component);
+  }
+
+  if(!is_null($unitName)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " unitName LIKE ? ";
+    $unitName = $unitName."%";
+    $params .= "s";
+    array_push($bindArray, $unitName);
+  }
+
   if($orderBy) {
     if($orderBy == "question") {
       $sql .= " ORDER BY TRIM(question) ";
+    }
+
+    if($orderBy == "year") {
+      $sql .= " ORDER BY year ";
     }
   }
 
@@ -985,7 +1043,7 @@ function updateMCQquestionExplanation($id, $explanation) {
 
 }
 
-function updateMCQquestion($id, $userId, $explanation, $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $relevant, $similar, $noRandom) {
+function updateMCQquestion($id, $userId, $explanation, $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $relevant, $similar, $noRandom, $question2, $midImgAssetId, $midTableArray, $optionsTable, $optionsTableHeading, $midTableHeader, $optionsAssets) {
   /*
   Used to update MCQ question information with id = $id
 
@@ -1026,15 +1084,15 @@ function updateMCQquestion($id, $userId, $explanation, $question, $optionsJSON, 
   
   //Update other values that are not explanation:
   $sql = "UPDATE question_bank_3
-          SET question = ?, options = ?, Topic = ?, topics = ?, Answer = ?, keywords = ?, textOnly = ?, relevant = ?, similar = ?, similar_array = ?, noRandom = ?
+          SET question = ?, options = ?, Topic = ?, topics = ?, Answer = ?, keywords = ?, textOnly = ?, relevant = ?, similar = ?, similar_array = ?, noRandom = ?, question2 = ?, midImgAssetId = ?, midTableArray = ?, optionsTable = ?, optionsTableHeading = ?, midTableHeader = ?, optionsAssets = ?
           WHERE id = ?";
   $stmt=$conn->prepare($sql);
-  $stmt->bind_param("ssssssiissii", $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $relevant, $similar, $similar_array, $noRandom, $id);
+  $stmt->bind_param("ssssssiississsisssi", $question, $optionsJSON, $topic, $topics, $answer, $keywords, $textOnly, $relevant, $similar, $similar_array, $noRandom, $question2, $midImgAssetId, $midTableArray, $optionsTable, $optionsTableHeading, $midTableHeader, $optionsAssets, $id);
   $stmt->execute();
 
 }
 
-function insertMCQquestion($userCreate, $questionCode, $questionNo, $examBoard, $level, $unitNo, $unitName, $year, $questionText, $options, $answer, $assetId, $topic, $topics, $keyWords) {
+function insertMCQquestion($userCreate, $questionCode, $questionNo, $examBoard, $level, $unitNo, $unitName, $year, $questionText, $options, $answer, $assetId, $topic, $topics, $keyWords, $question2) {
   /*
   This function inserts a new MCQ question.
   Used in:
@@ -1047,10 +1105,10 @@ function insertMCQquestion($userCreate, $questionCode, $questionNo, $examBoard, 
   $active = 1;
 
   $sql = "INSERT INTO question_bank_3
-          (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, options, Answer, assetId, Topic, topics, keywords, dateCreate, active)
-          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+          (userCreate, No, questionNo, examBoard, qualLevel, component, unitName, year, question, options, Answer, assetId, Topic, topics, keywords, dateCreate, active, question2)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("issssssssssissssi", $userCreate, $questionCode, $questionNo, $examBoard, $level, $unitNo, $unitName, $year, $questionText, $options, $answer, $assetId, $topic, $topics, $keyWords, $datetime, $active);
+  $stmt->bind_param("issssssssssissssis", $userCreate, $questionCode, $questionNo, $examBoard, $level, $unitNo, $unitName, $year, $questionText, $options, $answer, $assetId, $topic, $topics, $keyWords, $datetime, $active, $question2);
   $stmt->execute();
 
 
@@ -1349,6 +1407,151 @@ function getMCQCategoryValues($topic=null, $examBoard = null, $year = null, $com
   
 }
 
+function outputMCQquestion($id, $rootImgSource) {
+  /*
+  This function returns parsed HTML for MCQ questions that are enabled as text-only
+  */
+
+  $question = getMCQquestionDetails2($id)[0];
+
+  $question1 = explode("\n", $question['question']);
+  foreach($question1 as $p) {
+    ?>
+    <p class="mb-1"><?=$p?></p>
+    <?php
+  }
+
+  if($question['midImgAssetId'] != "") {
+    $midImgAssets = explode(",", $question['midImgAssetId']);
+    foreach($midImgAssets as $key => $asset) {
+      $midImgAssets[$key] = trim($asset);
+      if(count(getUploadsInfo($asset)) >0) {
+        $asset = getUploadsInfo($asset)[0];
+        //print_r($asset);
+        ?>
+        <img class="w-1/2 mx-auto" alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
+        <?php
+      }
+    }
+  }
+
+  if($question['midTableArray'] != "") {
+    $midTableArray = json_decode($question['midTableArray']);
+    //print_r($midTableArray);
+    ?>
+    <h2 class=" font-bold text-center my-1"><?=$question['midTableHeader']?></h2>
+    <table class="mx-auto my-1">
+    <?php
+    foreach ($midTableArray as $row) {
+      ?>
+      <tr>
+        <?php
+        foreach($row as $cell) {
+          ?>
+          <td class="px-4 text-center "><?=$cell?></td>
+          <?php
+        }
+        ?>
+      </tr>
+      <?php
+
+    }
+    ?>
+    </table>
+    <?php
+  }
+
+  $question2 = explode("\n", $question['question2']);
+  foreach($question2 as $p) {
+    ?>
+    <p class="mb-1"><?=$p?></p>
+    <?php
+  }
+
+  $options =(array) json_decode($question['options']);
+  if($question['optionsTable'] == 0) {
+    $optionsAssets = array();
+    if($question['optionsAssets'] != "") {
+      $optionsAssets = (array) json_decode($question  ['optionsAssets']);
+    }
+    //print_r($optionsAssets);
+    echo "<ul>";
+    foreach ($options as $key=>$option) {
+      $assets = array();
+      if(isset($optionsAssets[$key]) && $optionsAssets[$key] != "") {
+        $assets = explode(",",$optionsAssets[$key]);
+      }
+      //print_r($assets);
+      
+      if(count($assets) == 0) {
+        ?>
+          <li><?=$key?>: <?=$option?></li>
+        <?php
+      } else {
+        ?>
+        <li>
+          <p><?=$key?>: 
+            <?php
+            foreach ($assets as $asset) {
+              $asset = getUploadsInfo($asset)[0];
+              //print_r($asset);
+              ?>
+              <img class="w-1/2 inline" alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>"></p>
+              </li>
+              <?php                                  
+            }
+            ?>
+          </p>
+        </li>
+        <?php
+      }
+    }
+    echo "</ul>";
+  } else {
+    ?>
+    <table class="mx-auto my-1">
+      <tr >
+        <?php
+          $headerRow = $question['optionsTableHeading'];
+          $headerRow = explode("     ",$headerRow);
+          foreach ($headerRow as $cell) {
+            ?>
+            <td class="px-4 text-center "><?=$cell?></td>
+            <?php
+          }
+        ?>
+      </tr>
+      <?php
+        foreach($options as $key=>$option) {
+          $optionRows = explode("     ",$option);
+          ?>
+          <tr>
+            <td class="px-4 text-center "><?=$key?></td>
+            <?php
+              foreach($optionRows as $cell) {
+                ?>
+                <td class="px-4 text-center ">
+                  <?=$cell?>
+                </td>
+                <?php
+              }
+            ?>
+          </tr>
+
+          <?php
+        }
+      ?>
+    </table>
+
+    <?php
+  }
+
+
+
+
+
+}
+
 //SAQ Question handling
 
 function getExercises($table, $topic = null, $userCreate = null) {
@@ -1548,7 +1751,7 @@ function getNewsArticlesByTopic($topic) {
   return $articles;
 }
 
-function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null, $userCreate = null, $limit = null, $searchFor = null, $link = null, $bbcPerennial = null, $active = null, $withImages = null, $video = null, $audio = null) {
+function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null, $endDate=null, $orderBy = null, $userCreate = null, $limit = null, $searchFor = null, $link = null, $bbcPerennial = null, $active = null, $withImages = null, $video = null, $audio = null, $hasQuestions = null) {
   global $conn;
   $articles = array();
 
@@ -1675,6 +1878,12 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
     $sql .= " audio = 1 ";
   }
 
+  if($hasQuestions) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " questions_array <> '' ";
+  }
+
   
 
 
@@ -1718,12 +1927,12 @@ function getNewsArticles($id =null, $keyword=null, $topic=null, $startDate=null,
 
 }
 
-function insertNewsArticle($headline, $hyperlink, $datePublished, $explanation, $explanation_long, $topic, $datetime, $keyWords, $userid, $active) {
+function insertNewsArticle($headline, $hyperlink, $datePublished, $explanation, $explanation_long, $topic, $datetime, $keyWords, $userid, $active, $video, $audio) {
   global $conn;
 
-  $sql = "INSERT INTO news_data (headline, link, datePublished, explanation, explanation_long, topic, keyWords, dateCreated, user, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  $sql = "INSERT INTO news_data (headline, link, datePublished, explanation, explanation_long, topic, keyWords, dateCreated, user, active, video, audio) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("ssssssssii", $headline, $hyperlink, $datePublished, $explanation, $explanation_long, $topic, $keyWords, $datetime, $userid, $active);
+  $stmt->bind_param("ssssssssiiii", $headline, $hyperlink, $datePublished, $explanation, $explanation_long, $topic, $keyWords, $datetime, $userid, $active, $video, $audio);
   $stmt->execute();
   return "New record created successfully";
 
@@ -1884,6 +2093,161 @@ function updateNewsArticle($id, $headline = null, $datePublished = null, $explan
 
 
 
+
+}
+
+function insertNewsQuestion($question, $questionId, $answer, $answerId, $userId, $topic, $articleId) {
+  /*
+  Used in:
+  -newsQuestionsList.php
+  */
+
+  global $conn;
+  
+  $sql = "INSERT INTO news_questions
+          (question, model_answer, questionAssetId, answerAssetId, userCreate, topic, articleId)VALUES (?,?,?,?,?,?,?)";
+   $stmt = $conn->prepare($sql);
+   $stmt->bind_param("ssssisi", $question, $answer, $questionId, $answerId, $userId, $topic, $articleId);
+   $stmt->execute();
+   return "New record created successfully";
+
+
+
+}
+
+function updateNewsQuestion($id, $userId, $question = null, $questionId = null, $answer = null, $answerId = null, $topic = null, $articleId = null) {
+  /*
+  Function to update news_questions with new value for given id
+  Used in:
+  -newsQuestionsList.php
+  */
+
+  global $conn;
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+
+  $sql = "UPDATE news_questions
+          SET ";
+
+  if(!is_null($question)) {
+    $sql .= " question = ? ";
+    $params .= "s";
+    array_push($bindArray, $question);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($questionId)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " questionAssetId = ? ";
+    $params .= "s";
+    array_push($bindArray, $questionId);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($answer)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " model_answer = ? ";
+    $params .= "s";
+    array_push($bindArray, $answer);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($answerId)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " answerAssetId = ? ";
+    $params .= "s";
+    array_push($bindArray, $answerId);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($topic)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " topic = ? ";
+    $params .= "s";
+    array_push($bindArray, $topic);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($articleId)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " articleId = ? ";
+    $params .= "i";
+    array_push($bindArray, $articleId);
+    $conjoiner = 1;
+  }
+
+  $sql .= " WHERE id = ? ";
+  $params .= "i";
+  array_push($bindArray, $id);
+
+  //echo $sql;
+  //echo $params;
+  //print_r($bindArray);
+
+  $stmt=$conn->prepare($sql);
+  //Note that this only runs if $bindArray is greater than 1 because 'WHERE id = ?' is not dependent on input. Usually '  if(count($bindArray)>0) '
+  if(count($bindArray)>1) {
+    $stmt->bind_param($params, ...$bindArray);
+    //$stmt->execute();
+
+  }
+
+  //Check to see that the user has the right to update:
+
+  $newsQuestion = getNewsQuestion($id)[0];
+  $newsQuestionOwner = $newsQuestion['userCreate'];
+  
+
+  if($newsQuestionOwner == $userId) {
+    $stmt->execute();
+    return "Record ".$id." updated successfully";
+  } else {
+    return "Error: User does not have editing permissions.".$newsQuestionOwner." ".$userId;
+
+  }
+  
+  return $newsQuestion;
+
+
+
+  
+  
+
+}
+
+function getNewsQuestion($id=null) {
+  global $conn;
+  $results = array();
+
+  $bindArray = array();
+  $params = "";
+  $conjoiner = 0;
+
+  $sql = "SELECT * from news_questions ";
+
+  if(!is_null($id)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " id = ? ";
+    array_push($bindArray, $id);
+    $params .= "i";
+
+  }
+
+  $stmt=$conn->prepare($sql);
+  if(count($bindArray) > 0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+
+  return $results;
 
 }
 
@@ -3760,6 +4124,45 @@ function updateTopicsGeneralList($id, $code, $name, $subjectId, $levelsArray) {
     return "Record $id updated";
 }
 
+// simple topics:
+
+function getTopics($id=null) {
+  global $conn;
+  $results = array();
+
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+  
+  $sql = "SELECT *
+          FROM topics ";
+
+  if(!is_null($id)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " id = ?";
+    $params .= "i";
+    array_push($bindArray, $id);
+  }
+
+  $sql .= " ORDER BY topicCode ";
+
+  $stmt = $conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+
+  return $results;
+
+}
+
 
 
 function getExamBoards($id = null) {
@@ -4514,7 +4917,7 @@ function getMCQquizResults($userId, $responseId = null) {
 
 }
 
-function getMCQquizResults2($userId = null, $assignId = null) {
+function getMCQquizResults2($userId = null, $assignId = null, $quizId = null) {
   /*
   Updated version of getMCQquizResults() to use up-to-date standard with bindArray etc.
 
@@ -4555,9 +4958,20 @@ function getMCQquizResults2($userId = null, $assignId = null) {
     $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
     $sql .= $conjoin;
     $sql .= $tableAlias;
-    $sql .= "assignId = ? ";
-    $params .= "i";
+    $sql .= "(assignId = ? OR assignId_mod = ?) ";
+    $params .= "ii";
     array_push($bindArray, $assignId);
+    array_push($bindArray, $assignId);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($quizId)) {
+    $conjoin = ($conjoiner == 0) ? " WHERE " : " AND ";
+    $sql .= $conjoin;
+    //$sql .= $tableAlias;
+    $sql .= "q.id = ? ";
+    $params .= "i";
+    array_push($bindArray, $quizId);
     $conjoiner = 1;
   }
 
@@ -4579,6 +4993,35 @@ function getMCQquizResults2($userId = null, $assignId = null) {
   }
 
   return $results;
+
+
+}
+
+function updateMCQquizResults($id, $assignID_mod) {
+  //Used to update table results when studnet result instances are to be updated for another assignment, e.g. when switching classes. Updates the assignID_mod 
+
+  /*
+  Used in:
+  -assignswitch.php
+  */
+
+  global $conn;
+
+  $sql = "UPDATE responses
+          SET assignID_mod = ?
+          WHERE id = ?";
+
+  //echo $sql;
+  //var_dump($assignID_mod);
+  //var_dump($id);
+
+  
+  $stmt = $conn->prepare($sql);
+
+  $stmt->bind_param("ii", $assignID_mod, $id);
+  $stmt->execute();
+  return "Record ".$id." updated with assignId ".$assignID_mod;
+
 
 
 }
@@ -5255,4 +5698,187 @@ function shuffle_assoc($list) {
 }
 
 
+
+
+function insertExerciseList($name, $link, $topic) {
+  /*
+  This function inserts new Exercise titles into exercise_list
+  Used in:
+  -exercises/list_manager.php
+  */
+
+  global $conn;
+
+  $sql = "INSERT INTO exercise_list
+          (name, link, topic, topicOrder)
+          VALUES (?,?,?,?)";
+  $topicOrder = getExerciseListTopicCount($topic);
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("sssi", $name, $link, $topic, $topicOrder);
+  $stmt->execute();
+}
+
+function updateExerciseList($id, $name = null, $link = null, $topic = null, $active = null, $topicOrder = null) {
+
+  /*
+  This function updates exercise_list with values for given id.
+  Used in:
+  -list-manager.php
+  */
+  global $conn;
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+
+  $sql = "UPDATE exercise_list
+          SET ";
+
+  if(!is_null($name)) {
+    $sql .= " name =? ";
+    $params .= "s";
+    array_push($bindArray, $name);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($link)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " link = ? ";
+    $params .= "s";
+    array_push($bindArray, $link);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($topic)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " topic = ? ";
+    $params .= "s";
+    array_push($bindArray, $topic);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($active)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " active = ? ";
+    $params .= "i";
+    array_push($bindArray, $active);
+    $conjoiner = 1;
+  }
+
+  if(!is_null($topicOrder)) {
+    $sql .= ($conjoiner ==1) ? ", " : "";
+    $sql .= " topicOrder = ? ";
+    $params .= "i";
+    array_push($bindArray, $topicOrder);
+    $conjoiner = 1;
+  }
+
+  $sql .= " WHERE id = ? ";
+  $params .= "i";
+  array_push($bindArray, $id);
+
+  //echo $sql;
+
+  $stmt=$conn->prepare($sql);
+  //Note that this only runs if $bindArray is greater than 1 because 'WHERE id = ?' is not dependent on input. Usually '  if(count($bindArray)>0) '
+  if(count($bindArray)>1) {
+    $stmt->bind_param($params, ...$bindArray);
+    $stmt->execute();
+  }
+
+  return $sql;
+
+
+
+
+}
+
+function getExerciseListTopicCount($topic) {
+  global $conn;
+  $results = array();
+  $sql = "SELECT COUNT(*)
+          FROM exercise_list
+          WHERE topic = ?";
+  $stmt = $conn->prepare($sql);
+  
+    $stmt->bind_param("s", $topic);
+  
+  $stmt->execute();
+
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    $row = $result->fetch_assoc();
+    return $row['COUNT(*)'];
+    
+  }
+
+
+  
+}
+
+
+function getExerciseList($id = null, $active = null, $topic=null) {
+  /*
+  This function returns Exercise titles from exercise_list
+  Used in:
+  -exercises/list_manager.php
+  */
+
+  global $conn;
+  $results = array();
+
+  $params = "";
+  $bindArray = array();
+  $conjoiner = 0;
+  
+  $sql = "SELECT *
+          FROM exercise_list ";
+
+  if(!is_null($id)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " id = ?";
+    $params .= "i";
+    array_push($bindArray, $id);
+  }
+
+  if(!is_null($active)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " active = 1";
+    //$params .= "s";
+    //array_push($bindArray, $topic);
+  }
+
+
+
+
+  if(!is_null($topic)) {
+    $sql .= ($conjoiner == 0) ? " WHERE " : " AND ";
+    $conjoiner = 1;
+    $sql .= " topic = ?";
+    $params .= "s";
+    array_push($bindArray, $topic);
+  }
+
+  $sql .= " ORDER BY topic, topicOrder ";
+
+  $stmt = $conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($results, $row);
+    }
+  }
+
+  return $results;
+
+
+}
+
 ?>
+
+

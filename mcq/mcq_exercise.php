@@ -94,6 +94,7 @@ if(!is_null($get_selectors['topics'])) {
 	  
      //Variable $excludedYear is set to prevent questions from coming from a particular year, e.g. for purposes of mock examination. Change when not required
      $excludedYear = 2023;
+     $excludedYear = null;
      if($question['year'] == $excludedYear) {
         unset($questions[$key]);
         //echo $key." ";
@@ -262,7 +263,7 @@ if(str_contains($permissions, "main_admin")) {
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
     <h1 class="font-mono text-2xl bg-pink-400 pl-1">MCQ Exercise</h1>
-    <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
+    <div class="container mx-auto lg:p-4 mt-2 bg-white text-black mb-5">
       <?php
        
         //print_r($assignInfo);
@@ -278,22 +279,22 @@ if(str_contains($permissions, "main_admin")) {
    
         
       ?>
-    <h1 class="font-mono text-xl bg-pink-300 pl-1"><?=$quizInfo['quizName']?></h1>
-    <p class="font-mono text-lg bg-pink-200 pl-1">Name: <?=$userInfo['name_first']?> <?=$userInfo['name_last']?></p>
-    <?php
-    if (str_contains($permissions, "teacher")) {
-      ?>
-      <form method="post" action = "/assign_create1.0.php" target="_blank">
-        <input type="hidden" name = "exerciseid" value ="<?=$quizInfo['id']?>"></input>
-        <input type="hidden" name = "type" value ="mcq"></input>
-        <input type="hidden" name = "groupId" value =""></input>
-        <p class="mt-2" >Teacher: <input class="bg-pink-200 p-1" type="submit" value="Create Assignment With this Exercise"></p>
-      </form>
+    <div class="p-1 lg:p-0">
+      <h1 class="font-mono text-xl bg-pink-300 pl-1 rounded mb-1"><?=$quizInfo['quizName']?></h1>
+      <p class=" bg-pink-200 pl-1 rounded mb-1">Name: <?=$userInfo['name_first']?> <?=$userInfo['name_last']?></p>
       <?php
-    }
-
-
-    ?>
+      if (str_contains($permissions, "teacher")) {
+        ?>
+        <form method="post" action = "/assign_create1.0.php" target="_blank">
+          <input type="hidden" name = "exerciseid" value ="<?=$quizInfo['id']?>"></input>
+          <input type="hidden" name = "type" value ="mcq"></input>
+          <input type="hidden" name = "groupId" value =""></input>
+          <p class="mt-2" ><input class="bg-sky-200 p-1" type="submit" value="Create Assignment With this Exercise"></p>
+        </form>
+        <?php
+      }
+      ?>
+    </div>
 
 	<form method  = "post" action ="" class="p-2">
     <div id="alertBox" class="fixed top-10 left-1 right-1 bottom-1 border-8 m-3 p-5 border-pink-400 rounded-xl bg-white z-10 hidden flex  justify-center ">
@@ -331,10 +332,11 @@ if(str_contains($permissions, "main_admin")) {
     if(count($questions)>0 && $questions[0]!= "") {
       foreach ($questions as $key=>$question) {
         
-        $questionInfo = getMCQquestionDetails($question);
+        $questionInfo = getMCQquestionDetails2($question)[0];
         //print_r($questionInfo);
         $questionsDetails[$question] = $questionInfo;
         $imgSource = "https://thinkeconomics.co.uk";
+        $rootImgSource = "https://www.thinkeconomics.co.uk";
         $imgPath = "";
         if($questionInfo['path'] == "") {
           $imgPath = $questionInfo['No'].".JPG";
@@ -351,6 +353,10 @@ if(str_contains($permissions, "main_admin")) {
         if($questionInfo['noRandom'] == 1) {
           $noRandom = 1;
         }
+        $optionsTable = 0;
+        if($questionInfo['optionsTable'] == 1) {
+          $optionsTable = 1;
+        }
 
         $options = $questionInfo['options'];
         $options = json_decode($options, true);
@@ -362,43 +368,179 @@ if(str_contains($permissions, "main_admin")) {
         ?>
         <div class=" font-sans" id="question_div_<?=$key?>">
           <h2>Question <?=$questionNo?>/<?=$quesitonsCount?></h2>
-          <p class="text-xs"><em id = "q4"><?=$questionInfo['No']?></em></p>
+          <p class="text-xs hidden"><em id = "q4"><?=$questionInfo['No']?></em></p>
 
           <div class="flex flex-row gap-x-2 font-mono text-xs md:text-base mt-2">
             <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 previous" value ="Previous Question" id="previous1" onclick="changeQuestion(this);" <?=($key == 0) ? "disabled" : ""?>>
             <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit1" onclick="submit2();">
             <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next1" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
           </div>
-          <div class="lg:w-3/4 mx-auto">
+          <div class=" mx-auto">
             <?php
             if($textOnly == 1) {
               ?>
+              <div class=" my-3 mx-auto lg:w-3/4">
+                <?php
+                $question1 = explode("\n", $questionInfo['question']);
+                  foreach($question1 as $p) {
+                    ?>
+                    <p class="mb-1"><?=$p?></p>
+                    <?php
+                  }
+                  if($questionInfo['midImgAssetId'] != "") {
+                    $midImgAssets = explode(",", $questionInfo['midImgAssetId']);
+                    foreach($midImgAssets as $assetKey => $asset) {
+                      $midImgAssets[$assetKey] = trim($asset);
+                      if(count(getUploadsInfo($asset)) >0) {
+                        $asset = getUploadsInfo($asset)[0];
+                        //print_r($asset);
+                        ?>
+                        <img alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
+                        <?php
+                      }
+                    }
+                  }
+                  if($questionInfo['midTableArray'] != "") {
+                    $midTableArray = json_decode($questionInfo['midTableArray']);
+                    //print_r($midTableArray);
+                    ?>
+                    <h2 class=" font-bold text-center my-1 mb-2"><?=$questionInfo['midTableHeader']?></h2>
+                    <table class="mx-auto my-2">
+                    <?php
+                    foreach ($midTableArray as $row) {
+                      ?>
+                      <tr>
+                        <?php
+                        foreach($row as $cell) {
+                          ?>
+                          <td class="px-4 text-center "><?=$cell?></td>
+                          <?php
+                        }
+                        ?>
+                      </tr>
+                      <?php
+                    }
+                    ?>
+                    </table>
+                    <?php
+                  }
+                  $question2 = explode("\n", $questionInfo['question2']);
+                  foreach($question2 as $p) {
+                    ?>
+                    <p class="mb-1"><?=$p?></p>
+                    <?php
+                  }
+                ?>
+              </div>
               
-              <p class="my-3 mx-5 whitespace-pre-wrap"><?=$questionInfo['question']?></p>
               <?php
             } else {
             ?>
-            <img src="<?=$img?>" class=" my-3" alt = "<?=$questionInfo['No']?>">
+            <img src="<?=$img?>" class=" my-3 mx-auto max-h-screen" alt = "<?=$questionInfo['No']?>">
             <?php
             }
             ?>
-            <div class="ml-5">
+            <div class="mx-auto <?=$textOnly == 1 ? "lg:w-3/4" : "w-11/12 " ?>">
               <?php
 
               if($randomOptionsOrder ==1 && $textOnly == 1 && $noRandom == 0) {
                 $options = shuffle_assoc($options);
-
               }
-              foreach($options as $optKey=>$option) {
-                if($textOnly == 0) {
-                  $option = $optKey;
-                }
+              
+              if($optionsTable == 1) {
                 ?>
-                <p class="mb-2 ml-5">
-                  <input type="radio" class="-ml-5 mt-1.5 absolute" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
-                <label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
-                </p>
-                <?php
+                <table class="mx-auto my-1">
+                  <tr >
+                    <?php
+                      $headerRow = $questionInfo['optionsTableHeading'];
+                      $headerRow = explode("     ",$headerRow);
+                      foreach ($headerRow as $cell) {
+                        ?>
+                        <td class="px-4 text-center "><?=$cell?></td>
+                        <?php
+                      }
+                    ?>
+                  </tr>
+                  <?php
+                  }
+                    //Get option assets if available
+                    $optionsAssets = array();
+                    if($questionInfo['optionsAssets'] != "") {
+                      $optionsAssets = (array) json_decode($questionInfo  ['optionsAssets']);
+                    }
+                    //print_r($optionsAssets);
+
+                    foreach($options as $optKey=>$option) {
+                      if($textOnly == 0) {
+                        $option = $optKey;
+                      }
+
+                      if($optionsTable == 0) {
+                        //Get option assets if available:
+                        $assets = array();
+                            if(isset($optionsAssets[$optKey]) && $optionsAssets[$optKey] != "") {
+                              $assets = explode(",",$optionsAssets[$optKey]);
+                            }
+                            //echo $optKey;
+                            //print_r($assets);
+
+                            $assetEnabled = 0;
+                            if(count($assets) > 0) {
+                              $assetEnabled = 1;
+                            }
+                        ?>
+                        <p class="mb-2 ml-5">
+                          <input type="radio" class="<?=($assetEnabled == 1) ? "" : "-ml-5 mt-1.5 absolute"?>" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
+                          <?php
+                          if($assetEnabled ==0) {
+                            ?>
+                              <label class=" " for="a_<?=$question?>_<?=$optKey?>"><?=$option?></label>
+                            <?php
+                          } else {
+                            ?>
+                            <label class=" " for="a_<?=$question?>_<?=$optKey?>">
+                              <?php
+                              foreach ($assets as $asset) {
+                                $asset = getUploadsInfo($asset)[0];
+                                //print_r($asset);
+                                ?>
+                                <img class="w-1/2 inline" alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
+                                <?php                                  
+                              }
+                              ?>
+                            </label>
+                            <?php
+                          }
+                          ?>
+                        
+                        </p>
+                        <?php
+                      } else {
+                        $optionRows = explode("     ",$option);
+                        ?>
+                        <tr>
+                          <td class="px-4 text-center ">
+                            <input type="radio" class="" id="a_<?=$question?>_<?=$optKey?>" name="a_<?=$question?>" value="<?=$optKey?>" onclick="questionRecord(<?=$question?>)">
+                          </td>
+                          <?php
+                            foreach($optionRows as $cell) {
+                              ?>
+                              <td class="px-4 text-center ">
+                                <label for="a_<?=$question?>_<?=$optKey?>">
+                                  <?=$cell?>
+                                </label>
+                              </td>
+                              <?php
+                            }
+                          ?>
+                        </tr>
+                        <?php
+                      }
+                    }
+                    if($optionsTable == 1) {
+                    ?>
+                </table>
+              <?php
               }
               ?>
             </div>
@@ -409,6 +551,7 @@ if(str_contains($permissions, "main_admin")) {
             <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 submit" value ="Submit" id="submit1" onclick="submit2();">
             <input type="button" class="flex-1 px-1  bg-sky-100 hover:bg-pink-300 disabled:opacity-75 p-1 next" value ="Next Question" id="next1" onclick="changeQuestion(this);" <?=($key == ($quesitonsCount-1)) ? "disabled" : ""?>>
           </div>
+          
 
         </div>
         <?php

@@ -40,7 +40,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
 
 
   if(isset($_POST['submit']) && $_POST['submit'] == "Update") {
-    updateMCQquizDetails($_POST['id'],$_POST['topic'],$_POST['quizName'],$_POST['notes'],$_POST['description'],$_POST['active'], $_POST['topicQuiz']);
+    updateMCQquizDetails($_POST['id'],$_POST['topic'],$_POST['quizName'],$_POST['notes'],$_POST['description'],$_POST['active'], $_POST['topicQuiz'], $_POST['mcqHomePage'], $_POST['topicOrder'], $_POST['pastPaper'], $_POST['ppYear'], $_POST['ppExamBoard']);
     $updateQuestionBool = 1;
     
   }
@@ -55,11 +55,13 @@ $get_selectors = array(
   'questionId' => (isset($_GET['questionId'])&&$_GET['questionId']!="") ? $_GET['questionId'] : null,
   'active' => (isset($_GET['inactive'])&&$_GET['inactive']=="1") ? 0 : 1,
   'inactive' => (isset($_GET['inactive'])&&$_GET['inactive']!="") ? $_GET['inactive'] : null,
+  'orderBy' => (isset($_GET['orderBy'])&&$_GET['orderBy']!="") ? $_GET['orderBy'] : null,
+  'pastPaperOnly' => (isset($_GET['pastPaperOnly'])&&$_GET['pastPaperOnly']!="") ? $_GET['pastPaperOnly'] : null
 
 
 );
 
-$quizzes = getMCQquizDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionId'], $userId, $get_selectors['active']);
+$quizzes = getMCQquizDetails($get_selectors['id'], $get_selectors['topic'], $get_selectors['questionId'], $userId, $get_selectors['active'], null, $get_selectors['orderBy'],null, $get_selectors['pastPaperOnly']);
 
 include($path."/header_tailwind.php");
 
@@ -84,8 +86,18 @@ include($path."/header_tailwind.php");
         <label for="questionId_select">Question Id:</label>
         <input type="text" id="questionId_select" name="questionId" value="<?=$get_selectors['questionId']?>"</input>
 
+        <label for="orderByInput">Order By: </label>
+        <select name="orderBy" id="orderByInput">
+        <option value=""></option>
+          <option value="topic" <?=$get_selectors['orderBy'] == 'topic' ? 'selected' : ''?>>Topic</option>
+          <option value="examBoard" <?=$get_selectors['orderBy'] == 'examBoard' ? 'selected' : ''?>>examBoard</option>
+        </select>
+
         <input type="checkbox" name="inactive" value= "1" id="active_select" <?=($get_selectors['inactive']==1 ) ? "checked" : ""?>>
         <label for="active_select">Show Inactive</label>
+
+        <input type="checkbox" name="pastPaperOnly" value= "1" id="pastPaperOnly_select" <?=($get_selectors['pastPaperOnly']==1 ) ? "checked" : ""?>>
+        <label for="pastPaperOnly_select">Past Papers Only</label>
 
         <input type="submit"  value="Select">
       </form>
@@ -95,6 +107,7 @@ include($path."/header_tailwind.php");
         //print_r($quizzes);
         print_r($_POST);
       }
+      //print_r($_POST);
       ?>
       <table class="w-full table-fixed mb-2 border border-black">
         <tr class="sticky top-16 bg-white">
@@ -149,17 +162,24 @@ include($path."/header_tailwind.php");
               <td>
                 <p class="font-bold toggleClass_<?=$quiz['id']?>"><?=date('d/m/Y h:ia', strtotime($quiz['dateCreated']))?></p>
                 <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['notes']?></p>
+                <p  class="toggleClass_<?=$quiz['id']?>">Count: <?=count($questions)?></p>
                 
-                <textarea class="toggleClass_<?=$quiz['id']?> hidden" name="notes"><?=$quiz['notes']?></textarea>
+                <textarea class="toggleClass_<?=$quiz['id']?> hidden p-1" name="notes"><?=$quiz['notes']?></textarea>
               </td>
               <td>
                 <p class="toggleClass_<?=$quiz['id']?>"><?=$quiz['description']?></p>
-                <textarea class="toggleClass_<?=$quiz['id']?> hidden" name="description"><?=$quiz['description']?></textarea>
+                <textarea class="toggleClass_<?=$quiz['id']?> hidden p-1" name="description"><?=$quiz['description']?></textarea>
               </td>
               <td>
                 <p class="toggleClass_<?=$quiz['id']?> <?=($quiz['active']==0) ? "bg-pink-200" : ""?>"><?=($quiz['active']==1) ? "Active" : "Inactive"?></p>
                 <p class="toggleClass_<?=$quiz['id']?> <?=($quiz['topicQuiz']==0) ? "bg-sky-200" : ""?>"><?=($quiz['topicQuiz']==1) ? "Topic Quiz" : "Not Topic Quiz"?></p>
+                <p class="toggleClass_<?=$quiz['id']?> <?=($quiz['mcqHomePage']==1) ? "bg-pink-200" : ""?>"><?=($quiz['mcqHomePage']==1) ? "MCQ Home Page" : "Not MCQ Home Page"?></p>
+                <p class="toggleClass_<?=$quiz['id']?> <?=($quiz['pastPaper']==1) ? "bg-pink-300" : ""?>"><?=($quiz['pastPaper']==1) ? "Past Paper ".$quiz['ppExamBoard']." ".$quiz['ppYear'] : "Not MCQ Home Page"?></p>
+
                 <div class="toggleClass_<?=$quiz['id']?> hidden">
+                  <label for="topicOrderSelect_<?=$quiz['id']?>">Topic Order: </label><br>
+                  <input id="topicOrderSelect_<?=$quiz['id']?>" class="w-full" name="topicOrder" value="<?=$quiz['topicOrder']?>"></input><br>
+
                   <input type="radio" id="active_select_<?=$quiz['id']?>" name="active" value="1" <?=($quiz['active']==1) ? "checked" : ""?>>
                   <label for="active_select_<?=$quiz['id']?>">Active</label><br>
                   <input type="radio" id="inactive_select_<?=$quiz['id']?>" name="active" value="0" <?=($quiz['active']==0) ? "checked" : ""?>>
@@ -168,7 +188,36 @@ include($path."/header_tailwind.php");
                   <input type="radio" id="topicQuiz_select_<?=$quiz['id']?>" name="topicQuiz" value="1" <?=($quiz['topicQuiz']==1) ? "checked" : ""?>>
                   <label for="topicQuiz_select_<?=$quiz['id']?>">Topic Quiz</label><br>
                   <input type="radio" id="notopicQuiz_select_<?=$quiz['id']?>" name="topicQuiz" value="0" <?=($quiz['topicQuiz']==0) ? "checked" : ""?>>
-                  <label for="notopicQuiz_select_<?=$quiz['id']?>">Not Topic Quiz</label>
+                  <label for="notopicQuiz_select_<?=$quiz['id']?>">Not Topic Quiz</label><br>
+
+                  <input type="radio" id="mcqHomePage_select_<?=$quiz['id']?>" name="mcqHomePage" value="1" <?=($quiz['mcqHomePage']==1) ? "checked" : ""?>>
+                  <label for="mcqHomePage_select_<?=$quiz['id']?>">MCQ Home Page</label><br>
+                  <input type="radio" id="nomcqHomePage_select_<?=$quiz['id']?>" name="mcqHomePage" value="0" <?=($quiz['mcqHomePage']==0) ? "checked" : ""?>>
+                  <label for="nomcqHomePage_select_<?=$quiz['id']?>">Not MCQ Home Page</label><br>
+
+                  <input type="radio" id="pastPaper_select_<?=$quiz['id']?>" name="pastPaper" value="1" <?=($quiz['pastPaper']==1) ? "checked" : ""?>>
+                  <label for="pastPaper_select_<?=$quiz['id']?>">Past Paper</label><br>
+                  <input type="radio" id="nopastPaper_select_<?=$quiz['id']?>" name="pastPaper" value="0" <?=($quiz['pastPaper']==0) ? "checked" : ""?>>
+                  <label for="nopastPaper_select_<?=$quiz['id']?>">Not Past Paper</label>
+
+                  <div class="<?=$quiz['pastPaper'] == 0 ? 'hidden' : ''?>">
+                    <p>
+                      <label for="pastPaperYearInput_<?=$quiz['id']?>">Past Paper Year:</label>
+                      <input id="pastPaperYearInput_<?=$quiz['id']?>" class="w-full" name="ppYear" type="number" value="<?=$quiz['ppYear']?>">
+                    </p>
+                    <p>
+                      <label for="pastPaperExamBoardInput_<?=$quiz['id']?>">Past Paper Exam Board:</label>
+                      <select id="pastPaperExamBoardInput_<?=$quiz['id']?>" name="ppExamBoard">
+                        <option value=""></option>
+                        <option value="AQA" <?=$quiz['ppExamBoard'] == "AQA" ? 'selected' : ''?>>AQA</option>
+                        <option value="Eduqas" <?=$quiz['ppExamBoard'] == "Eduqas" ? 'selected' : ''?>>Eduqas</option>
+                        <option value="WJEC" <?=$quiz['ppExamBoard'] == "WJEC" ? 'selected' : ''?>>WJEC</option>
+                      </select>
+                    </p>
+                  </div>
+
+
+
                 </div>
               </td>
               <td>
