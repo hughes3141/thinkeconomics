@@ -349,10 +349,24 @@ $_GET controls:
             }
             $img = $imgSource."/mcq/question_img/".$imgPath;
 
+            $asset  = getUploadsInfo($question['midImgAssetId'])[0];
+            $midAssetImgSrc ="";
+            if($question['midImgAssetId'] != "") {
+              $midAssetImgSrc = $imgSource.$asset['path'];
+            }
+
             $questionDetailsInstance = array(
               'id'=>$question['id'],
               'No'=>$question['No'],
-              'question'=>preg_replace( "/[^a-zA-Z0-9]+/", '', $question['question']),
+              //'question'=>preg_replace( "/[^a-zA-Z0-9]+/", '', $question['question']),
+              //'question2'=>preg_replace( "/[^a-zA-Z0-9]+/", '', $question['question2']),
+
+              'question'=> $question['question'],
+              'question2'=> $question['question2'],
+              'midImgAssetId' => $question['midImgAssetId'],
+              'midImgPath' =>  $midAssetImgSrc,
+              'options' => $question['options'],
+
               'path'=>$img,
               'Answer' =>$question['Answer'],
               'examBoard' =>$question['examBoard'],
@@ -361,7 +375,8 @@ $_GET controls:
               'component'=>$question['component'],
               'series'=>$question['series'],
               'Topic'=>$question['Topic'],
-              'questionNo'=>$question['questionNo']
+              'questionNo'=>$question['questionNo'],
+              'textOnly' => $question['textOnly']
             );
             $questionDetails[$question['id']] = $questionDetailsInstance;
 
@@ -398,7 +413,21 @@ $_GET controls:
                 <label for="quizSelect_<?=$question['id']?>">Include</label>
               </p>
               <p class="text-xs"><?=$question['question']?></p>
-              <img src="<?=$img?>" class="" alt = "<?=$question['No']?>">
+              <?php
+              if($question['textOnly'] == 1) {
+                ?>
+                <div class="text-xs">
+                  <?php
+                  outputMCQquestion($question['id'], $imgSource);
+                  ?>
+                </div>
+                <?php
+              } else {
+                ?>
+                <img src="<?=$img?>" class="" alt = "<?=$question['No']?>">
+                <?php
+              }
+              ?>
               <div class="text-xs">
                 
                 <p>Answer: <?=$question['Answer']?></p>
@@ -506,6 +535,8 @@ $_GET controls:
     div.innerHTML = "";
     for (var i=0; i<selectedQuestions.length; i++) {
       var div2 = document.createElement('div');
+      var div3 = document.createElement('div');
+      div3.className = "border border-pink-300 rounded m-1 p-1"
       var img = document.createElement('img');
       var p = document.createElement('p');
       var button = document.createElement('button');
@@ -527,7 +558,7 @@ $_GET controls:
       p2.classList.add("text-xs");
 
       const questionDetails = questions[selectedQuestions[i]];
-      //console.log(questionDetails);
+      console.log(questionDetails);
       var p3 = document.createElement('p');
       p3.innerHTML = questionDetails.examBoard;
       p3.innerHTML += " "+questionDetails.qualLevel;
@@ -537,6 +568,36 @@ $_GET controls:
       p3.innerHTML += " Q"+questionDetails.questionNo;
       p3.innerHTML += " "+questionDetails.Topic;
       p3.classList.add("text-xs");
+      
+      var p4 = document.createElement('p');
+      //p4.className = "whitespace-pre-wrap";
+      p4.innerHTML = questionDetails.question;
+
+      var midImg = document.createElement('img');
+      midImg.src = questionDetails.midImgPath;
+
+      var p5 = document.createElement('p');
+      p5.innerHTML += " "+questionDetails.question2;
+      //p5.className = "whitespace-pre-wrap";
+
+      var p6 = document.createElement('div');
+      var optionsJSON = JSON.parse(questionDetails.options);
+      var options = [];
+
+      for(var j in optionsJSON)
+          options.push(optionsJSON[j])
+      //console.log(options);
+      var optionLetters = ["A", "B", "C", "D", "E", "F"];
+      for(var j=0; j<options.length; j++ ) {
+        var p7 = document.createElement('p');
+        p7.innerHTML += optionLetters[j]+": ";
+        p7.innerHTML += options[j];
+        //console.log(optionLetters[j]);
+        //console.log(options[j]);
+        p6.appendChild(p7);
+      }
+      //p6.innerHTML = questionDetails.options;
+
       button.innerHTML = "Remove";
       button.className = "border border-black mx-1 px-1 bg-pink-200 rounded";
       button.setAttribute("onclick", "removeItem(selectedQuestions, "+selectedQuestions[i]+"); previewPopulate();")
@@ -547,8 +608,17 @@ $_GET controls:
       img.alt= questions[selectedQuestions[i]].No;
       div2.appendChild(p);
       div2.appendChild(p3);
+      if(questionDetails.textOnly == 1) {
+        div3.appendChild(p4);
+        div3.appendChild(midImg);
+        div3.appendChild(p5);
+        div3.appendChild(p6);
+      }
       div2.appendChild(p2);
-      div2.appendChild(img);
+      if(questionDetails.textOnly == 0) {
+        div3.appendChild(img);
+      }
+      div2.appendChild(div3);
       div.appendChild(div2);
 
       
