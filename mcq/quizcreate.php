@@ -350,8 +350,10 @@ $_GET controls:
             $img = $imgSource."/mcq/question_img/".$imgPath;
 
             $asset  = getUploadsInfo($question['midImgAssetId'])[0];
-            $midAssetImgSrc = $imgSource.$asset['path'];
-            
+            $midAssetImgSrc ="";
+            if($question['midImgAssetId'] != "") {
+              $midAssetImgSrc = $imgSource.$asset['path'];
+            }
 
             $questionDetailsInstance = array(
               'id'=>$question['id'],
@@ -363,6 +365,7 @@ $_GET controls:
               'question2'=> $question['question2'],
               'midImgAssetId' => $question['midImgAssetId'],
               'midImgPath' =>  $midAssetImgSrc,
+              'options' => $question['options'],
 
               'path'=>$img,
               'Answer' =>$question['Answer'],
@@ -532,6 +535,8 @@ $_GET controls:
     div.innerHTML = "";
     for (var i=0; i<selectedQuestions.length; i++) {
       var div2 = document.createElement('div');
+      var div3 = document.createElement('div');
+      div3.className = "border border-pink-300 rounded m-1 p-1"
       var img = document.createElement('img');
       var p = document.createElement('p');
       var button = document.createElement('button');
@@ -565,13 +570,33 @@ $_GET controls:
       p3.classList.add("text-xs");
       
       var p4 = document.createElement('p');
+      //p4.className = "whitespace-pre-wrap";
       p4.innerHTML = questionDetails.question;
 
       var midImg = document.createElement('img');
       midImg.src = questionDetails.midImgPath;
 
-      var p5 = document.createElement('p5');
+      var p5 = document.createElement('p');
       p5.innerHTML += " "+questionDetails.question2;
+      //p5.className = "whitespace-pre-wrap";
+
+      var p6 = document.createElement('div');
+      var optionsJSON = JSON.parse(questionDetails.options);
+      var options = [];
+
+      for(var j in optionsJSON)
+          options.push(optionsJSON[j])
+      //console.log(options);
+      var optionLetters = ["A", "B", "C", "D", "E", "F"];
+      for(var j=0; j<options.length; j++ ) {
+        var p7 = document.createElement('p');
+        p7.innerHTML += optionLetters[j]+": ";
+        p7.innerHTML += options[j];
+        //console.log(optionLetters[j]);
+        //console.log(options[j]);
+        p6.appendChild(p7);
+      }
+      //p6.innerHTML = questionDetails.options;
 
       button.innerHTML = "Remove";
       button.className = "border border-black mx-1 px-1 bg-pink-200 rounded";
@@ -584,14 +609,16 @@ $_GET controls:
       div2.appendChild(p);
       div2.appendChild(p3);
       if(questionDetails.textOnly == 1) {
-        div2.appendChild(p4);
-        div2.appendChild(midImg);
-        div2.appendChild(p5);
+        div3.appendChild(p4);
+        div3.appendChild(midImg);
+        div3.appendChild(p5);
+        div3.appendChild(p6);
       }
       div2.appendChild(p2);
       if(questionDetails.textOnly == 0) {
-        div2.appendChild(img);
+        div3.appendChild(img);
       }
+      div2.appendChild(div3);
       div.appendChild(div2);
 
       
