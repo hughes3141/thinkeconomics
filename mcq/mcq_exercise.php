@@ -99,6 +99,15 @@ if(!is_null($get_selectors['topics'])) {
         unset($questions[$key]);
         //echo $key." ";
       }
+
+      //Variable $excludedYears to include multiple years. This being for preventing studnets from seeing due to mock exam purposes.
+      $excludedYears = array(2022,2023);
+      //$excludedYears = array();
+      if(in_array($question['year'], $excludedYears)) {
+        unset($questions[$key]);
+        //echo $key." ";
+      }
+      
 	  
   }
 
@@ -276,6 +285,7 @@ if(str_contains($permissions, "main_admin")) {
         //print_r($_POST);
         //print_r($get_selectors);
         //print_r($questions);
+        print_r($excludedYears);
    
         
       ?>
