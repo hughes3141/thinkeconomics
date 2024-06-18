@@ -81,6 +81,12 @@ include($path."/header_tailwind.php");
   <?php
 }
 
+$questionDetails = null;
+
+if(isset($_GET['questionDetails'])) {
+  $questionDetails = 1;
+}
+
 if(str_contains($permissions, "main_admin")) {
   ?>
   
@@ -88,6 +94,7 @@ if(str_contains($permissions, "main_admin")) {
     $_GET[]:
 
     'simple' => if isset then simple version of page displayed
+    'questionDetails' => if isset then more question details are output
   
     
   
@@ -121,11 +128,82 @@ if(str_contains($permissions, "main_admin")) {
     foreach($questions as $key => $question) {
       ?>
       <h2 class="text-lg underline <?=($key>0) ? "border-t-2 border-pink-300 mt-5" : ""?>"><?=$question['examBoard']?> <?=$question['qualLevel']?> Unit <?=$question['component']?> <?=$question['series']?> <?=$question['year']?> Q<?=$question['questionNo']?></h2>
-      <p class="my-2 whitespace-pre-wrap"><em><?=trim($question['question'])?> [<?=$question['marks']?> marks]</em></p>
+
       <?php
+
       if(isset($_GET['test'])) {
         print_r($question);
       }
+      //print_r($question);
+
+      if(isset($questionDetails)) {
+        if($question['caseId'] !=0) {
+          $caseId = $question['caseId'];
+          $caseStudy = getPastPaperQuestionDetails($question['caseId'])[0];
+          $questionAssets = explode(",",$caseStudy['questionAssets']);
+          //print_r($questionAssets);
+          
+          ?>
+          <h3 class="text-lg bg-pink-100 rounded">Case Study</h3>
+          <?php
+          $questionArray = explode("\n",$caseStudy['question']);
+          foreach($questionArray as $qArrayKey=>$newLine) {
+            ?>
+            <p class="mb-1"><?=$newLine?></p>
+            <?php
+          }
+          //print_r($caseStudy);
+          if(count($questionAssets) >0) {
+            //Questions Images:
+            echo "<div class='p-2'>";
+            foreach($questionAssets as $asset) {
+              $asset = getUploadsInfo($asset)[0];
+              //print_r($asset);
+              ?>
+                <img class=" object-contain" alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+              <?php
+            }
+            echo "</div>";
+
+          }
+
+        }
+
+
+      ?>
+      <h3  class="text-lg bg-sky-100 rounded">Question:</h3>
+      <?php
+      }
+
+      $questionArray = explode("\n",$question['question']);
+      foreach($questionArray as $qArrayKey=>$newLine) {
+        ?>
+        <p class="mb-1"><?=$newLine?></p>
+        <?php
+      }
+
+      ?>
+
+      <p class="mb-1"><em> [<?=$question['marks']?> marks]</em></p>
+
+      <?php
+
+      if(isset($questionDetails)) {
+        if($question['questionAssets'] != "") {
+          $questionAssets = explode(",",$question['questionAssets']);
+          //Questions Images:
+          echo "<div class='p-2'>";
+          foreach($questionAssets as $asset) {
+            $asset = getUploadsInfo($asset)[0];
+            //print_r($asset);
+            ?>
+              <img class=" object-contain" alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
+            <?php
+          }
+          echo "</div>";
+        }
+      }
+
 
       //Define what types of assets will be shown:
       $showMarkScheme = $showGuide = $showModel = $showModelAssets = null;
