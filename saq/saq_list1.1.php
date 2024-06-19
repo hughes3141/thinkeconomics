@@ -44,6 +44,10 @@ $style_input = "
     width: 100%;
     
   }
+
+  textarea, input {
+    padding: 0.25rem;
+  }
 ";
 
 //Controls to remove elements e.g. flashCard controls:
@@ -163,7 +167,7 @@ if(isset($_POST['updateValue'])) {
   
 
   //Update Record:
-  $updateMessage = updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $topic, $_POST['points'], $_POST['type'], "", $_POST['model_answer'], $questionAsset, $answerAsset, $flashCard, $topicId);
+  $updateMessage = updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $topic, $_POST['points'], $_POST['type'], $_POST['model_answer'], $questionAsset, $answerAsset, $flashCard, $topicId);
 
   //Change order value:
   changeOrderNumberWithinTopic($_POST['id'], $_POST['topic'], $_POST['topic_order'], $_POST['subjectId'], $_POST['levelId'], $userId);
@@ -610,7 +614,7 @@ include($path."/header_tailwind.php");
           </td>
           <td class="align-top">
             <div class="show_<?=$row['id'];?>">
-              <div class="whitespace-pre-line"><?=htmlspecialchars($row['question']);?></div>
+              <div class="whitespace-pre-line"><?=$row['question'];?></div>
               
               <?php
                     if(!is_null($row['q_path'])) {
@@ -637,7 +641,7 @@ include($path."/header_tailwind.php");
                 ?>
             </div>
             <div class= "hide hide_<?=$row['id'];?>">
-              <textarea class="h-44" name ="question"><?=htmlspecialchars($row['question'])?></textarea>
+              <textarea class="h-44" name ="question"><?=($row['question'])?></textarea>
               <br>
               <div class="<?=is_null($showAssetId)?"hidden":""?>">
                 <label for="qA_<?=$row['id'];?>">Question Asset Id:</label><br>

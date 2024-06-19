@@ -148,6 +148,7 @@ include($path."/header_tailwind.php");
                 $responses = getMCQquizResults($userId, $_GET['responseId']);
                 //print_r($responses);
                 if(count($responses)>0) {
+                    $rootImgSource = "https://www.thinkeconomics.co.uk";
                     ?>
                     <h2 class="w-full bg-pink-300 rounded p-1 text-xl mb-2">MCQ Review: <?=$responses['quiz_name']?></h2>
                     <?php
@@ -162,13 +163,23 @@ include($path."/header_tailwind.php");
                     //print_r($questions);
 
                     foreach($questions as $key=>$question) {
-                        $questionDetails = getMCQquestionDetails(null, $question[0]);
+                        $questionDetails = getMCQquestionDetails2(null, $question[0])[0];
                         //print_r($questionDetails);
                         ?>
                         <div class="questionSummary border-2  border-pink-300 rounded-xl my-2 p-2">
                             <h2>Question <?=(intval($key) +1)?></h2>
                             <p class="text-sm"><i><?=$question[0]?></i></p>
-                            <img src = "https://www.thinkeconomics.co.uk/mcq/question_img/<?=$question[0]?>.JPG">
+                            <div class="font-sans">
+                              <?php
+                              if($questionDetails['textOnly'] == 1) {
+                                outputMCQquestion($questionDetails['id'],$rootImgSource);
+                              } else {
+                                ?>
+                                <img src = "https://www.thinkeconomics.co.uk/mcq/question_img/<?=$question[0]?>.JPG">
+                                <?php
+                              }
+                              ?>
+                            </div>
                             <?php
                             $wrongAnswer = 1;
                             if($question['3']==true) {

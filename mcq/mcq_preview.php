@@ -24,6 +24,18 @@ else {
   }
 }
 
+$style_input = "
+  th, td {
+    border: 1px solid black;
+  }
+
+  textarea, input {
+    padding-left: 0.25rem;
+  }
+
+  
+  ";
+
 
 
 $get_selectors = array(
@@ -154,7 +166,7 @@ if($get_selectors['questions']) {
 
 
 
-      <div style="<?=($get_selectors['gridShow'] ==1) ? "display:grid; grid-template-columns: auto auto; " : ""?>">
+      <div style="<?=($get_selectors['gridShow'] ==1) ? "display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-gap: 0.25rem; " : ""?>">
         <?php
         
           //print_r($quiz);
@@ -168,7 +180,7 @@ if($get_selectors['questions']) {
             //print_r($question);
             
             ?>
-            <div>
+            <div id="id_<?=$question['id']?>" class="p-1">
             <!-- <?=$question['id']?>-->
             <?php
             if($get_selectors['noDetailShow']!=1) {
@@ -180,19 +192,153 @@ if($get_selectors['questions']) {
             <?php
             }
 
+            if($question['textOnly'] == 1) {
+              $rootImgSource = "https://www.thinkeconomics.co.uk";
+              ?>
+              <div class=""  class="border border-black p-1">
+              <?php
+                $question1 = explode("\n", $question['question']);
+                foreach($question1 as $p) {
+                  ?>
+                  <p class="mb-1"><?=$p?></p>
+                  <?php
+                }
+                if($question['midImgAssetId'] != "") {
+                  $midImgAssets = explode(",", $question['midImgAssetId']);
+                  foreach($midImgAssets as $key => $asset) {
+                    $midImgAssets[$key] = trim($asset);
+                    if(count(getUploadsInfo($asset)) >0) {
+                      $asset = getUploadsInfo($asset)[0];
+                      //print_r($asset);
+                      ?>
+                      <img alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>">
+                      <?php
+                    }
+                  }
+                }
 
-            $imgPath = "";
-            if($question['path'] == "") {
-              $imgPath = $question['No'].".JPG";
+                if($question['midTableArray'] != "") {
+                  $midTableArray = json_decode($question['midTableArray']);
+                  //print_r($midTableArray);
+                  ?>
+                  <h2 class=" font-bold text-center my-1"><?=$question['midTableHeader']?></h2>
+                  <table class="mx-auto my-1">
+                  <?php
+                  foreach ($midTableArray as $row) {
+                    ?>
+                    <tr>
+                      <?php
+                      foreach($row as $cell) {
+                        ?>
+                        <td class="px-4 text-center "><?=$cell?></td>
+                        <?php
+                      }
+                      ?>
+                    </tr>
+                    <?php
+
+                  }
+                  ?>
+                  </table>
+                  <?php
+                }
+
+                $question2 = explode("\n", $question['question2']);
+                foreach($question2 as $p) {
+                  ?>
+                  <p class="mb-1"><?=$p?></p>
+                  <?php
+                }
+                $options =(array) json_decode($question['options']);
+                if($question['optionsTable'] == 0) {
+                  $optionsAssets = array();
+                  if($question['optionsAssets'] != "") {
+                    $optionsAssets = (array) json_decode($question  ['optionsAssets']);
+                  }
+                  //echo "<ul>";
+                  foreach ($options as $key=>$option) {
+                    $assets = array();
+                    if(isset($optionsAssets[$key]) && $optionsAssets[$key] != "") {
+                      $assets = explode(",",$optionsAssets[$key]);
+                    }
+                    if(count($assets) == 0) {
+                      if($key != $option){
+                        ?>
+                          <p style="<?=($get_selectors['simple']==1) ? "margin: 0px; margin-left:1.25rem;" : ""?>"><?=$key?>: <?=$option?></p>
+                        <?php
+                      }
+                    } else {
+                      ?>
+                      <p style="display:table"><span style="display:table-cell; vertical-align:middle"><?=$key?>: </span>
+                        <?php
+                        foreach ($assets as $asset) {
+                          $asset = getUploadsInfo($asset)[0];
+                          //print_r($asset);
+                          ?>
+                          <img class="" style="width: 70%; display: inline;" alt ="<?=$asset['altText']?>" src="<?=$rootImgSource.$asset['path']?>"></p>
+                          </li>
+                          <?php                                  
+                        }
+                        ?>
+                      </p>
+                      <?php
+
+                    }
+                  }
+                  //echo "</ul>";
+                } else {
+                  ?>
+                  <table class="mx-auto my-1">
+                    <tr >
+                      <?php
+                        $headerRow = $question['optionsTableHeading'];
+                        $headerRow = explode("     ",$headerRow);
+                        foreach ($headerRow as $cell) {
+                          ?>
+                          <td class="px-4 text-center "><?=$cell?></td>
+                          <?php
+                        }
+                      ?>
+                    </tr>
+                    <?php
+                      foreach($options as $key=>$option) {
+                        $optionRows = explode("     ",$option);
+                        ?>
+                        <tr>
+                          <td class="px-4 text-center "><?=$key?></td>
+                          <?php
+                            foreach($optionRows as $cell) {
+                              ?>
+                              <td class="px-4 text-center ">
+                                <?=$cell?>
+                              </td>
+                              <?php
+                            }
+                          ?>
+                        </tr>
+
+                        <?php
+                      }
+                    ?>
+                  </table>
+                  <?php
+                  }
+              ?>
+              </div>
+              <?php
+
             } else {
-              $imgPath = $question['path'];
+              $imgPath = "";
+              if($question['path'] == "") {
+                $imgPath = $question['No'].".JPG";
+              } else {
+                $imgPath = $question['path'];
+              }
+              $img = $imgSource."/mcq/question_img/".$imgPath;
+              ?>
+              <img src="<?=$img?>" alt="<?=$question['No']?>" style="<?=($get_selectors['width']) ? "width: ".$get_selectors['width']."%" : "width:100%"?>">
+              <?php
             }
-            $img = $imgSource."/mcq/question_img/".$imgPath;
-            ?>
-            <img src="<?=$img?>" alt="<?=$question['No']?>" style="<?=($get_selectors['width']) ? "width: ".$get_selectors['width']."%" : "width:100%"?>">
-            
-
-            <?php
 
             if($get_selectors['answerShow'] ==1) {
               ?>
