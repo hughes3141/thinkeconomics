@@ -88,7 +88,8 @@ include "../header_tailwind.php";
         
         <?php
         
-          //print_r($userInfo);
+          print_r($userInfo);
+          //echo is_user_active($userInfo);
           //print_r($groupid);
           //print_r($assignments);
         ?>
