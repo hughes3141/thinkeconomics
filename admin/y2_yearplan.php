@@ -84,9 +84,9 @@ $topics =
   ["Revision and Review","",""],
   ["Revision and Review","",""],
   ["Revision and Review","",""],
-  ["Wednesday 15 May: Component 1 Paper (AM)","",""],
-  ["Monday 20 May: Component 2 Paper (PM)","",""],
-  ["Friday 7 June: Component 3 Paper (AM)","",""]
+  ["Monday 13 May: Component 1 Paper (AM) (Provisional)","",""],
+  ["Monday 20 May: Component 2 Paper (AM) (Provisional)","",""],
+  ["Friday 7 June: Component 3 Paper (AM) (Provisional)","",""]
 ];
 
 

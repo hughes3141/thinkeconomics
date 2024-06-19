@@ -1,189 +1,137 @@
-<?php
+<html>
 
-// Initialize the session
-session_start();
+<head>
 
-$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
-
-$path = $_SERVER['DOCUMENT_ROOT'];
-include($path."/php_header.php");
-include($path."/php_functions.php");
+<?php include "../header.php"; ?>
 
 
-if (!isset($_SESSION['userid'])) {
-  
-  //header("location: /login.php");
-  
+<style>
+
+table {
+
+	border-collapse: collapse;}
+	
+td, th {
+
+	border: 1px solid black;
+	padding: 10px;
+	}
+
+td.noBor {
+
+	border: none;
 }
 
-else {
-  $userInfo = getUserInfo($_SESSION['userid']);
-  $userId = $_SESSION['userid'];
-  $schoolId = $userInfo['schoolid'];
-  $permissions = $userInfo['permissions'];
-  
-}
+</style>
 
 
-$style_input = "
-
-    table {
-
-      border-collapse: collapse;}
-      
-    td, th {
-
-      border: 1px solid black;
-      //padding: 10px;
-      padding: 0px 5px 0px;
-      }
-
-    @media (min-width: 768px) { 
-      
-      td, th {
-
-        //border: 1px solid black;
-        padding: 10px;
-        }
-     }
-
-    td.noBor {
-
-      border: none;
-    }
-
-    ";
+</style>
 
 
-include($path."/header_tailwind.php");
-?>
+</head>
 
 
 
 
-<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4 ">
-    <h1 class="font-mono text-2xl bg-pink-400 pl-1">Income Tax Calculator</h1>
-    <div class=" container mx-auto px-1 mt-2 bg-white text-black mb-5">
+<body onload="populate()">
 
+<?php include "../navbar.php"; ?>
+<h1>2.3.1 Income Tax Calculator</h1>
 
-    
-      <div class=" w-full md:w-3/4 mx-auto pt-2">
-        <div class="flex mb-1">
-          <div class="">Pre-Tax Income: </div>
-          <div class="grow pl-1"><input type = "number" class=" pl-1 w-full" id="input" value="12500" min="0" step="1000" onchange="calculate()"  ></div>
-        </div>
+<p>Pre-Tax Income:<input type = "number" id="input" value="12500" min="0" step="1000" onchange="calculate()" ></p>
+<button onclick = "calculate()">Calculate</button>
+<br><br>
+<button onclick = "randomIncome()">Random Income</button>
 
-        <button  class="border border-black bg-pink-200 w-full rounded px-3 my-1 " onclick = "calculate()">Calculate</button>
-        <div class="flex my-1 justify-between gap-x-1">
-          <div class="basis-1/2"><button class="border border-black bg-pink-100 w-full rounded px-3" onclick="changeValue(-1000);" >Subtract £1000</button></div>
-          <div class="basis-1/2"><button class="border border-black bg-pink-100 w-full rounded px-3" onclick="changeValue(1000);" >Add £1000</button></div>
+<br><br>
+<p> Style:
+<input type="radio" id="simple" name="complexity" value ="simple" checked ="true">
+<label for="simple">Simple</label>
+<input type="radio" id="comp" name="complexity" value ="complex">
+<label for="simple">Adjusted Personal Allowance</label>
+</p>
 
-        </div>
-        <button  class="border border-black bg-sky-200 w-full rounded px-3 my-1 " onclick = "randomIncome()">Random Income</button>
-      </div>
-      <div class="flex justify-around mb-1">
-        <div>
-          <input type="radio" id="simple" name="complexity" value ="simple" checked ="true">
-          <label for="simple">Simple</label>
-        </div>
-        <div>
-          <input type="radio" id="comp" name="complexity" value ="complex">
-          <label for="comp">Adjusted Personal Allowance</label>
-        </div>
-      </div>
-      <div class="">
-        <table class="table-fixed w-full text-xs md:text-base">
+<table>
 
-          <tr>
-          <th>Band</th>
-          <th>Taxable Income</th>
-          <th>Tax Rate</th>
-          <th>Income in this Band</th>
-          <th>Tax Payable in this Band</th>
-          </tr>
-          <tr>
-          <td>Personal Allowance</td>
-          <td>Up to <span id="c_0"></span></td>
-          <td>0&percnt;</td>
-          <td id="0_0"></td>
-          <td id="0_1"></td>
-          </tr>
-          <tr>
-          <td>Basic Rate</td>
-          <td><span id="c_1"></span> to <span id="c_2"></span></td>
-          <td>20&percnt;</td>
-          <td id="1_0"></td>
-          <td id="1_1"></td>
-          </tr>
-          <tr>
-          <td>Higher Rate</td>
-          <td><span id="c_3"></span> to <span id="c_4"></span></td>
-          <td>40&percnt;</td>
-          <td id="2_0"></td>
-          <td id="2_1"></td>
-          </tr>
-          <tr>
-          <td>Additional Rate</td>
-          <td>over <span id="c_5"></td>
-          <td>45&percnt;</td>
-          <td id="3_0"></td>
-          <td id="3_1"></td>
-          </tr>
-          <tr>
-          <td class="noBor"></td>
-          <td class="noBor"></td>
+<tr>
+<th>Band</th>
+<th>Taxable Income</th>
+<th>Tax Rate</th>
+<th>Income in this Band</th>
+<th>Tax Payable in this Band</th>
+</tr>
+<tr>
+<td>Personal Allowance</td>
+<td>Up to <span id="c_0"></span></td>
+<td>0&percnt;</td>
+<td id="0_0"></td>
+<td id="0_1"></td>
+</tr>
+<tr>
+<td>Basic Rate</td>
+<td><span id="c_1"></span> to <span id="c_2"></span></td>
+<td>20&percnt;</td>
+<td id="1_0"></td>
+<td id="1_1"></td>
+</tr>
+<tr>
+<td>Higher Rate</td>
+<td><span id="c_3"></span> to <span id="c_4"></span></td>
+<td>40&percnt;</td>
+<td id="2_0"></td>
+<td id="2_1"></td>
+</tr>
+<tr>
+<td>Additional Rate</td>
+<td>over <span id="c_5"></td>
+<td>45&percnt;</td>
+<td id="3_0"></td>
+<td id="3_1"></td>
+</tr>
+<tr>
+<td class="noBor"></td>
+<td class="noBor"></td>
 
-          <td class="noBor"><b>Total:</b></td>
-          <td id="4_0"></td>
-          <td id="4_1"></td>
-          </tr>
-          <tr>
-          <td class="noBor"></td>
-          <td class="noBor"></td>
-          <td class="noBor"></td>
-          <td colspan="2" id="4_5" style="display:none";>Disposable Income = <span id="4_2"></span> - <span id="4_3"></span> = <span id="4_4"></span></td>
-          </tr>
-        </table>
-      </div>
-      <p></p>
-      <p>Average Rate of Tax: <span id="average"></span></p>
-      <p style="display:none;">Marginal Rate of Tax: <span id="marginal"></span></p>
-      <br>
-      <p>Interesting Reading:</p>
-      <ul>
-      <li>
-      <a class="underline text-sky-700" href="https://www.gov.uk/income-tax-rates" target ="_blank">https://www.gov.uk/income-tax-rates</a>
-      </li>
-      <li>
-      <a class="underline text-sky-700" href="https://www.gov.uk/income-tax-rates/income-over-100000" target ="_blank">https://www.gov.uk/income-tax-rates/income-over-100000</a>
-      </li>
-      <li>
-      <a class="underline text-sky-700" href="https://www.buzzacott.co.uk/insights/exposing-the-60-income-tax-rate" target ="_blank">Exposing the 60&percnt; tax rate</a>
-      </li>
-      </ul>
-      </div>
-  </div>
+<td class="noBor"><b>Total:</b></td>
+<td id="4_0"></td>
+<td id="4_1"></td>
+</tr>
+<tr>
+<td class="noBor"></td>
+<td class="noBor"></td>
+<td class="noBor"></td>
+<td colspan="2" id="4_5" style="display:none";>Disposable Income = <span id="4_2"></span> - <span id="4_3"></span> = <span id="4_4"></span></td>
+</tr>
+</table>
+<p></p>
+<p>Average Rate of Tax: <span id="average"></span></p>
+<p style="display:none;">Marginal Rate of Tax: <span id="marginal"></span></p>
+<br>
+<p>Interesting Reading:</p>
+<ul>
+<li>
+<a href="https://www.gov.uk/income-tax-rates" target ="_blank">https://www.gov.uk/income-tax-rates</a>
+</li>
+<li>
+<a href="https://www.gov.uk/income-tax-rates/income-over-100000" target ="_blank">https://www.gov.uk/income-tax-rates/income-over-100000</a>
+</li>
+<li>
+<a href="https://www.buzzacott.co.uk/insights/exposing-the-60-income-tax-rate" target ="_blank">Exposing the 60&percnt; tax rate</a>
+</li>
+</ul>
 </div>
-
-
-
-
-
 
 
 <script>
 
-  //populate();
-
 var index = [
   [12500,0],
   [50000,0.2],
-  [125000,0.4],
+  [150000,0.4],
   [0,0.45],
   [100000, 2]
 ]
 
-populate();
 /* 
 index[0] to index[3] have the format:
 [threshold, marginal tax rate]
@@ -432,20 +380,9 @@ function toComma2(x) {
     return fixedNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function changeValue(x) {
-  var input = document.getElementById("input");
-  var val = parseInt(input.value);
-  
-  val += x;
-  input.value = val;
-  console.log(val);
-  calculate();
-
-  
-  
-
-}
-
 </script>
 
-<?php   include($path."/footer_tailwind.php");?>
+</body>
+
+
+</html>

@@ -12,7 +12,6 @@ module.exports = {
     "../login.php",
     "../assign_create1.0.php",
     "../assignment_list.php",
-    "../revision.php",
   
 
     "../user/**/*.{html,js,php}",
@@ -25,8 +24,6 @@ module.exports = {
     "../admin/**/*.{html,js,php}",
     "../pastpapers/**/*.{html,js,php}",
     "../news/**/*.{html,js,php}",
-    
-    "../exercises2.php",
 
     "../node_modules/flowbite/**/*.js"
 

@@ -89,8 +89,7 @@ $_SESSION["userid"] = $_GET['userid'];
 
 
 
-$query = "SELECT id, name, name_first, name_last FROM users
-          WHERE active = 1 AND userCreate = 1 ORDER BY name_last";
+$query = "SELECT id, name, name_first, name_last FROM users";
 
 if ($result = mysqli_query($conn, $query)) {	
 	while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {

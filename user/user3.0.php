@@ -229,15 +229,11 @@ include "../header_tailwind.php";
       <?php if(str_contains($permissions, "main_admin")) { 
         ?>
             <h2 class="font-mono text-lg bg-pink-200 pl-1">News Management</h2>
-              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/news_input.php">News Input</a></p>
+              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/news_input2.1.php">News Input</a></p>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/news_list.php">News List</a></p>
-              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/questions.php?articleId=">Questions Page</a></p>
-              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/newsQuestionsList.php">News Questions Manager</a></p>
-              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/printfriendly.php">Print Friendly</a></p>
 
-            <h2 class="font-mono text-lg bg-pink-200 pl-1">Page Management</h2>
+            <h2 class="font-mono text-lg bg-pink-200 pl-1">Notes Management</h2>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../notes/notes_list.php">Notes List Update</a></p>
-              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../exercises/list_manager.php">Exercises List Update</a></p>
 
             <h2 class="font-mono text-lg bg-pink-200 pl-1">Revision Management</h2>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../revision/flashcard_collection_entry.php">Flashcard Collection Entry</a></p>
@@ -255,21 +251,18 @@ include "../header_tailwind.php";
                 <p class="ml-2 font-bold">New resources</p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../assign_create1.0.php">Assignment Create and List</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../user/user_work_review.php">User Work Review (dev)</a></p>
-                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../user/assignswitch.php">Assignment Switcher</a></p>
 
               <h3 class="font-mono text-md bg-pink-100 pl-1">Multiple Choice Questions</h3>
-                <p class="ml-2 font-bold hidden">Old resources</p>
-                <p class="ml-2 hover:bg-sky-100 hidden"><a class ="block" href="../mcq/mcq_list.php">List of MCQ Questions</a></p>
-                <p class="ml-2 hover:bg-sky-100 hidden"><a class ="block" href="../mcq/mcq_quizcreate.php">MCQ Quiz Creator and List</a></p>
+                <p class="ml-2 font-bold">Old resources</p>
+                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_list.php">List of MCQ Questions</a></p>
+                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_quizcreate.php">MCQ Quiz Creator and List</a></p>
                 <p class="ml-2 hover:bg-sky-100 hidden"><a class ="block" href="../mcq/mcq_student_review.php">MCQ Student Work Review</a></p>
                 
                 
                 
-                <p class="ml-2 font-bold hidden">New resources</p>
+                <p class="ml-2 font-bold">New resources</p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_questions.php">MCQ Question Manager</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/quizcreate.php">MCQ Quiz Creator</a></p>
-                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/quizlist.php">MCQ Quiz List</a></p>
-                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/question_analyse.php">MCQ Question Analyser</a></p>
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_preview.php">MCQ Quiz Preview</a></p>
 
 

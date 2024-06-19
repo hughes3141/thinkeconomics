@@ -10,7 +10,6 @@ include($path."/php_header.php");
 include($path."/php_functions.php");
 
 $userId = null;
-$permissions = "";
 
 if (!isset($_SESSION['userid'])) {
   
@@ -57,7 +56,7 @@ if(str_contains($permissions, "main_admin")) {
 
 if($_SERVER['REQUEST_METHOD']==='POST') {}
 
-$excludedYear = 2024;
+$excludedYear = 2023;
 
 /*
 
@@ -66,7 +65,7 @@ This is primarly so that most-recnet exam years will not show up in query purpos
 
 */
 
-$dateBefore = "2024-02-18";
+$dateBefore = "2023-11-20";
 
 if(isset($_GET['testNoDate'])) {
   $dateBefore = null;
@@ -81,7 +80,7 @@ if(isset($_GET['testNoDate'])) {
 
 */
 
-if(str_contains($permissions, "main_admin")) {
+if($userId) {
   $excludedYear = null;
 }
 
@@ -133,7 +132,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
 
 ?>
 
-<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
+<div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
     <h1 class="font-mono text-2xl bg-pink-400 pl-1">Past Paper Questions Database</h1>
     <div class=" container mx-auto p-4 mt-2 bg-white text-black mb-5">
           <?php
@@ -259,7 +258,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   $topicName = $topicList[1];
                   if($topicCode != "") {
                     ?>
-                    <option value="<?=$topicCode?>" <?=($get_selectors[$controlName] == $topicList[0]) ? "selected" : ""?>>(<?=$topicCode?>) <?=$topicName?></option>
+                    <option value="<?=$topicCode?>" <?=($get_selectors[$controlName] == $topicList[0]) ? "selected" : ""?>><?=$topicName?></option>
                     <?php
                   }
 
@@ -302,7 +301,7 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
 
               if(!in_array($examInstance, $usedExamInstance)) {
                 ?>
-                <h2 class="text-xl bg-sky-200 mb-2 p-1 rounded sticky top-12 lg:top-20 z-10"><a class="hover:bg-pink-300 hover:text-sky-700 " target="blank" href="questions.php?examBoard=<?=$question['examBoard']?>&qualLevel=<?=$question['qualLevel']?>&component=<?=$question['component']?>&year=<?=$question['year']?>&topic="><?=$examInstance?></a></h2>
+                <h2 class="text-xl bg-sky-200 mb-2 p-1 rounded"><?=$examInstance?></h2>
                 <?php
                 array_push($usedExamInstance, $examInstance);
 
@@ -411,168 +410,34 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                   echo "</div>";
 
                 }
-                  ?>
-                  
-                  <?php
+                ?>
+                
+                <?php
                   $markSchemeAssets = explode(",",$question2['markSchemeAssets']);
                   //print_r($questionAssets);
 
-                  //Define what types of assets will be shown:
-                  $showMarkScheme = $showGuide = $showModel = $showExamReportText = null;
                   if($question2['markSchemeAssets']!="") {
-                    $showMarkScheme = 1;
-                  }
-                  if($question2['guide']!="") {
-                    $showGuide = 1;
-                  }
-                  if($question2['modelAnswer']!="") {
-                    $showModel = 1;
-                  }
-
-                  if($question2['examReportText'] != "") {
-                    $showExamReportText = 1;
-                  }
-                  ?>
-
-                  <div id="second_part_<?=$question['id']?>" class="px-2 pb-2 mt-2">
-                    <div class="flex justify-between mb-2 text-xs md:text-base">
-                      <?php
-                      if($showMarkScheme) {
-                        ?>
-                        <button class="border rounded bg-pink-200 border-black mb-1 px-1 md:ml-9" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$question2['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
-                        <?php
-                      }
-                      if($showGuide) {
-                        ?>
-                        <button class="border rounded bg-sky-200 border-black mb-1 px-1 " type="button" onclick="toggleHide(this, 'guideToggle_<?=$question2['id']?>', 'Show Guide', 'Hide Guide', 'block')">Show Guide</button>
-                        <?php
-                      }
-                      if($showModel) {
-                        ?>
-                        <button class="border rounded bg-sky-300 border-black mb-1 px-1 " type="button" onclick="toggleHide(this, 'modelAnswerToggle_<?=$question2['id']?>', 'Show Model Answer', 'Hide Model Answer', 'block')">Show Model Answer</button>
-                        <?php
-                      }
-
-                      if($showExamReportText) {
-                        ?>
-                        <button class="border rounded bg-sky-100 border-black mb-1 p-1" type="button" onclick="toggleHide(this, 'examReportTextToggle_<?=$question2['id']?>', 'Show Exam Report', 'Hide Exam Report', 'block')">Show Exam Report</button>
-                        <?php
-
-                      }
-                      ?>
-                    </div>
-                      <?php
-                      if($userId) {
-                        ?>
-                        <div class="flex justify-between mb-2 text-xs md:text-base">
-                          <?php
-                          if($showMarkScheme) {
-                            ?>                       
-                            <a class="md:ml-9 underline hover:bg-pink-200 text-sky-700" target ="blank" href="markscheme.php?ids=<?=$question2['id']?>">Mark Scheme Link</a>
-                            <?php
-                          }
-                          if($showGuide) {
-                            ?>
-                            <a class=" underline hover:bg-pink-200 text-sky-700" target ="blank" href="guide.php?ids=<?=$question2['id']?>">Guide Link</a>
-                            <?php
-                          }
-                          ?>
-                        </div>
-                        <?php
-                      }
-
-                    if($showMarkScheme) {
                     ?>
-                      <div class="markSchemeToggle_<?=$question2['id']?> hidden">
-                        <?php
-                          //Mark Scheme:
-                          foreach($markSchemeAssets as $asset) {
-                          $asset = getUploadsInfo($asset)[0];
-                          //print_r($asset);
-                          ?>
-                          <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
-                          <?php
-                          }
-                        ?>
-                      </div>
+                  <div id="second_part_<?=$question['id']?>" class="px-2 pb-2">
+                    <button class="border rounded bg-pink-200 border-black mb-1 px-1 ml-9" type="button" onclick="toggleHide(this, 'markSchemeToggle_<?=$question2['id']?>', 'Show Mark Scheme', 'Hide Mark Scheme', 'block')">Show Mark Scheme</button>
+
+                    <div class="markSchemeToggle_<?=$question2['id']?> hidden">
                     <?php
-                    }
-                    if($showGuide) {
+                      //Mark Scheme:
+                      foreach($markSchemeAssets as $asset) {
+                      $asset = getUploadsInfo($asset)[0];
+                      //print_r($asset);
                       ?>
-                      <div class="guideToggle_<?=$question2['id']?> hidden mb-2 border-2 border-sky-200 rounded px-1">
-                        <h3 class="text-lg bg-sky-200 -mx-1 mb-2">Question Guidance</h3>
-                        <?php
-                        $guide = $question2['guide'];
-                        $guide = explode("\n", $guide);
-                        foreach($guide as $p) {
-                          ?>
-                          <p class="mb-1"><?=$p?></p>
-                          <?php
-                        }
-                        ?>
-                      </div>
+                      <img alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
                       <?php
-                    }
-
-                    if($showModel) {
-                      ?>
-                      <div class="modelAnswerToggle_<?=$question2['id']?> hidden mb-2 border-2 border-sky-300 rounded px-1">
-                        <h3 class="text-lg bg-sky-300 -mx-1">Model Answer</h3>
-                        <?php
-                        $modelAnswer = $question2['modelAnswer'];
-                        $modelAnswer = explode("\n", $modelAnswer);
-                        foreach($modelAnswer as $p) {
-                          ?>
-                          <p class="mb-1"><?=$p?></p>
-                          <?php
-                        }
-                        if($question2['modelAnswerAssets'] != "") {
-                          $modelAnswerAssets = explode(",",$question2['modelAnswerAssets']);
-                          foreach($modelAnswerAssets as $asset) {
-                            $asset = getUploadsInfo($asset)[0];
-                              //print_r($asset);
-                              ?>
-                              <img class="lg:w-1/2 mx-auto" alt ="<?=$asset['altText']?>" src="<?=$imgSource.$asset['path']?>">
-                              <?php
-                            }
-                        }
-                        ?>
-                      </div>
-                      <?php
-                    }
-
-                    if($showExamReportText) {
-                      ?>
-                      <div class="bg-sky-100 mb-2 px-1 border-2 border-sky-200 rounded examReportTextToggle_<?=$question2['id']?> hidden">
-                        <h3 class="text-lg bg-sky-200 -mx-1">Exam Report</h3>
-                        <?php
-                        $examReportText = $question2['examReportText'];
-                        $examReportText = explode("\n", $examReportText);
-                        foreach($examReportText as $p) {
-                          ?>
-                          <p class="mb=1"><?=$p?></p>
-                          <?php
-                        }
-                        ?>
-                        </div>
-                        <?php
-
-                    }
+                      }
                     ?>
+                    </div>
                   </div>
                   <?php
-                  //}
-                  if($question2['userCreate'] == $userId) {
-                    ?>
-                    <div>
-                      <a class="underline text-sky-700 hover:bg-pink-300" target="_blank" href="pastpapers_questions.php?id=<?=$question2['id']?>&topic=&questionNo=&examBoard=&year=&component=">Edit Details</a>
-                    </div>
-                    <?php
                   }
 
                 }
-
-
                 ?>
                 <div class="px-2 py-2 bg-pink-200 grid lg:grid-cols-2">       
                   <?php
@@ -587,13 +452,6 @@ $controls = getPastPaperCategoryValues($get_selectors['topic'], $get_selectors['
                     ?>
                     <div class="text-center">
                       <a class ="hover:bg-sky-200 hover:text-pink-500 w-full block underline rounded" href="<?=$question['markSchemeLink']?>" target="_blank">Link to Mark Scheme</a>
-                    </div>
-                    <?php
-                  }
-                  if($question['examReportLink'] != "") {
-                    ?>
-                    <div class="text-center">
-                      <a class ="hover:bg-sky-200 hover:text-pink-500 w-full block underline rounded" href="<?=$question['examReportLink']?>" target="_blank">Link to Exam Report</a>
                     </div>
                     <?php
                   }

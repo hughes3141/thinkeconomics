@@ -61,7 +61,7 @@ $get_selectors = array(
   'selectedQuestions' => (isset($_GET['selectedQuestions'])&&$_GET['selectedQuestions']!="") ? $_GET['selectedQuestions'] : null,
   'quizid' => (isset($_GET['quizid'])&&$_GET['quizid']!="") ? $_GET['quizid'] : null,
   'showQuizzes' => (isset($_GET['showQuizzes'])&&$_GET['showQuizzes']!="") ? $_GET['showQuizzes'] : null,
-  'excludedQuizzes' => (isset($_GET['excludedQuizzes'])&&$_GET['excludedQuizzes']!="") ? $_GET['excludedQuizzes'] : null
+  
 
 
 
@@ -123,8 +123,6 @@ foreach($selectedQuestionsRev as $questionid) {
 }
 
 foreach ($questions as $key => $question) {
-  //Label selected and original questions:
-
   if(in_array($question['id'], $selectedQuestions)) {
     $questions[$key]['selected'] = 1;
   } else {
@@ -137,63 +135,6 @@ foreach ($questions as $key => $question) {
   }
 }
 
-
-foreach($questions as $key => $question) {
-  //Apend field for used quizzes:
-  $questions[$key]['usedInQuizzes'] = "";
-  }
-
-
-//Looking now at whether questions are elements of a quiz.
-
-$globalUsedQuizzes = array();
-
-$excludedQuizzes = explode(",", $get_selectors['excludedQuizzes']);
-unset($excludedQuizzes[count($excludedQuizzes)-1]);
-
-
-//Processing quiz details if showQuizzes is enabled:  
-if($get_selectors['showQuizzes']) {  
-  foreach($questions as $key => $question) {
-    $usedQuizzes = getMCQquizDetails(null, null, $question['id'], null, 1,1);
-    $usedQuizzedIds = array();
-    //print_r($usedQuizzes);
-    
-    foreach($usedQuizzes as $key2 => $quiz) {
-      
-      if(in_array($quiz['id'], $excludedQuizzes)) {
-        unset($usedQuizzes[$key2]);
-      } else {
-        array_push($usedQuizzedIds, $quiz['id']);
-        if(!in_array($quiz, $globalUsedQuizzes)) {
-          array_push($globalUsedQuizzes, $quiz);
-        }
-      }
-      //print_r($usedQuizzedIds);
-      $questions[$key]['usedInQuizzes'] = implode(",",$usedQuizzedIds);
-
-    }
-  }
-
-}
-
-//Change $quesitons to be ordered by $globalusedquizzes
-if($get_selectors['orderby'] == "usedQuizzes") {
-  $questions_filter = array();
-  foreach($globalUsedQuizzes as $usedQuiz) {
-    foreach($questions as $key => $question) {
-      $usedInQuizIds = explode(",",$question['usedInQuizzes']);
-      if(in_array($usedQuiz['id'], $usedInQuizIds)) {
-        array_push($questions_filter, $question);
-        unset($questions[$key]);
-      }
-
-    }
-  }
-  $questions = array_merge($questions_filter, $questions);
-  
-
-}
 
 $questionDetails = array();
 
@@ -225,19 +166,19 @@ $_GET controls:
         <form method = "post" action ="">
           <p class="mb-1 ">
             <label for="quizNameInput">Quiz Name:</label>
-            <input class="w-full p-1" id = "quizNameInput" type="text" name="quizName">
+            <input class="w-full" id = "quizNameInput" type="text" name="quizName">
           </p>
           <p class="mb-1 ">
             <label for="topicInput">Topic:</label>
-            <input class="w-full p-1" id = "topicInput" type="text" name="topic">
+            <input class="w-full" id = "topicInput" type="text" name="topic">
           </p>
           <p class="mb-1 ">
             <label for="descriptionInput">Description:</label>
-            <textarea class="w-full p-1" id = "descriptionInput"  name="description"></textarea>
+            <textarea class="w-full" id = "descriptionInput"  name="description"></textarea>
           </p>
           <p class="mb-1 ">
             <label for="notesInput">Notes:</label>
-            <textarea class="w-full p-1" id = "notesInput"  name="notes"></textarea>
+            <textarea class="w-full" id = "notesInput"  name="notes"></textarea>
           </p>
           <input type="hidden" id="questionsIdInput" name="questions_id">
           <p class="mb-1 ">
@@ -250,7 +191,7 @@ $_GET controls:
       </div>
     </div>
     <div>
-      <form method ="get"  action="" id="selectForm">
+      <form method ="get"  action="">
           <label for="id_select">ID:</label>
           <input type="text" name="id" value="<?=isset($_GET['id']) ? $_GET['id'] : "" ?>"</input>
           <label for="_select">Topic:</label>
@@ -274,7 +215,6 @@ $_GET controls:
           <select id="orderby_select" name="orderby">
             <option value=""></option>
             <option value="question" <?=($get_selectors['orderby'] == "question") ? "selected" : ""?>>Question Text</option>
-            <option value="usedQuizzes" <?=($get_selectors['orderby'] == "usedQuizzes") ? "selected" : ""?>>Used Quizzes</option>
           </select>
           <!--
           <label for="search_select">Search:</label>
@@ -283,56 +223,19 @@ $_GET controls:
 
           <input type="hidden" id="selectedQuestionsSelect" name="selectedQuestions" value="<?=$get_selectors['selectedQuestions']?>">
 
-          <input type="hidden" id="excludedQuizzesSelect" name="excludedQuizzes" value="<?=$get_selectors['excludedQuizzes']?>">
-
           <label for="showQuizzes_select">Quiz Summary</label>
           <input id="showQuizzes_select" type="checkbox" name="showQuizzes" value="1" <?=($get_selectors['showQuizzes'] == 1) ? "checked" : ""?>>
 
           <input type="submit"  value="Select">
-          <?php
-          if($get_selectors['excludedQuizzes']) {
-            ?>
-            <button type="button" class="border border-black rounded" onclick="clearExcludedQuizzes();">Clear Excluded Quizzes</button>
-            <?php
-          }
-          ?>
         </form>
     </div>
 
     <?php
       echo count($questions);
       echo "<br>";
-      //print_r($get_selectors);
       //print_r($questions);
-      //print_r($questions_filter);
       //print_r($originalQuestions);
       //print_r($selectedQuestions);
-      //print_r($excludedQuizzes);
-      //print_r($globalUsedQuizzes);
-      /*
-      foreach($globalUsedQuizzes as $quiz) {
-        echo $quiz['id']." ";
-      }
-      */
-      
-      
-    ?>
-    <?php
-      if(count($globalUsedQuizzes)>0) {
-        ?>
-        <div>
-          <h2>Used Quizzes</h2>
-          <?php
-          foreach($globalUsedQuizzes as $quiz) {
-            //print_r($quiz);
-            ?>
-              <p><a class="underline text-sky-800 hover:bg-sky-200" href="mcq_preview.php?quizid=<?=$quiz['id']?>" target="_blank"><?=$quiz['topic']?> <?=$quiz['quizName']?></a> <a href="quizcreate.php?quizid=<?=$quiz['id']?>" target="_blank" class="bg-pink-200">This Quiz</a> <button class="bg-sky-100  rounded" onclick="excludedQuizzes(<?=$quiz['id']?>);">Exclude</button></p>
-            <?php
-          }
-          ?>
-        </div>
-        <?php
-      }
     ?>
     <div class="grid grid-cols-3 relative">
       <div class="col-span-2">
@@ -340,7 +243,6 @@ $_GET controls:
           <?php
 
           foreach($questions as $question) {
-            //echo $question['id'];
             $imgPath = "";
             if($question['path'] == "") {
               $imgPath = $question['No'].".JPG";
@@ -349,24 +251,10 @@ $_GET controls:
             }
             $img = $imgSource."/mcq/question_img/".$imgPath;
 
-            $asset  = getUploadsInfo($question['midImgAssetId'])[0];
-            $midAssetImgSrc ="";
-            if($question['midImgAssetId'] != "") {
-              $midAssetImgSrc = $imgSource.$asset['path'];
-            }
-
             $questionDetailsInstance = array(
               'id'=>$question['id'],
               'No'=>$question['No'],
-              //'question'=>preg_replace( "/[^a-zA-Z0-9]+/", '', $question['question']),
-              //'question2'=>preg_replace( "/[^a-zA-Z0-9]+/", '', $question['question2']),
-
-              'question'=> $question['question'],
-              'question2'=> $question['question2'],
-              'midImgAssetId' => $question['midImgAssetId'],
-              'midImgPath' =>  $midAssetImgSrc,
-              'options' => $question['options'],
-
+              'question'=>preg_replace( "/[^a-zA-Z0-9]+/", '', $question['question']),
               'path'=>$img,
               'Answer' =>$question['Answer'],
               'examBoard' =>$question['examBoard'],
@@ -375,30 +263,12 @@ $_GET controls:
               'component'=>$question['component'],
               'series'=>$question['series'],
               'Topic'=>$question['Topic'],
-              'questionNo'=>$question['questionNo'],
-              'textOnly' => $question['textOnly']
+              'questionNo'=>$question['questionNo']
             );
             $questionDetails[$question['id']] = $questionDetailsInstance;
 
-            $hideQuestion = 0;
-            if(
-              $question['selected'] == 1 && $question['original'] == 0
-              
-              ) {
-              $hideQuestion = 1;
-            }
-
-            $highlightQuestion = 0;
-            if(
-              $question['similar'] != ""
-              || $question['relevant'] == 0
-              
-            ) {
-              $highlightQuestion = 1;
-            }
-
             ?>
-            <div class="border border-black mx-1 mb-1 p-1 <?=($hideQuestion == 1) ? "  hidden " : ""?> <?=($highlightQuestion == 1) ? "  bg-sky-200 " : ""?>">
+            <div class="border border-black mx-1 mb-1 p-1 <?=($question['selected'] == 1 && $question['original'] == 0) ? " hidden bg-sky-200 " : ""?>">
               <?php
               if(isset($_GET['test'])) {
                 print_r($question);
@@ -407,78 +277,35 @@ $_GET controls:
               }
               ?>
               <h2 class="text-xs" ><?=$question['examBoard']?> <?=$question['qualLevel']?> <?=$question['component']?> <?=$question['series']?> <?=$question['year']?> Q<?=$question['questionNo']?> <?=$question['Topic']?></h2>
-              <p class="text-xs"><?=$question['id']?></p>
               <p>
                 <input id="quizSelect_<?=$question['id']?>" type="checkbox" onchange="includeQuestion(<?=$question['id']?>)" <?=(in_array($question['id'], $selectedQuestions)) ? "checked" :""?>>
                 <label for="quizSelect_<?=$question['id']?>">Include</label>
               </p>
               <p class="text-xs"><?=$question['question']?></p>
-              <?php
-              if($question['textOnly'] == 1) {
-                ?>
-                <div class="text-xs">
-                  <?php
-                  outputMCQquestion($question['id'], $imgSource);
-                  ?>
-                </div>
-                <?php
-              } else {
-                ?>
-                <img src="<?=$img?>" class="" alt = "<?=$question['No']?>">
-                <?php
-              }
-              ?>
+              <img src="<?=$img?>" class="" alt = "<?=$question['No']?>">
               <div class="text-xs">
                 
                 <p>Answer: <?=$question['Answer']?></p>
               </div>
               <?php
-
               //The following will show quiz detail summaries if showQuizzes is enabled:
-
-              $usedInQuizIds = $question['usedInQuizzes'];
-              $usedInQuizIds = explode(",",$usedInQuizIds);
-              $usedQuizzes = array();
-              foreach($usedInQuizIds as $key => $quiz) {
-                if($quiz!="") {
-                  array_push($usedQuizzes, getMCQquizDetails($quiz)[0]);
-                }
-              }
-              //print_r($usedInQuizIds);
-              //print_r($usedQuizzes);
-              if(count($usedInQuizIds) > 0) {
-                if(isset($_GET['test'])) {
-                  //print_r($usedQuizzes);
-                }
+              if($get_selectors['showQuizzes']) {
+                $usedQuizzes = getMCQquizDetails(null, null, $question['id']);
+                print_r($usedQuizzes);
                 ?>
-                  <div>
-                    <h2>Used in:</h2>
-                      <ul class="text-xs">
-                        <?php
-                        foreach ($usedQuizzes as $quiz) {
-                          ?>
-                          <li><a class="underline text-sky-800 hover:bg-sky-200" href="mcq_preview.php?quizid=<?=$quiz['id']?>#id_<?=$question['id']?>" target="_blank"><?=$quiz['topic']?> <?=$quiz['quizName']?></a> <a href="quizcreate.php?quizid=<?=$quiz['id']?>" target="_blank" class="bg-pink-200">This Quiz</a> <button class="bg-sky-100  rounded" onclick="excludedQuizzes(<?=$quiz['id']?>);">Exclude</button></li>
-                          <?php
-                        }
-                        ?>
-                      </ul>
-                  </div>
+                <div>
+
+                </div>
                 <?php
               }
               ?>
-              <a href="mcq_questions.php?id=<?=$question['id']?>" target="blank" class="underline text-sky-800 hover:bg-sky-200">Edit</a>
-              <!--
-              <button class="border border-black rounded bg-pink-200 my-2 p-1 "  onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit Details", "Hide Edit", "block");'>Edit Details</button>
+              <button class="border border-black rounded bg-pink-200 my-2 p-1"  onclick='toggleHide(this, "toggleClass_<?=$question['id']?>", "Edit Details", "Hide Edit", "block");'>Edit Details</button>
               <div class=" toggleClass_<?=$question['id']?> hidden">
-              
               <form method="post">
                 <label for="hide_question_<?=$question['id']?>">Search:</label>
                 <input type="text" id="hide_question_<?=$question['id']?>" name="hideQuestion" value="<?=isset($_GET['examBoard']) ? $_GET['search'] : "" ?>"</input>
               </form>
-              
-              
               </div>
-              -->
 
 
 
@@ -535,8 +362,6 @@ $_GET controls:
     div.innerHTML = "";
     for (var i=0; i<selectedQuestions.length; i++) {
       var div2 = document.createElement('div');
-      var div3 = document.createElement('div');
-      div3.className = "border border-pink-300 rounded m-1 p-1"
       var img = document.createElement('img');
       var p = document.createElement('p');
       var button = document.createElement('button');
@@ -558,7 +383,7 @@ $_GET controls:
       p2.classList.add("text-xs");
 
       const questionDetails = questions[selectedQuestions[i]];
-      console.log(questionDetails);
+      //console.log(questionDetails);
       var p3 = document.createElement('p');
       p3.innerHTML = questionDetails.examBoard;
       p3.innerHTML += " "+questionDetails.qualLevel;
@@ -568,36 +393,6 @@ $_GET controls:
       p3.innerHTML += " Q"+questionDetails.questionNo;
       p3.innerHTML += " "+questionDetails.Topic;
       p3.classList.add("text-xs");
-      
-      var p4 = document.createElement('p');
-      //p4.className = "whitespace-pre-wrap";
-      p4.innerHTML = questionDetails.question;
-
-      var midImg = document.createElement('img');
-      midImg.src = questionDetails.midImgPath;
-
-      var p5 = document.createElement('p');
-      p5.innerHTML += " "+questionDetails.question2;
-      //p5.className = "whitespace-pre-wrap";
-
-      var p6 = document.createElement('div');
-      var optionsJSON = JSON.parse(questionDetails.options);
-      var options = [];
-
-      for(var j in optionsJSON)
-          options.push(optionsJSON[j])
-      //console.log(options);
-      var optionLetters = ["A", "B", "C", "D", "E", "F"];
-      for(var j=0; j<options.length; j++ ) {
-        var p7 = document.createElement('p');
-        p7.innerHTML += optionLetters[j]+": ";
-        p7.innerHTML += options[j];
-        //console.log(optionLetters[j]);
-        //console.log(options[j]);
-        p6.appendChild(p7);
-      }
-      //p6.innerHTML = questionDetails.options;
-
       button.innerHTML = "Remove";
       button.className = "border border-black mx-1 px-1 bg-pink-200 rounded";
       button.setAttribute("onclick", "removeItem(selectedQuestions, "+selectedQuestions[i]+"); previewPopulate();")
@@ -608,17 +403,8 @@ $_GET controls:
       img.alt= questions[selectedQuestions[i]].No;
       div2.appendChild(p);
       div2.appendChild(p3);
-      if(questionDetails.textOnly == 1) {
-        div3.appendChild(p4);
-        div3.appendChild(midImg);
-        div3.appendChild(p5);
-        div3.appendChild(p6);
-      }
       div2.appendChild(p2);
-      if(questionDetails.textOnly == 0) {
-        div3.appendChild(img);
-      }
-      div2.appendChild(div3);
+      div2.appendChild(img);
       div.appendChild(div2);
 
       
@@ -683,23 +469,6 @@ $_GET controls:
     } else {
       form.classList.add("hidden");
     }
-  }
-
-  function excludedQuizzes(quizid) {
-    const excludedQuizzesSelect = document.getElementById("excludedQuizzesSelect");
-    const selectForm = document.getElementById("selectForm");
-    //console.log(excludedQuizzesSelect);
-    //console.log(quizid);
-    excludedQuizzesSelect.value += quizid+",";
-    selectForm.submit();
-
-  }
-
-  function clearExcludedQuizzes() {
-  const excludedQuizzesSelect = document.getElementById("excludedQuizzesSelect");
-  excludedQuizzesSelect.value="";
-  document.getElementById("selectForm").submit();
-  
   }
 
 </script>
