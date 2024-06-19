@@ -285,7 +285,7 @@ if(str_contains($permissions, "main_admin")) {
         //print_r($_POST);
         //print_r($get_selectors);
         //print_r($questions);
-        print_r($excludedYears);
+        //print_r($excludedYears);
    
         
       ?>
