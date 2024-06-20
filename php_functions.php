@@ -4682,12 +4682,12 @@ function validateEmail($email) {
 
 }
 
-function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $usertype, $email_name, $version, $privacy_bool = 0, $usertype_std = "student", $permissions = "student",  $active = 1, $schoolId = null, $userCreate = null, $groupIdArray = "", $passwordRecord = 0) {
+function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $usertype, $email_name, $version, $privacy_bool = 0, $usertype_std = "student", $permissions = "student",  $active = 1, $schoolId = null, $userCreate = null, $groupIdArray = "", $passwordRecord = 0, $activation_code, $expiry = 1 * 24  * 60 * 60) {
 
   global $conn;
 
   //Enter new user information into users table
-  $sql = "INSERT INTO users (name_first, name_last, username, password_hash, usertype, permissions, userInput_userType, email, active, time_added, privacy_agree, privacy_date, privacy_vers, schoolid, userCreate, groupid_array, password) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  $sql = "INSERT INTO users (name_first, name_last, username, password_hash, usertype, permissions, userInput_userType, email, active, time_added, privacy_agree, privacy_date, privacy_vers, schoolid, userCreate, groupid_array, password, activation_code, activation_expiry) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     
   $stmt = $conn->prepare($sql);
   
@@ -4708,7 +4708,12 @@ function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $us
     $groupIdArray = "";
   }
 
-  $stmt->bind_param("ssssssssisissiiss", $firstName, $lastName, $username, $password_hash, $usertype_std, $permissions, $usertype, $email_name, $active, $datetime, $privacy_bool, $datetime, $version, $schoolId, $userCreate, $groupIdArray, $passwordEntry);
+  //Activation code and expiry:
+
+  $activation_code = password_hash($activation_code, PASSWORD_DEFAULT);
+  $expiry = date('Y-m-d H:i:s',  time() + $expiry);
+
+  $stmt->bind_param("ssssssssisissiissss", $firstName, $lastName, $username, $password_hash, $usertype_std, $permissions, $usertype, $email_name, $active, $datetime, $privacy_bool, $datetime, $version, $schoolId, $userCreate, $groupIdArray, $passwordEntry, $activation_code, $expiry);
   
   $stmt->execute();
 
@@ -4724,6 +4729,84 @@ function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $us
 Used in: 
 -newuser.php
 */
+
+function find_user_by_username($username) {
+  global $conn;
+  $sql = 'SELECT username, password, active, email
+            FROM users
+            WHERE username= ?';
+
+//echo $sql;
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+  if($result ->num_rows>0) {
+    $row = $result->fetch_assoc();
+    return  $row;
+  }
+
+
+}
+
+function is_user_active($user)
+{
+    return (int)$user['active'] === 1;
+}
+
+function generate_activation_code(): string
+{
+    return bin2hex(random_bytes(16));
+}
+
+function find_unverified_user(string $activation_code, string $email)
+{
+    global $conn;
+    $sql = 'SELECT id, activation_code, activation_expiry < now() as expired
+            FROM users
+            WHERE active = 0 AND email= ?';
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+      if($result ->num_rows>0) {
+        $row = $result->fetch_assoc();
+      }
+    $user = $row;
+
+
+
+    if ($user) {
+        // already expired, delete the in active user with expired activation code
+        if ((int)$user['expired'] === 1) {
+            echo "delete user";
+            //delete_user_by_id($user['id']);
+            return null;
+        }
+        // verify the password
+        if (password_verify($activation_code, $user['activation_code'])) {
+            echo "verifying user";
+            return $user;
+        }
+    }
+
+    return null;
+}
+
+function delete_user_by_id(int $id, int $active = 0) {
+  global $conn;
+  $sql = 'DELETE FROM users
+            WHERE id = ? and active= ?';
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("ii", $id, $active);
+
+  return $stmt->execute();
+
+  
+}
 
 function getUserByUsernameDatetime($entry) {
   //This function is designed for the specific use of retrieving id from table users in the immediate afterward of a new account being registered
