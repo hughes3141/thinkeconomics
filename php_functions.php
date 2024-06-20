@@ -4819,6 +4819,10 @@ $stmt->bind_param("i", $user_id);
 return $stmt->execute();
 }
 
+function is_get_request(): bool
+{
+    return strtoupper($_SERVER['REQUEST_METHOD']) === 'GET';
+}
 
 
 function getUserByUsernameDatetime($entry) {
