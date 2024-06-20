@@ -4682,7 +4682,7 @@ function validateEmail($email) {
 
 }
 
-function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $usertype, $email_name, $version, $privacy_bool = 0, $usertype_std = "student", $permissions = "student",  $active = 1, $schoolId = null, $userCreate = null, $groupIdArray = "", $passwordRecord = 0, $activation_code, $expiry = 1 * 24  * 60 * 60) {
+function insertNewUserIntoUsers($firstName, $lastName, $username, $password, $usertype, $email_name, $version, $privacy_bool = 0, $usertype_std = "student", $permissions = "student",  $active = 1, $schoolId = null, $userCreate = null, $groupIdArray = "", $passwordRecord = 0, $activation_code =null, $expiry = 1 * 24  * 60 * 60) {
 
   global $conn;
 
@@ -4760,8 +4760,19 @@ function generate_activation_code(): string
     return bin2hex(random_bytes(16));
 }
 
-function find_unverified_user(string $activation_code, string $email)
-{
+function delete_user_by_id(int $id, int $active = 0) {
+  global $conn;
+  $sql = 'DELETE FROM users
+            WHERE id = ? and active= ?';
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("ii", $id, $active);
+
+  return $stmt->execute();
+
+  
+}
+
+function find_unverified_user(string $activation_code, string $email) {
     global $conn;
     $sql = 'SELECT id, activation_code, activation_expiry < now() as expired
             FROM users
@@ -4796,17 +4807,19 @@ function find_unverified_user(string $activation_code, string $email)
     return null;
 }
 
-function delete_user_by_id(int $id, int $active = 0) {
+function activate_user(int $user_id): bool {
   global $conn;
-  $sql = 'DELETE FROM users
-            WHERE id = ? and active= ?';
-  $stmt = $conn->prepare($sql);
-  $stmt->bind_param("ii", $id, $active);
+  $sql = 'UPDATE users
+          SET active = 1,
+              activated_at = CURRENT_TIMESTAMP
+          WHERE id=?';
 
-  return $stmt->execute();
-
-  
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+return $stmt->execute();
 }
+
+
 
 function getUserByUsernameDatetime($entry) {
   //This function is designed for the specific use of retrieving id from table users in the immediate afterward of a new account being registered

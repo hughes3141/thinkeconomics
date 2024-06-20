@@ -15,6 +15,7 @@ if (!isset($_SESSION['userid'])) {
 $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 include($path."/php_functions.php");
+include($path."/php_email_functions.php");
 include ($path."/header_tailwind.php");
 
 //Very little file that only contains the vairabble $version to be ouput to database.
@@ -107,10 +108,21 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
       $permissions .= ", teacher";
     }
 
+    //Generate Activation code for activation purposes:
+
+    $activation_code = generate_activation_code();
+
+
+
     //Enter new user information into users table.
     //Store newly-minted 'username' and 'time_added' to $entry array, which is ['username'=> , 'datetime'=> ]
 
-    $entry = insertNewUserIntoUsers($firstName, $lastName, $username, $password1, $usertype, $email_name, $version, $privacy_bool, $usertype, $permissions);
+    $entry = insertNewUserIntoUsers($firstName, $lastName, $username, $password1, $usertype, $email_name, $version, $privacy_bool, $usertype, $permissions, 0, null, null, "", 0, $activation_code);
+
+    //Generate Activation email
+    $fullName = $firstName." ".$lastName;
+
+    send_activation_email($email_name, $fullName, $activation_code);
 
     //Set session userid to newly-minted userid:
     $userid = getUserByUsernameDatetime($entry);
