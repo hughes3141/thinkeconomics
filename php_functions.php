@@ -5685,6 +5685,26 @@ function getPastPaperCategoryValues($topic=null, $examBoard = null, $year = null
   
 }
 
+function insertModelAnswer($text, $type, $assets, $quesstionId, $notes, $userCreate) {
+  /*
+  Creates record in table pastpaper_model_answers
+  This table is used for
+  -MCQ explanations
+  -Model Answers in Past Papers
+
+  
+  */
+  global $conn;
+
+  $sql = "INSERT INTO pastpaper_model_answers
+          (text, type, assets, questionId, notes, userCreate)
+          VALUES (?,?,?,?,?,?)";
+
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("sssisi", $text, $type, $assets, $quesstionId, $notes, $userCreate);
+  $stmt->execute();
+}
+
 function shuffle_assoc($list) { 
   if (!is_array($list)) return $list; 
 
