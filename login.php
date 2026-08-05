@@ -30,12 +30,13 @@ if(isset($_SESSION["userid"])){
     //print_r($_SESSION);
     //exit;
 }
- 
 
+
+$publicPage = true;
 $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 include($path."/php_functions.php");
- 
+
 // Define variables and initialize with empty values
 $username = $password2 = "";
 $username_err = $password_err = $login_err = "";

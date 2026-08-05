@@ -1,10 +1,8 @@
 <?php
 
-// Initialize the session
-session_start();
 
-$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
+$publicPage = true;
 $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 include($path."/php_functions.php");
@@ -13,13 +11,7 @@ $downloadPermissions = null;
 $userId = null;
 $permissions = '';
 
-if (!isset($_SESSION['userid'])) {
-  
-  //header("location: /login.php");
-
-}
-
-else {
+if (isset($_SESSION['userid'])) {
   $userId = $_SESSION['userid'];
   $userInfo = getUserInfo($_SESSION['userid']);
   $userType = $userInfo['usertype'];
@@ -33,7 +25,6 @@ else {
   }
   */
 }
-
 /*
 Note that the permission "news_article_download" must be present in either permissions for school or for user for article download to be available.
 

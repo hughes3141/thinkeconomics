@@ -1,9 +1,6 @@
 <?php
 
-// Initialize the session
-session_start();
 
-$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
 $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
@@ -13,27 +10,18 @@ $downloadPermissions = null;
 $userId = null;
 $permissions = '';
 
-if (!isset($_SESSION['userid'])) {
-  
-  header("location: /login.php");
-
+$userId = $_SESSION['userid'];
+$userInfo = getUserInfo($_SESSION['userid']);
+$userType = $userInfo['usertype'];
+$permissions = $userInfo['permissions'];
+/*
+if((str_contains($permissions, "news_article_download") || str_contains($userInfo['school_permissions'], "news_article_download"))) {
+  $downloadPermissions = 1;
 }
+*/
 
-else {
-  $userId = $_SESSION['userid'];
-  $userInfo = getUserInfo($_SESSION['userid']);
-  $userType = $userInfo['usertype'];
-  $permissions = $userInfo['permissions'];
-  /*
-  if((str_contains($permissions, "news_article_download") || str_contains($userInfo['school_permissions'], "news_article_download"))) {
-    $downloadPermissions = 1;
-  }
-  */
-  
-  if (!($userType == "teacher" || $userType =="admin")) {
-    header("location: /index.php");
-  }
-  
+if (!($userType == "teacher" || $userType =="admin")) {
+  header("location: /index.php");
 }
 
 $style_input = "

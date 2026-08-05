@@ -1,9 +1,6 @@
 <?php
 
-// Initialize the session
-session_start();
 
-$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
 $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
@@ -14,23 +11,13 @@ if(isset($_GET['test'])) {
   $test = true;
 }
 
-if (!isset($_SESSION['userid'])) {
-  
-  header("location: /login.php");
-  $userId = $_SESSION['userid'];
-  
-}
-
-else {
-  $userInfo = getUserInfo($_SESSION['userid']);
-  $userId = $_SESSION['userid'];
-  $schoolId = $userInfo['schoolid'];
-  $permissions = $userInfo['permissions'];
-  echo ($test == true ? print_r($userInfo) : "");
-  $userGroups = json_decode($userInfo['groupid_array']);
-  //print_r($userGroups);
-  
-}
+$userInfo = getUserInfo($_SESSION['userid']);
+$userId = $_SESSION['userid'];
+$schoolId = $userInfo['schoolid'];
+$permissions = $userInfo['permissions'];
+echo ($test == true ? print_r($userInfo) : "");
+$userGroups = json_decode($userInfo['groupid_array']);
+//print_r($userGroups);
 
 $style_input = "
 

@@ -1,43 +1,26 @@
 <?php
 
-// Initialize the session
-session_start();
 
-$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
 $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 include($path."/php_functions.php");
 
+$userInfo = getUserInfo($_SESSION['userid']);
+$userId = $_SESSION['userid'];
+$permissions = $userInfo['permissions'];
 
-if (!isset($_SESSION['userid'])) {
-  
-  header("location: /login.php");
-  
+/*
+$groupid = array();
+if($userInfo['groupid_array'] != "") {
+  $groupid = json_decode($userInfo['groupid_array']);
 }
+*/
 
-else {
-  $userInfo = getUserInfo($_SESSION['userid']);
-  $userId = $_SESSION['userid'];
-  $permissions = $userInfo['permissions'];
-
-  /*
-  $groupid = array();
-  if($userInfo['groupid_array'] != "") {
-    $groupid = json_decode($userInfo['groupid_array']);
-  }
-  */
-
-  $groupid_array = array();
-  if($userInfo['groupid_array'] != "") {
-    $groupid_array = json_decode($userInfo['groupid_array']);
-  }
-
-
+$groupid_array = array();
+if($userInfo['groupid_array'] != "") {
+  $groupid_array = json_decode($userInfo['groupid_array']);
 }
-
-
-
 $style_input = "
 
 td, th {

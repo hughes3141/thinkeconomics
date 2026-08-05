@@ -1,28 +1,15 @@
 <?php
 
-// Initialize the session
-session_start();
 
-$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
 $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 include($path."/php_functions.php");
 
-
-if (!isset($_SESSION['userid'])) {
-  
-  header("location: /login.php");
-  
-}
-
-else {
-  $userInfo = getUserInfo($_SESSION['userid']);
-  $userId = $_SESSION['userid'];
-  $schoolId = $userInfo['schoolid'];
-  $permissions = $userInfo['permissions'];
-  
-}
+$userInfo = getUserInfo($_SESSION['userid']);
+$userId = $_SESSION['userid'];
+$schoolId = $userInfo['schoolid'];
+$permissions = $userInfo['permissions'];
 
 $assignid = "";
 

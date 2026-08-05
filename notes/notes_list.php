@@ -1,30 +1,8 @@
-<?php 
+<?php
 
-
-// Initialize the session
-session_start();
-
-$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
-
-
-if (!isset($_SESSION['userid'])) {
-  
-  header("location: /login.php");
-  
-}
-
-//Define server path:
 $path = $_SERVER['DOCUMENT_ROOT'];
-$path .= "/../secrets/secrets.php";
-include($path);
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
+include($path."/php_header.php");
+include($path."/php_functions.php");
 
 /*
 print_r($_SESSION);

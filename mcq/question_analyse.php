@@ -1,31 +1,17 @@
 <?php
 
-// Initialize the session
-session_start();
 
-$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
 $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
 include($path."/php_functions.php");
 
-
-if (!isset($_SESSION['userid'])) {
-  
-  header("location: /login.php");
-  
+$userInfo = getUserInfo($_SESSION['userid']);
+$userId = $_SESSION['userid'];
+$permissions = $userInfo['permissions'];
+if (!(str_contains($permissions, 'main_admin'))) {
+  header("location: /index.php");
 }
-
-else {
-  $userInfo = getUserInfo($_SESSION['userid']);
-  $userId = $_SESSION['userid'];
-  $permissions = $userInfo['permissions'];
-  if (!(str_contains($permissions, 'main_admin'))) {
-    header("location: /index.php");
-  }
-
-}
-
 $style_input = "
   th, td {
     border: 1px solid black;

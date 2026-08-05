@@ -3,6 +3,7 @@
 
 
 $path = $_SERVER['DOCUMENT_ROOT'];
+$publicPage = true;
 include($path."/php_header.php");
 //include($path."/php_functions.php");
 
