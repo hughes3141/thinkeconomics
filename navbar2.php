@@ -8,10 +8,7 @@
 <a class="navbar-brand" href="/index.html">Think Economics</a>
 -->
 <ul class="navbar-nav">
-  <li class="nav-item"><a class="nav-link navbar" href="/notes.php">Notes</a></li>
-  <li class="nav-item"><a class="nav-link navbar" href="/news.php">News</a></li>
   <li class="nav-item"><a class="nav-link navbar" href="/videos.php">Videos</a></li>
-  <li class="nav-item"><a class="nav-link navbar" href="/exercises.php">Exercises</a></li>
   <li class="nav-item"><a class="nav-link navbar" href="/mcq.php">MCQs</a></li>
   <li class="nav-item"><a class="nav-link navbar" href="/user_login2.0.php">Login</a></li>
   <!--

@@ -3,10 +3,7 @@
 <div class="titlediv cour">
 <ul class="navbar">
   
-  <li class="navbar"><a class="navbar" href="/notes.php">Notes</a></li>
-  <li class="navbar"><a class="navbar" href="/news.php">News</a></li>
   <li class="navbar"><a class="navbar" href="/videos.php">Videos</a></li>
-  <li class="navbar"><a class="navbar" href="/exercises.php">Exercises</a></li>
   <li class="navbar"><a class="navbar" href="/mcq.php">MCQs</a></li>
   
   <li class="navbar"><a class="navbar" href="/admin.php">Admin</a></li>

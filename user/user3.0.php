@@ -196,31 +196,12 @@ include "../header_tailwind.php";
                 <a class ="block" href="/user/user_manager.php">Manage Users</a>
               </p>
 
-            <h2 class="font-mono text-lg bg-pink-200 pl-1">Question Management</h2> 
-            <p class="ml-2 hover:bg-sky-100">
-                <a class ="block" href="/saq/saq_list1.1.php?noFlashCard&noAssetInput">Upload/Update Questions</a>
-              </p>
-
-      <?php 
+      <?php
         }
         ?>
 
       <?php if(str_contains($permissions, "main_admin")) { 
         ?>
-            <h2 class="font-mono text-lg bg-pink-200 pl-1">News Management</h2>
-              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/news_input.php">News Input</a></p>
-              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/news_list.php">News List</a></p>
-              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/questions.php?articleId=">Questions Page</a></p>
-              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/newsQuestionsList.php">News Questions Manager</a></p>
-              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/printfriendly.php">Print Friendly</a></p>
-
-            <h2 class="font-mono text-lg bg-pink-200 pl-1">Page Management</h2>
-              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../notes/notes_list.php">Notes List Update</a></p>
-              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../exercises/list_manager.php">Exercises List Update</a></p>
-
-            <h2 class="font-mono text-lg bg-pink-200 pl-1">Revision Management</h2>
-              <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../revision/flashcard_collection_entry.php">Flashcard Collection Entry</a></p>
-
             <h2 class="font-mono text-lg bg-pink-200 pl-1">Past Paper Questions</h3>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../pastpapers/pastpapers_questions.php">Past Paper Questions Manager</a></p>
              
@@ -252,21 +233,6 @@ include "../header_tailwind.php";
                 <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../mcq/mcq_preview.php">MCQ Quiz Preview</a></p>
 
 
-              <h3 class="font-mono text-md bg-pink-100 pl-1">Short Answer Questions</h3>
-                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../saq/saq_list1.1.php">SAQ Question List and Input</a></p>
-                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../saq/saq_exercisecreate1.0.php">SAQ Exercise List and Input</a></p>
-                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../saq/saq_assign_review1.1.php">SAQ Assignment Review</a></p>
-                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../user/class_flashcard_review.php">Class Flashcard Review (dev)</a></p>
-                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../user/class_flashcard_student_review.php">Class Student Flashcard Review</a></p>
-
-
-              <h3 class="font-mono text-md bg-pink-100 pl-1">Non-Digital Entry</h3>
-                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../nde/nde_exercise_create1.1.php">Non-Digital Entry: Create Exercise</a></p>
-                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../nde/nde_exercise_review1.0.php" >Non-Digital Entry: Review Exercises</a></p>
-                <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../nde/nde_exercise_view1.0.php" >Non-Digital Entry: Exercise View</a></p>
-                
-          
-          
           <?php
           
         }

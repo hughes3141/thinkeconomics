@@ -83,28 +83,8 @@
         <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-white lg:bg-transparent text-black p-4 lg:p-0 z-20" id="nav-content">
           <ul class="list-none p-0 lg:flex justify-end flex-1 items-center">
             <li class="mr-3">
-              <a class="block text-black no-underline hover:bg-sky-100 lg:hover:bg-inherit py-2 px-4" href="/notes.php">
-                Notes
-              </a>
-            </li>
-            <li class="mr-3">
-              <a class="block text-black no-underline hover:bg-sky-100 lg:hover:bg-inherit py-2 px-4" href="/news.php">
-                News
-              </a>
-            </li>
-            <li class="mr-3">
-              <a class="block text-black no-underline hover:bg-sky-100 lg:hover:bg-inherit py-2 px-4" href="/exercises.php">
-                Exercises
-              </a>
-            </li>
-            <li class="mr-3">
               <a class="block text-black no-underline hover:bg-sky-100 lg:hover:bg-inherit py-2 px-4" href="/mcq.php">
                 MCQs
-              </a>
-            </li>
-            <li class="mr-3">
-              <a class="block text-black no-underline hover:bg-sky-100 lg:hover:bg-inherit py-2 px-4" href="/revision.php">
-                Revision
               </a>
             </li>
             <li class="mr-3">
@@ -112,7 +92,7 @@
                 Admin
               </a>
             </li>
-            
+
           </ul>
           <button
             id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar"
