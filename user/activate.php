@@ -35,7 +35,7 @@ if (is_get_request()) {
 
       // if user exists and activate the user successfully
       if ($user && activate_user($user['id'])) {
-        echo "this user is now activated"
+        echo "this user is now activated";
         /*
           redirect_with_message(
               'login.php',
