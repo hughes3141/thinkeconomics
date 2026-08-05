@@ -4729,11 +4729,6 @@ function validatePassword($password1, $password2) {
       $password_validate = 1;
     }
 
-    //Temporary code to bypass password validation if required:
-
-      $password_err = "";
-      $password_validate = 1;
-
     $results = array(
       "password_err" => $password_err,
       "password_validate" => $password_validate,
@@ -4891,23 +4886,16 @@ function find_unverified_user(string $activation_code, string $email) {
     $stmt->execute();
 
     $result = $stmt->get_result();
-      if($result ->num_rows>0) {
-        $row = $result->fetch_assoc();
-      }
-    $user = $row;
-
-
+    $user = $result->num_rows > 0 ? $result->fetch_assoc() : null;
 
     if ($user) {
         // already expired, delete the in active user with expired activation code
         if ((int)$user['expired'] === 1) {
-            echo "delete user";
             //delete_user_by_id($user['id']);
             return null;
         }
         // verify the password
         if (password_verify($activation_code, $user['activation_code'])) {
-            echo "verifying user";
             return $user;
         }
     }

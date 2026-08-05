@@ -17,6 +17,7 @@ $firstName = $lastName = $username= $email_name = $privacy_bool = $usertype = ""
 $username_err = $username_avail = $password_err = $email_err = $name_err= $privacy_err = $usertype_err= "";
 $name_validate = $username_validate = $password_validate = $email_validate = 0;
 $fn_validate = $ln_validate = $user_avail_validate = $user_rule_validate = $pass_match_validate = $pass_rule_validate = $privacy_validate = $usertype_validate = 0;
+$registrationSuccess = false;
 
 //Processing form data when form is submitted
 if($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -100,31 +101,21 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     //Generate Activation code for activation purposes:
 
     $activation_code = generate_activation_code();
-
-
+    $activationExpiryHours = 24;
 
     //Enter new user information into users table.
     //Store newly-minted 'username' and 'time_added' to $entry array, which is ['username'=> , 'datetime'=> ]
 
-    $entry = insertNewUserIntoUsers($firstName, $lastName, $username, $password1, $usertype, $email_name, $version, $privacy_bool, $usertype, $permissions, 0, null, null, "", 0, $activation_code);
+    $entry = insertNewUserIntoUsers($firstName, $lastName, $username, $password1, $usertype, $email_name, $version, $privacy_bool, $usertype, $permissions, 0, null, null, "", 0, $activation_code, $activationExpiryHours * 60 * 60);
 
     //Generate Activation email
     $fullName = $firstName." ".$lastName;
 
-    send_activation_email($email_name, $fullName, $activation_code);
+    send_activation_email($email_name, $fullName, $activation_code, $activationExpiryHours);
 
-    //Set session userid to newly-minted userid:
-    $userid = getUserByUsernameDatetime($entry);
-    $_SESSION['userid'] = $userid;
-
-    //Register login at login_log table:
-    login_log($userid);
-
-
-    //Send to a new page
-    echo "<script>window.location = '/user/user3.0.php'</script>";
-    //unset($_SESSION['userid']);
-    
+    //Account is created inactive (see insertNewUserIntoUsers above) until the
+    //activation link is clicked - don't log them in yet, just confirm the email was sent.
+    $registrationSuccess = true;
   }
 
 
@@ -141,14 +132,14 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
 
 
-      <?php
-      /*
-        echo "<p>";
-        print_r($_POST);
-        echo "<p>";
-      */
- 
-      ?>
+      <?php if ($registrationSuccess) { ?>
+
+      <p class="pl-1 py-2 text-green-700 bg-lime-100 rounded">
+        Thanks for registering! We've sent an activation link to <b><?=htmlspecialchars($email_name)?></b> -
+        please check your email and click the link to activate your account before logging in.
+      </p>
+
+      <?php } else { ?>
 
       <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" id="inputForm" autocomplete="off" >
       <div class="md:flex /*space-y-5*/ md:space-y-0 md:space-x-4">
@@ -262,10 +253,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
       </div>
 
       </form>
-    
 
-          <h1 class="font-mono text-xl bg-pink-300 pl-1"></h1>
-          
+      <?php } ?>
 
         </div>
 </div>

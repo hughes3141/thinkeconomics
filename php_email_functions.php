@@ -17,7 +17,7 @@ require $path.'/PHPMailer-master/src/Exception.php';
 require $path.'/PHPMailer-master/src/PHPMailer.php';
 require $path.'/PHPMailer-master/src/SMTP.php';
 
-function send_activation_email(string $emailAddress, string $name, string $activation_code): void
+function send_activation_email(string $emailAddress, string $name, string $activation_code, int $expiryHours = 24): void
 {
 
     global $emailPasswordNoReply;
@@ -43,22 +43,24 @@ function send_activation_email(string $emailAddress, string $name, string $activ
         
 
         $mail->SMTPSecure = 'tls'; // Enable SSL encryption, TLS also accepted with port 465
-        $mail->Port = 26; // TCP port to connect to
+        $mail->Port = 587; // TCP port to connect to (587 is the standard STARTTLS submission port)
         //Recipients
         $mail->setFrom('no-reply@thinkeconomics.co.uk', 'ThinkEconomics Support'); //This is the email your form sends From
 
         $mail->addAddress($emailAddress, $name); // Add a recipient address
         //Content
         $mail->isHTML(true); // Set email format to HTML
-        $mail->Subject = 'ThinkEconomics: Please activate your account '.date('m/d/Y h:i:s a');
+        $mail->Subject = 'ThinkEconomics: Please activate your account '.date('d/m/Y H:i');
         $mail->Body    = <<<MESSAGE
-            Hi,
-            <p>Please click the following link to activate your account:</p>
-            <a target = "_blank" href="$activation_link">$activation_link</a>
+            Hi $name,
+            <p>Thanks for signing up to ThinkEconomics! Please click the link below to activate your account and get started:</p>
+            <p><a target = "_blank" href="$activation_link">$activation_link</a></p>
+            <p>This link will expire in $expiryHours hours, so be sure to activate your account soon.</p>
+            <p>If you didn't sign up for a ThinkEconomics account, you can safely ignore this email.</p>
+            <p>Thanks,<br>The ThinkEconomics Team</p>
             MESSAGE;
         $mail->send();
-        echo 'Message has been sent';
-        
+
     } catch (Exception $e) {
         echo 'Message could not be sent.';
         echo 'Mailer Error: ' . $mail->ErrorInfo;

@@ -21,6 +21,13 @@ if($_SESSION['last_url']) {
   $previous = $_SESSION['last_url'];
 }
 
+//The login form posts back to itself, so "last_url" can end up being login.php
+//itself (e.g. login.php?activated=1) rather than a genuine previous page -
+//redirecting back to the login page after logging in is never useful.
+if(strpos($previous, '/login.php') === 0) {
+  $previous = "";
+}
+
 
 
  
@@ -146,12 +153,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 <body>
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">User Login</h1>
     <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
-   
+
         <p class="px-3 py-2 hidden">Please fill in your credentials to login.</p>
 
-        <?php //print_r($_SESSION);?>
-
-        
+        <?php if (isset($_GET['activated'])) { ?>
+          <p class="ml-3 mt-1 py-2 text-green-700 bg-lime-100 rounded">Your account has been activated successfully. Please log in below.</p>
+        <?php } ?>
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="form-group">
@@ -175,9 +182,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             <div class="form-group">
                 <input type="submit" class=" bg-sky-500 hover:bg-sky-400 focus:bg-sky-200 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block" value="Login">
             </div>
-            <!--
-            <p>Don't have an account? <a href="register.php">Sign up now</a>.</p>
-      -->
+            <p class="ml-3 mt-3">Don't have an account? <a href="/user/newuser.php" class="underline hover:bg-sky-100">Sign up now</a>.</p>
         </form>
     </div>
 
