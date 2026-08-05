@@ -53,7 +53,10 @@ if(isset($_GET['orderBy'])) {
 
 
 
-$results = getFlashcardSummaryByQuestion($groupId, $startDate, $endDate, $orderBy);
+//$results = getFlashcardSummaryByQuestion($groupId, $startDate, $endDate, $orderBy);
+
+$results2 = getFlashcardResponses(null, null, $startDate, $endDate, $groupId, 185);
+//$results2 = getFlashcardResponses(null, 1152);
 
 $groups = getGroupsList($userId);
 
@@ -61,10 +64,7 @@ $date = date('Y-m-d');
 $dateLastMonth = date('Y-m-d', strtotime('-30 days'));
 
 
-foreach($results as $array) {
-  //print_r($array);
-  //echo "<br>";
-}
+
 
 
 ?>
@@ -77,6 +77,14 @@ foreach($results as $array) {
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">Flash Card Review</h1>
   <div class="container mx-auto px-0 mt-2 bg-white text-black pt-1">
   <?php
+  echo "<pre>";
+  print_r($results2);
+  echo "</pre>";
+
+  foreach($results2 as $array) {
+    print_r($array);
+    echo "<br>";
+  }
   
   /*
   echo "<pre>";
@@ -135,7 +143,14 @@ foreach($results as $array) {
                 <img src = "<?=$array['img']?>" class="w-auto">
                 <?php
               }
-              ?>
+      
+              if(!is_null($array['q_path'])) {
+                ?>
+                <img class = "mx-auto content-center object-center" src= "<?=htmlspecialchars($array['q_path'])?>" alt = "<?=htmlspecialchars($array['q_alt'])?>">
+                <?php
+              }
+            ?>
+              
           </td>
           <td>
             Correct: <?=$array['correct']?> ||

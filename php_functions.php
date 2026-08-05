@@ -2435,10 +2435,18 @@ function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endD
     $orderBy = "q.topic";
   }
 
-  $sql = "SELECT q.id id, q.topic, q.question, COUNT(CASE r.gotRight WHEN 0 THEN 1 ELSE NULL END) dontknow, COUNT(CASE r.gotRight WHEN 1 THEN 1 ELSE NULL END) wrong, COUNT(CASE r.gotRight WHEN 2 THEN 1 ELSE NULL END) correct, q.img
+  $sql = "SELECT q.id id, q.topic, q.question, COUNT(CASE r.gotRight WHEN 0 THEN 1 ELSE NULL END) dontknow, COUNT(CASE r.gotRight WHEN 1 THEN 1 ELSE NULL END) wrong, COUNT(CASE r.gotRight WHEN 2 THEN 1 ELSE NULL END) correct, q.img, COUNT(CASE WHEN r.dontKnow = 1 THEN 1 ELSE NULL END) dontKnow2, COUNT(CASE WHEN (r.correct = 0 AND r.dontKnow = 0) THEN 1 ELSE NULL END) wrong2, COUNT(CASE r.correct WHEN 1 THEN 1 ELSE NULL END) correct2, aq.path q_path, aq.altText q_alt, aa.path a_path, aa.altText a_alt, q.topicId
         FROM saq_question_bank_3 q
         JOIN flashcard_responses r
         ON q.id = r.questionId
+
+        LEFT JOIN upload_record aq
+          ON q.questionAssetId = aq.id
+          LEFT JOIN upload_record aa
+          ON q.answerAssetId = aa.id
+          LEFT JOIN topics_all topic
+          ON topic.id = q.topicId
+
         WHERE ";
         /*q.userCreate = 1 AND */
         
@@ -2483,6 +2491,106 @@ function getFlashcardSummaryByQuestion($classid = null, $startDate = null, $endD
   
   return $responses;
 
+}
+
+function getFlashcardResponses($id=null, $questionId=null, $startDate = null, $endDate = null, $groupId = null, $topicId=null) {
+  /*
+  An update to replace getFlashcardSummaryByQuestion as above.
+  Selects all responses in flashcard_responses to then be analysed by class etc.
+  */
+
+  global $conn;
+
+  $responses = array();
+  $bindArray = array();
+  $params = "";
+  $conjoiner = 0;
+
+  $sql = "SELECT r.id responseId, r.*,
+          q.id questionId, q.*,
+          u.groupid_array
+          FROM flashcard_responses r 
+          LEFT JOIN saq_question_bank_3 q
+          ON q.id = r.questionId
+          LEFT JOIN users u
+          ON u.id = r.userId
+          ";
+
+  if($id OR $questionId OR $startDate OR $endDate OR $groupId OR $topicId) {
+    $sql .= " WHERE ";
+  }
+
+  if($id) {
+    $sql .= " r.id = ? ";
+    array_push($bindArray, $id);
+    $params .= "i";
+    $conjoiner = 1;
+  }
+
+  if($questionId) {
+    $sql .= " q.id = ? ";
+    array_push($bindArray, $questionId);
+    $params .= "i";
+    $conjoiner = 1;
+  }
+
+  if($topicId) {
+    $sql .= " q.topicId = ? ";
+    array_push($bindArray, $topicId);
+    $params .= "i";
+    $conjoiner = 1;
+  }
+
+  if($startDate) {
+    $conjoin = ($conjoiner == 1) ? " AND " : "";
+    $sql .= $conjoin;
+    $sql .= " timeSubmit > ? ";
+    //$keyword = "%".$keyword."%";
+    array_push($bindArray, $startDate);
+    $params .= "s";
+    $conjoiner = 1;
+  }
+
+  if($endDate) {
+    $conjoin = ($conjoiner == 1) ? " AND " : "";
+    $sql .= $conjoin;
+    $endDate = date('Y-m-d H:i:s', strtotime($endDate . ' +1 day'));
+    $sql .= " timeSubmit <= ? ";
+    //$keyword = "%".$keyword."%";
+    array_push($bindArray, $endDate);
+    $params .= "s";
+    $conjoiner = 1;
+  }
+
+  if($groupId) {
+    $conjoin = ($conjoiner == 1) ? " AND " : "";
+    $sql .= $conjoin;
+    $groupId = "%\"".$groupId."\"%";
+    $sql .= " u.groupid_array LIKE ? ";
+    //$keyword = "%".$keyword."%";
+    array_push($bindArray, $groupId);
+    $params .= "s";
+    $conjoiner = 1;
+  }
+
+  $sql .= " LIMIT 100 ";
+
+  echo $sql;
+
+  $stmt = $conn->prepare($sql);
+  if(count($bindArray)>0) {
+    $stmt->bind_param($params, ...$bindArray);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if($result->num_rows>0) {
+    while($row = $result->fetch_assoc()) {
+      array_push($responses, $row);
+    }
+  }
+
+  
+  return $responses;
 }
 
 function getFlashcardSummaryByStudent($userId, $startDate = null, $endDate = null) {
@@ -3309,7 +3417,7 @@ function insertFlashcardResponse($questionId, $userId, $gotRight, $timeStart, $t
   $dontKnow = 0;
   $correct = 0;
 
-  if($gotRight == 1) {
+  if($gotRight == 0) {
     $dontKnow = 1;
   }
 
