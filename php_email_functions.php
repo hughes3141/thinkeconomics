@@ -66,26 +66,41 @@ MESSAGE;
         echo 'Mailer Error: ' . $mail->ErrorInfo;
     }
 
-    /*
-
-    // set email subject & body
-    $subject = 'Please activate your account';
-    $message = <<<MESSAGE
-            Hi,
-            Please click the following link to activate your account:
-            $activation_link
-            MESSAGE;
-    // email header
-    $header = "From:" . SENDER_EMAIL_ADDRESS;
-
-    // send the email
-    mail($email, $subject, nl2br($message), $header);
-
-    */
-
-
-
 }
 
+function send_password_reset_email(string $emailAddress, string $name, string $resetCode, int $expiryHours = 1): void
+{
+    global $emailPasswordNoReply;
+    $reset_link = "https://thinkeconomics.co.uk/user/password_reset.php?email=$emailAddress&reset_code=$resetCode";
+
+    $mail = new PHPMailer(true);
+    try {
+        $mail->SMTPDebug = 0;
+        $mail->isSMTP();
+        $mail->Host = 'mail.thinkeconomics.co.uk';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'no-reply@thinkeconomics.co.uk';
+        $mail->Password = $emailPasswordNoReply;
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;
+        $mail->setFrom('no-reply@thinkeconomics.co.uk', 'ThinkEconomics Support');
+        $mail->addAddress($emailAddress, $name);
+        $mail->isHTML(true);
+        $mail->Subject = 'ThinkEconomics: Password change request '.date('d/m/Y H:i');
+        $mail->Body    = <<<MESSAGE
+Hi $name,
+<p>We received a request to change the password on your ThinkEconomics account. Click the link below to choose a new password:</p>
+<p><a target = "_blank" href="$reset_link">$reset_link</a></p>
+<p>This link will expire in $expiryHours hour(s).</p>
+<p>If you didn't request this, you can safely ignore this email - your password won't be changed unless you click the link above and set a new one.</p>
+<p>Thanks,<br>The ThinkEconomics Team</p>
+MESSAGE;
+        $mail->send();
+
+    } catch (Exception $e) {
+        echo 'Message could not be sent.';
+        echo 'Mailer Error: ' . $mail->ErrorInfo;
+    }
+}
 
 ?>

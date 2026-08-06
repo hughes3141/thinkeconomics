@@ -4920,6 +4920,58 @@ function is_get_request(): bool
     return strtoupper($_SERVER['REQUEST_METHOD']) === 'GET';
 }
 
+function generate_password_reset_request(int $user_id, int $expirySeconds = 3600): string {
+  //Generates a raw reset code, stores only its hash (mirrors activation_code),
+  //and returns the raw code so the caller can put it in the email link.
+  global $conn;
+
+  $resetCode = bin2hex(random_bytes(16));
+  $codeHash = password_hash($resetCode, PASSWORD_DEFAULT);
+  $expiry = date('Y-m-d H:i:s', time() + $expirySeconds);
+
+  $sql = 'UPDATE users SET password_reset_code = ?, password_reset_expiry = ? WHERE id = ?';
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("ssi", $codeHash, $expiry, $user_id);
+  $stmt->execute();
+
+  return $resetCode;
+}
+
+function find_user_by_reset_code(string $resetCode, string $email) {
+  global $conn;
+  $sql = 'SELECT id, password_reset_code, password_reset_expiry < NOW() AS expired
+          FROM users
+          WHERE active = 1 AND email = ? AND password_reset_code IS NOT NULL';
+
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("s", $email);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $user = $result->num_rows > 0 ? $result->fetch_assoc() : null;
+
+  if ($user) {
+    if ((int)$user['expired'] === 1) {
+      return null;
+    }
+    if (password_verify($resetCode, $user['password_reset_code'])) {
+      return $user;
+    }
+  }
+
+  return null;
+}
+
+function update_user_password(int $user_id, string $newPassword): bool {
+  //Sets the new password and clears the reset code so the link is single-use.
+  global $conn;
+
+  $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+  $sql = 'UPDATE users SET password_hash = ?, password_reset_code = NULL, password_reset_expiry = NULL WHERE id = ?';
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("si", $passwordHash, $user_id);
+  return $stmt->execute();
+}
+
 
 function getUserByUsernameDatetime($entry) {
   //This function is designed for the specific use of retrieving id from table users in the immediate afterward of a new account being registered

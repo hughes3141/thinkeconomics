@@ -65,7 +65,10 @@ include "../header_tailwind.php";
       <div class="container mx-auto px-0 mt-2 bg-white text-black">
     
           <p class="pl-1 text-lg bg-sky-100 font-mono my-2">Logged in as <?php echo trim($userInfo['name_first']." ".$userInfo['name_last']);?></p>
-        
+
+          <h1 class="font-mono text-xl bg-pink-300 pl-1">User Profile</h1>
+          <p class="ml-2 hover:bg-sky-100"><a class="block" href="password_change_request.php">Change Password</a></p>
+
         <?php
         
           //print_r($userInfo);

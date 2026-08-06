@@ -160,6 +160,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
           <p class="ml-3 mt-1 py-2 text-green-700 bg-lime-100 rounded">Your account has been activated successfully. Please log in below.</p>
         <?php } ?>
 
+        <?php if (isset($_GET['password_changed'])) { ?>
+          <p class="ml-3 mt-1 py-2 text-green-700 bg-lime-100 rounded">Your password has been changed successfully. Please log in with your new password.</p>
+        <?php } ?>
+
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="form-group">
                 <label class ="text-gray-600 pb-1 ml-2 mb-2 pt-1">username/email:</label>
