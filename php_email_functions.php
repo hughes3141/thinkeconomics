@@ -52,13 +52,13 @@ function send_activation_email(string $emailAddress, string $name, string $activ
         $mail->isHTML(true); // Set email format to HTML
         $mail->Subject = 'ThinkEconomics: Please activate your account '.date('d/m/Y H:i');
         $mail->Body    = <<<MESSAGE
-            Hi $name,
-            <p>Thanks for signing up to ThinkEconomics! Please click the link below to activate your account and get started:</p>
-            <p><a target = "_blank" href="$activation_link">$activation_link</a></p>
-            <p>This link will expire in $expiryHours hours, so be sure to activate your account soon.</p>
-            <p>If you didn't sign up for a ThinkEconomics account, you can safely ignore this email.</p>
-            <p>Thanks,<br>The ThinkEconomics Team</p>
-            MESSAGE;
+Hi $name,
+<p>Thanks for signing up to ThinkEconomics! Please click the link below to activate your account and get started:</p>
+<p><a target = "_blank" href="$activation_link">$activation_link</a></p>
+<p>This link will expire in $expiryHours hours, so be sure to activate your account soon.</p>
+<p>If you didn't sign up for a ThinkEconomics account, you can safely ignore this email.</p>
+<p>Thanks,<br>The ThinkEconomics Team</p>
+MESSAGE;
         $mail->send();
 
     } catch (Exception $e) {
