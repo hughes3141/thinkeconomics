@@ -121,7 +121,7 @@
             ?>">
                 <ul class="py-1 text-sm text-gray-800 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
                   <li>
-                    <a href="/user/user3.0.php" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
+                    <a href="/user/dashboard.php" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
                   </li>
                   <!--
                   <li>

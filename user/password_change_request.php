@@ -31,7 +31,7 @@ include($path."/header_tailwind.php");
         We've sent a link to <b><?=htmlspecialchars($userInfo['email'])?></b> - please check your email and click the
         link to choose a new password. The link will expire in 1 hour.
       </p>
-      <p class="mt-3"><a href="/user/user3.0.php" class="underline hover:bg-sky-100">Back to dashboard</a></p>
+      <p class="mt-3"><a href="/user/dashboard.php" class="underline hover:bg-sky-100">Back to dashboard</a></p>
 
     <?php } else { ?>
 
@@ -42,7 +42,7 @@ include($path."/header_tailwind.php");
       <form method="post">
         <input type="submit" class="mt-3 rounded bg-sky-500 hover:bg-sky-400 focus:bg-sky-200 focus:shadow-sm focus:ring-4 focus:ring-sky-200 focus:ring-opacity-50 text-white w-full py-2.5 text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block" value="Send me a password change link">
       </form>
-      <p class="mt-3"><a href="/user/user3.0.php" class="underline hover:bg-sky-100">Cancel, back to dashboard</a></p>
+      <p class="mt-3"><a href="/user/dashboard.php" class="underline hover:bg-sky-100">Cancel, back to dashboard</a></p>
 
     <?php } ?>
 

@@ -80,7 +80,7 @@ if ($result = mysqli_query($link, $query)) {
 			//print_r($_SESSION);
 			
 			echo "<script type='text/javascript'>
-			window.location.href = 'user/user3.0.php';
+			window.location.href = 'user/dashboard.php';
 			//document.getElementById('useridInput').value ='".$row[id]."';
 			</script>";
 			

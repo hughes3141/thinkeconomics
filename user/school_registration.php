@@ -34,7 +34,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
   if($_POST['submit'] == "Confirm") {
     linkUserToSchool($userId, $_POST['schoolId']);
     $userInfo  = getUserInfo($_SESSION['userid']);
-    echo "<script>window.location = '/user/user3.0.php'</script>";
+    echo "<script>window.location = '/user/dashboard.php'</script>";
 
   }
 }

@@ -8,7 +8,7 @@
   
   <li class="navbar"><a class="navbar" href="/admin.php">Admin</a></li>
   
-  <li class="navbar"><a class="navbar" href="/user/user3.0.php">Login</a></li>
+  <li class="navbar"><a class="navbar" href="/user/dashboard.php">Login</a></li>
 
   <!--
   <li class="navbar" style="display:"><a class="navbar" href="/tutoring.php">Tutoring</a></li>

@@ -53,9 +53,9 @@ function updatePrivacy($userId) {
   if(($previous !="")&&($previous !="/")) {
     header("location: ".$previous);
   } else if ($previous == "/") {
-    header("location: /user/user3.0.php");
+    header("location: /user/dashboard.php");
   } else if ($previous == $_SERVER['REQUEST_URI']) { 
-    header("location: /user/user3.0.php");
+    header("location: /user/dashboard.php");
   } else {
     header("location: index.php");
   }
