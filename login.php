@@ -174,6 +174,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 <label class ="text-gray-600 pb-1 ml-2 mb-2 pt-1">Password</label>
                 <input type="password" name="password" class="border px-3 py-2  text-sm w-full" placeholder =Password>
                 <span class="ml-3 mt-1 py-0 text-red-600 bg-lime-300"><?php echo $password_err; ?></span>
+                <p class="ml-3 mt-1"><a href="/user/forgot_password.php" class="underline hover:bg-sky-100">Forgot password?</a></p>
             </div>
             <div class="form-group">
 

@@ -4937,6 +4937,35 @@ function generate_password_reset_request(int $user_id, int $expirySeconds = 3600
   return $resetCode;
 }
 
+function generate_password_reset_request_by_email(string $email, int $expirySeconds = 3600) {
+  //Looks up an active account by email (for the logged-out "forgot password"
+  //flow) and, if one exists, generates a reset request for it exactly like
+  //generate_password_reset_request(). Returns null if no matching active
+  //account exists - callers must show an identical message either way, to
+  //avoid leaking which emails are registered.
+  global $conn;
+
+  $sql = 'SELECT id, name_first, name_last FROM users WHERE email = ? AND active = 1';
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("s", $email);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if ($result->num_rows === 0) {
+    return null;
+  }
+
+  $user = $result->fetch_assoc();
+  $resetCode = generate_password_reset_request((int)$user['id'], $expirySeconds);
+
+  return [
+    'id' => $user['id'],
+    'name_first' => $user['name_first'],
+    'name_last' => $user['name_last'],
+    'resetCode' => $resetCode,
+  ];
+}
+
 function find_user_by_reset_code(string $resetCode, string $email) {
   global $conn;
   $sql = 'SELECT id, password_reset_code, password_reset_expiry < NOW() AS expired
