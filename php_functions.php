@@ -798,7 +798,7 @@ function getMCQquestionDetails($id = null, $questionNo = null, $topic = null, $k
   $bindArray = array();
   $conjoiner = 0;
 
-  $sql ="SELECT q.id, q.No, q.Answer, q.Topic, q.topics, q.keywords, q.question, q.options, q.explanation, q.examBoard, q.component, q.assetId, q.unitName, q.qualLevel, q.textOnly, q.topicsAQA, q.topicsEdexcel, q.topicsOCR, q.topicsCIE, q.noRandom, a.path
+  $sql ="SELECT q.id, q.No, q.Answer, q.Topic, q.topics, q.keywords, q.question, q.options, q.explanation, q.examBoard, q.component, q.assetId, q.unitName, q.qualLevel, q.textOnly, q.noRandom, a.path
         FROM question_bank_3 q
         LEFT JOIN upload_record a
           ON a.id = q.assetId";
@@ -903,7 +903,7 @@ function getMCQquestionDetails2($id = null, $questionNo = null, $topic = null, $
   $bindArray = array();
   $conjoiner = 0;
 
-  $sql ="SELECT q.id, q.No, q.Answer, q.Topic, q.topics, q.keywords, q.question, q.question2, q.options, q.optionsAssets,q.explanation, q.examBoard, q.component, q.assetId, q.unitName, q.qualLevel, q.textOnly, q.topicsAQA, q.topicsEdexcel, q.topicsOCR, q.topicsCIE, q.series, q.year, q.questionNo, q.noRandom, q.similar, q.relevant, q.midImgAssetId, q.midTableArray, q.optionsTable, q.optionsTableHeading, q.midTableHeader, a.path
+  $sql ="SELECT q.id, q.No, q.Answer, q.Topic, q.topics, q.keywords, q.question, q.question2, q.options, q.optionsAssets,q.explanation, q.examBoard, q.component, q.assetId, q.unitName, q.qualLevel, q.textOnly, q.series, q.year, q.questionNo, q.noRandom, q.similar, q.relevant, q.midImgAssetId, q.midTableArray, q.optionsTable, q.optionsTableHeading, q.midTableHeader, a.path
         FROM question_bank_3 q
         LEFT JOIN upload_record a
           ON a.id = q.assetId";

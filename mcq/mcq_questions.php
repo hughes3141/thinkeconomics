@@ -619,7 +619,7 @@ $_GET controls:
                       <div>
                         <h3>Topics:</h3>
                         <div class="toggleClass_<?=$question['id']?>">
-                          <p><?=$question['Topic']?> <?=$question['topics']?> <?=$question['topicsAQA']?> <?=$question['topicsEdexcel']?> <?=$question['topicsOCR']?> <?=$question['topicsCIE']?></p>
+                          <p><?=$question['Topic']?> <?=$question['topics']?></p>
                         </div>
                         <div class="toggleClass_<?=$question['id']?> hidden">
                           <label>Primary Topic:</label>
