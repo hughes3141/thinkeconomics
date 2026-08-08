@@ -17,7 +17,9 @@ include($path."/header_tailwind.php");
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="pastpapers/questions.php">Past Paper Questions Database</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/topic_list.php">Eduqas A Level Topic list</a></li>
       <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/topic_mapping.php">Exam Board Topic Mapping</a></li>
-      <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href ="admin/eduqas-a-economics-spec-from-2015.pdf" target ="_blank">A Level Economics Specification</a></li>
+      <?php if(isset($_SESSION['userid'])) { ?>
+      <li class="ml-2 mr-2 hover:bg-sky-100"><a class = "block" href="admin/specification_summary.php">Specification Summary</a></li>
+      <?php } ?>
     </ul>
     <?php for($x=0; $x<10; $x++) {echo "<br>";}?>
   </div>
