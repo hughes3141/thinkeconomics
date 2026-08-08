@@ -78,8 +78,8 @@ include($path."/header_tailwind.php");
   <div class="container mx-auto p-4 mt-2 bg-white text-black mb-5">
 
     <div class="border-2 rounded border-sky-200 p-3 mb-4">
-      <p class="mb-2">Every exam board organises A Level Economics a little differently — some group topics broadly, others break them into fine detail, and the wording is never quite the same from one specification to another. To make it possible to use the same set of resources and questions whichever board you're following, we've built a single <strong>master topic list</strong> that every specification maps onto.</p>
-      <p class="mb-2">Find your exam board's column in the table below. Wherever your specification lists a topic, you'll see which master topic it corresponds to — and its official topic code, where the board publishes one. This is also how our question bank and revision resources are organised, so it's worth knowing which master topic matches whatever you're currently studying, even if your own specification calls it something slightly different.</p>
+      <p class="mb-2">Every exam board organises A Level Economics a little differently — some group topics broadly, others break them into fine detail, and the wording is never quite the same from one specification to another. To make it possible to use the same set of resources and questions whichever board you're following, we've built a single <strong>topic list</strong> that every specification maps onto.</p>
+      <p class="mb-2">Find your exam board's column in the table below. Wherever your specification lists a topic, you'll see which topic it corresponds to — and its official topic code, where the board publishes one. This is also how our question bank and revision resources are organised, so it's worth knowing which topic matches whatever you're currently studying, even if your own specification calls it something slightly different.</p>
       <p>Where a cell is blank, that board's specification doesn't have a directly equivalent topic — that's expected, not a mistake; boards genuinely differ in what they cover and at what level of detail.</p>
     </div>
 
@@ -94,7 +94,7 @@ include($path."/header_tailwind.php");
       <table class="w-full text-sm">
         <thead>
           <tr class="sticky top-0 z-50 bg-sky-100">
-            <th class="text-left sticky left-0 top-0 z-[60] bg-sky-100">Master Topic</th>
+            <th class="text-left sticky left-0 top-0 z-[60] bg-sky-100">Topic</th>
             <?php foreach ($boardOrder as $boardId) { ?>
               <th class="text-left"><?=$boardsById[$boardId]?></th>
             <?php } ?>
