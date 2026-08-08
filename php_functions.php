@@ -1096,7 +1096,7 @@ function insertMCQquestion($userCreate, $questionCode, $questionNo, $examBoard, 
   /*
   This function inserts a new MCQ question.
   Used in:
-  -mcq/mcq_questions.php
+  -mcq/mcq_questions_new.php
   */
 
   global $conn;
